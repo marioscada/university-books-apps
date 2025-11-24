@@ -1,0 +1,18 @@
+# =============================================================================
+# CODEOWNERS
+# =============================================================================
+# Definisce i code owners per review automatiche.
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# =============================================================================
+
+# Default owners per tutto il repo
+* @marianoscada
+
+# CI/CD e configurazioni
+/.github/ @marianoscada
+/scripts/ @marianoscada
+
+# Configurazioni critiche
+package.json @marianoscada
+package-lock.json @marianoscada
+angular.json @marianoscada
