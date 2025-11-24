@@ -1,0 +1,22 @@
+#!/bin/sh
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Allow master and develop branches
+if [ "$branch" = "master" ] || [ "$branch" = "cicd-test/develop" ]; then
+  exit 0
+fi
+
+# Check branch naming convention
+if ! echo "$branch" | grep -qE "^cicd-test/(feat|fix|refactor)/"; then
+  echo "Error: Branch name must follow pattern: cicd-test/feat|fix|refactor/branch-name"
+  echo "Current branch: $branch"
+  echo ""
+  echo "Examples:"
+  echo "  cicd-test/feat/add-login"
+  echo "  cicd-test/fix/button-color"
+  echo "  cicd-test/refactor/cleanup-code"
+  exit 1
+fi
+
+exit 0

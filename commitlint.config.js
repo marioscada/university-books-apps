@@ -7,19 +7,12 @@ module.exports = {
       [
         'feat',     // Nuova funzionalità
         'fix',      // Bug fix
-        'docs',     // Documentazione
-        'style',    // Formattazione, semicolons, etc.
-        'refactor', // Refactoring del codice
-        'perf',     // Miglioramenti performance
-        'test',     // Aggiunta test
-        'chore',    // Manutenzione, build, CI
-        'ci',       // Cambiamenti CI/CD
-        'build',    // Build system
-        'revert'    // Revert commit
+        'refactor'  // Refactoring del codice
       ]
     ],
-    'scope-case': [2, 'always', 'kebab-case'],
-    'subject-case': [0], // Permette qualsiasi case
-    'body-max-line-length': [0] // Nessun limite
+    'scope-enum': [2, 'always', ['cicd-test']],
+    'scope-empty': [2, 'never'],
+    'subject-case': [0],
+    'body-max-line-length': [0]
   }
 };
