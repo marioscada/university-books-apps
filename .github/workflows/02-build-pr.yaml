@@ -1,0 +1,135 @@
+# =============================================================================
+# BUILD PR - Build su Pull Request
+# =============================================================================
+# Questo workflow esegue build selettivo dei progetti modificati su ogni PR.
+# Builda solo i progetti che hanno subito modifiche (ottimizzazione).
+#
+# PERSONALIZZAZIONE:
+# - Sostituisci {{NODE_VERSION}} con la tua versione Node
+# - Sostituisci {{PROJECT_1}}, {{PROJECT_2}}, {{PROJECT_3}} con i nomi progetti
+# - Sostituisci {{S3_BUCKET_BASE}} e {{S3_REGION}} con i tuoi valori AWS
+# =============================================================================
+
+name: Build Pull Request
+
+on: [pull_request]
+
+jobs:
+  pr-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['{{NODE_VERSION}}']
+
+    steps:
+      - name: Print payload
+        run: echo "$PAYLOAD"
+        env:
+          PAYLOAD: ${{ toJSON(github) }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: |
+            node_modules
+            */*/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      # =============================================================================
+      # DETECT CHANGES - Rileva quali progetti sono stati modificati
+      # =============================================================================
+      - name: Get BASE & HEAD SHA
+        run: |
+          echo "BASE_SHA=${{github.event.pull_request.base.sha}}" >> $GITHUB_ENV
+          echo "HEAD_SHA=${{github.event.pull_request.head.sha}}" >> $GITHUB_ENV
+
+      - name: Detect Changed Projects
+        run: |
+          echo "CHANGED_PROJECT_1=$(git diff-tree --numstat --no-commit-id -r ${{ env.BASE_SHA }} ${{ env.HEAD_SHA }} -- ./projects/{{PROJECT_1}} | head -n 1 )" >> $GITHUB_ENV
+          echo "CHANGED_PROJECT_2=$(git diff-tree --numstat --no-commit-id -r ${{ env.BASE_SHA }} ${{ env.HEAD_SHA }} -- ./projects/{{PROJECT_2}} | head -n 1 )" >> $GITHUB_ENV
+          echo "CHANGED_PROJECT_3=$(git diff-tree --numstat --no-commit-id -r ${{ env.BASE_SHA }} ${{ env.HEAD_SHA }} -- ./projects/{{PROJECT_3}} | head -n 1 )" >> $GITHUB_ENV
+
+      # =============================================================================
+      # BUILD - Compila solo i progetti modificati
+      # =============================================================================
+      - name: Build Shared Libraries
+        if: env.CHANGED_PROJECT_1 != '' || env.CHANGED_PROJECT_2 != '' || env.CHANGED_PROJECT_3 != ''
+        run: npm run build:libs
+
+      - name: Build {{PROJECT_1}}
+        if: env.CHANGED_PROJECT_1 != ''
+        run: |
+          npm run i18n:cache-busting {{PROJECT_1}} || true
+          npm run build:{{PROJECT_1}}
+
+      - name: Build {{PROJECT_2}}
+        if: env.CHANGED_PROJECT_2 != ''
+        run: |
+          npm run i18n:cache-busting {{PROJECT_2}} || true
+          npm run build:{{PROJECT_2}}
+
+      - name: Build {{PROJECT_3}}
+        if: env.CHANGED_PROJECT_3 != ''
+        run: |
+          npm run i18n:cache-busting {{PROJECT_3}} || true
+          npm run build:{{PROJECT_3}}
+
+      # =============================================================================
+      # DEPLOY - Upload su S3
+      # =============================================================================
+      - name: Deploy on S3
+        run: npm run upload
+        env:
+          S3_ACCESS_KEY: ${{ secrets.S3_ACCESS_KEY }}
+          S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
+          PR_SHA: ${{ github.sha }}
+          REF: ${{ github.ref }}
+
+      # =============================================================================
+      # PR COMMENT - Commento automatico con link deploy
+      # =============================================================================
+      - name: Find Deploy URL Comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Deploy Up & Running
+
+      - name: Create or Update Deploy URL
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## Deploy Up & Running :rocket:
+
+            | Project | Deploy URL |
+            |---------|------------|
+            | {{PROJECT_1}} | [Preview](http://${{github.sha}}.dev.{{S3_BUCKET_BASE}}.s3-website-{{S3_REGION}}.amazonaws.com) |
+            | {{PROJECT_2}} | [Preview](http://${{github.sha}}.dev.{{PROJECT_2}}.{{S3_BUCKET_BASE}}.s3-website-{{S3_REGION}}.amazonaws.com) |
+            | {{PROJECT_3}} | [Preview](http://${{github.sha}}.dev.{{PROJECT_3}}.{{S3_BUCKET_BASE}}.s3-website-{{S3_REGION}}.amazonaws.com) |
+
+            > :information_source: Solo i progetti modificati sono stati compilati.
+          edit-mode: replace
