@@ -1,0 +1,80 @@
+# =============================================================================
+# BUILD PR - Build su Pull Request
+# =============================================================================
+# Questo workflow esegue il build su ogni PR.
+# =============================================================================
+
+name: Build Pull Request
+
+on: [pull_request]
+
+jobs:
+  pr-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['20']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache node modules
+        id: cache-nodemodules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Build Production
+        run: npm run build:prod
+
+      # =============================================================================
+      # DEPLOY - Upload su S3 (richiede configurazione secrets)
+      # =============================================================================
+      # - name: Deploy on S3
+      #   run: npm run upload
+      #   env:
+      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     PR_SHA: ${{ github.sha }}
+      #     REF: ${{ github.ref }}
+
+      # =============================================================================
+      # PR COMMENT - Commento automatico con link deploy
+      # =============================================================================
+      # - name: Find Deploy URL Comment
+      #   uses: peter-evans/find-comment@v3
+      #   id: fc
+      #   with:
+      #     issue-number: ${{ github.event.pull_request.number }}
+      #     comment-author: 'github-actions[bot]'
+      #     body-includes: Deploy Up & Running
+
+      # - name: Create or Update Deploy URL
+      #   uses: peter-evans/create-or-update-comment@v4
+      #   with:
+      #     comment-id: ${{ steps.fc.outputs.comment-id }}
+      #     issue-number: ${{ github.event.pull_request.number }}
+      #     body: |
+      #       ## Deploy Up & Running :rocket:
+      #
+      #       | Project | Deploy URL |
+      #       |---------|------------|
+      #       | cicd-test | [Preview](http://${{github.sha}}.dev.cicd-test.example.com.s3-website-eu-west-1.amazonaws.com) |
+      #     edit-mode: replace
