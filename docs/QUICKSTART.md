@@ -1,139 +1,95 @@
-# Quick Start - Setup CI/CD in 10 minuti
+# ⚡ Quick Start - Template Monorepo Angular
 
-Checklist rapida per configurare la pipeline CI/CD su un nuovo progetto.
+## 🎯 Setup Nuovo Progetto (5 minuti)
 
----
-
-## Checklist
-
-### 1. Preparazione Repository
-- [ ] Crea repository su GitHub
-- [ ] Clona in locale
-- [ ] Crea cartella `.github/workflows/`
-
-### 2. Copia Workflow Files
+### 1. Clone Template
 ```bash
-# Dalla cartella del tuo nuovo progetto
-mkdir -p .github/workflows
-
-# Copia i file dalla cartella workflows/ di questa guida
-# Rinomina rimuovendo i numeri iniziali:
-# - 01-check-pr.yaml → check-pr.yaml
-# - 02-build-pr.yaml → build-pr.yaml
-# - 03-build-master.yaml → build-master.yaml
+git clone https://github.com/marioscada/cicd-test.git my-client-project
+cd my-client-project
+rm -rf .git
+git init
 ```
 
-### 3. Personalizza Placeholder
+### 2. Configura per il Cliente
+Apri `project.config.js` e modifica:
 
-Apri ogni file e sostituisci:
-
-| Trova | Sostituisci con |
-|-------|-----------------|
-| `{{NODE_VERSION}}` | `18.19.0` (o la tua versione) |
-| `{{PROJECT_1}}` | Nome del tuo primo progetto |
-| `{{PROJECT_2}}` | Nome del tuo secondo progetto |
-| `{{PROJECT_3}}` | Nome del tuo terzo progetto |
-| `{{S3_BUCKET_BASE}}` | `tuodominio.com` |
-| `{{S3_REGION}}` | `eu-west-1` |
-
-### 4. Configura Secrets su GitHub
-
-Vai su: Repository → Settings → Secrets and variables → Actions
-
-Aggiungi:
-- [ ] `S3_ACCESS_KEY`
-- [ ] `S3_SECRET_KEY`
-- [ ] `SENTRY_AUTH_TOKEN` (opzionale)
-- [ ] `SENTRY_ORG` (opzionale)
-
-### 5. Verifica package.json
-
-Assicurati di avere questi script:
-
-```json
-{
-  "scripts": {
-    "check": "npm run lint",
-    "lint": "eslint .",
-    "build:libs": "ng build my-shared-lib",
-    "build:project1": "ng build project1 --configuration=production",
-    "build:project2": "ng build project2 --configuration=production",
-    "upload": "node scripts/upload-to-s3.js"
-  }
-}
+```javascript
+module.exports = {
+  client: {
+    name: 'Acme Corp',              // ← CAMBIA
+    companyName: 'Acme Corporation',// ← CAMBIA
+    website: 'https://acme.com',    // ← CAMBIA
+    email: 'info@acme.com',         // ← CAMBIA
+  },
+  repository: {
+    name: 'acme-frontend',          // ← CAMBIA
+    owner: 'acme-corp',             // ← CAMBIA
+    url: 'https://github.com/acme-corp/acme-frontend',  // ← CAMBIA
+  },
+  // ... modifica anche aws, styling, etc.
+};
 ```
 
-### 6. Test
-
-1. Crea un branch: `git checkout -b test/ci-cd`
-2. Fai una modifica qualsiasi
-3. Commit e push
-4. Apri una PR
-5. Verifica che i workflow partano in Actions tab
-
----
-
-## Esempio Completo
-
-### Scenario
-- Progetto: `acme-platform`
-- Applicazioni: `customer-app`, `admin-dashboard`, `public-website`
-- Node: 18.19.0
-- S3: `acme-platform.com` in `eu-central-1`
-
-### Valori da usare
-
-```yaml
-node-version: ['18.19.0']
-
-# In build-pr.yaml
-echo "CHANGED_CUSTOMER_APP=$(git diff-tree ... -- ./projects/customer-app | head -n 1 )" >> $GITHUB_ENV
-echo "CHANGED_ADMIN_DASHBOARD=$(git diff-tree ... -- ./projects/admin-dashboard | head -n 1 )" >> $GITHUB_ENV
-echo "CHANGED_PUBLIC_WEBSITE=$(git diff-tree ... -- ./projects/public-website | head -n 1 )" >> $GITHUB_ENV
-
-# Build steps
-- name: Build customer-app
-  if: env.CHANGED_CUSTOMER_APP != ''
-  run: npm run build:customer-app
-
-# Deploy URLs
-http://${{github.sha}}.dev.acme-platform.com.s3-website-eu-central-1.amazonaws.com
-```
-
----
-
-## Comandi Utili
-
+### 3. Applica Configurazione
 ```bash
-# Verifica sintassi YAML
-yamllint .github/workflows/*.yaml
-
-# Test locale con act (https://github.com/nektos/act)
-act pull_request
-
-# Verifica secrets configurati
-gh secret list
-
-# Visualizza workflow runs
-gh run list
+npm install
+npm run configure
 ```
 
+### 4. Test
+```bash
+npm run build:all
+npm run docker:build:all  # opzionale
+```
+
+### 5. Push to GitHub
+```bash
+git add .
+git commit -m "chore: initial setup from template"
+gh repo create acme-corp/acme-frontend --private
+git branch -M main
+git push -u origin main
+```
+
+### 6. Setup GitHub Secrets
+GitHub → Settings → Secrets → Actions → New:
+```
+AWS_ACCESS_KEY_ID = <your-key>
+AWS_SECRET_ACCESS_KEY = <your-secret>
+AWS_REGION = us-east-1
+```
+
+### 7. Enable Branch Protection
+Settings → Branches → Add rule:
+- Branch name: `main`
+- ☑ Require pull request
+- ☑ Require approvals (1)
+- ☑ Require status checks
+
+## ✅ Done!
+
+Ora hai un progetto Angular production-ready con:
+- ✅ CI/CD configurato
+- ✅ Docker pronto
+- ✅ Branch protection attivo
+- ✅ Conventional commits enforced
+- ✅ Tailwind CSS + SCSS architecture
+- ✅ 3 progetti Angular pronti
+
+## 📚 Docs Completa
+
+- `TEMPLATE.md` - Guida dettagliata
+- `SUMMARY.md` - Panoramica completa
+- `MONOREPO.md` - Struttura monorepo
+
+## 🆘 Help
+
+Problema? Controlla:
+1. `node --version` (>= 20)
+2. `npm install` completato senza errori
+3. `project.config.js` correttamente modificato
+4. `npm run configure` eseguito
+
 ---
 
-## Troubleshooting Rapido
-
-| Problema | Soluzione |
-|----------|-----------|
-| Workflow non parte | Verifica che il file sia in `.github/workflows/` |
-| Secrets non trovati | Controlla maiuscole/minuscole nel nome |
-| Cache non funziona | Verifica `package-lock.json` nel repo |
-| Build out of memory | Aggiungi `NODE_OPTIONS="--max-old-space-size=4096"` |
-
----
-
-## Prossimi Passi
-
-1. [ ] Aggiungi workflow per tests automatici
-2. [ ] Configura branch protection rules
-3. [ ] Aggiungi notifiche Slack/Teams
-4. [ ] Configura ambienti staging/production
+**Template by:** Mariano Scada | **Version:** 1.0.0

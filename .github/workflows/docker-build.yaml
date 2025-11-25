@@ -1,0 +1,98 @@
+# =============================================================================
+# DOCKER BUILD - Build and Test Docker Image
+# =============================================================================
+# Builds Docker image and tests it works correctly
+# =============================================================================
+
+name: Docker Build
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  docker-build:
+    name: Build & Test Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: false
+          load: true
+          tags: cicd-test:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Docker image
+        run: |
+          # Start container
+          docker run -d -p 8080:80 --name test-container cicd-test:latest
+
+          # Wait for container to be ready
+          echo "Waiting for container to start..."
+          sleep 5
+
+          # Health check
+          for i in {1..10}; do
+            if curl -f http://localhost:8080/ > /dev/null 2>&1; then
+              echo "✅ Container is responding"
+              break
+            fi
+            echo "Attempt $i/10: Container not ready yet..."
+            sleep 2
+          done
+
+          # Final test
+          if ! curl -f http://localhost:8080/ > /dev/null 2>&1; then
+            echo "❌ Container failed to respond"
+            docker logs test-container
+            exit 1
+          fi
+
+          # Stop container
+          docker stop test-container
+
+      - name: Image size check
+        run: |
+          SIZE=$(docker image inspect cicd-test:latest --format='{{.Size}}' | awk '{print $1/1024/1024}')
+          echo "Image size: ${SIZE}MB"
+
+          # Warn if image is too large (> 200MB)
+          if (( $(echo "$SIZE > 200" | bc -l) )); then
+            echo "⚠️ Warning: Image size is larger than 200MB"
+          else
+            echo "✅ Image size is acceptable"
+          fi
+
+      # =============================================================================
+      # Optional: Push to GitHub Container Registry
+      # Uncomment when you want to publish images
+      # =============================================================================
+      # - name: Login to GitHub Container Registry
+      #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      #   uses: docker/login-action@v3
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Push to GHCR
+      #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     push: true
+      #     tags: |
+      #       ghcr.io/${{ github.repository }}:latest
+      #       ghcr.io/${{ github.repository }}:${{ github.sha }}

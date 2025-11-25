@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'cicd-test' title`, () => {
+  it(`should have the '🚀 CICD Test - First Project' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('cicd-test');
+    expect(app.title).toEqual('🚀 CICD Test - First Project');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, cicd-test');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, 🚀 CICD Test - First Project');
   });
 });

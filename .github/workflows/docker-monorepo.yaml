@@ -1,0 +1,159 @@
+# =============================================================================
+# Docker Monorepo - Build solo progetti modificati
+# =============================================================================
+
+name: Docker Monorepo Build
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  # Detect quali progetti sono stati modificati
+  detect-changes:
+    name: Detect Changed Projects
+    runs-on: ubuntu-latest
+    outputs:
+      customer-app: ${{ steps.filter.outputs.customer-app }}
+      admin-portal: ${{ steps.filter.outputs.admin-portal }}
+      mobile-api: ${{ steps.filter.outputs.mobile-api }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            customer-app:
+              - 'projects/cicd-test/**'
+              - 'package*.json'
+              - 'angular.json'
+            admin-portal:
+              - 'projects/cicd-second-project/**'
+              - 'package*.json'
+              - 'angular.json'
+            mobile-api:
+              - 'projects/cicd-third-project/**'
+              - 'package*.json'
+
+  # Build Customer App
+  build-customer-app:
+    name: Build Customer App
+    needs: detect-changes
+    if: needs.detect-changes.outputs.customer-app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Customer App
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.monorepo
+          push: false
+          load: true
+          tags: customer-app:latest
+          build-args: |
+            PROJECT_NAME=cicd-test
+            BUILD_CONFIGURATION=production
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Customer App
+        run: |
+          docker run -d -p 8080:80 --name test-customer-app customer-app:latest
+          sleep 5
+          curl -f http://localhost:8080/ || exit 1
+          docker stop test-customer-app
+
+  # Build Admin Portal
+  build-admin-portal:
+    name: Build Admin Portal
+    needs: detect-changes
+    if: needs.detect-changes.outputs.admin-portal == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Admin Portal
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.monorepo
+          push: false
+          load: true
+          tags: admin-portal:latest
+          build-args: |
+            PROJECT_NAME=cicd-second-project
+            BUILD_CONFIGURATION=production
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Admin Portal
+        run: |
+          docker run -d -p 8080:80 --name test-admin-portal admin-portal:latest
+          sleep 5
+          curl -f http://localhost:8080/ || exit 1
+          docker stop test-admin-portal
+
+  # Build Third Project
+  build-mobile-api:
+    name: Build Mobile API
+    needs: detect-changes
+    if: needs.detect-changes.outputs.mobile-api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Third Project
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.monorepo
+          push: false
+          load: true
+          tags: mobile-api:latest
+          build-args: |
+            PROJECT_NAME=cicd-third-project
+            BUILD_CONFIGURATION=production
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Third Project
+        run: |
+          docker run -d -p 8080:80 --name test-mobile-api mobile-api:latest
+          sleep 5
+          curl -f http://localhost:8080/ || exit 1
+          docker stop test-mobile-api
+
+  # Summary
+  build-summary:
+    name: Build Summary
+    needs: [detect-changes, build-customer-app, build-admin-portal, build-mobile-api]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Project | Changed | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|---------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Customer App | ${{ needs.detect-changes.outputs.customer-app }} | ${{ needs.build-customer-app.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Admin Portal | ${{ needs.detect-changes.outputs.admin-portal }} | ${{ needs.build-admin-portal.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Mobile API | ${{ needs.detect-changes.outputs.mobile-api }} | ${{ needs.build-mobile-api.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY

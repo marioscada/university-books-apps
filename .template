@@ -1,0 +1,29 @@
+# This is a TEMPLATE repository
+# Version: 1.0.0
+# Created: November 2025
+# Author: Mariano Scada
+
+This repository serves as a template for Angular monorepo projects.
+
+## Quick Start for New Project
+
+1. Edit `project.config.js` with client information
+2. Run `npm install && npm run configure`
+3. Test with `npm run build:all`
+4. See docs/TEMPLATE.md for complete guide
+
+## Template Includes
+
+- Angular 19 monorepo (3 projects)
+- Tailwind CSS v3
+- SCSS architecture (variables, mixins, functions)
+- CI/CD pipelines (GitHub Actions)
+- Docker support
+- Commitlint + Husky
+- Branch protection ready
+- Environment management
+- Public assets folder (Angular 18+ convention)
+
+## Last Updated
+
+November 2025

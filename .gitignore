@@ -40,3 +40,14 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Environment files with sensitive data (keep templates)
+.env
+.env.local
+.env.*.local
+
+# AWS
+.aws-sam/
+
+# Template marker (remove when using template)
+# .template
