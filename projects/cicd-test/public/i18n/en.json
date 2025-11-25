@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "CICD Test",
+    "version": "1.0.0",
+    "description": "CI/CD Test Application"
+  },
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "logout": "Logout"
+  }
+}
