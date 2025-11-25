@@ -1,0 +1,76 @@
+version: '3.8'
+
+# =============================================================================
+# Docker Compose per Monorepo Multi-Progetto
+# =============================================================================
+# Uso:
+#   docker-compose -f docker-compose.monorepo.yml up
+# =============================================================================
+
+services:
+  # CICD Test Project
+  cicd-test:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.monorepo
+      args:
+        PROJECT_NAME: cicd-test
+        BUILD_CONFIGURATION: production
+    ports:
+      - "8080:80"
+    container_name: cicd-test
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    labels:
+      - "project=cicd-test"
+      - "type=frontend"
+
+  # CICD Second Project
+  cicd-second-project:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.monorepo
+      args:
+        PROJECT_NAME: cicd-second-project
+        BUILD_CONFIGURATION: production
+    ports:
+      - "8081:80"
+    container_name: cicd-second-project
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    labels:
+      - "project=cicd-second-project"
+      - "type=frontend"
+
+  # CICD Third Project
+  cicd-third-project:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.monorepo
+      args:
+        PROJECT_NAME: cicd-third-project
+        BUILD_CONFIGURATION: production
+    ports:
+      - "8082:80"
+    container_name: cicd-third-project
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    labels:
+      - "project=cicd-third-project"
+      - "type=frontend"
+
+networks:
+  default:
+    name: monorepo-network

@@ -1,59 +1,68 @@
-# CicdTest
+# CICD Test
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.0.1.
+Example Company - Angular Monorepo
 
-## Development server
-
-To start a local development server, run:
+## 🚀 Quick Start
 
 ```bash
-ng serve
+# Install dependencies
+npm install
+
+# Start development server
+npm run start:cicd-test     # http://localhost:4200
+npm run start:second        # http://localhost:4201
+npm run start:third         # http://localhost:4202
+
+# Build for production
+npm run build:all
+
+# Run with Docker
+npm run docker:build:all
+npm run docker:up
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 📦 Projects
 
-## Code scaffolding
+- **CICD Test** - CI/CD Test Application (Port: 4200)
+- **CICD Second Project** - Second Angular Project (Port: 4201)
+- **CICD Third Project** - Third Angular Project (Port: 4202)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🔧 Configuration
 
+Tutte le configurazioni personalizzabili si trovano in `project.config.js`.
+
+Per applicare le modifiche:
 ```bash
-ng generate component component-name
+npm run configure
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 📚 Documentation
 
-```bash
-ng generate --help
-```
+### Getting Started
+- [Quick Start Guide](docs/QUICKSTART.md) - Setup in 5 minuti
+- [Template Usage](docs/TEMPLATE.md) - Guida completa uso template
+- [Project Summary](docs/SUMMARY.md) - Overview completo
 
-## Building
+### Architecture
+- [Monorepo Structure](docs/MONOREPO.md) - Struttura e organizzazione
+- [Shared Module](projects/cicd-test/src/shared/README.md) - Componenti condivisi
 
-To build the project run:
+### DevOps & Deployment
+- [Docker Setup](docs/DOCKER-MONOREPO.md) - Containerization
+- [AWS Deployment](docs/AWS-SETUP.md) - Cloud deployment
+- [GitHub Settings](docs/GITHUB-SETTINGS.md) - CI/CD configuration
 
-```bash
-ng build
-```
+### Extensions
+- [Auth Library](docs/AUTH-LIBRARY-IMPLEMENTATION.md) - **Libreria Auth completa** (Login, Register, Social Auth, Styling dinamico, Ionic support) 🔥
+- [Firebase Integration](docs/FIREBASE-SETUP.md) - **Setup completo Firebase** (Auth, Firestore, Storage, Analytics, Hosting)
+- [Future Integrations](docs/FUTURE-INTEGRATIONS.md) - Librerie e feature da aggiungere (UI libraries, State Management, Auth, Mobile/Ionic/Capacitor, Testing, etc.)
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 👥 Team
 
-## Running unit tests
+Example Company
+- Website: https://example.com
+- Email: info@example.com
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## 📄 License
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Copyright © 2025 Example Company
