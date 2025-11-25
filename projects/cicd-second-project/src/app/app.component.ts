@@ -8,6 +8,6 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'cicd-test';
+  title = '🔵 CICD Second Project';
   version = '1.0.0';
 }

@@ -10,29 +10,34 @@
           "style": "scss"
         }
       },
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/cicd-test",
+      "sourceRoot": "projects/cicd-test/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/cicd-test/src/styles"
+              ]
+            },
             "outputPath": "dist/cicd-test",
-            "index": "src/index.html",
-            "browser": "src/main.ts",
+            "index": "projects/cicd-test/src/index.html",
+            "browser": "projects/cicd-test/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "tsconfig.app.json",
+            "tsConfig": "projects/cicd-test/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "projects/cicd-test/public"
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "projects/cicd-test/src/styles.scss"
             ],
             "scripts": []
           },
@@ -50,7 +55,13 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/cicd-test/src/environments/environment.ts",
+                  "with": "projects/cicd-test/src/environments/environment.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
@@ -82,16 +93,16 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "tsconfig.spec.json",
+            "tsConfig": "projects/cicd-test/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "projects/cicd-test/public"
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "projects/cicd-test/src/styles.scss"
             ],
             "scripts": []
           }
@@ -100,9 +111,224 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
+              "projects/cicd-test/src/**/*.ts",
+              "projects/cicd-test/src/**/*.html"
             ]
+          }
+        }
+      }
+    },
+    "cicd-second-project": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/cicd-second-project",
+      "sourceRoot": "projects/cicd-second-project/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/cicd-second-project/src/styles"
+              ]
+            },
+            "outputPath": "dist/cicd-second-project",
+            "index": "projects/cicd-second-project/src/index.html",
+            "browser": "projects/cicd-second-project/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/cicd-second-project/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/cicd-second-project/public"
+              }
+            ],
+            "styles": [
+              "projects/cicd-second-project/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/cicd-second-project/src/environments/environment.ts",
+                  "with": "projects/cicd-second-project/src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "cicd-second-project:build:production"
+            },
+            "development": {
+              "buildTarget": "cicd-second-project:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/cicd-second-project/src/**/*.ts",
+              "projects/cicd-second-project/src/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "cicd-third-project": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/cicd-third-project",
+      "sourceRoot": "projects/cicd-third-project/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/cicd-third-project/src/styles"
+              ]
+            },
+            "outputPath": "dist/cicd-third-project",
+            "index": "projects/cicd-third-project/src/index.html",
+            "browser": "projects/cicd-third-project/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/cicd-third-project/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/cicd-third-project/public"
+              }
+            ],
+            "styles": [
+              "projects/cicd-third-project/src/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/cicd-third-project/src/environments/environment.ts",
+                  "with": "projects/cicd-third-project/src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "cicd-third-project:build:production"
+            },
+            "development": {
+              "buildTarget": "cicd-third-project:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/cicd-third-project/src/**/*.ts",
+              "projects/cicd-third-project/src/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "auth": {
+      "projectType": "library",
+      "root": "libs/auth",
+      "sourceRoot": "libs/auth/src",
+      "prefix": "lib-auth",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "libs/auth/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/auth/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/auth/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "libs/auth/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/auth/**/*.ts",
+              "libs/auth/**/*.html"
+            ],
+            "eslintConfig": "libs/auth/eslint.config.js"
           }
         }
       }

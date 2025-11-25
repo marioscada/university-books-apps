@@ -1,0 +1,239 @@
+// =============================================================================
+// Utility Classes
+// =============================================================================
+// Reusable utility classes for common patterns
+
+@use 'variables' as vars;
+
+// -----------------------------------------------------------------------------
+// Display
+// -----------------------------------------------------------------------------
+
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-inline { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-flex { display: flex !important; }
+.d-inline-flex { display: inline-flex !important; }
+.d-grid { display: grid !important; }
+
+// -----------------------------------------------------------------------------
+// Flexbox
+// -----------------------------------------------------------------------------
+
+.flex-row { flex-direction: row !important; }
+.flex-column { flex-direction: column !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+
+.justify-start { justify-content: flex-start !important; }
+.justify-center { justify-content: center !important; }
+.justify-end { justify-content: flex-end !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-around { justify-content: space-around !important; }
+
+.align-start { align-items: flex-start !important; }
+.align-center { align-items: center !important; }
+.align-end { align-items: flex-end !important; }
+.align-stretch { align-items: stretch !important; }
+
+.flex-1 { flex: 1 1 0% !important; }
+.flex-auto { flex: 1 1 auto !important; }
+.flex-none { flex: none !important; }
+
+// -----------------------------------------------------------------------------
+// Spacing (Margin & Padding)
+// -----------------------------------------------------------------------------
+
+// Margin
+.m-0 { margin: vars.$spacing-0 !important; }
+.m-1 { margin: vars.$spacing-1 !important; }
+.m-2 { margin: vars.$spacing-2 !important; }
+.m-3 { margin: vars.$spacing-3 !important; }
+.m-4 { margin: vars.$spacing-4 !important; }
+.m-5 { margin: vars.$spacing-5 !important; }
+.m-6 { margin: vars.$spacing-6 !important; }
+.m-8 { margin: vars.$spacing-8 !important; }
+.m-auto { margin: auto !important; }
+
+// Margin Top
+.mt-0 { margin-top: vars.$spacing-0 !important; }
+.mt-1 { margin-top: vars.$spacing-1 !important; }
+.mt-2 { margin-top: vars.$spacing-2 !important; }
+.mt-3 { margin-top: vars.$spacing-3 !important; }
+.mt-4 { margin-top: vars.$spacing-4 !important; }
+.mt-5 { margin-top: vars.$spacing-5 !important; }
+.mt-6 { margin-top: vars.$spacing-6 !important; }
+.mt-8 { margin-top: vars.$spacing-8 !important; }
+
+// Margin Bottom
+.mb-0 { margin-bottom: vars.$spacing-0 !important; }
+.mb-1 { margin-bottom: vars.$spacing-1 !important; }
+.mb-2 { margin-bottom: vars.$spacing-2 !important; }
+.mb-3 { margin-bottom: vars.$spacing-3 !important; }
+.mb-4 { margin-bottom: vars.$spacing-4 !important; }
+.mb-5 { margin-bottom: vars.$spacing-5 !important; }
+.mb-6 { margin-bottom: vars.$spacing-6 !important; }
+.mb-8 { margin-bottom: vars.$spacing-8 !important; }
+
+// Margin Left
+.ml-0 { margin-left: vars.$spacing-0 !important; }
+.ml-1 { margin-left: vars.$spacing-1 !important; }
+.ml-2 { margin-left: vars.$spacing-2 !important; }
+.ml-3 { margin-left: vars.$spacing-3 !important; }
+.ml-4 { margin-left: vars.$spacing-4 !important; }
+.ml-auto { margin-left: auto !important; }
+
+// Margin Right
+.mr-0 { margin-right: vars.$spacing-0 !important; }
+.mr-1 { margin-right: vars.$spacing-1 !important; }
+.mr-2 { margin-right: vars.$spacing-2 !important; }
+.mr-3 { margin-right: vars.$spacing-3 !important; }
+.mr-4 { margin-right: vars.$spacing-4 !important; }
+.mr-auto { margin-right: auto !important; }
+
+// Padding
+.p-0 { padding: vars.$spacing-0 !important; }
+.p-1 { padding: vars.$spacing-1 !important; }
+.p-2 { padding: vars.$spacing-2 !important; }
+.p-3 { padding: vars.$spacing-3 !important; }
+.p-4 { padding: vars.$spacing-4 !important; }
+.p-5 { padding: vars.$spacing-5 !important; }
+.p-6 { padding: vars.$spacing-6 !important; }
+.p-8 { padding: vars.$spacing-8 !important; }
+
+// Padding Top
+.pt-0 { padding-top: vars.$spacing-0 !important; }
+.pt-1 { padding-top: vars.$spacing-1 !important; }
+.pt-2 { padding-top: vars.$spacing-2 !important; }
+.pt-3 { padding-top: vars.$spacing-3 !important; }
+.pt-4 { padding-top: vars.$spacing-4 !important; }
+
+// Padding Bottom
+.pb-0 { padding-bottom: vars.$spacing-0 !important; }
+.pb-1 { padding-bottom: vars.$spacing-1 !important; }
+.pb-2 { padding-bottom: vars.$spacing-2 !important; }
+.pb-3 { padding-bottom: vars.$spacing-3 !important; }
+.pb-4 { padding-bottom: vars.$spacing-4 !important; }
+
+// -----------------------------------------------------------------------------
+// Text
+// -----------------------------------------------------------------------------
+
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+
+.text-uppercase { text-transform: uppercase !important; }
+.text-lowercase { text-transform: lowercase !important; }
+.text-capitalize { text-transform: capitalize !important; }
+
+.font-light { font-weight: vars.$font-weight-light !important; }
+.font-normal { font-weight: vars.$font-weight-regular !important; }
+.font-medium { font-weight: vars.$font-weight-medium !important; }
+.font-bold { font-weight: vars.$font-weight-bold !important; }
+
+.text-xs { font-size: vars.$font-size-xs !important; }
+.text-sm { font-size: vars.$font-size-sm !important; }
+.text-base { font-size: vars.$font-size-base !important; }
+.text-lg { font-size: vars.$font-size-lg !important; }
+.text-xl { font-size: vars.$font-size-xl !important; }
+.text-2xl { font-size: vars.$font-size-2xl !important; }
+
+.text-truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+// -----------------------------------------------------------------------------
+// Colors
+// -----------------------------------------------------------------------------
+
+.text-primary { color: vars.$primary-color !important; }
+.text-success { color: vars.$success !important; }
+.text-warning { color: vars.$warning !important; }
+.text-error { color: vars.$error !important; }
+.text-muted { color: vars.$text-color-light !important; }
+
+.bg-primary { background-color: vars.$primary-color !important; }
+.bg-success { background-color: vars.$success !important; }
+.bg-warning { background-color: vars.$warning !important; }
+.bg-error { background-color: vars.$error !important; }
+.bg-white { background-color: vars.$white !important; }
+.bg-gray-50 { background-color: vars.$gray-50 !important; }
+.bg-gray-100 { background-color: vars.$gray-100 !important; }
+
+// -----------------------------------------------------------------------------
+// Width & Height
+// -----------------------------------------------------------------------------
+
+.w-full { width: 100% !important; }
+.w-auto { width: auto !important; }
+.h-full { height: 100% !important; }
+.h-auto { height: auto !important; }
+
+.w-screen { width: 100vw !important; }
+.h-screen { height: 100vh !important; }
+
+// -----------------------------------------------------------------------------
+// Position
+// -----------------------------------------------------------------------------
+
+.position-static { position: static !important; }
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed { position: fixed !important; }
+.position-sticky { position: sticky !important; }
+
+// -----------------------------------------------------------------------------
+// Border & Radius
+// -----------------------------------------------------------------------------
+
+.border { border: vars.$border-width vars.$border-style vars.$border-color !important; }
+.border-0 { border: 0 !important; }
+.border-top { border-top: vars.$border-width vars.$border-style vars.$border-color !important; }
+.border-bottom { border-bottom: vars.$border-width vars.$border-style vars.$border-color !important; }
+
+.rounded-none { border-radius: 0 !important; }
+.rounded-sm { border-radius: vars.$border-radius-sm !important; }
+.rounded { border-radius: vars.$border-radius !important; }
+.rounded-lg { border-radius: vars.$border-radius-lg !important; }
+.rounded-full { border-radius: vars.$border-radius-full !important; }
+
+// -----------------------------------------------------------------------------
+// Shadow
+// -----------------------------------------------------------------------------
+
+.shadow-none { box-shadow: none !important; }
+.shadow-sm { box-shadow: vars.$shadow-sm !important; }
+.shadow { box-shadow: vars.$shadow !important; }
+.shadow-md { box-shadow: vars.$shadow-md !important; }
+.shadow-lg { box-shadow: vars.$shadow-lg !important; }
+
+// -----------------------------------------------------------------------------
+// Overflow
+// -----------------------------------------------------------------------------
+
+.overflow-auto { overflow: auto !important; }
+.overflow-hidden { overflow: hidden !important; }
+.overflow-visible { overflow: visible !important; }
+.overflow-scroll { overflow: scroll !important; }
+
+// -----------------------------------------------------------------------------
+// Cursor
+// -----------------------------------------------------------------------------
+
+.cursor-pointer { cursor: pointer !important; }
+.cursor-not-allowed { cursor: not-allowed !important; }
+.cursor-default { cursor: default !important; }
+
+// -----------------------------------------------------------------------------
+// Visibility
+// -----------------------------------------------------------------------------
+
+.visible { visibility: visible !important; }
+.invisible { visibility: hidden !important; }
+.opacity-0 { opacity: 0 !important; }
+.opacity-50 { opacity: 0.5 !important; }
+.opacity-100 { opacity: 1 !important; }

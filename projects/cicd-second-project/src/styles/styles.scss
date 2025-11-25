@@ -1,0 +1,34 @@
+// =============================================================================
+// Global Styles Entry Point
+// =============================================================================
+// Main SCSS file - combines Tailwind CSS with custom SCSS
+// This file is referenced in angular.json
+
+// -----------------------------------------------------------------------------
+// Tailwind CSS v3 (must come first with @import)
+// -----------------------------------------------------------------------------
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+// -----------------------------------------------------------------------------
+// Custom Base & Utilities (using @import for compatibility with Tailwind)
+// -----------------------------------------------------------------------------
+@import 'base';
+@import 'utilities';
+
+// -----------------------------------------------------------------------------
+// Custom Global Styles
+// -----------------------------------------------------------------------------
+// Add your custom global styles below
+// Try to keep global styles minimal - prefer component-scoped styles
+
+// Example: Container utility
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}

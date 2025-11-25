@@ -1,0 +1,90 @@
+// =============================================================================
+// Functions
+// =============================================================================
+// SCSS utility functions
+// Usage: @use '../styles/functions' as fn;
+//        width: fn.rem(32);
+
+@use 'sass:math';
+@use 'variables' as vars;
+
+// -----------------------------------------------------------------------------
+// Unit Conversion
+// -----------------------------------------------------------------------------
+
+// Convert px to rem
+// Example: rem(16) => 1rem
+@function rem($px, $base: 16) {
+  @return math.div($px, $base) * 1rem;
+}
+
+// Convert px to em
+// Example: em(16) => 1em
+@function em($px, $base: 16) {
+  @return math.div($px, $base) * 1em;
+}
+
+// -----------------------------------------------------------------------------
+// Spacing
+// -----------------------------------------------------------------------------
+
+// Get spacing value by multiplier
+// Example: spacing(4) => 16px (4 * 4px)
+@function spacing($multiplier) {
+  @return vars.$spacing-unit * $multiplier;
+}
+
+// -----------------------------------------------------------------------------
+// Color Manipulation
+// -----------------------------------------------------------------------------
+
+// Slightly lighten a color
+// Example: tint(#000, 10%) => lighten black by 10%
+@function tint($color, $percentage) {
+  @return mix(white, $color, $percentage);
+}
+
+// Slightly darken a color
+// Example: shade(#fff, 10%) => darken white by 10%
+@function shade($color, $percentage) {
+  @return mix(black, $color, $percentage);
+}
+
+// -----------------------------------------------------------------------------
+// Z-index Management
+// -----------------------------------------------------------------------------
+
+// Get z-index from a map
+$z-layers: (
+  'base': 0,
+  'dropdown': vars.$z-index-dropdown,
+  'sticky': vars.$z-index-sticky,
+  'fixed': vars.$z-index-fixed,
+  'modal-backdrop': vars.$z-index-modal-backdrop,
+  'modal': vars.$z-index-modal,
+  'popover': vars.$z-index-popover,
+  'tooltip': vars.$z-index-tooltip,
+);
+
+@function z($layer) {
+  @if not map-has-key($z-layers, $layer) {
+    @warn "Unknown z-index layer: #{$layer}";
+    @return 0;
+  }
+  @return map-get($z-layers, $layer);
+}
+
+// -----------------------------------------------------------------------------
+// Math Utilities
+// -----------------------------------------------------------------------------
+
+// Clamp a value between min and max
+@function clamp-value($value, $min, $max) {
+  @return math.max($min, math.min($value, $max));
+}
+
+// Calculate percentage
+// Example: percentage(50, 200) => 25%
+@function percentage($value, $total) {
+  @return math.div($value, $total) * 100%;
+}
