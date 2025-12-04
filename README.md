@@ -1,308 +1,325 @@
-# University Books Apps - Monorepo
+# 📚 University Books Mobile App
 
-**Multi-project repository for University Educational Books applications**
+Angular + Ionic mobile application with AWS Cognito authentication - Clean Architecture starter.
 
-This monorepo contains all client applications for the University Educational Books platform, supporting FAD (Formazione A Distanza) requirements.
+## 🎯 Overview
 
----
+Modern mobile application starter built with:
+- **Angular 19** - Latest framework with standalone components
+- **Ionic 7+** (Ready) - Cross-platform mobile UI
+- **AWS Cognito** (TODO) - Secure authentication
+- **Clean Architecture** - SOLID principles and design patterns
+- **TypeScript 5.6** - Type-safe development
 
-## 📦 Projects
+**Status**: 🚧 Clean slate - Ready for implementation
 
-### 1. **university-books-mobile** 📱
-Mobile application for accessing educational books
-
-- **Type**: Angular application
-- **Platform**: Web/Mobile (Ionic/Capacitor ready)
-- **Branch naming**: `feat/university-books-mobile/*`
-- **Port**: 4200
-- **Status**: ✅ Active development
-
-### 2. **cicd-second-project**
-Secondary project (to be renamed/repurposed)
-- **Port**: 4201
-- **Status**: ⚪ Inactive
-
-### 3. **cicd-third-project**
-Third project (to be renamed/repurposed)
-- **Port**: 4202
-- **Status**: ⚪ Inactive
-
----
-
-## 🚀 Quick Start
-
-```bash
-# Install dependencies
-npm install
-
-# Start development servers
-npm run start:mobile        # university-books-mobile on http://localhost:4200
-npm run start:second        # cicd-second-project on http://localhost:4201
-npm run start:third         # cicd-third-project on http://localhost:4202
-
-# Build for production
-npm run build:all
-npm run build:mobile:prod
-
-# Run with Docker
-npm run docker:build:all
-npm run docker:up
-
-# Run tests
-npm run test:mobile
-
-# Lint
-npm run lint:mobile
-```
-
----
-
-## 📱 university-books-mobile
-
-### Features
-- 📚 Book browsing and reading
-- ✅ FAD compliance (4 UD, 16 Lessons structure)
-- 📴 Offline reading support
-- 📊 Progress tracking
-- 🔐 Authentication with AWS Cognito
-- 🔌 API integration with backend
-
-### Tech Stack
-- **Framework**: Angular 19
-- **Language**: TypeScript
-- **Styling**: SCSS + TailwindCSS
-- **State Management**: RxJS/NgRx
-- **HTTP Client**: Angular HttpClient
-- **Authentication**: AWS Cognito (30-day refresh tokens)
-
-### Development
-
-```bash
-# Serve development
-ng serve university-books-mobile
-
-# Build production
-ng build university-books-mobile --configuration=production
-
-# Run tests
-ng test university-books-mobile
-
-# Lint
-ng lint university-books-mobile
-```
-
-### Environment Configuration
-
-Create environment files in `projects/university-books-mobile/src/environments/`:
-
-#### Development (`environment.ts`)
-```typescript
-export const environment = {
-  production: false,
-  apiUrl: 'https://dev-api.university-books.edu',
-  cognitoUserPoolId: 'eu-south-1_XXXXXXXXX',
-  cognitoClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
-  awsRegion: 'eu-south-1',
-};
-```
-
-#### Production (`environment.prod.ts`)
-```typescript
-export const environment = {
-  production: true,
-  apiUrl: 'https://api.university-books.edu',
-  cognitoUserPoolId: 'eu-south-1_XXXXXXXXX',
-  cognitoClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
-  awsRegion: 'eu-south-1',
-};
-```
-
----
-
-## 🏗️ Monorepo Structure
+## 📁 Project Structure
 
 ```
 university-books-apps/
 ├── projects/
-│   ├── university-books-mobile/    # 📱 Mobile app
-│   │   ├── src/
-│   │   │   ├── app/               # Application code
-│   │   │   ├── environments/      # Environment configs
-│   │   │   ├── styles/            # Global styles
-│   │   │   ├── index.html
-│   │   │   └── main.ts
-│   │   ├── public/                # Static assets
-│   │   └── tsconfig.*.json        # TypeScript configs
-│   ├── cicd-second-project/       # Project 2
-│   └── cicd-third-project/        # Project 3
+│   └── university-books-mobile/       # Main mobile app
+│       └── src/
+│           ├── app/
+│           │   ├── core/              # Core business logic (TODO)
+│           │   │   └── auth/          # Authentication (TODO)
+│           │   │       ├── models/         # (empty)
+│           │   │       ├── services/       # (empty)
+│           │   │       ├── guards/         # (empty)
+│           │   │       ├── interceptors/   # api-key.interceptor.ts
+│           │   │       └── repositories/   # (empty)
+│           │   ├── features/          # Feature modules (TODO)
+│           │   │   └── auth/          # Auth UI (TODO)
+│           │   │       ├── containers/     # (empty)
+│           │   │       ├── components/     # (empty)
+│           │   │       └── pages/          # (empty)
+│           │   ├── app.component.ts
+│           │   ├── app.config.ts
+│           │   └── app.routes.ts
+│           ├── environments/          # Environment configs
+│           │   ├── environment.ts          # Dev config (clean)
+│           │   └── environment.prod.ts     # Prod config (clean)
+│           └── assets/
 ├── libs/
-│   └── auth/                      # 🔐 Shared authentication library
-├── docs/                          # 📚 Documentation
-├── scripts/                       # 🛠️ Build and deployment scripts
-├── .github/
-│   └── workflows/                 # 🚀 CI/CD pipelines
-├── angular.json                   # Angular workspace config
-├── package.json                   # Dependencies
-├── project.config.js              # Project configuration
-└── README.md                      # This file
+│   └── auth/                          # Auth library (reusable)
+├── docs/
+│   ├── ANGULAR-IMPLEMENTATION-GUIDE.md  # ⭐ Clean Architecture guide
+│   ├── FUTURE-INTEGRATIONS.md           # Libraries reference
+│   └── archive/                         # Archived docs
+└── scripts/
+    ├── configure-project.js
+    └── upload-to-s3.js
 ```
 
----
+## 🚀 Quick Start
 
-## 🔀 Branch Naming Convention
+### Prerequisites
 
-### Mobile App Features
+- **Node.js** >= 18.19.0
+- **npm** >= 9.0.0
+- **Angular CLI** >= 19.0.0
+- **Ionic CLI** >= 7.0.0 (optional, for mobile)
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/marioscada/university-books-apps.git
+cd university-books-apps
+
+# Install dependencies
+npm install
+
+# Start development server
+npm start
 ```
-feat/university-books-mobile/feature-name
-fix/university-books-mobile/bug-description
-chore/university-books-mobile/task-description
+
+The app will be available at `http://localhost:4200`
+
+## 📜 Available Scripts
+
+### Development
+
+```bash
+npm start              # Start dev server (university-books-mobile)
+npm run watch          # Build with watch mode
+npm test               # Run unit tests
+npm run test:ci        # Run tests in CI mode (headless)
 ```
 
-### Backend/Infrastructure
+### Build
+
+```bash
+npm run build          # Production build
 ```
-feat/university-books-aws/feature-name
-fix/university-books-aws/bug-description
+
+### Linting
+
+```bash
+npm run lint           # Lint university-books-mobile
+npm run lint:auth      # Lint auth library
+npm run lint:all       # Lint all projects
 ```
 
-### Examples
-- `feat/university-books-mobile/book-reader`
-- `feat/university-books-mobile/offline-sync`
-- `fix/university-books-mobile/auth-token-refresh`
-- `feat/university-books-aws/mobile-app-integration`
+### Auth Library
 
----
+```bash
+npm run build:auth     # Build auth library
+```
 
-## 🚀 CI/CD Pipeline
+## 🏗️ Architecture
 
-### Automated Workflows
-- **Build**: Automatic build on every push
-- **Test**: Unit and E2E tests
-- **Lint**: Code quality checks
-- **Deploy**: Automatic deployment to staging/production
+### Clean Architecture Layers
 
-### Deployment Targets
-- **Development**: Auto-deploy to dev environment
-- **Staging**: Auto-deploy on merge to `develop`
-- **Production**: Manual approval required
+This project follows Clean Architecture principles as described in `docs/ANGULAR-IMPLEMENTATION-GUIDE.md`:
 
----
+#### 1. **Infrastructure Layer** (Storage)
+- Ionic Storage for secure local persistence
+- iOS Keychain / Android Keystore
+- Abstraction via `IStorage` interface
 
-## 📚 Documentation
+#### 2. **Core Domain Layer** (Business Logic)
+- **Auth Module**: Cognito authentication services
+  - `TokenService`: JWT token management
+  - `AuthStateService`: RxJS state management
+  - `AuthService`: Authentication orchestrator
+- **Repositories**: Data access abstractions
+- **Guards**: Route protection
+- **Interceptors**: HTTP middleware
 
-### Getting Started
-- [Quick Start Guide](docs/QUICKSTART.md) - Setup in 5 minutes
-- [Template Usage](docs/TEMPLATE.md) - Complete template guide
-- [Project Summary](docs/SUMMARY.md) - Complete overview
+#### 3. **Presentation Layer** (UI)
+- **Features**: Feature-specific components
+  - Smart components (containers) - Logic & state
+  - Dumb components (presentational) - UI only
+- **Shared**: Reusable components & services
 
-### Architecture
-- [Monorepo Structure](docs/MONOREPO.md) - Structure and organization
-- [Shared Module](projects/university-books-mobile/src/shared/README.md) - Shared components
+### Design Patterns
 
-### DevOps & Deployment
-- [Docker Setup](docs/DOCKER-MONOREPO.md) - Containerization
-- [AWS Deployment](docs/AWS-SETUP.md) - Cloud deployment
-- [GitHub Settings](docs/GITHUB-SETTINGS.md) - CI/CD configuration
+- ✅ **Repository Pattern** - Data access abstraction
+- ✅ **Observer Pattern** - RxJS reactive programming
+- ✅ **Interceptor Pattern** - HTTP middleware
+- ✅ **Guard Pattern** - Route protection
+- ✅ **Facade Pattern** - Simplified subsystem access
+- ✅ **Dependency Inversion** - Interface-based dependencies
 
-### Extensions
-- [Auth Library](docs/AUTH-LIBRARY-IMPLEMENTATION.md) - Complete Auth library (Login, Register, Social Auth)
-- [Firebase Integration](docs/FIREBASE-SETUP.md) - Complete Firebase setup
-- [Future Integrations](docs/FUTURE-INTEGRATIONS.md) - Libraries and features to add
+### SOLID Principles
 
----
+- **S**ingle Responsibility - Each class has one job
+- **O**pen/Closed - Open for extension, closed for modification
+- **L**iskov Substitution - Interfaces are interchangeable
+- **I**nterface Segregation - Small, focused interfaces
+- **D**ependency Inversion - Depend on abstractions
 
 ## 🔐 Authentication
 
-### Test User Credentials
+### AWS Cognito Integration
+
+Authentication is handled via AWS Cognito User Pools:
+
+1. **Login Flow**: Email/Password with Cognito
+2. **Token Management**: Access, ID, and Refresh tokens
+3. **Secure Storage**: Tokens stored in Ionic Storage (encrypted)
+4. **Auto-refresh**: Token refresh before expiration
+5. **Route Protection**: Auth guards for private routes
+
+### Environment Configuration
+
+Configure AWS Cognito in `src/environments/environment.ts`:
+
+```typescript
+export const environment = {
+  production: false,
+  auth: {
+    region: 'us-east-1',
+    userPoolId: 'us-east-1_XXXXXXXXX',
+    userPoolWebClientId: 'xxxxxxxxxxxxxxxxxxxxxxxxxx',
+    apiKey: 'your-api-key-here',
+  },
+  api: {
+    baseUrl: 'https://api.university-books.com',
+    timeout: 30000,
+    retryAttempts: 3,
+    retryDelay: 1000,
+  },
+};
 ```
-Username: test@example.com
-Password: Mariotest@1974
+
+## 🧪 Testing
+
+### Unit Tests
+
+```bash
+npm test               # Run tests in watch mode
+npm run test:ci        # Run tests in CI (headless)
 ```
 
-### Token Management
-- **Access Token**: 1 hour validity
-- **ID Token**: 1 hour validity
-- **Refresh Token**: 30 days validity
-- **Auto-refresh**: Implemented in auth service
+Tests are written using:
+- **Karma** - Test runner
+- **Jasmine** - Testing framework
+- **Chrome Headless** - Browser for CI
 
-### Backend Integration
-The mobile app connects to the University Books AWS backend:
-- **API Gateway**: RESTful API endpoints
-- **AWS Cognito**: User authentication and authorization
-- **DynamoDB**: Data persistence
-- **S3**: Document storage
+### Test Coverage
 
----
+Coverage reports are generated in `/coverage` directory.
 
-## 🛠️ Development Tools
+## 📦 Building for Production
 
-### Required
-- Node.js 18+
-- npm 9+
-- Angular CLI 19+
+### Web Build
 
-### Recommended
-- VS Code with Angular extensions
-- Postman for API testing
-- AWS CLI for deployment
+```bash
+npm run build
+```
 
----
+Output: `dist/university-books-mobile/`
+
+### Mobile Build (iOS/Android)
+
+```bash
+# Add platforms
+ionic capacitor add ios
+ionic capacitor add android
+
+# Build and sync
+npm run build
+ionic capacitor sync
+
+# Open in Xcode/Android Studio
+ionic capacitor open ios
+ionic capacitor open android
+```
 
 ## 🔧 Configuration
 
-All customizable configurations are in `project.config.js`.
+### HTTP Interceptors
 
-To apply changes:
-```bash
-npm run configure
-```
+Current interceptors:
+1. **API Key Interceptor** - Adds `x-api-key` header (temporary)
 
----
+**TODO**:
+- Auth Interceptor for Cognito JWT tokens
+- Error Interceptor for global error handling
+- Loading Interceptor for loading states
 
-## 📊 Project Status
+## 📚 Documentation
 
-| Project | Status | Branch | Port | Last Updated |
-|---------|--------|--------|------|--------------|
-| university-books-mobile | 🟢 Active | feat/university-books-mobile/* | 4200 | 2025-12-04 |
-| cicd-second-project | ⚪ Inactive | - | 4201 | - |
-| cicd-third-project | ⚪ Inactive | - | 4202 | - |
+| Document | Description |
+|----------|-------------|
+| [ANGULAR-IMPLEMENTATION-GUIDE.md](docs/ANGULAR-IMPLEMENTATION-GUIDE.md) | Clean Architecture, SOLID, Design Patterns |
+| [FUTURE-INTEGRATIONS.md](docs/FUTURE-INTEGRATIONS.md) | Libraries and future enhancements |
 
----
+## 🛠️ Tech Stack
+
+### Core
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| Angular | 19.0.0 | Framework |
+| RxJS | 7.8.0 | Reactive programming |
+| TypeScript | 5.6.2 | Language |
+| Zone.js | 0.15.0 | Change detection |
+
+### Development
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| ESLint | 9.39.1 | Linting |
+| Karma | 6.4.0 | Test runner |
+| Jasmine | 5.4.0 | Testing framework |
+| Tailwind CSS | 3.4.18 | Utility-first CSS |
+
+### Future Integrations
+
+See `docs/FUTURE-INTEGRATIONS.md` for:
+- Ionic Framework
+- AWS Amplify (Cognito)
+- NgRx (State Management)
+- Angular Material
+
+## 🚧 Implementation Roadmap
+
+### Phase 1: Infrastructure Layer (Storage)
+- [ ] Create `IStorage` interface
+- [ ] Implement Ionic Storage service
+- [ ] Add Ionic Storage module
+
+### Phase 2: Core Domain Layer (Auth)
+- [ ] Create auth models and interfaces
+- [ ] Implement TokenService (JWT management)
+- [ ] Implement AuthStateService (RxJS state)
+- [ ] Implement AuthService (Cognito integration)
+- [ ] Create auth repository
+
+### Phase 3: HTTP & Guards
+- [ ] Implement Auth Interceptor (JWT tokens)
+- [ ] Create Auth Guard (route protection)
+- [ ] Add error handling interceptor
+
+### Phase 4: Presentation Layer (UI)
+- [ ] Create login page (container)
+- [ ] Create login form (component)
+- [ ] Create register page
+- [ ] Add routing and navigation
+
+### Phase 5: Testing & Polish
+- [ ] Unit tests for services
+- [ ] Integration tests for auth flow
+- [ ] E2E tests
+- [ ] Polish UI/UX
+
+## 📄 License
+
+Copyright © 2025 Mariano Scada
 
 ## 🤝 Contributing
 
-1. Create feature branch following naming convention
-2. Make changes in appropriate project
-3. Test locally
-4. Commit with conventional commits
-5. Push and create PR
-6. Wait for CI/CD checks
-7. Request review
-8. Merge after approval
+This is a private project. For questions or issues, contact the author.
+
+## 📞 Support
+
+For support, contact: marianoscada@example.com
 
 ---
 
-## 📝 License
-
-Private - University Educational Books Platform
-
----
-
-## 📧 Support
-
-For issues or questions:
-- Technical issues: Create GitHub issue
-- Platform questions: Contact platform team
-
----
-
-## 👥 Team
-
-University Educational Books Platform Team
-- Repository: https://github.com/marioscada/university-books-apps
-- Backend: https://github.com/marioscada/ai-platform-university-books
-
----
-
-**Last Updated**: December 2025
-**Version**: 2.0.0 (Monorepo restructure)
-**Main Project**: university-books-mobile
+**Version:** 1.0.0
+**Last Updated:** December 2025
+**Author:** Mariano Scada

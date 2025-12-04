@@ -20,10 +20,12 @@ export const environment = {
 
   // Authentication
   auth: {
-    // Production: Use Cognito authentication
+    apiKey: '', // Injected via CI/CD (temporary until Cognito is fully implemented)
+
+    // AWS Cognito Configuration
     cognito: {
-      userPoolId: '', // Injected via CI/CD
-      userPoolClientId: '', // Injected via CI/CD
+      userPoolId: '', // TODO: Injected via CI/CD
+      userPoolClientId: '', // TODO: Injected via CI/CD
       region: 'eu-south-1',
     },
   },
