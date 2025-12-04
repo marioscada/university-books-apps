@@ -1,6 +1,33 @@
-# CICD Test
+# University Books Apps - Monorepo
 
-Example Company - Angular Monorepo
+**Multi-project repository for University Educational Books applications**
+
+This monorepo contains all client applications for the University Educational Books platform, supporting FAD (Formazione A Distanza) requirements.
+
+---
+
+## 📦 Projects
+
+### 1. **university-books-mobile** 📱
+Mobile application for accessing educational books
+
+- **Type**: Angular application
+- **Platform**: Web/Mobile (Ionic/Capacitor ready)
+- **Branch naming**: `feat/university-books-mobile/*`
+- **Port**: 4200
+- **Status**: ✅ Active development
+
+### 2. **cicd-second-project**
+Secondary project (to be renamed/repurposed)
+- **Port**: 4201
+- **Status**: ⚪ Inactive
+
+### 3. **cicd-third-project**
+Third project (to be renamed/repurposed)
+- **Port**: 4202
+- **Status**: ⚪ Inactive
+
+---
 
 ## 🚀 Quick Start
 
@@ -8,44 +35,168 @@ Example Company - Angular Monorepo
 # Install dependencies
 npm install
 
-# Start development server
-npm run start:cicd-test     # http://localhost:4200
-npm run start:second        # http://localhost:4201
-npm run start:third         # http://localhost:4202
+# Start development servers
+npm run start:mobile        # university-books-mobile on http://localhost:4200
+npm run start:second        # cicd-second-project on http://localhost:4201
+npm run start:third         # cicd-third-project on http://localhost:4202
 
 # Build for production
 npm run build:all
+npm run build:mobile:prod
 
 # Run with Docker
 npm run docker:build:all
 npm run docker:up
+
+# Run tests
+npm run test:mobile
+
+# Lint
+npm run lint:mobile
 ```
 
-## 📦 Projects
+---
 
-- **CICD Test** - CI/CD Test Application (Port: 4200)
-- **CICD Second Project** - Second Angular Project (Port: 4201)
-- **CICD Third Project** - Third Angular Project (Port: 4202)
+## 📱 university-books-mobile
 
-## 🔧 Configuration
+### Features
+- 📚 Book browsing and reading
+- ✅ FAD compliance (4 UD, 16 Lessons structure)
+- 📴 Offline reading support
+- 📊 Progress tracking
+- 🔐 Authentication with AWS Cognito
+- 🔌 API integration with backend
 
-Tutte le configurazioni personalizzabili si trovano in `project.config.js`.
+### Tech Stack
+- **Framework**: Angular 19
+- **Language**: TypeScript
+- **Styling**: SCSS + TailwindCSS
+- **State Management**: RxJS/NgRx
+- **HTTP Client**: Angular HttpClient
+- **Authentication**: AWS Cognito (30-day refresh tokens)
 
-Per applicare le modifiche:
+### Development
+
 ```bash
-npm run configure
+# Serve development
+ng serve university-books-mobile
+
+# Build production
+ng build university-books-mobile --configuration=production
+
+# Run tests
+ng test university-books-mobile
+
+# Lint
+ng lint university-books-mobile
 ```
+
+### Environment Configuration
+
+Create environment files in `projects/university-books-mobile/src/environments/`:
+
+#### Development (`environment.ts`)
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'https://dev-api.university-books.edu',
+  cognitoUserPoolId: 'eu-south-1_XXXXXXXXX',
+  cognitoClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
+  awsRegion: 'eu-south-1',
+};
+```
+
+#### Production (`environment.prod.ts`)
+```typescript
+export const environment = {
+  production: true,
+  apiUrl: 'https://api.university-books.edu',
+  cognitoUserPoolId: 'eu-south-1_XXXXXXXXX',
+  cognitoClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
+  awsRegion: 'eu-south-1',
+};
+```
+
+---
+
+## 🏗️ Monorepo Structure
+
+```
+university-books-apps/
+├── projects/
+│   ├── university-books-mobile/    # 📱 Mobile app
+│   │   ├── src/
+│   │   │   ├── app/               # Application code
+│   │   │   ├── environments/      # Environment configs
+│   │   │   ├── styles/            # Global styles
+│   │   │   ├── index.html
+│   │   │   └── main.ts
+│   │   ├── public/                # Static assets
+│   │   └── tsconfig.*.json        # TypeScript configs
+│   ├── cicd-second-project/       # Project 2
+│   └── cicd-third-project/        # Project 3
+├── libs/
+│   └── auth/                      # 🔐 Shared authentication library
+├── docs/                          # 📚 Documentation
+├── scripts/                       # 🛠️ Build and deployment scripts
+├── .github/
+│   └── workflows/                 # 🚀 CI/CD pipelines
+├── angular.json                   # Angular workspace config
+├── package.json                   # Dependencies
+├── project.config.js              # Project configuration
+└── README.md                      # This file
+```
+
+---
+
+## 🔀 Branch Naming Convention
+
+### Mobile App Features
+```
+feat/university-books-mobile/feature-name
+fix/university-books-mobile/bug-description
+chore/university-books-mobile/task-description
+```
+
+### Backend/Infrastructure
+```
+feat/university-books-aws/feature-name
+fix/university-books-aws/bug-description
+```
+
+### Examples
+- `feat/university-books-mobile/book-reader`
+- `feat/university-books-mobile/offline-sync`
+- `fix/university-books-mobile/auth-token-refresh`
+- `feat/university-books-aws/mobile-app-integration`
+
+---
+
+## 🚀 CI/CD Pipeline
+
+### Automated Workflows
+- **Build**: Automatic build on every push
+- **Test**: Unit and E2E tests
+- **Lint**: Code quality checks
+- **Deploy**: Automatic deployment to staging/production
+
+### Deployment Targets
+- **Development**: Auto-deploy to dev environment
+- **Staging**: Auto-deploy on merge to `develop`
+- **Production**: Manual approval required
+
+---
 
 ## 📚 Documentation
 
 ### Getting Started
-- [Quick Start Guide](docs/QUICKSTART.md) - Setup in 5 minuti
-- [Template Usage](docs/TEMPLATE.md) - Guida completa uso template
-- [Project Summary](docs/SUMMARY.md) - Overview completo
+- [Quick Start Guide](docs/QUICKSTART.md) - Setup in 5 minutes
+- [Template Usage](docs/TEMPLATE.md) - Complete template guide
+- [Project Summary](docs/SUMMARY.md) - Complete overview
 
 ### Architecture
-- [Monorepo Structure](docs/MONOREPO.md) - Struttura e organizzazione
-- [Shared Module](projects/cicd-test/src/shared/README.md) - Componenti condivisi
+- [Monorepo Structure](docs/MONOREPO.md) - Structure and organization
+- [Shared Module](projects/university-books-mobile/src/shared/README.md) - Shared components
 
 ### DevOps & Deployment
 - [Docker Setup](docs/DOCKER-MONOREPO.md) - Containerization
@@ -53,16 +204,105 @@ npm run configure
 - [GitHub Settings](docs/GITHUB-SETTINGS.md) - CI/CD configuration
 
 ### Extensions
-- [Auth Library](docs/AUTH-LIBRARY-IMPLEMENTATION.md) - **Libreria Auth completa** (Login, Register, Social Auth, Styling dinamico, Ionic support) 🔥
-- [Firebase Integration](docs/FIREBASE-SETUP.md) - **Setup completo Firebase** (Auth, Firestore, Storage, Analytics, Hosting)
-- [Future Integrations](docs/FUTURE-INTEGRATIONS.md) - Librerie e feature da aggiungere (UI libraries, State Management, Auth, Mobile/Ionic/Capacitor, Testing, etc.)
+- [Auth Library](docs/AUTH-LIBRARY-IMPLEMENTATION.md) - Complete Auth library (Login, Register, Social Auth)
+- [Firebase Integration](docs/FIREBASE-SETUP.md) - Complete Firebase setup
+- [Future Integrations](docs/FUTURE-INTEGRATIONS.md) - Libraries and features to add
+
+---
+
+## 🔐 Authentication
+
+### Test User Credentials
+```
+Username: test@example.com
+Password: Mariotest@1974
+```
+
+### Token Management
+- **Access Token**: 1 hour validity
+- **ID Token**: 1 hour validity
+- **Refresh Token**: 30 days validity
+- **Auto-refresh**: Implemented in auth service
+
+### Backend Integration
+The mobile app connects to the University Books AWS backend:
+- **API Gateway**: RESTful API endpoints
+- **AWS Cognito**: User authentication and authorization
+- **DynamoDB**: Data persistence
+- **S3**: Document storage
+
+---
+
+## 🛠️ Development Tools
+
+### Required
+- Node.js 18+
+- npm 9+
+- Angular CLI 19+
+
+### Recommended
+- VS Code with Angular extensions
+- Postman for API testing
+- AWS CLI for deployment
+
+---
+
+## 🔧 Configuration
+
+All customizable configurations are in `project.config.js`.
+
+To apply changes:
+```bash
+npm run configure
+```
+
+---
+
+## 📊 Project Status
+
+| Project | Status | Branch | Port | Last Updated |
+|---------|--------|--------|------|--------------|
+| university-books-mobile | 🟢 Active | feat/university-books-mobile/* | 4200 | 2025-12-04 |
+| cicd-second-project | ⚪ Inactive | - | 4201 | - |
+| cicd-third-project | ⚪ Inactive | - | 4202 | - |
+
+---
+
+## 🤝 Contributing
+
+1. Create feature branch following naming convention
+2. Make changes in appropriate project
+3. Test locally
+4. Commit with conventional commits
+5. Push and create PR
+6. Wait for CI/CD checks
+7. Request review
+8. Merge after approval
+
+---
+
+## 📝 License
+
+Private - University Educational Books Platform
+
+---
+
+## 📧 Support
+
+For issues or questions:
+- Technical issues: Create GitHub issue
+- Platform questions: Contact platform team
+
+---
 
 ## 👥 Team
 
-Example Company
-- Website: https://example.com
-- Email: info@example.com
+University Educational Books Platform Team
+- Repository: https://github.com/marioscada/university-books-apps
+- Backend: https://github.com/marioscada/ai-platform-university-books
 
-## 📄 License
+---
 
-Copyright © 2025 Example Company
+**Last Updated**: December 2025
+**Version**: 2.0.0 (Monorepo restructure)
+**Main Project**: university-books-mobile

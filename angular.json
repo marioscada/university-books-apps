@@ -3,15 +3,15 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "cicd-test": {
+    "university-books-mobile": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "projects/cicd-test",
-      "sourceRoot": "projects/cicd-test/src",
+      "root": "projects/university-books-mobile",
+      "sourceRoot": "projects/university-books-mobile/src",
       "prefix": "app",
       "architect": {
         "build": {
@@ -19,25 +19,25 @@
           "options": {
             "stylePreprocessorOptions": {
               "includePaths": [
-                "projects/cicd-test/src/styles"
+                "projects/university-books-mobile/src/styles"
               ]
             },
-            "outputPath": "dist/cicd-test",
-            "index": "projects/cicd-test/src/index.html",
-            "browser": "projects/cicd-test/src/main.ts",
+            "outputPath": "dist/university-books-mobile",
+            "index": "projects/university-books-mobile/src/index.html",
+            "browser": "projects/university-books-mobile/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "projects/cicd-test/tsconfig.app.json",
+            "tsConfig": "projects/university-books-mobile/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/cicd-test/public"
+                "input": "projects/university-books-mobile/public"
               }
             ],
             "styles": [
-              "projects/cicd-test/src/styles.scss"
+              "projects/university-books-mobile/src/styles.scss"
             ],
             "scripts": []
           },
@@ -58,8 +58,8 @@
               "outputHashing": "all",
               "fileReplacements": [
                 {
-                  "replace": "projects/cicd-test/src/environments/environment.ts",
-                  "with": "projects/cicd-test/src/environments/environment.prod.ts"
+                  "replace": "projects/university-books-mobile/src/environments/environment.ts",
+                  "with": "projects/university-books-mobile/src/environments/environment.prod.ts"
                 }
               ]
             },
@@ -75,10 +75,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "cicd-test:build:production"
+              "buildTarget": "university-books-mobile:build:production"
             },
             "development": {
-              "buildTarget": "cicd-test:build:development"
+              "buildTarget": "university-books-mobile:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -93,16 +93,16 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "projects/cicd-test/tsconfig.spec.json",
+            "tsConfig": "projects/university-books-mobile/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/cicd-test/public"
+                "input": "projects/university-books-mobile/public"
               }
             ],
             "styles": [
-              "projects/cicd-test/src/styles.scss"
+              "projects/university-books-mobile/src/styles.scss"
             ],
             "scripts": []
           }
@@ -111,8 +111,8 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "projects/cicd-test/src/**/*.ts",
-              "projects/cicd-test/src/**/*.html"
+              "projects/university-books-mobile/src/**/*.ts",
+              "projects/university-books-mobile/src/**/*.html"
             ]
           }
         }
