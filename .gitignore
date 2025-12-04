@@ -51,3 +51,6 @@ Thumbs.db
 
 # Template marker (remove when using template)
 # .template
+
+# Environment overrides (local API Keys)
+**/environment.local.ts
