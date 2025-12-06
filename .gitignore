@@ -54,3 +54,14 @@ Thumbs.db
 
 # Environment overrides (local API Keys)
 **/environment.local.ts
+
+# =============================================================================
+# Schema Management & Code Generation
+# =============================================================================
+# OpenAPI schemas downloaded from backend
+schemas/
+# Auto-generated TypeScript code from OpenAPI
+**/generated/
+# Schema cache files
+*.schema.json
+*.hash

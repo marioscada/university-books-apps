@@ -118,23 +118,23 @@
         }
       }
     },
-    "auth": {
+    "backend-api-client": {
       "projectType": "library",
-      "root": "libs/auth",
-      "sourceRoot": "libs/auth/src",
-      "prefix": "lib-auth",
+      "root": "libs/backend-api-client",
+      "sourceRoot": "libs/backend-api-client/src",
+      "prefix": "ub",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "project": "libs/auth/ng-package.json"
+            "project": "libs/backend-api-client/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "libs/auth/tsconfig.lib.prod.json"
+              "tsConfig": "libs/backend-api-client/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "libs/auth/tsconfig.lib.json"
+              "tsConfig": "libs/backend-api-client/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -142,7 +142,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "tsConfig": "libs/auth/tsconfig.spec.json",
+            "tsConfig": "libs/backend-api-client/tsconfig.spec.json",
             "polyfills": [
               "zone.js",
               "zone.js/testing"
@@ -153,10 +153,10 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "libs/auth/**/*.ts",
-              "libs/auth/**/*.html"
+              "libs/backend-api-client/**/*.ts",
+              "libs/backend-api-client/**/*.html"
             ],
-            "eslintConfig": "libs/auth/eslint.config.js"
+            "eslintConfig": "libs/backend-api-client/eslint.config.js"
           }
         }
       }

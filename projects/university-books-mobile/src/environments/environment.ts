@@ -13,7 +13,7 @@ export const environment = {
 
   // API Configuration
   api: {
-    baseUrl: '', // TODO: Set your API Gateway URL
+    baseUrl: 'https://omrsvjwsfh.execute-api.eu-south-1.amazonaws.com/dev',
     timeout: 30000, // 30 seconds
     retryAttempts: 3,
     retryDelay: 1000, // 1 second
@@ -22,12 +22,12 @@ export const environment = {
   // Authentication
   auth: {
     // Temporary: API Key for development (until Cognito is implemented)
-    apiKey: '', // TODO: Set this to your API Key from backend
+    apiKey: 'RErezCnnQ2a80EWrT7BXtPs1pcq708J1l66v0pY1',
 
     // AWS Cognito Configuration
     cognito: {
-      userPoolId: '', // TODO: Set your Cognito User Pool ID
-      userPoolClientId: '', // TODO: Set your Cognito App Client ID
+      userPoolId: 'eu-south-1_jEu8Stbmc',
+      userPoolClientId: '2k6isr2cfi30429noupl4bak0t',
       region: 'eu-south-1',
     },
   },

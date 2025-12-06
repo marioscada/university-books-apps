@@ -1,0 +1,37 @@
+<div class="home-container">
+  <div class="home-content">
+    <header class="home-header">
+      <h1 class="home-title">Welcome to University Books</h1>
+      <p class="home-subtitle">Hello, {{ userName() }}!</p>
+    </header>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📚</div>
+        <h3>Documents</h3>
+        <p>Upload and manage your university documents</p>
+        <button class="btn-secondary" disabled>Coming Soon</button>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👤</div>
+        <h3>Profile</h3>
+        <p>View and edit your profile information</p>
+        <button class="btn-secondary" disabled>Coming Soon</button>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3>Settings</h3>
+        <p>Manage your account settings</p>
+        <button class="btn-secondary" disabled>Coming Soon</button>
+      </div>
+    </div>
+
+    <footer class="home-footer">
+      <button class="btn-logout" (click)="onLogout()">
+        Sign Out
+      </button>
+    </footer>
+  </div>
+</div>
