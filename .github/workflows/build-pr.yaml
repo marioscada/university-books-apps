@@ -41,6 +41,12 @@ jobs:
         if: steps.cache-nodemodules.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Check RxJS Subscriptions
+        run: npm run check:subscriptions
+
+      - name: Run Lint
+        run: npm run lint
+
       - name: Build Production
         run: npm run build
 
