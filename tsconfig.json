@@ -4,6 +4,12 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
+      "@university-books/backend-api-client": [
+        "./libs/backend-api-client/src/index.ts"
+      ],
+      "@university-books/decorators": [
+        "./libs/decorators/src/index.ts"
+      ],
       "auth": [
         "./dist/auth"
       ]
@@ -19,6 +25,7 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",

@@ -51,3 +51,21 @@ Thumbs.db
 
 # Template marker (remove when using template)
 # .template
+
+# Environment overrides (local API Keys)
+**/environment.local.ts
+
+# =============================================================================
+# Schema Management & Code Generation
+# =============================================================================
+# OpenAPI schemas downloaded from backend (developer-only, requires API keys)
+schemas/
+
+# Auto-generated TypeScript code from OpenAPI
+# Note: Backend API client generated code IS committed (library pattern)
+**/generated/
+!libs/backend-api-client/src/generated/
+
+# Schema cache files
+*.schema.json
+*.hash

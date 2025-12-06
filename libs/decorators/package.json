@@ -1,0 +1,23 @@
+{
+  "name": "@university-books/decorators",
+  "version": "0.0.1",
+  "description": "Shared TypeScript decorators for University Books applications",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "peerDependencies": {
+    "rxjs": "^7.8.0",
+    "reflect-metadata": "^0.1.13 || ^0.2.0"
+  },
+  "keywords": [
+    "decorators",
+    "typescript",
+    "rxjs",
+    "unsubscribe",
+    "angular"
+  ],
+  "author": "University Books Team",
+  "license": "MIT"
+}

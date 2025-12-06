@@ -1,5 +1,5 @@
 # =============================================================================
-# Multi-stage Dockerfile for Angular 19
+# Multi-stage Dockerfile for Angular 19 - University Books Mobile
 # =============================================================================
 
 # Stage 1: Build
@@ -9,6 +9,8 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY angular.json ./
+COPY tsconfig*.json ./
 
 # Install dependencies
 RUN npm ci --prefer-offline --no-audit
@@ -22,11 +24,14 @@ RUN npm run build:prod
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
 
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
 # Copy custom nginx config
 COPY docker/config/nginx.conf /etc/nginx/nginx.conf
 
 # Copy built app from build stage
-COPY --from=build /app/dist/cicd-test/browser /usr/share/nginx/html
+COPY --from=build /app/dist/university-books-mobile/browser /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80

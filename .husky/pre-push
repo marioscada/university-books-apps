@@ -7,15 +7,17 @@ if [ "$branch" = "master" ]; then
   exit 0
 fi
 
-# Check branch naming convention: feat|fix|refactor/cicd-test/branch-name
-if ! echo "$branch" | grep -qE "^(feat|fix|refactor)/cicd-test/"; then
-  echo "Error: Branch name must follow pattern: feat|fix|refactor/cicd-test/branch-name"
+# Check branch naming convention: feat|fix|refactor/project-name/branch-name
+if ! echo "$branch" | grep -qE "^(feat|fix|refactor)/(university-books-mobile|api-client|auth|ci)/"; then
+  echo "Error: Branch name must follow pattern: feat|fix|refactor/{project}/branch-name"
   echo "Current branch: $branch"
   echo ""
+  echo "Valid projects: university-books-mobile, api-client, auth, ci"
+  echo ""
   echo "Examples:"
-  echo "  feat/cicd-test/add-login"
-  echo "  fix/cicd-test/button-color"
-  echo "  refactor/cicd-test/cleanup-code"
+  echo "  feat/university-books-mobile/add-login"
+  echo "  fix/api-client/fix-auth"
+  echo "  refactor/auth/cleanup-code"
   exit 1
 fi
 
