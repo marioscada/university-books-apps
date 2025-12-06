@@ -30,14 +30,14 @@ jobs:
           file: docker/Dockerfile
           push: false
           load: true
-          tags: cicd-test:latest
+          tags: university-books-mobile:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Test Docker image
         run: |
           # Start container
-          docker run -d -p 8080:80 --name test-container cicd-test:latest
+          docker run -d -p 8080:80 --name test-container university-books-mobile:latest
 
           # Wait for container to be ready
           echo "Waiting for container to start..."
@@ -65,7 +65,7 @@ jobs:
 
       - name: Image size check
         run: |
-          SIZE=$(docker image inspect cicd-test:latest --format='{{.Size}}' | awk '{print $1/1024/1024}')
+          SIZE=$(docker image inspect university-books-mobile:latest --format='{{.Size}}' | awk '{print $1/1024/1024}')
           echo "Image size: ${SIZE}MB"
 
           # Warn if image is too large (> 200MB)
