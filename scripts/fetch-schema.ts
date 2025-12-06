@@ -23,9 +23,9 @@ config({ path: path.join(process.cwd(), '.env.local') });
 // Configuration
 // =============================================================================
 
-const API_KEY = process.env.VITE_DEV_API_KEY;
-const API_BASE_URL = process.env.VITE_API_BASE_URL;
-const ENABLE_CACHE = process.env.VITE_ENABLE_SCHEMA_CACHE === 'true';
+const API_KEY = process.env['VITE_DEV_API_KEY'];
+const API_BASE_URL = process.env['VITE_API_BASE_URL'];
+const ENABLE_CACHE = process.env['VITE_ENABLE_SCHEMA_CACHE'] === 'true';
 
 // Validation
 if (!API_KEY || !API_BASE_URL) {

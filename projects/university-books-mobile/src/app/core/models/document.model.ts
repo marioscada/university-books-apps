@@ -45,21 +45,21 @@ export class Document {
    * Check if document is uploaded
    */
   get isUploaded(): boolean {
-    return this.status === 'UPLOADED';
+    return this.status === 'uploaded';
   }
 
   /**
    * Check if document is processing
    */
   get isProcessing(): boolean {
-    return this.status === 'PROCESSING';
+    return this.status === 'processing';
   }
 
   /**
    * Check if document failed
    */
   get isFailed(): boolean {
-    return this.status === 'FAILED';
+    return this.status === 'failed';
   }
 
   /**

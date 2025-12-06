@@ -20,6 +20,10 @@ import { environment } from '../../../environments/environment';
  * Amplify Configuration
  *
  * This configuration is loaded from environment files.
+ *
+ * Note: Using type assertion because AWS Amplify types incorrectly require
+ * identityPoolId even when only using Cognito User Pools (not Identity Pools).
+ * This is a known issue with Amplify v6 type definitions.
  */
 export const amplifyConfig: ResourcesConfig = {
   Auth: {
@@ -43,7 +47,8 @@ export const amplifyConfig: ResourcesConfig = {
         requireNumbers: true,
         requireSpecialCharacters: true,
       },
-    },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any,
   },
 };
 
