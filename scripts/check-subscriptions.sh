@@ -29,7 +29,20 @@ check_project() {
   while IFS= read -r file; do
     # Check if file contains takeUntilDestroyed or @Unsubscribe or Persistent subscription
     if ! grep -q "takeUntilDestroyed" "$file" && ! grep -q "@Unsubscribe" "$file" && ! grep -q "⚠️ Persistent subscription" "$file"; then
+      # Count subscriptions in file
+      SUB_COUNT=$(grep -c "\.subscribe(" "$file")
+
       echo "   ❌ Missing cleanup in: $file"
+      echo "      Subscriptions found: $SUB_COUNT"
+      echo "      Required: Add takeUntilDestroyed(), @Unsubscribe decorator, or ⚠️ Persistent subscription comment"
+
+      # Get all subscription line numbers for GitHub annotations
+      if [ -n "$GITHUB_ACTIONS" ]; then
+        while IFS=: read -r line_num _; do
+          echo "::error file=$file,line=$line_num,title=Missing Subscription Cleanup::Subscription has no cleanup mechanism. Add .pipe(takeUntilDestroyed()) or use @Unsubscribe decorator."
+        done < <(grep -n "\.subscribe(" "$file")
+      fi
+
       MISSING_CLEANUP=$((MISSING_CLEANUP + 1))
     fi
   done < <(find "$PROJECT_DIR" -name "*.ts" ! -name "*.spec.ts" -type f -exec grep -l "\.subscribe(" {} \; 2>/dev/null)
@@ -66,7 +79,21 @@ check_project() {
       elif echo "$CONTEXT_LINES" | grep -q "⚠️ Subscribe necessario"; then
         : # Valid regular subscription, do nothing
       else
+        # Get context: function/method name and code snippet
+        FUNC_NAME=$(sed -n "1,$((LINE-1))p" "$file" | grep -E "^\s*(public|private|protected)?\s*(async)?\s*\w+\s*\(" | tail -1 | sed 's/^\s*//;s/(.*//;s/.*\s//')
+        CODE_LINE=$(sed -n "${LINE}p" "$file" | sed 's/^\s*//')
+
         echo "   ❌ Missing explanation comment in: $file:$LINE"
+        if [ -n "$FUNC_NAME" ]; then
+          echo "      Function: $FUNC_NAME"
+        fi
+        echo "      Code: $CODE_LINE"
+
+        # GitHub Actions annotation
+        if [ -n "$GITHUB_ACTIONS" ]; then
+          echo "::error file=$file,line=$LINE,title=Missing Subscription Comment::Subscription at line $LINE is missing explanation comment. Add '⚠️ Subscribe necessario (non async pipe) perché:' or use async pipe."
+        fi
+
         MISSING_COMMENTS=$((MISSING_COMMENTS + 1))
       fi
     done
