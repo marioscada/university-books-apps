@@ -42,7 +42,7 @@ jobs:
         run: npm ci
 
       - name: Build Production
-        run: npm run build:prod
+        run: npm run build
 
       # =============================================================================
       # DEPLOY - Upload su S3 (richiede configurazione secrets)
