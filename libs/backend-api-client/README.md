@@ -103,20 +103,51 @@ See `projects/university-books-mobile/src/app/core/config/api-client.config.ts` 
 
 ## 🔄 Regeneration
 
-**⚠️ NEVER modify files in this library manually!**
+**⚠️ IMPORTANT: This is a LIBRARY - treat it as a stable dependency!**
 
-All code is auto-generated from the OpenAPI schema. To update:
+All code is auto-generated from the OpenAPI schema, but follows **enterprise best practices**:
+
+### When to Regenerate
+
+**Only regenerate when:**
+- ✅ Backend API has breaking changes
+- ✅ New endpoints or models are added
+- ✅ Field types change
+- ❌ **NOT** on every build or PR
+
+### How to Regenerate
 
 ```bash
-# Download latest schema and regenerate client
+# 1. Download latest schema from backend (requires API keys in .env.local)
+npm run schema:fetch
+
+# 2. Generate TypeScript code
+npm run schema:generate
+
+# 3. Or combined:
 npm run schema:update
 
-# Or step by step:
-npm run schema:fetch      # Download schema from backend
-npm run schema:generate   # Generate TypeScript code
+# 4. Verify changes
+git diff libs/backend-api-client/src/generated/
+
+# 5. Commit the generated code
+git add libs/backend-api-client/src/generated/
+git commit -m "chore(api-client): update from backend schema vX.Y.Z"
 ```
 
-The code will be regenerated in `libs/backend-api-client/src/generated/`
+### Why Generated Code is Committed
+
+Following **Angular, AWS SDK, and enterprise patterns**:
+- ✅ Generated code is **stable** and **deterministic**
+- ✅ CI/CD can build without API keys
+- ✅ Developers don't need backend access
+- ✅ Version control tracks API changes
+- ✅ Build is **fast** and **reliable**
+
+**This is the same approach used by:**
+- `@angular/*` packages (generated code committed)
+- `aws-sdk` (generated clients committed)
+- `@prisma/client` (generated schema committed)
 
 ## 📂 Structure
 
@@ -135,16 +166,19 @@ libs/backend-api-client/
 ## 🔒 Important Rules
 
 ### ✅ DO
-- Import from `'api-client'`
+- Import from `@university-books/backend-api-client`
 - Use the generated types and services
-- Regenerate after backend schema changes
-- Report issues if generated code has problems
+- Regenerate after backend schema changes (manual process)
+- Commit generated code changes (library pattern)
+- Review diffs before committing
+- Document schema version in commit message
 
 ### ❌ DON'T
-- Modify files in `generated/` directory
+- Modify files in `generated/` directory manually
 - Copy-paste generated code to other projects
 - Create your own API types (use generated ones)
-- Commit `generated/` to git (it's gitignored)
+- Auto-regenerate on every build (performance killer)
+- Regenerate without testing
 
 ## 📚 Available Exports
 

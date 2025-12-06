@@ -58,10 +58,14 @@ Thumbs.db
 # =============================================================================
 # Schema Management & Code Generation
 # =============================================================================
-# OpenAPI schemas downloaded from backend
+# OpenAPI schemas downloaded from backend (developer-only, requires API keys)
 schemas/
+
 # Auto-generated TypeScript code from OpenAPI
+# Note: Backend API client generated code IS committed (library pattern)
 **/generated/
+!libs/backend-api-client/src/generated/
+
 # Schema cache files
 *.schema.json
 *.hash

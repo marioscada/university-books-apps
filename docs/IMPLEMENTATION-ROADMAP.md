@@ -590,7 +590,89 @@ export class LoginComponent {
 }
 ```
 
-### 8. Project Structure
+### 8. API Client Library Management (Enterprise Pattern)
+
+**Pattern:** Generated API client as committed library (like Angular, AWS SDK, Prisma)
+
+#### ✅ Generated Code is COMMITTED
+
+```bash
+libs/backend-api-client/src/generated/  # ✅ Committato in git
+```
+
+**Why?** Following **Angular, AWS SDK, Prisma pattern**:
+- ✅ CI/CD builds without API keys or backend access
+- ✅ Deterministic builds (same code → same result)
+- ✅ Fast builds (no generation step)
+- ✅ Version control tracks API changes
+- ✅ Developers don't need backend access
+
+#### 🔄 Schema Update Process (Manual)
+
+```bash
+# ❌ WRONG - Auto-regenerate on every build
+"prebuild": "npm run schema:update && npm run build"
+
+# ✅ CORRECT - Manual regeneration when needed
+"prebuild": "npm run check:subscriptions"
+```
+
+**When to regenerate:**
+- ✅ Backend API has breaking changes
+- ✅ New endpoints/models added
+- ✅ After backend deploy
+- ❌ **NOT** on every build/PR
+
+**How to update:**
+```bash
+# 1. Fetch latest schema (requires .env.local with API keys)
+npm run schema:fetch
+
+# 2. Generate TypeScript client
+npm run schema:generate
+
+# 3. Review changes
+git diff libs/backend-api-client/src/generated/
+
+# 4. Test application
+npm run build && npm run test
+
+# 5. Commit as library update
+git add libs/backend-api-client/
+git commit -m "chore(api-client): update from backend schema v2.1.0"
+```
+
+#### 📦 Library Usage
+
+```typescript
+// ✅ Import from library
+import { LoginRequest, AuthenticationService } from '@university-books/backend-api-client';
+
+// ❌ Don't create your own API types
+interface LoginRequest { ... }  // NO!
+```
+
+**Benefits:**
+- Single source of truth for API contracts
+- Type safety guaranteed
+- Shared across all projects (mobile, web, admin)
+- Breaking changes caught at compile time
+
+#### 🔒 Rules
+
+**DO:**
+- ✅ Commit generated code changes
+- ✅ Review diffs before committing
+- ✅ Document schema version in commit message
+- ✅ Test after regeneration
+
+**DON'T:**
+- ❌ Modify `generated/` files manually
+- ❌ Auto-regenerate on build
+- ❌ Skip testing after regeneration
+- ❌ Regenerate without backend access
+
+### 9. Project Structure
 
 ```
 projects/university-books-mobile/src/app/

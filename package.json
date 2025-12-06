@@ -19,7 +19,7 @@
     "check:subscriptions": "bash scripts/check-subscriptions.sh",
     "check:subscriptions:mobile": "bash scripts/check-subscriptions.sh university-books-mobile",
     "schema:check": "tsx scripts/check-breaking-changes.ts",
-    "prebuild": "npm run check:subscriptions && npm run schema:update"
+    "prebuild": "npm run check:subscriptions"
   },
   "private": true,
   "dependencies": {
