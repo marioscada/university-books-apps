@@ -10,7 +10,7 @@
     "build:check": "npm run check && npm run build",
     "watch": "ng build university-books-mobile --watch --configuration development",
     "test": "ng test university-books-mobile",
-    "test:ci": "ng test university-books-mobile --watch=false --browsers=ChromeHeadlessCI --code-coverage",
+    "test:ci": "ng test university-books-mobile --watch=false --browsers=ChromeHeadless --code-coverage",
     "lint": "ng lint university-books-mobile",
     "lint:all": "npm run check:subscriptions && ng lint university-books-mobile",
     "check": "npm run check:subscriptions && npm run lint",

@@ -42,6 +42,8 @@ module.exports = function (config) {
           '--disable-dev-shm-usage'
         ]
       }
-    }
+    },
+    // Use ChromeHeadless in CI environments
+    singleRun: false
   });
 };
