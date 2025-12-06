@@ -43,7 +43,7 @@ export const amplifyConfig: ResourcesConfig = {
         requireNumbers: true,
         requireSpecialCharacters: true,
       },
-    } as any, // Type workaround for optional identityPoolId
+    },
   },
 };
 

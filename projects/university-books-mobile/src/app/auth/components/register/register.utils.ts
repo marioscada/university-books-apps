@@ -4,13 +4,15 @@
  * Utility functions for registration and email verification error handling.
  */
 
+import { CognitoError } from '../../models/auth.model';
+
 /**
  * Parse registration errors into user-friendly messages
  *
  * @param error - Error from Cognito signUp
  * @returns User-friendly error message
  */
-export function parseRegistrationError(error: any): string {
+export function parseRegistrationError(error: CognitoError): string {
   if (error.name === 'UsernameExistsException') {
     return 'An account with this email already exists.';
   }
@@ -29,7 +31,7 @@ export function parseRegistrationError(error: any): string {
  * @param error - Error from Cognito confirmSignUp
  * @returns User-friendly error message
  */
-export function parseConfirmationError(error: any): string {
+export function parseConfirmationError(error: CognitoError): string {
   if (error.name === 'CodeMismatchException') {
     return 'Invalid verification code. Please check and try again.';
   }

@@ -4,13 +4,15 @@
  * Utility functions for password reset error handling.
  */
 
+import { CognitoError } from '../../models/auth.model';
+
 /**
  * Parse password reset errors into user-friendly messages
  *
  * @param error - Error from Cognito resetPassword or confirmResetPassword
  * @returns User-friendly error message
  */
-export function parsePasswordResetError(error: any): string {
+export function parsePasswordResetError(error: CognitoError): string {
   if (error.name === 'UserNotFoundException') {
     return 'No account found with this email.';
   }

@@ -19,7 +19,7 @@ import { signIn, signOut, getCurrentUser, fetchAuthSession, SignInInput, SignInO
 import { Observable, from, BehaviorSubject } from 'rxjs';
 import { tap, catchError, map, switchMap } from 'rxjs/operators';
 
-import { AuthUser, AuthTokens, AuthState } from '../models/auth.model';
+import { AuthUser, AuthTokens, AuthState, CognitoError } from '../models/auth.model';
 
 // =============================================================================
 // Service
@@ -79,7 +79,7 @@ export class AuthService {
 
         console.log('✅ User session restored:', authUser.username);
       }
-    } catch (error) {
+    } catch (_error) {
       // No active session, user needs to log in
       this.setState({
         isAuthenticated: false,
@@ -278,7 +278,7 @@ export class AuthService {
   /**
    * Parse Cognito/Amplify errors into user-friendly messages
    */
-  private parseAuthError(error: any): string {
+  private parseAuthError(error: CognitoError): string {
     const errorCode = error?.name || error?.code || 'UnknownError';
     const errorMessage = error?.message || 'An unknown error occurred';
 
