@@ -12,6 +12,58 @@ Questo progetto segue le raccomandazioni ufficiali di Angular e le best practice
 
 ### 1. Naming Conventions
 
+#### Git Branch Names (`feat/project-name/description`)
+
+**OBBLIGATORIO:** Tutte le branch devono seguire il pattern `feat/nome-progetto/descrizione`
+
+```bash
+# ✅ CORRETTO - Branch naming con nome progetto
+git checkout -b feat/university-books-mobile/auth-implementation
+git checkout -b feat/university-books-mobile/api-integration
+git checkout -b fix/university-books-mobile/login-validation
+git checkout -b refactor/university-books-mobile/state-management
+
+# ❌ SBAGLIATO - Branch senza nome progetto
+git checkout -b feat/auth-implementation
+git checkout -b feature/login
+```
+
+**Pattern completo:**
+```
+<type>/<project-name>/<short-description>
+
+type:
+  - feat:     Nuova funzionalità
+  - fix:      Bug fix
+  - refactor: Refactoring codice
+  - docs:     Documentazione
+  - test:     Test
+  - chore:    Manutenzione
+
+project-name:
+  - university-books-mobile
+  - backend-api-client
+  - (altri progetti futuri)
+
+short-description:
+  - Breve descrizione kebab-case (2-4 parole)
+```
+
+**Esempi:**
+```bash
+feat/university-books-mobile/auth-implementation
+feat/university-books-mobile/book-list-ui
+fix/university-books-mobile/session-timeout
+refactor/backend-api-client/error-handling
+docs/university-books-mobile/setup-guide
+```
+
+**Motivo:**
+- Organizzazione chiara per progetti in monorepo
+- Facile identificare a quale progetto appartiene una branch
+- Migliore gestione PR e code review
+- Convenzione scalabile per progetti futuri
+
 #### Observable Streams (`$` suffix)
 ```typescript
 // ✅ CORRETTO - Observable con suffisso $
@@ -1337,21 +1389,49 @@ npm run schema:fetch
 npm run schema:generate
 ```
 
-### Git
+### Git Workflow
+
+**IMPORTANTE:** Seguire sempre la convenzione di naming `<type>/<project-name>/<description>`
+
 ```bash
 # Check status
 git status
 
-# Create feature branch
-git checkout -b feat/auth-ui
+# Create feature branch (con nome progetto!)
+git checkout -b feat/university-books-mobile/auth-ui
 
-# Commit
+# Commit con conventional commits
 git add .
-git commit -m "feat: implement login UI"
+git commit -m "feat(auth): implement login UI with form validation"
 
-# Push
-git push origin feat/auth-ui
+# Push (specificare nome progetto nella branch)
+git push origin feat/university-books-mobile/auth-ui
+
+# Creare Pull Request su GitHub
+# Titolo: feat(auth): implement login UI with form validation
+# Branch target: master o main
 ```
+
+**Convenzioni branch naming:**
+- ✅ `feat/university-books-mobile/auth-implementation`
+- ✅ `fix/university-books-mobile/login-bug`
+- ✅ `refactor/backend-api-client/error-handling`
+- ❌ `feat/auth` (manca nome progetto)
+- ❌ `feature/login-ui` (tipo sbagliato, manca progetto)
+
+**Convenzioni commit message:**
+```bash
+<type>(<scope>): <description>
+
+# Esempi:
+feat(auth): implement AWS Cognito integration
+fix(auth): resolve session timeout issue
+refactor(api-client): improve error handling
+docs(readme): update setup instructions
+test(auth): add login component tests
+```
+
+**Scopes validi:** auth, api-client, ci, university-books-mobile
 
 ---
 

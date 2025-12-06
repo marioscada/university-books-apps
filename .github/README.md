@@ -154,20 +154,46 @@ I workflow sono in `.github/workflows/`:
 
 ## ✅ Best Practices
 
-1. **Prima di creare una PR:**
-   - Esegui `npm run check` localmente
-   - Fix tutti gli errori prima di pushare
-   - Aggiungi commenti alle subscriptions necessarie
+### 1. Git Branch Naming
 
-2. **Persistent Subscriptions:**
-   - Usare SOLO per listener app-wide (AWS Hub, WebSocket globali)
-   - Documentare con `⚠️ Persistent subscription: <motivo>`
-   - NON usare `takeUntilDestroyed()` (sono intenzionalmente persistenti)
+**OBBLIGATORIO:** Tutte le branch devono seguire il pattern `<type>/<project-name>/<description>`
 
-3. **Code Review:**
-   - Verifica che ogni subscription abbia un commento
-   - Verifica che non si possa usare `async pipe` invece
-   - Verifica che il cleanup sia presente
+```bash
+# ✅ CORRETTO
+git checkout -b feat/university-books-mobile/auth-implementation
+git checkout -b fix/university-books-mobile/login-validation
+git checkout -b refactor/backend-api-client/error-handling
+
+# ❌ SBAGLIATO - Manca nome progetto
+git checkout -b feat/auth-implementation
+git checkout -b feature/login-ui
+```
+
+**Pattern:** `<type>/<project-name>/<short-description>`
+- **type:** feat, fix, refactor, docs, test, chore
+- **project-name:** university-books-mobile, backend-api-client
+- **description:** 2-4 parole kebab-case
+
+### 2. Prima di creare una PR
+
+- ✅ Esegui `npm run check` localmente
+- ✅ Fix tutti gli errori prima di pushare
+- ✅ Aggiungi commenti alle subscriptions necessarie
+- ✅ Branch naming corretta (`feat/project-name/description`)
+- ✅ Commit messages con conventional commits
+
+### 3. Persistent Subscriptions
+
+- Usare SOLO per listener app-wide (AWS Hub, WebSocket globali)
+- Documentare con `⚠️ Persistent subscription: <motivo>`
+- NON usare `takeUntilDestroyed()` (sono intenzionalmente persistenti)
+
+### 4. Code Review
+
+- Verifica che ogni subscription abbia un commento
+- Verifica che non si possa usare `async pipe` invece
+- Verifica che il cleanup sia presente
+- Verifica naming conventions (branch, file, variabili)
 
 ## 🛠️ Troubleshooting
 
