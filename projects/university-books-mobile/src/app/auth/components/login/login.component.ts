@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, of } from 'rxjs';
+import { switchMap, map, catchError, startWith, tap, shareReplay } from 'rxjs/operators';
 
 import { AuthService } from '../../services/auth.service';
 
@@ -19,8 +20,41 @@ export class LoginComponent {
   private readonly router = inject(Router);
 
   public readonly loginForm: FormGroup;
-  public readonly loading = signal(false);
-  public readonly errorMessage = signal<string | null>(null);
+
+  // ✅ Subject per trigger del submit (no subscribe nel .ts)
+  private readonly submitTrigger$ = new Subject<{ email: string; password: string }>();
+
+  // ✅ Observable per lo stato - usato con async pipe nel template
+  public readonly loginState$ = this.submitTrigger$.pipe(
+    switchMap(({ email, password }) =>
+      this.authService.signIn$(email, password).pipe(
+        map(result => ({
+          loading: false,
+          error: null as string | null,
+          success: result.isSignedIn
+        })),
+        tap((state) => {
+          // ✅ Navigation side effect (eseguito dall'async pipe)
+          if (state.success) {
+            this.router.navigate(['/home']);
+          }
+        }),
+        catchError((error: unknown) => {
+          const errorMessage = error && typeof error === 'object' && 'message' in error
+            ? (error as { message: string }).message
+            : 'Login failed. Please check your credentials and try again.';
+          return of({
+            loading: false,
+            error: errorMessage,
+            success: false
+          });
+        }),
+        startWith({ loading: true, error: null as string | null, success: false })
+      )
+    ),
+    startWith({ loading: false, error: null as string | null, success: false }),
+    shareReplay(1) // ✅ Condivide stream per multiple async pipe
+  );
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -35,31 +69,9 @@ export class LoginComponent {
       return;
     }
 
-    this.loading.set(true);
-    this.errorMessage.set(null);
-
     const { email, password } = this.loginForm.value;
-
-    // ⚠️ Subscribe necessario (non async pipe) perché:
-    // 1. Gestisce loading state (signals)
-    // 2. Navigazione imperativa (router.navigate)
-    // 3. Form submission con feedback utente
-    this.authService.signIn$(email, password)
-      .pipe(takeUntilDestroyed())
-      .subscribe({
-        next: (result) => {
-          this.loading.set(false);
-          if (result.isSignedIn) {
-            this.router.navigate(['/home']);
-          }
-        },
-        error: (error) => {
-          this.loading.set(false);
-          this.errorMessage.set(
-            error.message || 'Login failed. Please check your credentials and try again.'
-          );
-        }
-      });
+    // ✅ Trigger observable stream (no subscribe)
+    this.submitTrigger$.next({ email, password });
   }
 
   get email() {

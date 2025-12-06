@@ -3,7 +3,6 @@
  *
  * Exports all core functionality including:
  * - Domain Models (business logic)
- * - Services (singletons)
  * - Configurations
  *
  * Note: API Client (generated code) is now in @university-books/backend-api-client library

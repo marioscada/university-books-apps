@@ -734,7 +734,336 @@ private parseAuthError(error: any): string {
 }
 ```
 
-### 10. Librerie Condivise
+### 10. Async Operations Management - Subject + async pipe Pattern
+
+**Pattern Angular Best Practice:** Subject come trigger + Observable stream + async pipe nel template.
+
+#### 🎯 Problema Risolto
+
+Usare `.subscribe()` nei componenti viola la best practice Angular di preferire `async` pipe:
+
+```typescript
+// ❌ SBAGLIATO - Subscribe manuale nel componente
+export class LoginComponent {
+  private destroyRef = inject(DestroyRef);
+  loading = signal(false);
+  errorMessage = signal<string | null>(null);
+
+  onSubmit() {
+    this.loading.set(true);
+    this.errorMessage.set(null);
+
+    // ⚠️ Subscribe necessario? NO! Può usare async pipe
+    this.authService.signIn$(email, password)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.loading.set(false);
+          if (result.isSignedIn) {
+            this.router.navigate(['/home']);
+          }
+        },
+        error: (error) => {
+          this.loading.set(false);
+          this.errorMessage.set(error.message || 'Login failed');
+        }
+      });
+  }
+}
+```
+
+**Problemi:**
+- 🔴 Viola best practice "preferire async pipe"
+- 🔴 Manual subscription management
+- 🔴 Boilerplate ripetitivo per state management
+- 🔴 Facile dimenticare `takeUntilDestroyed()`
+
+#### ✅ Soluzione: Subject + Observable Stream + async pipe
+
+```typescript
+// ✅ CORRETTO - Zero subscribe, async pipe nel template
+export class LoginComponent {
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+
+  // Subject per trigger del submit
+  private readonly submitTrigger$ = new Subject<{ email: string; password: string }>();
+
+  // Observable stream per lo stato (usato con async pipe)
+  public readonly loginState$ = this.submitTrigger$.pipe(
+    switchMap(({ email, password }) =>
+      this.authService.signIn$(email, password).pipe(
+        map(result => ({
+          loading: false,
+          error: null as string | null,
+          success: result.isSignedIn
+        })),
+        tap(state => {
+          // Side effect: navigation
+          if (state.success) {
+            this.router.navigate(['/home']);
+          }
+        }),
+        catchError((error: any) => {
+          const errorMessage = error?.message || 'Login failed';
+          return of({
+            loading: false,
+            error: errorMessage,
+            success: false
+          });
+        }),
+        startWith({ loading: true, error: null as string | null, success: false })
+      )
+    ),
+    startWith({ loading: false, error: null as string | null, success: false }),
+    shareReplay(1)
+  );
+
+  onSubmit(): void {
+    if (this.loginForm.invalid) return;
+    const { email, password } = this.loginForm.value;
+    this.submitTrigger$.next({ email, password }); // ✅ Trigger stream
+  }
+}
+```
+
+**Template con async pipe:**
+```html
+@if (loginState$ | async; as state) {
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <!-- Error Message -->
+    @if (state.error) {
+      <div class="alert alert-error">{{ state.error }}</div>
+    }
+
+    <!-- Submit Button -->
+    <button type="submit" [disabled]="state.loading || loginForm.invalid">
+      @if (state.loading) {
+        <span>Signing in...</span>
+      } @else {
+        <span>Sign In</span>
+      }
+    </button>
+  </form>
+}
+```
+
+**Vantaggi:**
+- ✅ **Zero subscribe** - async pipe gestisce tutto
+- ✅ **Auto cleanup** - async pipe fa unsubscribe automatico
+- ✅ **Declarative** - template dichiara cosa mostrare
+- ✅ **Type-safe** - TypeScript interface per state
+- ✅ **OnPush friendly** - Change detection ottimizzata
+- ✅ **Best practice** - Segue raccomandazioni Angular ufficiali
+
+#### 📦 Pattern Breakdown
+
+**1. Subject come trigger:**
+```typescript
+private readonly submitTrigger$ = new Subject<{ email: string; password: string }>();
+```
+- Il Subject non emette finché non chiamiamo `.next()`
+- Quando l'utente fa submit, triggeriamo lo stream
+
+**2. Observable stream reattivo:**
+```typescript
+public readonly loginState$ = this.submitTrigger$.pipe(
+  switchMap(({ email, password }) => /* ... */),
+  startWith({ loading: false, error: null, success: false }),
+  shareReplay(1)
+);
+```
+- `switchMap`: Per ogni trigger, esegue operazione async
+- `startWith`: Stato iniziale (loading: false)
+- `shareReplay(1)`: Condivide stream tra multiple async pipe
+
+**3. State interface tipizzato:**
+```typescript
+interface LoginState {
+  loading: boolean;
+  error: string | null;
+  success: boolean;
+}
+```
+
+**4. Side effects con `tap`:**
+```typescript
+tap(state => {
+  if (state.success) {
+    this.router.navigate(['/home']);
+  }
+})
+```
+- Navigation è side effect imperativo
+- Eseguito automaticamente dall'async pipe
+
+#### 💡 Esempi d'Uso
+
+**Login con navigation:**
+```typescript
+// Component
+private readonly submitTrigger$ = new Subject<{ email: string; password: string }>();
+
+public readonly loginState$ = this.submitTrigger$.pipe(
+  switchMap(({ email, password }) =>
+    this.authService.signIn$(email, password).pipe(
+      map(result => ({ loading: false, error: null, success: result.isSignedIn })),
+      tap(state => state.success && this.router.navigate(['/home'])),
+      catchError(error => of({ loading: false, error: error.message, success: false })),
+      startWith({ loading: true, error: null, success: false })
+    )
+  ),
+  startWith({ loading: false, error: null, success: false }),
+  shareReplay(1)
+);
+
+onSubmit(): void {
+  this.submitTrigger$.next(this.loginForm.value);
+}
+```
+
+**Logout semplice:**
+```typescript
+// Component
+private readonly logoutTrigger$ = new Subject<void>();
+
+public readonly logoutState$ = this.logoutTrigger$.pipe(
+  switchMap(() =>
+    this.authService.signOut$().pipe(
+      map(() => ({ loading: false, error: null, success: true })),
+      tap(() => this.router.navigate(['/auth/login'])),
+      catchError(error => of({ loading: false, error: error.message, success: false })),
+      startWith({ loading: true, error: null, success: false })
+    )
+  ),
+  startWith({ loading: false, error: null, success: false }),
+  shareReplay(1)
+);
+
+onLogout(): void {
+  this.logoutTrigger$.next();
+}
+```
+
+**Template:**
+```html
+@if (logoutState$ | async; as state) {
+  <button (click)="onLogout()" [disabled]="state.loading">
+    {{ state.loading ? 'Signing out...' : 'Sign Out' }}
+  </button>
+}
+```
+
+#### 🏗️ Pattern Inspirations
+
+**Angular Official Docs:**
+- Preferire async pipe quando possibile
+- Evitare subscribe manuali nei componenti
+
+**RxJS Best Practices:**
+- Subject per imperativo → Observable conversione
+- `switchMap` per cancellare operazioni precedenti
+- `shareReplay(1)` per hot observable
+
+**NgRx Component Store:**
+- State management locale con Observable
+- Side effects con `tap`
+
+#### 🎯 Quando Usarlo
+
+**✅ USALO per:**
+- Form submissions con loading/error states
+- Login/logout operations
+- API calls che richiedono UI feedback
+- Operazioni async con navigation dopo successo
+- Qualsiasi operazione che può mostrare loading spinner
+
+**❌ NON usarlo per:**
+- Observable già esposti da service (usa async pipe direttamente)
+- Background operations senza UI (usa `subscribe` con commento)
+- Persistent streams (WebSocket - usa `.subscribe()` con commento)
+
+#### 📏 Confronto: Subscribe vs async pipe
+
+**❌ SBAGLIATO - Subscribe manuale (38 righe):**
+```typescript
+export class LoginComponent {
+  private destroyRef = inject(DestroyRef);
+  loading = signal(false);
+  errorMessage = signal<string | null>(null);
+
+  onSubmit() {
+    this.loading.set(true);
+    this.errorMessage.set(null);
+
+    this.authService.signIn$(email, password)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.loading.set(false);
+          if (result.isSignedIn) {
+            this.router.navigate(['/home']);
+          }
+        },
+        error: (error) => {
+          this.loading.set(false);
+          this.errorMessage.set(error.message || 'Login failed');
+        }
+      });
+  }
+}
+
+// Template
+<button [disabled]="loading() || loginForm.invalid">
+  @if (loading()) { Signing in... } @else { Sign In }
+</button>
+@if (errorMessage()) {
+  <div>{{ errorMessage() }}</div>
+}
+```
+
+**✅ CORRETTO - Subject + async pipe (35 righe):**
+```typescript
+export class LoginComponent {
+  private readonly submitTrigger$ = new Subject<{ email: string; password: string }>();
+
+  public readonly loginState$ = this.submitTrigger$.pipe(
+    switchMap(({ email, password }) =>
+      this.authService.signIn$(email, password).pipe(
+        map(result => ({ loading: false, error: null, success: result.isSignedIn })),
+        tap(state => state.success && this.router.navigate(['/home'])),
+        catchError(error => of({ loading: false, error: error.message, success: false })),
+        startWith({ loading: true, error: null, success: false })
+      )
+    ),
+    startWith({ loading: false, error: null, success: false }),
+    shareReplay(1)
+  );
+
+  onSubmit(): void {
+    this.submitTrigger$.next(this.loginForm.value);
+  }
+}
+
+// Template
+@if (loginState$ | async; as state) {
+  <button [disabled]="state.loading || loginForm.invalid">
+    @if (state.loading) { Signing in... } @else { Sign In }
+  </button>
+  @if (state.error) {
+    <div>{{ state.error }}</div>
+  }
+}
+```
+
+**Risultato:**
+- ✅ **Zero subscribe manuali**
+- ✅ **Zero memory leaks** (async pipe auto-cleanup)
+- ✅ **Best practice compliant**
+- ✅ **OnPush change detection ready**
+- ✅ **Type-safe state**
+
+### 11. Librerie Condivise
 
 ```typescript
 // libs/backend-api-client/package.json
@@ -760,7 +1089,7 @@ import { LoginRequest, AuthenticationService } from '@university-books/backend-a
 - `@university-books/backend-api-client` - Client TypeScript auto-generato per API backend
 - `@university-books/decorators` - Decoratori TypeScript riutilizzabili (es: `@Unsubscribe`)
 
-### 11. Import Organization
+### 12. Import Organization
 
 #### Separare import esterni da import locali
 ```typescript
@@ -787,7 +1116,7 @@ import { AuthUser } from '../../models/auth.model';
 3. **[SPAZIO VUOTO]**
 4. Import locali relativi (`./`, `../`)
 
-### 12. Class Member Order
+### 13. Class Member Order
 
 Mantenere un ordine consistente dei membri della classe per migliorare la leggibilità.
 
@@ -828,7 +1157,7 @@ export class LoginComponent {
     // ...
   }
 
-  // 6. GETTERS (per template access)
+  // 6. GETTERS (per template access o computed values)
   get email() {
     return this.loginForm.get('email');
   }
@@ -837,7 +1166,17 @@ export class LoginComponent {
     return this.loginForm.get('password');
   }
 
-  // 7. PRIVATE/PROTECTED METHODS (helper methods)
+  get isFormValid(): boolean {
+    return this.loginForm.valid;
+  }
+
+  // 7. SETTERS (per proprietà complesse)
+  set userPreferences(prefs: any) {
+    this._preferences = prefs;
+    this.saveToLocalStorage(prefs);
+  }
+
+  // 8. PRIVATE/PROTECTED METHODS (helper methods)
   private setLoading(loading: boolean): void {
     this.loading.set(loading);
   }
@@ -855,9 +1194,10 @@ export class LoginComponent {
 4. Lifecycle hooks
 5. Public methods
 6. Getters
-7. Private/Protected methods
+7. Setters
+8. Private/Protected methods
 
-### 13. Utility Functions - Separation of Concerns
+### 14. Utility Functions - Separation of Concerns
 
 Quando un componente ha funzioni utility complesse o riutilizzabili, separarle in file dedicati.
 
@@ -966,7 +1306,7 @@ export function generateUsername(email: string): string { }
 export function validateBirthDate(date: Date): boolean { }
 ```
 
-### 14. File Naming Conventions
+### 15. File Naming Conventions
 
 ```
 ✅ CORRETTO:

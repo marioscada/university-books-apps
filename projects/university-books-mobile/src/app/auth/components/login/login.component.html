@@ -3,72 +3,74 @@
     <h1 class="login-title">University Books</h1>
     <p class="login-subtitle">Sign in to continue</p>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <!-- Email Field -->
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="you@example.com"
-          [class.error]="email?.invalid && email?.touched"
-        />
-        @if (email?.invalid && email?.touched) {
-          <div class="error-message">
-            @if (email?.errors?.['required']) {
-              <span>Email is required</span>
-            }
-            @if (email?.errors?.['email']) {
-              <span>Please enter a valid email</span>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Password Field -->
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="Enter your password"
-          [class.error]="password?.invalid && password?.touched"
-        />
-        @if (password?.invalid && password?.touched) {
-          <div class="error-message">
-            @if (password?.errors?.['required']) {
-              <span>Password is required</span>
-            }
-            @if (password?.errors?.['minlength']) {
-              <span>Password must be at least 8 characters</span>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Error Message -->
-      @if (errorMessage()) {
-        <div class="alert alert-error">
-          {{ errorMessage() }}
+    @if (loginState$ | async; as state) {
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            [class.error]="email?.invalid && email?.touched"
+          />
+          @if (email?.invalid && email?.touched) {
+            <div class="error-message">
+              @if (email?.errors?.['required']) {
+                <span>Email is required</span>
+              }
+              @if (email?.errors?.['email']) {
+                <span>Please enter a valid email</span>
+              }
+            </div>
+          }
         </div>
-      }
 
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        class="btn-primary"
-        [disabled]="loading() || loginForm.invalid"
-      >
-        @if (loading()) {
-          <span class="spinner"></span>
-          <span>Signing in...</span>
-        } @else {
-          <span>Sign In</span>
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            [class.error]="password?.invalid && password?.touched"
+          />
+          @if (password?.invalid && password?.touched) {
+            <div class="error-message">
+              @if (password?.errors?.['required']) {
+                <span>Password is required</span>
+              }
+              @if (password?.errors?.['minlength']) {
+                <span>Password must be at least 8 characters</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Error Message -->
+        @if (state.error) {
+          <div class="alert alert-error">
+            {{ state.error }}
+          </div>
         }
-      </button>
-    </form>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="state.loading || loginForm.invalid"
+        >
+          @if (state.loading) {
+            <span class="spinner"></span>
+            <span>Signing in...</span>
+          } @else {
+            <span>Sign In</span>
+          }
+        </button>
+      </form>
+    }
 
     <!-- Footer -->
     <div class="login-footer">
