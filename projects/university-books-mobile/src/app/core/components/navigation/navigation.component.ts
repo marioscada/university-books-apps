@@ -12,7 +12,6 @@ import { filter, map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   trigger,
-  state,
   style,
   transition,
   animate,

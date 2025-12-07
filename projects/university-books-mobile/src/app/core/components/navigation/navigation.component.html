@@ -18,7 +18,12 @@
 @if (isMobile() && isMobileMenuOpen()) {
   <div
     class="backdrop"
+    role="button"
+    tabindex="0"
     (click)="closeMobileMenu()"
+    (keydown.enter)="closeMobileMenu()"
+    (keydown.escape)="closeMobileMenu()"
+    [attr.aria-label]="'Close navigation menu'"
     [@fadeIn]
   ></div>
 }
