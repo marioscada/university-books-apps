@@ -198,12 +198,12 @@
   &.nav-link-active {
     background: linear-gradient(135deg, vars.$surface-2 0%, vars.$surface-3 100%);
     color: vars.$text-color;
-    border-left: 3px solid vars.$accent-blue;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    border-left: 3px solid vars.$accent-green;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
 
     .nav-icon {
-      color: vars.$accent-blue;
-      filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.4));
+      color: vars.$accent-green;
+      filter: drop-shadow(0 2px 4px rgba(5, 150, 105, 0.4));
     }
 
     .nav-label {
