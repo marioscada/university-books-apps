@@ -19,6 +19,7 @@ import {
 
 import { ResponsiveService } from '../../services/responsive.service';
 import { NAVIGATION_ITEMS, NavigationItem } from './navigation.model';
+import { AuthService } from '../../../auth/services/auth.service';
 
 /**
  * Adaptive Navigation Component
@@ -74,6 +75,7 @@ export class NavigationComponent {
   // Services
   private readonly responsive = inject(ResponsiveService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   // Navigation items from model
   public readonly navigationItems = NAVIGATION_ITEMS;
@@ -99,12 +101,25 @@ export class NavigationComponent {
     { initialValue: this.router.url }
   );
 
+  // Authentication state
+  public readonly isAuthenticated = computed(() => this.authService.state().isAuthenticated);
+
+  /**
+   * Show navigation (only if authenticated)
+   */
+  public readonly showNavigation = computed(() => {
+    return this.isAuthenticated();
+  });
+
   /**
    * Show sidebar based on breakpoint
    * - Mobile: Only when menu is open
    * - Tablet/Desktop: Always visible
    */
   public readonly showSidebar = computed(() => {
+    if (!this.showNavigation()) {
+      return false; // Never show if not authenticated
+    }
     if (this.isMobile()) {
       return this.isMobileMenuOpen();
     }

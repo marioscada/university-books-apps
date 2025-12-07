@@ -1,5 +1,5 @@
 <!-- Mobile Hamburger Menu Button -->
-@if (isMobile()) {
+@if (showNavigation() && isMobile()) {
   <button
     class="hamburger-btn"
     (click)="toggleMobileMenu()"
@@ -15,7 +15,7 @@
 }
 
 <!-- Backdrop Overlay (Mobile Only) -->
-@if (isMobile() && isMobileMenuOpen()) {
+@if (showNavigation() && isMobile() && isMobileMenuOpen()) {
   <div
     class="backdrop"
     role="button"
