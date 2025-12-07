@@ -64,6 +64,83 @@ docs/university-books-mobile/setup-guide
 - Migliore gestione PR e code review
 - Convenzione scalabile per progetti futuri
 
+#### Git Commit Messages (`type(project-name): description`)
+
+**OBBLIGATORIO:** Tutti i commit devono seguire il pattern Conventional Commits con nome progetto nello scope.
+
+```bash
+# ✅ CORRETTO - Commit message con nome progetto
+git commit -m "feat(university-books-mobile): implement AWS Cognito authentication"
+git commit -m "fix(university-books-mobile): resolve login validation issue"
+git commit -m "refactor(backend-api-client): improve error handling"
+git commit -m "docs(university-books-mobile): update README with setup instructions"
+
+# ❌ SBAGLIATO - Commit senza nome progetto nello scope
+git commit -m "feat: implement authentication"
+git commit -m "fix: login bug"
+git commit -m "add new feature"
+```
+
+**Pattern completo:**
+```
+<type>(<project-name>): <description>
+
+[optional body]
+
+[optional footer]
+
+type:
+  - feat:     Nuova funzionalità
+  - fix:      Bug fix
+  - refactor: Refactoring codice
+  - docs:     Documentazione
+  - test:     Test
+  - chore:    Manutenzione
+  - style:    Formatting, missing semicolons, ecc.
+  - perf:     Performance improvements
+
+project-name (scope):
+  - university-books-mobile
+  - backend-api-client
+  - cicd-test
+  - (altri progetti futuri)
+
+description:
+  - Descrizione concisa in imperativo (max 72 caratteri)
+  - Inizia con minuscola
+  - Nessun punto finale
+```
+
+**Esempi completi:**
+```bash
+feat(university-books-mobile): add responsive navigation component
+fix(university-books-mobile): resolve token refresh on session timeout
+refactor(backend-api-client): extract error parsing to utility functions
+docs(university-books-mobile): add deployment guide for AWS Amplify
+test(university-books-mobile): add unit tests for auth service
+chore(university-books-mobile): update dependencies to latest versions
+style(university-books-mobile): format code with prettier
+perf(university-books-mobile): optimize bundle size with lazy loading
+```
+
+**Commit con body e footer (per breaking changes):**
+```bash
+git commit -m "feat(university-books-mobile): migrate to Angular 19 standalone components
+
+BREAKING CHANGE: All components now use standalone API.
+Modules have been removed. Update imports accordingly.
+
+Closes #123"
+```
+
+**Motivo:**
+- Compatibile con Semantic Versioning (SemVer)
+- Generazione automatica changelog
+- Facile identificare tipo di modifica e progetto impattato
+- Standard riconosciuto nell'industria
+- Tool automation friendly (commitlint, semantic-release)
+- Migliore tracciabilità in monorepo con multiple progetti
+
 #### Observable Streams (`$` suffix)
 ```typescript
 // ✅ CORRETTO - Observable con suffisso $
