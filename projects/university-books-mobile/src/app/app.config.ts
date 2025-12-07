@@ -11,6 +11,7 @@
 import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { Amplify } from 'aws-amplify';
 
 import { routes } from './app.routes';
@@ -46,6 +47,7 @@ try {
  * - Zone.js change detection
  * - Router
  * - HTTP Client
+ * - Animations
  * - API Client with JWT authentication
  */
 export const appConfig: ApplicationConfig = {
@@ -58,6 +60,9 @@ export const appConfig: ApplicationConfig = {
 
     // HTTP Client (for generated API client)
     provideHttpClient(),
+
+    // Animations (for Angular animations like slide-in, fade-in, etc.)
+    provideAnimations(),
 
     // Configure API Client on app initialization
     {
