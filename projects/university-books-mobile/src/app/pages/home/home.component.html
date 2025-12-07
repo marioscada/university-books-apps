@@ -1,12 +1,21 @@
 <div class="home-container">
+  <!-- Library Icon Button (Top Right) -->
+  <button
+    class="library-btn"
+    type="button"
+    aria-label="University Books"
+  >
+    <ion-icon
+      name="library-outline"
+      class="library-icon"
+    ></ion-icon>
+  </button>
+
   <div class="home-content">
     <header class="home-header">
-      <div class="header-logo">
-        <ion-icon name="library-outline" class="logo-icon"></ion-icon>
-        <div class="logo-content">
-          <h1 class="logo-title">University Books</h1>
-          <p class="logo-subtitle">Create & Share</p>
-        </div>
+      <div class="header-title">
+        <h1 class="title">University Books</h1>
+        <p class="subtitle">Create & Share</p>
       </div>
       <p class="home-greeting">Hello, {{ userName() }}!</p>
     </header>

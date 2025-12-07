@@ -171,6 +171,53 @@ map(result => result.data)
 
 **Regola ESLint:** `"arrow-parens": ["error", "always"]`
 
+#### HTML Attributes Formatting (un attributo per riga, ordine standard)
+
+**OBBLIGATORIO:** Gli attributi HTML devono essere scritti uno per riga e seguire l'ordine standard internazionale:
+
+1. Structural directives (@if, @for, *ngIf, *ngFor, [@animations])
+2. class
+3. id, name
+4. type, role, tabindex
+5. Data bindings ([property], [attr.*])
+6. Event handlers ((click), (keydown), etc.)
+
+```html
+<!-- ✅ CORRETTO - Un attributo per riga, ordine corretto -->
+<button
+  [@fadeIn]
+  class="hamburger-btn"
+  type="button"
+  [attr.aria-expanded]="isMobileMenuOpen()"
+  [attr.aria-label]="isMobileMenuOpen() ? 'Close menu' : 'Open menu'"
+  (click)="toggleMobileMenu()"
+>
+  <ion-icon
+    [name]="isMobileMenuOpen() ? 'close-outline' : 'menu-outline'"
+    class="hamburger-icon"
+  ></ion-icon>
+</button>
+
+@if (item.badge && item.badge > 0) {
+  <span
+    class="nav-badge"
+    [attr.aria-label]="item.badge + ' notifications'"
+  >
+    {{ item.badge }}
+  </span>
+}
+
+<!-- ❌ SBAGLIATO - Tutto su una riga o ordine errato -->
+<button class="hamburger-btn" (click)="toggleMobileMenu()" type="button" [attr.aria-label]="'Menu'">
+<ion-icon [name]="'menu'" class="icon"></ion-icon>
+```
+
+**Motivo:**
+- Migliora la leggibilità del codice nei code review
+- Facilita il merge dei conflitti Git
+- Segue gli standard internazionali HTML/Angular
+- Rende più semplice individuare binding ed eventi
+
 ### 2. Access Modifiers & Immutability
 
 #### `readonly` per campi immutabili

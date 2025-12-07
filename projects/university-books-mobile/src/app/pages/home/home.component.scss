@@ -1,5 +1,51 @@
 @use '../../../styles/variables' as vars;
 
+// =============================================================================
+// Library Icon Button (Top Right)
+// =============================================================================
+
+.library-btn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: vars.$z-index-fixed + 1;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: vars.$surface-2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all vars.$transition-speed-base ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  &:hover {
+    background: vars.$surface-3;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .library-icon {
+    font-size: 1.5rem;
+    color: vars.$accent-blue;
+    background: linear-gradient(135deg, vars.$accent-blue 0%, vars.$primary-dark 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+// =============================================================================
+// Home Container
+// =============================================================================
+
 .home-container {
   min-height: 100vh;
   background: vars.$background-color;
@@ -16,32 +62,15 @@
   color: vars.$text-color;
   margin-bottom: 3rem;
 
-  .header-logo {
+  .header-title {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 1rem;
+    gap: 0.5rem;
     margin-bottom: 1.5rem;
 
-    .logo-icon {
-      font-size: 3rem;
-      color: vars.$accent-blue;
-      background: linear-gradient(135deg, vars.$accent-blue 0%, vars.$primary-dark 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      flex-shrink: 0;
-    }
-
-    .logo-content {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      text-align: left;
-    }
-
-    .logo-title {
-      font-size: 2rem;
+    .title {
+      font-size: 2.5rem;
       font-weight: 700;
       margin: 0;
       color: #B3B9C4;
@@ -49,8 +78,8 @@
       line-height: 1.2;
     }
 
-    .logo-subtitle {
-      font-size: 1rem;
+    .subtitle {
+      font-size: 1.25rem;
       font-weight: 500;
       margin: 0;
       color: vars.$text-color-secondary;

@@ -2,10 +2,10 @@
 @if (showNavigation() && isMobile()) {
   <button
     class="hamburger-btn"
-    (click)="toggleMobileMenu()"
+    type="button"
     [attr.aria-expanded]="isMobileMenuOpen()"
     [attr.aria-label]="isMobileMenuOpen() ? 'Close menu' : 'Open menu'"
-    type="button"
+    (click)="toggleMobileMenu()"
   >
     <ion-icon
       [name]="isMobileMenuOpen() ? 'close-outline' : 'menu-outline'"
@@ -17,31 +17,34 @@
 <!-- Backdrop Overlay (Mobile Only) -->
 @if (showNavigation() && isMobile() && isMobileMenuOpen()) {
   <div
+    [@fadeIn]
     class="backdrop"
     role="button"
     tabindex="0"
+    [attr.aria-label]="'Close navigation menu'"
     (click)="closeMobileMenu()"
     (keydown.enter)="closeMobileMenu()"
     (keydown.escape)="closeMobileMenu()"
-    [attr.aria-label]="'Close navigation menu'"
-    [@fadeIn]
   ></div>
 }
 
 <!-- Sidebar Navigation -->
 @if (showSidebar()) {
   <nav
+    [@slideIn]
     class="sidebar"
     [class.sidebar-mobile]="isMobile()"
     [class.sidebar-tablet]="isTablet()"
     [class.sidebar-desktop]="isDesktop()"
     [attr.aria-label]="'Main navigation'"
-    [@slideIn]
   >
     <!-- Navigation Header -->
     <div class="nav-header">
       <div class="nav-logo">
-        <ion-icon name="library-outline" class="logo-icon"></ion-icon>
+        <ion-icon
+          name="library-outline"
+          class="logo-icon"
+        ></ion-icon>
         <div class="logo-content">
           <span class="logo-title">University Books</span>
           <span class="logo-subtitle">Create & Share</span>
@@ -57,8 +60,8 @@
             [routerLink]="item.route"
             class="nav-link"
             [class.nav-link-active]="isActive(item)"
-            (click)="navigateTo(item)"
             [attr.aria-current]="isActive(item) ? 'page' : null"
+            (click)="navigateTo(item)"
           >
             <!-- Icon -->
             <ion-icon
@@ -71,7 +74,10 @@
 
             <!-- Badge (if present) -->
             @if (item.badge && item.badge > 0) {
-              <span class="nav-badge" [attr.aria-label]="item.badge + ' notifications'">
+              <span
+                class="nav-badge"
+                [attr.aria-label]="item.badge + ' notifications'"
+              >
                 {{ item.badge }}
               </span>
             }
@@ -84,7 +90,10 @@
     <div class="nav-footer">
       <div class="nav-divider"></div>
       <div class="nav-user-info">
-        <ion-icon name="person-circle" class="user-avatar"></ion-icon>
+        <ion-icon
+          name="person-circle"
+          class="user-avatar"
+        ></ion-icon>
         @if (!isMobile()) {
           <div class="user-details">
             <span class="user-name">User</span>
