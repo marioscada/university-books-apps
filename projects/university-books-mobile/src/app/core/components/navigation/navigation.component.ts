@@ -91,7 +91,7 @@ export class NavigationComponent {
 
   // Current active route as Observable stream
   private readonly activeRoute$ = this.router.events.pipe(
-    filter(event => event instanceof NavigationEnd),
+    filter((event) => event instanceof NavigationEnd),
     map(() => this.router.url)
   );
 
@@ -130,7 +130,7 @@ export class NavigationComponent {
    * Toggle mobile menu
    */
   public toggleMobileMenu(): void {
-    this.isMobileMenuOpen.update(isOpen => !isOpen);
+    this.isMobileMenuOpen.update((isOpen) => !isOpen);
   }
 
   /**

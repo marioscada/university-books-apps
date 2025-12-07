@@ -28,7 +28,7 @@ export class LoginComponent {
   public readonly loginState$ = this.submitTrigger$.pipe(
     switchMap(({ email, password }) =>
       this.authService.signIn$(email, password).pipe(
-        map(result => ({
+        map((result) => ({
           loading: false,
           error: null as string | null,
           success: result.isSignedIn

@@ -10,12 +10,12 @@ export const routes: Routes = [
   },
   {
     path: 'auth',
-    loadChildren: () => import('./auth/auth.routes').then(m => m.authRoutes),
+    loadChildren: () => import('./auth/auth.routes').then((m) => m.authRoutes),
     canActivate: [guestGuard]
   },
   {
     path: 'home',
-    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent),
+    loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
     canActivate: [authGuard],
     title: 'Home - University Books'
   }

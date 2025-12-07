@@ -39,6 +39,7 @@ module.exports = defineConfig([
           caughtErrorsIgnorePattern: "^_",
         },
       ],
+      "arrow-parens": ["error", "always"],
     },
   },
   {

@@ -61,7 +61,7 @@ export class ResponsiveService {
     IONIC_BREAKPOINTS.lg,
     IONIC_BREAKPOINTS.xl,
   ]).pipe(
-    map(result => {
+    map((result) => {
       if (result.breakpoints[IONIC_BREAKPOINTS.xl]) return 'xl';
       if (result.breakpoints[IONIC_BREAKPOINTS.lg]) return 'lg';
       if (result.breakpoints[IONIC_BREAKPOINTS.md]) return 'md';
