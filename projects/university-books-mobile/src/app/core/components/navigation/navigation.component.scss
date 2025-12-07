@@ -33,8 +33,82 @@
   }
 
   .hamburger-icon {
-    font-size: 1.5rem;
+    font-size: 2rem; // 32px
     color: vars.$text-color;
+  }
+}
+
+// =============================================================================
+// Header Actions (Search + Avatar buttons)
+// =============================================================================
+
+.header-actions {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: vars.$z-index-fixed + 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.search-header-btn {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: vars.$surface-2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all vars.$transition-speed-base ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  &:hover {
+    background: vars.$surface-3;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .search-icon {
+    font-size: 2rem; // 32px
+    color: vars.$text-color;
+  }
+}
+
+.avatar-header-btn {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: vars.$surface-2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%; // Circular like GitHub
+  cursor: pointer;
+  transition: all vars.$transition-speed-base ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  &:hover {
+    background: vars.$surface-3;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  &:active {
+    transform: scale(1);
+  }
+
+  .avatar-icon {
+    font-size: 2rem;
+    color: vars.$text-color-secondary;
   }
 }
 
@@ -50,7 +124,6 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.7);
   z-index: vars.$z-index-modal-backdrop;
-  backdrop-filter: blur(4px);
 }
 
 // =============================================================================
@@ -90,22 +163,20 @@
     }
   }
 
-  // Mobile styles (xs, sm)
-  &.sidebar-mobile {
+  // Always use modal z-index (hamburger menu on all screen sizes)
+  &.sidebar-mobile,
+  &.sidebar-tablet,
+  &.sidebar-desktop {
     width: 280px;
     z-index: vars.$z-index-modal;
   }
 
-  // Tablet styles (md, lg)
-  &.sidebar-tablet {
-    width: 240px;
-    z-index: vars.$z-index-sticky;
-  }
-
-  // Desktop styles (xl)
-  &.sidebar-desktop {
-    width: 280px;
-    z-index: vars.$z-index-sticky;
+  // Mobile optimizations
+  &.sidebar-mobile {
+    @media (max-width: vars.$breakpoint-sm - 1) {
+      width: 100%;
+      max-width: 320px;
+    }
   }
 }
 
@@ -213,7 +284,7 @@
 }
 
 .nav-icon {
-  font-size: 1.5rem;
+  font-size: 1rem; // 16px
   color: vars.$text-color-secondary;
   transition: all vars.$transition-speed-fast ease;
   flex-shrink: 0;
@@ -259,10 +330,13 @@
   padding: 0.75rem;
   border-radius: 12px;
   transition: all vars.$transition-speed-fast ease;
-  cursor: pointer;
 
-  &:hover {
-    background: vars.$surface-2;
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: vars.$surface-2;
+    }
   }
 
   .user-avatar {
@@ -287,18 +361,47 @@
   }
 }
 
+// Mobile user section (avatar + logout)
+.nav-user-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: vars.$surface-2;
+  color: vars.$text-color;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all vars.$transition-speed-base ease;
+
+  &:hover {
+    background: vars.$surface-3;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .logout-icon {
+    font-size: 1.125rem;
+  }
+}
+
 // =============================================================================
 // Responsive Adjustments
 // =============================================================================
 
-// Tablet (md, lg)
-@media (min-width: vars.$breakpoint-md) {
-  .hamburger-btn {
-    display: none;
-  }
-}
+// Note: Hamburger button is always visible (GitHub style)
+// Sidebar always uses modal z-index and consistent width
 
-// Desktop (xl)
+// Desktop font size adjustments
 @media (min-width: vars.$breakpoint-xl) {
   .sidebar {
     &.sidebar-desktop {
@@ -309,16 +412,6 @@
       .nav-label {
         font-size: 1rem;
       }
-    }
-  }
-}
-
-// Mobile optimizations
-@media (max-width: vars.$breakpoint-sm - 1) {
-  .sidebar {
-    &.sidebar-mobile {
-      width: 100%;
-      max-width: 320px;
     }
   }
 }

@@ -1,8 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
 
-import { ResponsiveService } from '../../core/services/responsive.service';
+interface DashboardCard {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  route: string;
+  badge?: number;
+}
 
 @Component({
   selector: 'app-home',
@@ -12,8 +20,61 @@ import { ResponsiveService } from '../../core/services/responsive.service';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  private readonly responsive = inject(ResponsiveService);
+  private readonly router = inject(Router);
 
-  // Responsive signals
-  public readonly isMobile = this.responsive.isMobile;
+  /**
+   * Dashboard cards matching navigation menu items
+   */
+  public readonly dashboardCards: DashboardCard[] = [
+    {
+      id: 'search',
+      title: 'Search',
+      description: 'Find books, chapters, and content quickly',
+      icon: 'search',
+      route: '/search'
+    },
+    {
+      id: 'my-books',
+      title: 'My Books',
+      description: 'View and manage your book projects',
+      icon: 'book',
+      route: '/books',
+      badge: 3
+    },
+    {
+      id: 'ai-studio',
+      title: 'AI Studio',
+      description: 'Generate content with AI assistance',
+      icon: 'bulb',
+      route: '/ai-studio'
+    },
+    {
+      id: 'templates',
+      title: 'Templates',
+      description: 'Start from pre-built book templates',
+      icon: 'document-text',
+      route: '/templates'
+    },
+    {
+      id: 'library',
+      title: 'Library',
+      description: 'Access reference materials and research',
+      icon: 'library',
+      route: '/library'
+    },
+    {
+      id: 'settings',
+      title: 'Settings',
+      description: 'Manage your account and preferences',
+      icon: 'settings',
+      route: '/settings'
+    }
+  ];
+
+  /**
+   * Navigate to a specific route
+   */
+  public navigateTo(route: string): void {
+    this.router.navigate([route]);
+  }
 }

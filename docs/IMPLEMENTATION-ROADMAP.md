@@ -1678,51 +1678,172 @@ src/app/features/home/
 
 ---
 
-### Phase 4: UI Implementation - Core App Features 🟡 TODO
+### Phase 4: Navigation & Core App Features 🟡 IN PROGRESS
 
-#### 4.1 Dashboard/Home
-- [ ] Creare `features/home/` module
-- [ ] Dashboard component con overview
-- [ ] Navigation menu
-- [ ] User profile display
+#### 4.1 Navigation Menu (basato su ricerca best practices AI apps) ✅
 
-#### 4.2 Documents Feature
-- [ ] Creare `features/documents/` module
-- [ ] `DocumentListComponent`
-  - [ ] Lista documenti con filtering/sorting
-  - [ ] Paginazione
-  - [ ] Search
-- [ ] `DocumentUploadComponent`
-  - [ ] File upload con drag & drop
-  - [ ] Progress indicator
-  - [ ] Upload to S3 presigned URL
-- [ ] `DocumentDetailComponent`
-  - [ ] View document metadata
-  - [ ] Download/Delete actions
+**Struttura Menu Implementata** (MVP - 6 voci principali):
 
-**File da creare:**
 ```
-src/app/features/documents/
-├── list/
-│   └── document-list.component.ts
-├── upload/
-│   └── document-upload.component.ts
-├── detail/
-│   └── document-detail.component.ts
-└── documents.routes.ts
+📍 NAVIGATION MENU (Left Sidebar)
+├─ 🔍 Search          (top position, sempre visibile, cmd/ctrl+K shortcut)
+├─ 🏠 Dashboard       (overview, quick actions, recent books, AI suggestions)
+├─ 📚 My Books        (lista/griglia libri, filtri, sorting, azioni CRUD)
+├─ 💡 AI Studio       (AI generation tools: outline, chapter, rewrite, research, chat)
+├─ 📄 Templates       (libreria template: Academic, Technical, Creative)
+└─ 📖 Library         (reference materials: PDFs, links, notes, images)
 ```
 
-#### 4.3 Business Services
-- [ ] Creare `DocumentService` in `core/services/`
-  - [ ] Metodi: `getAll()`, `upload()`, `delete()`
+**Ricerca Best Practices Completata:**
+- ✅ Analizzati: Notion AI, Jasper AI, Sudowrite, Scrivener, Canva Docs, ChatGPT, Copy.ai, Writesonic
+- ✅ Pattern identificati: Search top priority, Create as primary CTA, Project-based organization
+- ✅ Naming conventions: "My Books" > "Projects", "AI Studio" > "Generate", "Templates" standard
+- ✅ Rimossi: Profile, Settings (spostati nel menu destro avatar dropdown)
+
+**Cosa Viene Visualizzato in Ogni Vista:**
+
+**🔍 Search** (Global - Always Visible):
+- Barra ricerca globale con risultati in tempo reale
+- Filtri: Books, Chapters, Templates, Library items
+- AI-powered semantic search
+- Recent searches history
+- Keyboard shortcut: cmd/ctrl + K
+
+**🏠 Dashboard**:
+- Quick Actions: "Create New Book", "Browse Templates" (primary CTAs)
+- Recent Books: Ultimi 3-5 libri aperti (cards con title, cover, word count, last edited)
+- Progress Overview: Word counts, completion percentages per libro
+- AI Suggestions: Template consigliati basati su attività, next steps suggeriti
+- Activity Feed: Recent edits, collaborations, AI generations
+- Statistics Cards: Total books, words written (today/week/month), books published
+
+**📚 My Books**:
+- Lista/Griglia: Tutti i libri creati dall'utente
+- Card per libro: Title, cover thumbnail, word count, last edited date, status badge (Draft/Published)
+- Azioni (hover/menu): Open, Edit, Delete, Duplicate, Export (PDF/DOCX/LaTeX)
+- Filtri: Status (All/Draft/Published), Date range, Author (per collaborative)
+- Sorting: Recent, Alphabetical, Word count, Creation date
+- Search bar locale: Ricerca solo nei titoli/contenuti libri
+- Empty state: Quando nessun libro presente (CTA "Create Your First Book")
+- Pagination: Per liste lunghe
+
+**💡 AI Studio** (AI Generation Workspace):
+- **Tabs/Sections**:
+  1. **Generate Outline**: AI-assisted book structure creation (input: topic, output: TOC)
+  2. **Generate Chapter**: Write complete chapter with AI (input: title + context)
+  3. **Expand/Rewrite**: Improve existing text (input: text, output: enhanced version)
+  4. **Research Assistant**: Find sources, facts, citations (AI web search integration)
+  5. **Chat with AI**: Conversational assistance (brainstorming, questions)
+- Input/Output Panels: Split view (prompt left, result right)
+- Generation History: Lista generazioni precedenti (riutilizzabili)
+- Save to Book: Button per salvare output in libro esistente o nuovo
+- Token usage indicator: Show API usage
+
+**📄 Templates** (Pre-built Book Structures):
+- **Categorie**:
+  - **Academic**: Textbook, Thesis, Dissertation, Research Paper, Course Notes, Lab Report
+  - **Technical**: User Manual, API Documentation, Tutorial, How-to Guide, Technical Spec
+  - **Creative**: Novel Outline, Short Story, Essay Structure, Biography Template, Memoir
+- Card per template: Preview image, description, structure outline (chapters included), estimated length
+- Azione primaria: "Use Template" → Creates new book pre-populated with structure
+- Filtering: Per categoria, difficulty, length
+- Search templates: Ricerca per keyword
+- Template preview: Modal con full structure before using
+- Community templates (future): User-contributed templates
+
+**📖 Library** (Reference Materials Repository):
+- **Content Types**:
+  - **PDFs**: Research papers, articles, books uploaded
+  - **Web Links**: Bookmarked resources with auto-preview
+  - **Notes**: User-created notes and highlights
+  - **Images/Diagrams**: Visual references for books
+- Organizzazione: Folders (nested), tags (multi-select), collections (smart groups)
+- Azioni: Upload new, tag multiple, search full-text, link to books (references)
+- Preview panel: Right panel shows content preview
+- Export/Download: Batch download, export annotations
+- AI Citation Generator: Auto-generate citations from PDFs
+- OCR support: Extract text from images
+
+**File da Implementare:**
+```
+src/app/core/components/navigation/
+├── navigation.component.ts       ✅ AGGIORNATO
+├── navigation.component.html     ✅ AGGIORNATO
+├── navigation.component.scss     ✅ AGGIORNATO
+└── navigation.model.ts           ✅ AGGIORNATO (6 items MVP)
+
+src/app/pages/
+├── search/                       🔴 TODO
+│   ├── search.component.ts
+│   ├── search.component.html
+│   └── search.component.scss
+├── dashboard/                    🔴 TODO (già esiste home/, rinominare?)
+│   ├── dashboard.component.ts
+│   ├── dashboard.component.html
+│   └── dashboard.component.scss
+├── books/                        🔴 TODO
+│   ├── book-list.component.ts
+│   ├── book-card.component.ts
+│   ├── book-detail.component.ts
+│   └── books.routes.ts
+├── ai-studio/                    🔴 TODO
+│   ├── ai-studio.component.ts
+│   ├── outline-generator.component.ts
+│   ├── chapter-generator.component.ts
+│   ├── text-improver.component.ts
+│   ├── research-assistant.component.ts
+│   ├── ai-chat.component.ts
+│   └── ai-studio.routes.ts
+├── templates/                    🔴 TODO
+│   ├── template-library.component.ts
+│   ├── template-card.component.ts
+│   ├── template-preview-modal.component.ts
+│   └── templates.routes.ts
+└── library/                      🔴 TODO
+    ├── library.component.ts
+    ├── library-upload.component.ts
+    ├── library-item-card.component.ts
+    ├── library-preview-panel.component.ts
+    └── library.routes.ts
+```
+
+#### 4.2 Business Services
+- [ ] Creare services in `core/services/`
+  - [ ] `BookService` - CRUD books, chapters management
+  - [ ] `AIService` - AI generation API calls (outline, chapter, rewrite)
+  - [ ] `TemplateService` - Load and manage templates
+  - [ ] `LibraryService` - Reference materials management
+  - [ ] `SearchService` - Global search across all content
   - [ ] Trasformazione API Types → Domain Models
   - [ ] Error handling
-  - [ ] Caching (optional)
+  - [ ] Caching (IndexedDB for offline)
 
 **File da creare:**
 ```
 src/app/core/services/
-└── document.service.ts
+├── book.service.ts
+├── ai.service.ts
+├── template.service.ts
+├── library.service.ts
+└── search.service.ts
+```
+
+#### 4.3 Domain Models
+- [ ] Creare models in `core/models/`
+  - [ ] `Book` model (title, chapters, metadata, status, wordCount)
+  - [ ] `Chapter` model (title, content, order, wordCount)
+  - [ ] `Template` model (name, category, structure, chapters)
+  - [ ] `LibraryItem` model (type, content, tags, metadata)
+  - [ ] `AIGeneration` model (prompt, result, timestamp, tokens)
+
+**File da creare:**
+```
+src/app/core/models/
+├── book.model.ts
+├── chapter.model.ts
+├── template.model.ts
+├── library-item.model.ts
+└── ai-generation.model.ts
 ```
 
 ---

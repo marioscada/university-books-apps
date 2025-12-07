@@ -1,10 +1,10 @@
 @use '../../../styles/variables' as vars;
 
 // =============================================================================
-// Library Icon Button (Top Right)
+// Avatar Icon Button (Top Right)
 // =============================================================================
 
-.library-btn {
+.avatar-btn {
   position: fixed;
   top: 1rem;
   right: 1rem;
@@ -32,8 +32,8 @@
     transform: translateY(0);
   }
 
-  .library-icon {
-    font-size: 1.5rem;
+  .avatar-icon {
+    font-size: 2rem;
     color: vars.$text-color-secondary;
   }
 }
@@ -100,11 +100,16 @@
   text-align: center;
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
 
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
     border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &:active {
+    transform: translateY(-2px);
   }
 
   // Gradienti e accenti per ogni card
@@ -138,15 +143,68 @@
     }
   }
 
+  &:nth-child(4) {
+    background: linear-gradient(135deg, vars.$surface-2 0%, vars.$surface-3 100%);
+
+    .feature-icon {
+      background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+      color: vars.$white;
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+    }
+  }
+
+  &:nth-child(5) {
+    background: linear-gradient(135deg, vars.$surface-2 0%, vars.$surface-3 100%);
+
+    .feature-icon {
+      background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
+      color: vars.$white;
+      box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3);
+    }
+  }
+
+  &:nth-child(6) {
+    background: linear-gradient(135deg, vars.$surface-2 0%, vars.$surface-3 100%);
+
+    .feature-icon {
+      background: linear-gradient(135deg, #64748B 0%, #475569 100%);
+      color: vars.$white;
+      box-shadow: 0 4px 16px rgba(100, 116, 139, 0.3);
+    }
+  }
+
+  .feature-icon-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
+  }
+
   .feature-icon {
     font-size: 2rem;
-    margin: 0 auto 1.5rem;
     width: 4.5rem;
     height: 4.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 16px;
+  }
+
+  .feature-badge {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    background: linear-gradient(135deg, vars.$accent-green 0%, #059669 100%);
+    color: vars.$white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: vars.$border-radius-full;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
   }
 
   h3 {
@@ -157,7 +215,7 @@
   }
 
   p {
-    margin: 0 0 1.5rem 0;
+    margin: 0;
     color: vars.$text-color-secondary;
     line-height: 1.6;
     font-size: 0.95rem;

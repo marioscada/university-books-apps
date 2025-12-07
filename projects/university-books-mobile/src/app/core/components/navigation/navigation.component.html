@@ -1,5 +1,35 @@
-<!-- Mobile Hamburger Menu Button -->
-@if (showNavigation() && isMobile()) {
+<!-- Search and Avatar Buttons (All screen sizes) -->
+@if (showNavigation()) {
+  <div class="header-actions">
+    <!-- Search Button -->
+    <button
+      class="search-header-btn"
+      type="button"
+      aria-label="Search"
+    >
+      <ion-icon
+        name="search-outline"
+        class="search-icon"
+      ></ion-icon>
+    </button>
+
+    <!-- Avatar Button -->
+    <button
+      class="avatar-header-btn"
+      type="button"
+      aria-label="Open user profile"
+      (click)="openProfileSidebar()"
+    >
+      <ion-icon
+        name="person-circle"
+        class="avatar-icon"
+      ></ion-icon>
+    </button>
+  </div>
+}
+
+<!-- Hamburger Menu Button (Always visible - GitHub style) -->
+@if (showNavigation()) {
   <button
     class="hamburger-btn"
     type="button"
@@ -14,8 +44,8 @@
   </button>
 }
 
-<!-- Backdrop Overlay (Mobile Only) -->
-@if (showNavigation() && isMobile() && isMobileMenuOpen()) {
+<!-- Backdrop Overlay (Always when menu is open) -->
+@if (showNavigation() && isMobileMenuOpen()) {
   <div
     [@fadeIn]
     class="backdrop"
@@ -84,46 +114,13 @@
           </a>
         </li>
       }
-
-      <!-- Logout Item -->
-      @if (logoutState$ | async; as logoutState) {
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            role="button"
-            tabindex="0"
-            [attr.aria-label]="logoutState.loading ? 'Signing out...' : 'Sign out of your account'"
-            (click)="onLogout()"
-            (keydown.enter)="onLogout()"
-          >
-            <!-- Icon -->
-            <ion-icon
-              name="log-out"
-              class="nav-icon"
-            ></ion-icon>
-
-            <!-- Label -->
-            @if (logoutState.loading) {
-              <span class="nav-label">Signing out...</span>
-            } @else {
-              <span class="nav-label">Sign Out</span>
-            }
-          </a>
-        </li>
-      }
     </ul>
-
-    <!-- Navigation Footer (User Avatar & Email) -->
-    <div class="nav-footer">
-      <div class="nav-user-info">
-        <ion-icon
-          name="person-circle"
-          class="user-avatar"
-        ></ion-icon>
-        <div class="user-details">
-          <span class="user-email">{{ userEmail() }}</span>
-        </div>
-      </div>
-    </div>
   </nav>
+}
+
+<!-- Profile Sidebar (All screen sizes) -->
+@if (isProfileSidebarOpen()) {
+  <app-user-profile-sidebar
+    (closeSidebar)="closeProfileSidebar()"
+  ></app-user-profile-sidebar>
 }

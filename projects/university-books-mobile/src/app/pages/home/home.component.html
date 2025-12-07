@@ -1,47 +1,32 @@
 <div class="home-container">
-  <!-- Library Icon Button (Top Right) - Only on Mobile -->
-  @if (isMobile()) {
-    <button
-      class="library-btn"
-      type="button"
-      aria-label="Books"
-    >
-      <ion-icon
-        name="library"
-        class="library-icon"
-      ></ion-icon>
-    </button>
-  }
-
   <div class="home-content">
     <header class="home-header">
       <div class="header-title">
-        <h1 class="title">Books</h1>
-        <p class="subtitle">Create & Share</p>
+        <h1 class="title">Dashboard</h1>
+        <p class="subtitle">Quick access to all features</p>
       </div>
     </header>
 
     <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">📚</div>
-        <h3>Documents</h3>
-        <p>Upload and manage your university documents</p>
-        <button class="btn-secondary" disabled>Coming Soon</button>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">👤</div>
-        <h3>Profile</h3>
-        <p>View and edit your profile information</p>
-        <button class="btn-secondary" disabled>Coming Soon</button>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon">⚙️</div>
-        <h3>Settings</h3>
-        <p>Manage your account settings</p>
-        <button class="btn-secondary" disabled>Coming Soon</button>
-      </div>
+      @for (card of dashboardCards; track card.id) {
+        <div
+          class="feature-card"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="'Navigate to ' + card.title"
+          (click)="navigateTo(card.route)"
+          (keydown.enter)="navigateTo(card.route)"
+        >
+          <div class="feature-icon-wrapper">
+            <ion-icon [name]="card.icon" class="feature-icon"></ion-icon>
+            @if (card.badge) {
+              <span class="feature-badge">{{ card.badge }}</span>
+            }
+          </div>
+          <h3>{{ card.title }}</h3>
+          <p>{{ card.description }}</p>
+        </div>
+      }
     </div>
   </div>
 </div>

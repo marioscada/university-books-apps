@@ -8,8 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { Subject, of } from 'rxjs';
-import { filter, map, switchMap, catchError, startWith, tap, shareReplay } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   trigger,
@@ -21,17 +20,17 @@ import {
 import { ResponsiveService } from '../../services/responsive.service';
 import { NAVIGATION_ITEMS, NavigationItem } from './navigation.model';
 import { AuthService } from '../../../auth/services/auth.service';
+import { UserProfileSidebarComponent } from '../user-profile-sidebar/user-profile-sidebar.component';
 
 /**
- * Adaptive Navigation Component
+ * Hamburger Navigation Component (GitHub Style)
  *
- * Single component that automatically adapts its layout based on screen size:
- * - Mobile (xs, sm): Hamburger menu with slide-out drawer
- * - Tablet (md, lg): Sidebar navigation
- * - Desktop (xl): Persistent sidebar navigation
+ * Navigation with hamburger menu on all screen sizes.
+ * The sidebar slides in from the left when the hamburger is clicked.
  *
  * Features:
- * - Reactive breakpoint detection using ResponsiveService
+ * - Hamburger menu always visible (all breakpoints)
+ * - Slide-out drawer navigation
  * - Active route highlighting
  * - Badge support for notifications
  * - Smooth animations and transitions
@@ -45,7 +44,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 @Component({
   selector: 'app-navigation',
   standalone: true,
-  imports: [CommonModule, RouterModule, IonicModule],
+  imports: [CommonModule, RouterModule, IonicModule, UserProfileSidebarComponent],
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -90,6 +89,9 @@ export class NavigationComponent {
   // Mobile menu state
   public readonly isMobileMenuOpen = signal(false);
 
+  // Profile sidebar state
+  public readonly isProfileSidebarOpen = signal(false);
+
   // Current active route as Observable stream
   private readonly activeRoute$ = this.router.events.pipe(
     filter((event) => event instanceof NavigationEnd),
@@ -114,45 +116,6 @@ export class NavigationComponent {
   });
 
   /**
-   * Logout trigger subject
-   */
-  private readonly logoutTrigger$ = new Subject<void>();
-
-  /**
-   * Logout state observable (used with async pipe)
-   */
-  public readonly logoutState$ = this.logoutTrigger$.pipe(
-    switchMap(() =>
-      this.authService.signOut$().pipe(
-        map(() => ({
-          loading: false,
-          error: null as string | null,
-          success: true
-        })),
-        tap(() => {
-          // Navigate to login and close mobile menu
-          this.router.navigate(['/auth/login']);
-          this.closeMobileMenu();
-        }),
-        catchError((error: unknown) => {
-          console.error('Logout failed:', error);
-          const errorMessage = error && typeof error === 'object' && 'message' in error
-            ? (error as { message: string }).message
-            : 'Logout failed';
-          return of({
-            loading: false,
-            error: errorMessage,
-            success: false
-          });
-        }),
-        startWith({ loading: true, error: null as string | null, success: false })
-      )
-    ),
-    startWith({ loading: false, error: null as string | null, success: false }),
-    shareReplay(1)
-  );
-
-  /**
    * Show navigation (only if authenticated)
    */
   public readonly showNavigation = computed(() => {
@@ -160,18 +123,14 @@ export class NavigationComponent {
   });
 
   /**
-   * Show sidebar based on breakpoint
-   * - Mobile: Only when menu is open
-   * - Tablet/Desktop: Always visible
+   * Show sidebar based on menu state
+   * - Always only when hamburger menu is open (GitHub style)
    */
   public readonly showSidebar = computed(() => {
     if (!this.showNavigation()) {
       return false; // Never show if not authenticated
     }
-    if (this.isMobile()) {
-      return this.isMobileMenuOpen();
-    }
-    return true; // Always show on tablet and desktop
+    return this.isMobileMenuOpen(); // Only show when menu is open
   });
 
   /**
@@ -197,19 +156,32 @@ export class NavigationComponent {
   }
 
   /**
-   * Navigate to route and close mobile menu if open
+   * Navigate to route and close menu (always)
    */
   public navigateTo(item: NavigationItem): void {
     this.router.navigate([item.route]);
-    if (this.isMobile()) {
-      this.closeMobileMenu();
-    }
+    this.closeMobileMenu(); // Always close menu after navigation
   }
 
   /**
-   * Trigger logout
+   * Open profile sidebar
    */
-  public onLogout(): void {
-    this.logoutTrigger$.next();
+  public openProfileSidebar(): void {
+    this.isProfileSidebarOpen.set(true);
+  }
+
+  /**
+   * Close profile sidebar
+   */
+  public closeProfileSidebar(): void {
+    this.isProfileSidebarOpen.set(false);
+  }
+
+  /**
+   * Handle avatar click
+   * - Always open profile sidebar (GitHub style)
+   */
+  public onAvatarClick(): void {
+    this.openProfileSidebar();
   }
 }

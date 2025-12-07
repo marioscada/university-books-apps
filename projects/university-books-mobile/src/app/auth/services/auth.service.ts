@@ -67,11 +67,17 @@ export class AuthService {
         // Try to fetch user attributes, but don't fail if it's not available
         let email: string | undefined;
         let emailVerified = false;
+        let name: string | undefined;
+        let givenName: string | undefined;
+        let familyName: string | undefined;
 
         try {
           const attributes = await fetchUserAttributes();
           email = attributes.email;
           emailVerified = attributes.email_verified === 'true';
+          name = attributes.name;
+          givenName = attributes.given_name;
+          familyName = attributes.family_name;
         } catch (attrError) {
           console.warn('Could not fetch user attributes:', attrError);
           // Use username as fallback
@@ -82,6 +88,9 @@ export class AuthService {
           username: user.username,
           email: email,
           emailVerified: emailVerified,
+          name: name,
+          givenName: givenName,
+          familyName: familyName,
         };
 
         this.setState({
@@ -133,11 +142,17 @@ export class AuthService {
           // Try to fetch user attributes, but don't fail if it's not available
           let email: string | undefined;
           let emailVerified = false;
+          let name: string | undefined;
+          let givenName: string | undefined;
+          let familyName: string | undefined;
 
           try {
             const attributes = await fetchUserAttributes();
             email = attributes.email;
             emailVerified = attributes.email_verified === 'true';
+            name = attributes.name;
+            givenName = attributes.given_name;
+            familyName = attributes.family_name;
           } catch (attrError) {
             console.warn('Could not fetch user attributes:', attrError);
             // Use username as fallback
@@ -148,6 +163,9 @@ export class AuthService {
             username: user.username,
             email: email,
             emailVerified: emailVerified,
+            name: name,
+            givenName: givenName,
+            familyName: familyName,
           };
 
           this.setState({

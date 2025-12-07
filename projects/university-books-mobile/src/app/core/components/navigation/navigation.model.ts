@@ -29,21 +29,16 @@ export interface NavigationItem {
  *
  * Main navigation menu items for the application.
  * These items are displayed in both mobile menu and desktop sidebar.
+ *
+ * Navigation structure based on best practices from leading AI content creation platforms:
+ * - Search first (primary action for finding content)
+ * - Dashboard (overview and quick actions)
+ * - My Books (main workspace for projects)
+ * - AI Studio (dedicated AI content generation workspace)
+ * - Templates (pre-built structures for different book types)
+ * - Library (reference materials and research)
  */
 export const NAVIGATION_ITEMS: readonly NavigationItem[] = [
-  {
-    id: 'home',
-    label: 'Dashboard',
-    icon: 'home',
-    route: '/home'
-  },
-  {
-    id: 'books',
-    label: 'My Books',
-    icon: 'book',
-    route: '/books',
-    badge: 3
-  },
   {
     id: 'search',
     label: 'Search',
@@ -51,21 +46,34 @@ export const NAVIGATION_ITEMS: readonly NavigationItem[] = [
     route: '/search'
   },
   {
-    id: 'favorites',
-    label: 'Favorites',
-    icon: 'heart',
-    route: '/favorites'
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: 'home',
+    route: '/home'
   },
   {
-    id: 'profile',
-    label: 'Profile',
-    icon: 'person',
-    route: '/profile'
+    id: 'my-books',
+    label: 'My Books',
+    icon: 'book',
+    route: '/books',
+    badge: 3
   },
   {
-    id: 'settings',
-    label: 'Settings',
-    icon: 'settings',
-    route: '/settings'
+    id: 'ai-studio',
+    label: 'AI Studio',
+    icon: 'bulb',
+    route: '/ai-studio'
+  },
+  {
+    id: 'templates',
+    label: 'Templates',
+    icon: 'document-text',
+    route: '/templates'
+  },
+  {
+    id: 'library',
+    label: 'Library',
+    icon: 'library',
+    route: '/library'
   }
 ] as const;

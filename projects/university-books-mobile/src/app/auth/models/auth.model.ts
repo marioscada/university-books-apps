@@ -23,6 +23,9 @@ export interface AuthUser {
   username: string;
   email?: string;
   emailVerified?: boolean;
+  name?: string;
+  givenName?: string;
+  familyName?: string;
 }
 
 export interface AuthTokens {
