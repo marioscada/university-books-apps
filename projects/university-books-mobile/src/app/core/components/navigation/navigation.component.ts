@@ -105,6 +105,14 @@ export class NavigationComponent {
   public readonly isAuthenticated = computed(() => this.authService.state().isAuthenticated);
 
   /**
+   * User email from auth state
+   */
+  public readonly userEmail = computed(() => {
+    const user = this.authService.state().user;
+    return user?.username || 'User';
+  });
+
+  /**
    * Show navigation (only if authenticated)
    */
   public readonly showNavigation = computed(() => {
