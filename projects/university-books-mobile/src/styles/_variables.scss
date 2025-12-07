@@ -6,44 +6,68 @@
 //        color: vars.$primary-color;
 
 // -----------------------------------------------------------------------------
-// Colors
+// Colors - Black Gradient Theme (Inspired by Modern Presentation Apps)
 // -----------------------------------------------------------------------------
 
-// Primary palette
-$primary-color: #3f51b5;
-$primary-light: #757de8;
-$primary-dark: #002984;
-
-// Accent palette
-$accent-color: #ff4081;
-$accent-light: #ff79b0;
-$accent-dark: #c60055;
-
-// Neutrals
-$white: #ffffff;
+// ━━━ BASE COLORS ━━━
+$white: #FFFFFF;
 $black: #000000;
-$gray-50: #fafafa;
-$gray-100: #f5f5f5;
-$gray-200: #eeeeee;
-$gray-300: #e0e0e0;
-$gray-400: #bdbdbd;
-$gray-500: #9e9e9e;
-$gray-600: #757575;
-$gray-700: #616161;
-$gray-800: #424242;
-$gray-900: #212121;
 
-// Semantic colors
-$success: #4caf50;
-$warning: #ff9800;
-$error: #f44336;
-$info: #2196f3;
+// ━━━ BLACK GRADIENT BACKGROUNDS ━━━
+// Sfumature di nero per creare profondità visiva
+$background-color: #0A0A0A;    // Nero principale (quasi puro)
+$surface-1: #141414;           // Superficie elevata livello 1
+$surface-2: #1E1E1E;           // Superficie elevata livello 2
+$surface-3: #282828;           // Superficie elevata livello 3
+$surface-color: $surface-1;    // Alias per card/surface
+$surface-variant: $surface-2;  // Variante superficie
 
-// Background & Text
-$background-color: $white;
-$background-dark: $gray-900;
-$text-color: $gray-900;
-$text-color-light: $gray-600;
+// ━━━ PRIMARY PALETTE ━━━
+$primary-color: #3B82F6;       // Blue per azioni primarie
+$primary-light: #60A5FA;       // Light blue
+$primary-dark: #2563EB;        // Dark blue
+$primary-contrast: #FFFFFF;    // Testo su primary
+
+// ━━━ ACCENT COLORS ━━━
+$accent-yellow: #FBBF24;       // Yellow accent (come nello screenshot)
+$accent-green: #10B981;        // Green accent
+$accent-blue: #3B82F6;         // Blue accent
+$accent-orange: #F97316;       // Orange accent
+
+// ━━━ ACTION COLOR ━━━
+// Per link (login, logout, forgot password)
+$accent-color: #60A5FA;        // Blue 400
+$accent-light: #93C5FD;        // Blue 300
+$accent-dark: #3B82F6;         // Blue 500
+$accent-contrast: #FFFFFF;     // Testo su accent
+
+// ━━━ GRAY SCALE ━━━
+$gray-50: #F9FAFB;             // Quasi bianco
+$gray-100: #F3F4F6;            // Molto chiaro
+$gray-200: #E5E7EB;            // Chiaro
+$gray-300: #D1D5DB;            // Medio chiaro
+$gray-400: #9CA3AF;            // Medio
+$gray-500: #6B7280;            // Medio scuro
+$gray-600: #4B5563;            // Scuro
+$gray-700: #374151;            // Più scuro
+$gray-800: #1F2937;            // Molto scuro
+$gray-900: #111827;            // Quasi nero
+
+// ━━━ SEMANTIC COLORS ━━━
+$success: #10B981;             // Green
+$warning: #FBBF24;             // Yellow
+$error: #EF4444;               // Red
+$info: #3B82F6;                // Blue
+
+// ━━━ TEXT COLORS ━━━
+// Bianco soft per icone, scritte e titoli (come "Origin" nell'immagine)
+$text-color: #E8E8E8;          // Testo principale (bianco soft, non acceso)
+$text-color-secondary: #A1A1AA; // Testo secondario (grigio chiaro)
+$text-color-light: #A1A1AA;    // Alias (backward compatibility)
+$text-color-disabled: #71717A; // Testo disabilitato
+$text-on-primary: $white;      // Testo su colore primario (può restare bianco puro)
+$text-on-accent: $white;       // Testo su accent
+$text-on-dark: #E8E8E8;        // Testo su sfondo scuro (bianco soft)
 
 // -----------------------------------------------------------------------------
 // Typography

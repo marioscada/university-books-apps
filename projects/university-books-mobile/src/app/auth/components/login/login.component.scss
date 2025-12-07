@@ -1,32 +1,35 @@
+@use '../../../../styles/variables' as vars;
+
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: vars.$background-color;
 }
 
 .login-card {
   width: 100%;
   max-width: 400px;
-  padding: 2rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  background: #1E1E1E;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .login-title {
   margin: 0 0 0.5rem 0;
   font-size: 2rem;
   font-weight: 700;
-  color: #1a202c;
+  color: #B3B9C4;
   text-align: center;
 }
 
 .login-subtitle {
   margin: 0 0 2rem 0;
-  color: #718096;
+  color: vars.$text-color-secondary;
   text-align: center;
   font-size: 0.95rem;
 }
@@ -44,35 +47,39 @@
 
   label {
     font-weight: 500;
-    color: #2d3748;
+    color: #B3B9C4;
     font-size: 0.875rem;
   }
 
   input {
     width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     font-size: 1rem;
-    transition: all 0.2s;
+    background: vars.$surface-3;
+    color: vars.$text-color;
+    transition: all 0.3s ease;
 
     &:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: vars.$primary-color;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      background: vars.$surface-variant;
     }
 
     &.error {
-      border-color: #f56565;
+      border-color: vars.$error;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
     }
 
     &::placeholder {
-      color: #a0aec0;
+      color: vars.$text-color-disabled;
     }
   }
 
   .error-message {
-    color: #f56565;
+    color: vars.$error;
     font-size: 0.875rem;
     margin-top: -0.25rem;
   }
@@ -84,31 +91,32 @@
   font-size: 0.875rem;
 
   &.alert-error {
-    background-color: #fff5f5;
-    color: #c53030;
-    border: 1px solid #feb2b2;
+    background-color: rgba(252, 165, 165, 0.1);
+    color: vars.$error;
+    border: 1px solid vars.$error;
   }
 }
 
 .btn-primary {
   width: 100%;
-  padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  padding: 1rem 1.5rem;
+  background: #282828;
+  color: #E8E8E8;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
 
   &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    background: #3A4A5A;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(58, 74, 90, 0.4);
   }
 
   &:active:not(:disabled) {
@@ -116,7 +124,7 @@
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 
@@ -124,7 +132,7 @@
     width: 16px;
     height: 16px;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
+    border-top-color: #E8E8E8;
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
   }
@@ -143,15 +151,16 @@
   p {
     margin: 0.5rem 0;
     font-size: 0.875rem;
-    color: #718096;
+    color: vars.$text-color-secondary;
   }
 
   a {
-    color: #667eea;
+    color: vars.$accent-color;
     text-decoration: none;
     font-weight: 500;
 
     &:hover {
+      color: vars.$accent-light;
       text-decoration: underline;
     }
   }
