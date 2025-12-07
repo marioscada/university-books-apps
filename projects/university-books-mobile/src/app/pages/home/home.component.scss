@@ -34,11 +34,7 @@
 
   .library-icon {
     font-size: 1.5rem;
-    color: vars.$accent-blue;
-    background: linear-gradient(135deg, vars.$accent-blue 0%, vars.$primary-dark 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: vars.$text-color-secondary;
   }
 }
 
