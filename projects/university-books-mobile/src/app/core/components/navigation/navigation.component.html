@@ -84,21 +84,45 @@
           </a>
         </li>
       }
+
+      <!-- Logout Item -->
+      @if (logoutState$ | async; as logoutState) {
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="logoutState.loading ? 'Signing out...' : 'Sign out of your account'"
+            (click)="onLogout()"
+            (keydown.enter)="onLogout()"
+          >
+            <!-- Icon -->
+            <ion-icon
+              name="log-out"
+              class="nav-icon"
+            ></ion-icon>
+
+            <!-- Label -->
+            @if (logoutState.loading) {
+              <span class="nav-label">Signing out...</span>
+            } @else {
+              <span class="nav-label">Sign Out</span>
+            }
+          </a>
+        </li>
+      }
     </ul>
 
-    <!-- Navigation Footer (optional for user info or settings) -->
+    <!-- Navigation Footer (User Avatar & Email) -->
     <div class="nav-footer">
-      <div class="nav-divider"></div>
       <div class="nav-user-info">
         <ion-icon
           name="person-circle"
           class="user-avatar"
         ></ion-icon>
-        @if (!isMobile()) {
-          <div class="user-details">
-            <span class="user-email">{{ userEmail() }}</span>
-          </div>
-        }
+        <div class="user-details">
+          <span class="user-email">{{ userEmail() }}</span>
+        </div>
       </div>
     </div>
   </nav>

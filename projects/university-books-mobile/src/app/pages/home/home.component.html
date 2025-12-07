@@ -43,20 +43,5 @@
         <button class="btn-secondary" disabled>Coming Soon</button>
       </div>
     </div>
-
-    @if (logoutState$ | async; as logoutState) {
-      <footer class="home-footer">
-        @if (logoutState.error) {
-          <div class="alert alert-error">{{ logoutState.error }}</div>
-        }
-        <button class="btn-logout" (click)="onLogout()" [disabled]="logoutState.loading">
-          @if (logoutState.loading) {
-            <span>Signing out...</span>
-          } @else {
-            <span>Sign Out</span>
-          }
-        </button>
-      </footer>
-    }
   </div>
 </div>

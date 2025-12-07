@@ -8,7 +8,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { filter, map } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
+import { filter, map, switchMap, catchError, startWith, tap, shareReplay } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   trigger,
@@ -113,6 +114,45 @@ export class NavigationComponent {
   });
 
   /**
+   * Logout trigger subject
+   */
+  private readonly logoutTrigger$ = new Subject<void>();
+
+  /**
+   * Logout state observable (used with async pipe)
+   */
+  public readonly logoutState$ = this.logoutTrigger$.pipe(
+    switchMap(() =>
+      this.authService.signOut$().pipe(
+        map(() => ({
+          loading: false,
+          error: null as string | null,
+          success: true
+        })),
+        tap(() => {
+          // Navigate to login and close mobile menu
+          this.router.navigate(['/auth/login']);
+          this.closeMobileMenu();
+        }),
+        catchError((error: unknown) => {
+          console.error('Logout failed:', error);
+          const errorMessage = error && typeof error === 'object' && 'message' in error
+            ? (error as { message: string }).message
+            : 'Logout failed';
+          return of({
+            loading: false,
+            error: errorMessage,
+            success: false
+          });
+        }),
+        startWith({ loading: true, error: null as string | null, success: false })
+      )
+    ),
+    startWith({ loading: false, error: null as string | null, success: false }),
+    shareReplay(1)
+  );
+
+  /**
    * Show navigation (only if authenticated)
    */
   public readonly showNavigation = computed(() => {
@@ -164,5 +204,12 @@ export class NavigationComponent {
     if (this.isMobile()) {
       this.closeMobileMenu();
     }
+  }
+
+  /**
+   * Trigger logout
+   */
+  public onLogout(): void {
+    this.logoutTrigger$.next();
   }
 }
