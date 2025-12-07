@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, of } from 'rxjs';
@@ -24,11 +24,6 @@ export class HomeComponent {
 
   // Responsive signals
   public readonly isMobile = this.responsive.isMobile;
-
-  public readonly userName = computed(() => {
-    const user = this.authState().user;
-    return user?.username || 'User';
-  });
 
   // ✅ Subject per trigger del logout (no subscribe nel .ts)
   private readonly logoutTrigger$ = new Subject<void>();
