@@ -1,0 +1,37 @@
+@use '../styles/variables' as vars;
+
+// =============================================================================
+// App Root Layout
+// =============================================================================
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: vars.$background-color;
+  color: vars.$text-color;
+}
+
+// =============================================================================
+// Main Content Area
+// =============================================================================
+
+.app-main {
+  min-height: 100vh;
+  background: vars.$background-color;
+  transition: margin-left vars.$transition-speed-base ease;
+
+  // Mobile (xs, sm): No margin, navigation overlays
+  @media (max-width: vars.$breakpoint-md - 1) {
+    margin-left: 0;
+  }
+
+  // Tablet (md, lg): Sidebar is 240px wide
+  @media (min-width: vars.$breakpoint-md) and (max-width: vars.$breakpoint-xl - 1) {
+    margin-left: 240px;
+  }
+
+  // Desktop (xl): Sidebar is 280px wide
+  @media (min-width: vars.$breakpoint-xl) {
+    margin-left: 280px;
+  }
+}

@@ -1,0 +1,327 @@
+@use '../../../../styles/variables' as vars;
+
+// =============================================================================
+// Mobile Hamburger Button
+// =============================================================================
+
+.hamburger-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: vars.$z-index-fixed + 1;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: vars.$surface-2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all vars.$transition-speed-base ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  &:hover {
+    background: vars.$surface-3;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .hamburger-icon {
+    font-size: 1.5rem;
+    color: vars.$text-color;
+  }
+}
+
+// =============================================================================
+// Backdrop Overlay (Mobile Only)
+// =============================================================================
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: vars.$z-index-modal-backdrop;
+  backdrop-filter: blur(4px);
+}
+
+// =============================================================================
+// Sidebar Navigation
+// =============================================================================
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background: vars.$surface-1;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 2px 0 24px rgba(0, 0, 0, 0.4);
+  z-index: vars.$z-index-modal;
+  transition: all vars.$transition-speed-base ease;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: vars.$surface-1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: vars.$surface-3;
+    border-radius: 3px;
+
+    &:hover {
+      background: vars.$gray-600;
+    }
+  }
+
+  // Mobile styles (xs, sm)
+  &.sidebar-mobile {
+    width: 280px;
+    z-index: vars.$z-index-modal;
+  }
+
+  // Tablet styles (md, lg)
+  &.sidebar-tablet {
+    width: 240px;
+    z-index: vars.$z-index-sticky;
+  }
+
+  // Desktop styles (xl)
+  &.sidebar-desktop {
+    width: 280px;
+    z-index: vars.$z-index-sticky;
+  }
+}
+
+// =============================================================================
+// Navigation Header
+// =============================================================================
+
+.nav-header {
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+
+  .logo-icon {
+    font-size: 2rem;
+    color: vars.$accent-blue;
+    background: linear-gradient(135deg, vars.$accent-blue 0%, vars.$primary-dark 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #B3B9C4;
+    letter-spacing: -0.02em;
+  }
+}
+
+// =============================================================================
+// Navigation List
+// =============================================================================
+
+.nav-list {
+  list-style: none;
+  padding: 1rem 0.75rem;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nav-item {
+  margin: 0;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  color: vars.$text-color-secondary;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all vars.$transition-speed-fast ease;
+  cursor: pointer;
+  position: relative;
+  font-weight: 500;
+
+  &:hover {
+    background: vars.$surface-2;
+    color: vars.$text-color;
+    transform: translateX(4px);
+  }
+
+  &:active {
+    transform: translateX(2px);
+  }
+
+  // Active state
+  &.nav-link-active {
+    background: linear-gradient(135deg, vars.$surface-2 0%, vars.$surface-3 100%);
+    color: vars.$text-color;
+    border-left: 3px solid vars.$accent-blue;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+
+    .nav-icon {
+      color: vars.$accent-blue;
+      filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.4));
+    }
+
+    .nav-label {
+      font-weight: 600;
+    }
+  }
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+  color: vars.$text-color-secondary;
+  transition: all vars.$transition-speed-fast ease;
+  flex-shrink: 0;
+}
+
+.nav-label {
+  font-size: 0.95rem;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  background: linear-gradient(135deg, vars.$error 0%, #DC2626 100%);
+  color: vars.$white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: vars.$border-radius-full;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+// =============================================================================
+// Navigation Footer
+// =============================================================================
+
+.nav-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: auto;
+}
+
+.nav-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 1rem;
+}
+
+.nav-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  transition: all vars.$transition-speed-fast ease;
+  cursor: pointer;
+
+  &:hover {
+    background: vars.$surface-2;
+  }
+
+  .user-avatar {
+    font-size: 2rem;
+    color: vars.$text-color-secondary;
+    flex-shrink: 0;
+  }
+
+  .user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    overflow: hidden;
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: vars.$text-color;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      color: vars.$text-color-secondary;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+// =============================================================================
+// Responsive Adjustments
+// =============================================================================
+
+// Tablet (md, lg)
+@media (min-width: vars.$breakpoint-md) {
+  .hamburger-btn {
+    display: none;
+  }
+}
+
+// Desktop (xl)
+@media (min-width: vars.$breakpoint-xl) {
+  .sidebar {
+    &.sidebar-desktop {
+      .nav-link {
+        padding: 1rem 1.25rem;
+      }
+
+      .nav-label {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// Mobile optimizations
+@media (max-width: vars.$breakpoint-sm - 1) {
+  .sidebar {
+    &.sidebar-mobile {
+      width: 100%;
+      max-width: 320px;
+    }
+  }
+}

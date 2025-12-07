@@ -15,6 +15,9 @@
 // Domain Models (business logic)
 export * from './models';
 
+// Services
+export * from './services/responsive.service';
+
 // Configuration
 export * from './config/amplify.config';
 export * from './config/api-client.config';

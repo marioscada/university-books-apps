@@ -1,0 +1,89 @@
+<!-- Mobile Hamburger Menu Button -->
+@if (isMobile()) {
+  <button
+    class="hamburger-btn"
+    (click)="toggleMobileMenu()"
+    [attr.aria-expanded]="isMobileMenuOpen()"
+    [attr.aria-label]="isMobileMenuOpen() ? 'Close menu' : 'Open menu'"
+    type="button"
+  >
+    <ion-icon
+      [name]="isMobileMenuOpen() ? 'close' : 'menu'"
+      class="hamburger-icon"
+    ></ion-icon>
+  </button>
+}
+
+<!-- Backdrop Overlay (Mobile Only) -->
+@if (isMobile() && isMobileMenuOpen()) {
+  <div
+    class="backdrop"
+    (click)="closeMobileMenu()"
+    [@fadeIn]
+  ></div>
+}
+
+<!-- Sidebar Navigation -->
+@if (showSidebar()) {
+  <nav
+    class="sidebar"
+    [class.sidebar-mobile]="isMobile()"
+    [class.sidebar-tablet]="isTablet()"
+    [class.sidebar-desktop]="isDesktop()"
+    [attr.aria-label]="'Main navigation'"
+    [@slideIn]
+  >
+    <!-- Navigation Header -->
+    <div class="nav-header">
+      <div class="nav-logo">
+        <ion-icon name="book" class="logo-icon"></ion-icon>
+        <span class="logo-text">University Books</span>
+      </div>
+    </div>
+
+    <!-- Navigation Items -->
+    <ul class="nav-list">
+      @for (item of navigationItems; track item.id) {
+        <li class="nav-item">
+          <a
+            [routerLink]="item.route"
+            class="nav-link"
+            [class.nav-link-active]="isActive(item)"
+            (click)="navigateTo(item)"
+            [attr.aria-current]="isActive(item) ? 'page' : null"
+          >
+            <!-- Icon -->
+            <ion-icon
+              [name]="item.icon"
+              class="nav-icon"
+            ></ion-icon>
+
+            <!-- Label -->
+            <span class="nav-label">{{ item.label }}</span>
+
+            <!-- Badge (if present) -->
+            @if (item.badge && item.badge > 0) {
+              <span class="nav-badge" [attr.aria-label]="item.badge + ' notifications'">
+                {{ item.badge }}
+              </span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+
+    <!-- Navigation Footer (optional for user info or settings) -->
+    <div class="nav-footer">
+      <div class="nav-divider"></div>
+      <div class="nav-user-info">
+        <ion-icon name="person-circle" class="user-avatar"></ion-icon>
+        @if (!isMobile()) {
+          <div class="user-details">
+            <span class="user-name">User</span>
+            <span class="user-role">Student</span>
+          </div>
+        }
+      </div>
+    </div>
+  </nav>
+}
