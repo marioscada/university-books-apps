@@ -154,6 +154,23 @@ signIn(email: string, password: string): Observable<SignInOutput>
 
 **Motivo:** Il suffisso `$` rende immediatamente visibile che stai lavorando con uno stream Observable, migliorando la leggibilità del codice.
 
+#### Arrow Function Parentheses (sempre con parentesi)
+```typescript
+// ✅ CORRETTO - Sempre con parentesi attorno ai parametri
+filter((event) => event instanceof NavigationEnd)
+map((result) => result.data)
+.subscribe((user) => console.log(user))
+
+// ❌ SBAGLIATO - Senza parentesi (anche con un solo parametro)
+filter(event => event instanceof NavigationEnd)
+map(result => result.data)
+.subscribe(user => console.log(user))
+```
+
+**Motivo:** Le parentesi migliorano la consistenza del codice e facilitano l'aggiunta di parametri o type annotations senza dover riformattare.
+
+**Regola ESLint:** `"arrow-parens": ["error", "always"]`
+
 ### 2. Access Modifiers & Immutability
 
 #### `readonly` per campi immutabili
