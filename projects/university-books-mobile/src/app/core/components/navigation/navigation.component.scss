@@ -131,13 +131,29 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    flex-shrink: 0;
   }
 
-  .logo-text {
+  .logo-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .logo-title {
     font-size: 1.25rem;
     font-weight: 700;
     color: #B3B9C4;
     letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .logo-subtitle {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: vars.$text-color-secondary;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
   }
 }
 
