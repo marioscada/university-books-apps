@@ -52,24 +52,29 @@ export class ResponsiveService {
   private readonly breakpointObserver = inject(BreakpointObserver);
 
   /**
+   * Current breakpoint type as an Observable stream
+   */
+  private readonly currentBreakpoint$ = this.breakpointObserver.observe([
+    IONIC_BREAKPOINTS.xs,
+    IONIC_BREAKPOINTS.sm,
+    IONIC_BREAKPOINTS.md,
+    IONIC_BREAKPOINTS.lg,
+    IONIC_BREAKPOINTS.xl,
+  ]).pipe(
+    map(result => {
+      if (result.breakpoints[IONIC_BREAKPOINTS.xl]) return 'xl';
+      if (result.breakpoints[IONIC_BREAKPOINTS.lg]) return 'lg';
+      if (result.breakpoints[IONIC_BREAKPOINTS.md]) return 'md';
+      if (result.breakpoints[IONIC_BREAKPOINTS.sm]) return 'sm';
+      return 'xs';
+    })
+  );
+
+  /**
    * Current breakpoint type as a signal
    */
   public readonly currentBreakpoint = toSignal(
-    this.breakpointObserver.observe([
-      IONIC_BREAKPOINTS.xs,
-      IONIC_BREAKPOINTS.sm,
-      IONIC_BREAKPOINTS.md,
-      IONIC_BREAKPOINTS.lg,
-      IONIC_BREAKPOINTS.xl,
-    ]).pipe(
-      map(result => {
-        if (result.breakpoints[IONIC_BREAKPOINTS.xl]) return 'xl';
-        if (result.breakpoints[IONIC_BREAKPOINTS.lg]) return 'lg';
-        if (result.breakpoints[IONIC_BREAKPOINTS.md]) return 'md';
-        if (result.breakpoints[IONIC_BREAKPOINTS.sm]) return 'sm';
-        return 'xs';
-      })
-    ),
+    this.currentBreakpoint$,
     { initialValue: 'xs' as BreakpointType }
   );
 

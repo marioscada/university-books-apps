@@ -87,12 +87,15 @@ export class NavigationComponent {
   // Mobile menu state
   public readonly isMobileMenuOpen = signal(false);
 
-  // Current active route
+  // Current active route as Observable stream
+  private readonly activeRoute$ = this.router.events.pipe(
+    filter(event => event instanceof NavigationEnd),
+    map(() => this.router.url)
+  );
+
+  // Current active route as signal
   public readonly activeRoute = toSignal(
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      map(() => this.router.url)
-    ),
+    this.activeRoute$,
     { initialValue: this.router.url }
   );
 
