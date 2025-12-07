@@ -109,7 +109,7 @@ export class NavigationComponent {
    */
   public readonly userEmail = computed(() => {
     const user = this.authService.state().user;
-    return user?.username || 'User';
+    return user?.email || user?.username || 'User';
   });
 
   /**

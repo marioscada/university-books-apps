@@ -284,21 +284,12 @@
   .user-details {
     display: flex;
     flex-direction: column;
-    gap: 0.125rem;
     overflow: hidden;
 
-    .user-name {
+    .user-email {
       font-size: 0.875rem;
-      font-weight: 600;
+      font-weight: 500;
       color: vars.$text-color;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .user-role {
-      font-size: 0.75rem;
-      color: vars.$text-color-secondary;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

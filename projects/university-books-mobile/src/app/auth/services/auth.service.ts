@@ -15,7 +15,7 @@
  */
 
 import { Injectable, signal } from '@angular/core';
-import { signIn, signOut, getCurrentUser, fetchAuthSession, SignInInput, SignInOutput } from 'aws-amplify/auth';
+import { signIn, signOut, getCurrentUser, fetchAuthSession, fetchUserAttributes, SignInInput, SignInOutput } from 'aws-amplify/auth';
 import { Observable, from, BehaviorSubject } from 'rxjs';
 import { tap, catchError, map, switchMap } from 'rxjs/operators';
 
@@ -64,10 +64,24 @@ export class AuthService {
       const session = await fetchAuthSession();
 
       if (user && session.tokens) {
+        // Try to fetch user attributes, but don't fail if it's not available
+        let email: string | undefined;
+        let emailVerified = false;
+
+        try {
+          const attributes = await fetchUserAttributes();
+          email = attributes.email;
+          emailVerified = attributes.email_verified === 'true';
+        } catch (attrError) {
+          console.warn('Could not fetch user attributes:', attrError);
+          // Use username as fallback
+        }
+
         const authUser: AuthUser = {
           userId: user.userId,
           username: user.username,
-          // Additional user attributes can be fetched if needed
+          email: email,
+          emailVerified: emailVerified,
         };
 
         this.setState({
@@ -77,7 +91,7 @@ export class AuthService {
           error: null,
         });
 
-        console.log('✅ User session restored:', authUser.username);
+        console.log('✅ User session restored:', authUser.email || authUser.username);
       }
     } catch (_error) {
       // No active session, user needs to log in
@@ -116,9 +130,24 @@ export class AuthService {
           // Get user details
           const user = await getCurrentUser();
 
+          // Try to fetch user attributes, but don't fail if it's not available
+          let email: string | undefined;
+          let emailVerified = false;
+
+          try {
+            const attributes = await fetchUserAttributes();
+            email = attributes.email;
+            emailVerified = attributes.email_verified === 'true';
+          } catch (attrError) {
+            console.warn('Could not fetch user attributes:', attrError);
+            // Use username as fallback
+          }
+
           const authUser: AuthUser = {
             userId: user.userId,
             username: user.username,
+            email: email,
+            emailVerified: emailVerified,
           };
 
           this.setState({
@@ -128,7 +157,7 @@ export class AuthService {
             error: null,
           });
 
-          console.log('✅ Sign in successful:', authUser.username);
+          console.log('✅ Sign in successful:', authUser.email || authUser.username);
         } else {
           this.setLoading(false);
         }

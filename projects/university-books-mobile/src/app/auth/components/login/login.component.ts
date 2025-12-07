@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { switchMap, map, catchError, startWith, tap, shareReplay } from 'rxjs/operators';
 
@@ -18,6 +18,7 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   public readonly loginForm: FormGroup;
 
@@ -60,6 +61,18 @@ export class LoginComponent {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]]
+    });
+
+    // Auto-redirect if already authenticated
+    effect(() => {
+      const isAuthenticated = this.authService.state().isAuthenticated;
+      const loading = this.authService.state().loading;
+
+      if (isAuthenticated && !loading) {
+        // Get return URL from query params or default to /home
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
+        this.router.navigateByUrl(returnUrl);
+      }
     });
   }
 
