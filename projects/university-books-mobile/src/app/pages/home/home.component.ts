@@ -6,6 +6,7 @@ import { switchMap, map, catchError, startWith, tap, shareReplay } from 'rxjs/op
 import { IonicModule } from '@ionic/angular';
 
 import { AuthService } from '../../auth/services/auth.service';
+import { ResponsiveService } from '../../core/services/responsive.service';
 
 @Component({
   selector: 'app-home',
@@ -17,8 +18,12 @@ import { AuthService } from '../../auth/services/auth.service';
 export class HomeComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly responsive = inject(ResponsiveService);
 
   public readonly authState = this.authService.state;
+
+  // Responsive signals
+  public readonly isMobile = this.responsive.isMobile;
 
   public readonly userName = computed(() => {
     const user = this.authState().user;

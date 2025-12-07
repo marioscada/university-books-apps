@@ -1,15 +1,17 @@
 <div class="home-container">
-  <!-- Library Icon Button (Top Right) -->
-  <button
-    class="library-btn"
-    type="button"
-    aria-label="University Books"
-  >
-    <ion-icon
-      name="library-outline"
-      class="library-icon"
-    ></ion-icon>
-  </button>
+  <!-- Library Icon Button (Top Right) - Only on Mobile -->
+  @if (isMobile()) {
+    <button
+      class="library-btn"
+      type="button"
+      aria-label="University Books"
+    >
+      <ion-icon
+        name="library-outline"
+        class="library-icon"
+      ></ion-icon>
+    </button>
+  }
 
   <div class="home-content">
     <header class="home-header">
