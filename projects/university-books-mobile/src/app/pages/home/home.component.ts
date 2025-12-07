@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { switchMap, map, catchError, startWith, tap, shareReplay } from 'rxjs/operators';
+import { IonicModule } from '@ionic/angular';
 
 import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IonicModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })

@@ -1,8 +1,14 @@
 <div class="home-container">
   <div class="home-content">
     <header class="home-header">
-      <h1 class="home-title">Welcome to University Books</h1>
-      <p class="home-subtitle">Hello, {{ userName() }}!</p>
+      <div class="header-logo">
+        <ion-icon name="library-outline" class="logo-icon"></ion-icon>
+        <div class="logo-content">
+          <h1 class="logo-title">University Books</h1>
+          <p class="logo-subtitle">Create & Share</p>
+        </div>
+      </div>
+      <p class="home-greeting">Hello, {{ userName() }}!</p>
     </header>
 
     <div class="features-grid">

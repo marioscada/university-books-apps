@@ -16,14 +16,50 @@
   color: vars.$text-color;
   margin-bottom: 3rem;
 
-  .home-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem 0;
-    color: #B3B9C4;
+  .header-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    .logo-icon {
+      font-size: 3rem;
+      color: vars.$accent-blue;
+      background: linear-gradient(135deg, vars.$accent-blue 0%, vars.$primary-dark 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      flex-shrink: 0;
+    }
+
+    .logo-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      text-align: left;
+    }
+
+    .logo-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0;
+      color: #B3B9C4;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .logo-subtitle {
+      font-size: 1rem;
+      font-weight: 500;
+      margin: 0;
+      color: vars.$text-color-secondary;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
   }
 
-  .home-subtitle {
+  .home-greeting {
     font-size: 1.25rem;
     margin: 0;
     color: vars.$text-color-secondary;
