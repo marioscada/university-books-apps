@@ -1,19 +1,34 @@
 <!-- Search and Avatar Buttons (All screen sizes) -->
 @if (showNavigation()) {
   <div class="header-actions">
-    <!-- Search Button (GitHub style) -->
-    <button
-      #searchButton
-      class="search-trigger-btn"
-      type="button"
-      aria-label="Search"
-      (click)="openSearch()"
-    >
-      <ion-icon name="search-outline" class="search-trigger-icon"></ion-icon>
-      <span class="search-trigger-text">Type</span>
-      <kbd class="search-trigger-key">/</kbd>
-      <span class="search-trigger-text">to search</span>
-    </button>
+    <!-- Search Button - Desktop (expanded with text) -->
+    @if (isDesktop()) {
+      <button
+        #searchButton
+        class="search-trigger-btn"
+        type="button"
+        aria-label="Search"
+        (click)="openSearch()"
+      >
+        <ion-icon name="search-outline" class="search-trigger-icon"></ion-icon>
+        <span class="search-trigger-text">Type</span>
+        <kbd class="search-trigger-key">/</kbd>
+        <span class="search-trigger-text">to search</span>
+      </button>
+    }
+
+    <!-- Search Button - Mobile/Tablet (icon only) -->
+    @if (isMobile() || isTablet()) {
+      <button
+        #searchButton
+        class="search-icon-btn"
+        type="button"
+        aria-label="Search"
+        (click)="openSearch()"
+      >
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+      </button>
+    }
 
     <!-- Avatar Button -->
     <button

@@ -52,6 +52,7 @@
   gap: 0.75rem;
 }
 
+// Search Button - Desktop (expanded with text)
 .search-trigger-btn {
   display: flex;
   align-items: center;
@@ -102,6 +103,37 @@
     color: vars.$text-color;
     font-family: vars.$font-family-mono;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Search Button - Mobile/Tablet (icon only)
+.search-icon-btn {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: vars.$surface-2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all vars.$transition-speed-base ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  &:hover {
+    background: vars.$surface-3;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  .search-icon {
+    font-size: 2rem;
+    color: vars.$text-color;
   }
 }
 
