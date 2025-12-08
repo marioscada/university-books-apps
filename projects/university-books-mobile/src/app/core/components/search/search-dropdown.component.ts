@@ -1,9 +1,8 @@
 import {
   Component,
-  computed,
-  input,
-  output,
-  signal,
+  Input,
+  Output,
+  EventEmitter,
   ViewChildren,
   QueryList,
   AfterViewInit,
@@ -11,6 +10,8 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { IonSearchbar, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -50,10 +51,17 @@ import { SearchItemComponent } from './search-item.component';
  *
  * @example
  * ```typescript
- * // Opened via SearchOverlayService (parent component)
+ * // Opened via SearchOverlayService (parent component provides all texts)
  * const ref = this.searchOverlayService.open(element, SearchDropdownComponent);
- * ref.instance.items.set(allSearchableItems);
- * ref.instance.itemSelected.subscribe(item => {
+ * ref.instance.items = allSearchableItems;
+ * ref.instance.placeholder = 'Search books, chapters, documents...';
+ * ref.instance.emptyMessage = 'Start typing to search';
+ * ref.instance.noResultsMessage = 'No results found for "{query}"';
+ * ref.instance.noResultsHint = 'Try searching for something else';
+ * ref.instance.jumpToHint = 'Jump to';
+ *
+ * // ⚠️ Persistent subscription: parent component manages dropdown lifecycle
+ * ref.instance.itemSelected.pipe(takeUntilDestroyed()).subscribe(item => {
  *   // Parent handles navigation logic
  *   this.router.navigate(['/books', item.id]);
  * });
@@ -78,90 +86,123 @@ export class SearchDropdownComponent implements AfterViewInit {
   /**
    * All searchable items (provided by parent)
    */
-  public readonly items = input.required<SearchItem[]>();
+  @Input({ required: true }) items!: SearchItem[];
 
   /**
-   * Placeholder text
+   * Placeholder text (translated by parent)
    */
-  public readonly placeholder = input<string>('Search books, chapters, documents...');
+  @Input({ required: true }) placeholder!: string;
 
   /**
-   * Dropdown title
+   * Empty state message (translated by parent)
    */
-  public readonly title = input<string>('Search');
+  @Input({ required: true }) emptyMessage!: string;
 
   /**
-   * Empty state message
+   * No results message template (translated by parent)
+   * Use {query} placeholder for search query
+   * Example: "No results found for {query}"
    */
-  public readonly emptyMessage = input<string>('Start typing to search');
+  @Input({ required: true }) noResultsMessage!: string;
 
   /**
-   * Search query signal
+   * No results hint text (translated by parent)
    */
-  public readonly searchQuery = signal<string>('');
+  @Input({ required: true }) noResultsHint!: string;
+
+  /**
+   * "Jump to" hint text for search items (translated by parent)
+   */
+  @Input({ required: true }) jumpToHint!: string;
+
+  /**
+   * Search query observable (internal state)
+   */
+  private readonly searchQuerySubject = new BehaviorSubject<string>('');
+  public readonly searchQuery$ = this.searchQuerySubject.asObservable();
 
   /**
    * Filtered items based on search query
    */
-  public readonly filteredItems = computed(() => {
-    const query = this.searchQuery().toLowerCase().trim();
-    if (!query) {
-      return [];
-    }
+  public readonly filteredItems$: Observable<SearchItem[]> = this.searchQuery$.pipe(
+    map((query) => {
+      const trimmedQuery = query.toLowerCase().trim();
+      if (!trimmedQuery) {
+        return [];
+      }
 
-    return this.items().filter(
-      (item) =>
-        item.title.toLowerCase().includes(query) ||
-        item.subtitle?.toLowerCase().includes(query) ||
-        item.metadata?.toLowerCase().includes(query)
-    );
-  });
+      return this.items.filter(
+        (item) =>
+          item.title.toLowerCase().includes(trimmedQuery) ||
+          item.subtitle?.toLowerCase().includes(trimmedQuery) ||
+          item.metadata?.toLowerCase().includes(trimmedQuery)
+      );
+    }),
+    startWith([])
+  );
 
   /**
    * Items grouped by category (GitHub-style)
    */
-  public readonly itemsByCategory = computed(() => {
-    const items = this.filteredItems();
-    const grouped: Map<SearchCategory, SearchItem[]> = new Map();
+  public readonly itemsByCategory$: Observable<Map<SearchCategory, SearchItem[]>> =
+    this.filteredItems$.pipe(
+      map((items) => {
+        const grouped: Map<SearchCategory, SearchItem[]> = new Map();
 
-    // Group items by category
-    items.forEach((item) => {
-      const existing = grouped.get(item.category) || [];
-      grouped.set(item.category, [...existing, item]);
-    });
+        // Group items by category
+        items.forEach((item) => {
+          const existing = grouped.get(item.category) || [];
+          grouped.set(item.category, [...existing, item]);
+        });
 
-    return grouped;
-  });
+        return grouped;
+      })
+    );
 
   /**
    * Categories with items (for template iteration)
    */
-  public readonly categoriesWithItems = computed(() => {
-    const grouped = this.itemsByCategory();
-    return Array.from(grouped.entries()).map(([category, items]) => ({
-      config: SEARCH_CATEGORY_CONFIGS[category],
-      items,
-    }));
-  });
+  public readonly categoriesWithItems$: Observable<
+    Array<{ config: any; items: SearchItem[] }>
+  > = this.itemsByCategory$.pipe(
+    map((grouped) =>
+      Array.from(grouped.entries()).map(([category, items]) => ({
+        config: SEARCH_CATEGORY_CONFIGS[category],
+        items,
+      }))
+    )
+  );
 
   /**
    * Show empty state
    */
-  public readonly showEmpty = computed(
-    () => this.searchQuery().trim() === ''
+  public readonly showEmpty$: Observable<boolean> = this.searchQuery$.pipe(
+    map((query) => query.trim() === ''),
+    startWith(true)
   );
 
   /**
    * Show no results state
    */
-  public readonly showNoResults = computed(
-    () => this.searchQuery().trim() !== '' && this.filteredItems().length === 0
+  public readonly showNoResults$: Observable<boolean> = combineLatest([
+    this.searchQuery$,
+    this.filteredItems$,
+  ]).pipe(
+    map(([query, items]) => query.trim() !== '' && items.length === 0),
+    startWith(false)
+  );
+
+  /**
+   * Formatted no results message (replaces {query} placeholder)
+   */
+  public readonly noResultsMessageFormatted$: Observable<string> = this.searchQuery$.pipe(
+    map((query) => this.noResultsMessage.replace('{query}', query))
   );
 
   /**
    * Item selected event (parent handles navigation)
    */
-  public readonly itemSelected = output<SearchItem>();
+  @Output() itemSelected = new EventEmitter<SearchItem>();
 
   constructor() {
     addIcons({
@@ -187,7 +228,7 @@ export class SearchDropdownComponent implements AfterViewInit {
    */
   public onSearchInput(event: CustomEvent): void {
     const value = event.detail.value || '';
-    this.searchQuery.set(value);
+    this.searchQuerySubject.next(value);
 
     // Reset keyboard manager when query changes
     if (this.keyManager) {

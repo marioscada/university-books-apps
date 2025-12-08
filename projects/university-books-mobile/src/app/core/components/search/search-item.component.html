@@ -10,25 +10,25 @@
   <!-- Icon -->
   <ion-icon
     class="search-item-icon"
-    [name]="item().icon"
+    [name]="item.icon"
   ></ion-icon>
 
   <!-- Content -->
   <div class="search-item-content">
     <div class="search-item-title">
-      {{ item().title }}
+      {{ item.title }}
     </div>
 
-    @if (item().subtitle || item().metadata) {
+    @if (item.subtitle || item.metadata) {
       <div class="search-item-meta">
-        @if (item().subtitle) {
+        @if (item.subtitle) {
           <span class="search-item-subtitle">
-            {{ item().subtitle }}
+            {{ item.subtitle }}
           </span>
         }
-        @if (item().metadata) {
+        @if (item.metadata) {
           <span class="search-item-metadata">
-            {{ item().metadata }}
+            {{ item.metadata }}
           </span>
         }
       </div>
@@ -36,15 +36,15 @@
   </div>
 
   <!-- Badge -->
-  @if (item().badge) {
+  @if (item.badge) {
     <span
       class="search-item-badge"
-      [attr.data-badge-color]="item().badgeColor || 'medium'"
+      [attr.data-badge-color]="item.badgeColor || 'medium'"
     >
-      {{ item().badge }}
+      {{ item.badge }}
     </span>
   }
 
   <!-- "Jump to" hint (GitHub-style) -->
-  <span class="search-item-hint">Jump to</span>
+  <span class="search-item-hint">{{ jumpToHint }}</span>
 </div>

@@ -1,7 +1,8 @@
 import {
   Component,
-  input,
-  output,
+  Input,
+  Output,
+  EventEmitter,
   inject,
   ElementRef,
   ChangeDetectionStrategy,
@@ -24,9 +25,12 @@ import { SearchItem } from '../../models/search-item.model';
  * ```html
  * <app-search-item
  *   [item]="searchItem"
+ *   [jumpToHint]="'Jump to'"
  *   (selected)="onItemSelected($event)"
  * ></app-search-item>
  * ```
+ *
+ * Note: All text content must be provided by parent component (already translated)
  */
 @Component({
   selector: 'app-search-item',
@@ -45,12 +49,18 @@ export class SearchItemComponent implements FocusableOption {
   /**
    * Search item data
    */
-  public readonly item = input.required<SearchItem>();
+  @Input({ required: true }) item!: SearchItem;
+
+  /**
+   * "Jump to" hint text (translated by parent)
+   * Example: "Jump to", "Go to", "Navigate to"
+   */
+  @Input({ required: true }) jumpToHint!: string;
 
   /**
    * Item selected event
    */
-  public readonly selected = output<SearchItem>();
+  @Output() selected = new EventEmitter<SearchItem>();
 
   /**
    * Focus state (managed by ListKeyManager)
@@ -77,6 +87,6 @@ export class SearchItemComponent implements FocusableOption {
    * Handle item selection
    */
   public onSelect(): void {
-    this.selected.emit(this.item());
+    this.selected.emit(this.item);
   }
 }

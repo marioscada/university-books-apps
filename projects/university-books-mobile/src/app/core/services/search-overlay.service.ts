@@ -21,12 +21,22 @@ import { ComponentPortal } from '@angular/cdk/portal';
  *
  * @example
  * ```typescript
+ * // Parent component provides all translated texts
  * const ref = this.searchOverlayService.open(
  *   elementRef.nativeElement,
  *   SearchDropdownComponent
  * );
- * ref.instance.items.set(searchItems);
- * ref.instance.itemSelected.subscribe(item => console.log(item));
+ * ref.instance.items = searchItems;
+ * ref.instance.placeholder = this.translateService.instant('search.placeholder');
+ * ref.instance.emptyMessage = this.translateService.instant('search.empty');
+ * ref.instance.noResultsMessage = this.translateService.instant('search.noResults');
+ * ref.instance.noResultsHint = this.translateService.instant('search.noResultsHint');
+ * ref.instance.jumpToHint = this.translateService.instant('search.jumpTo');
+ *
+ * // ⚠️ Persistent subscription: parent component manages dropdown lifecycle
+ * ref.instance.itemSelected.pipe(takeUntilDestroyed()).subscribe(item => {
+ *   this.router.navigate(['/books', item.id]);
+ * });
  * ```
  */
 @Injectable({
@@ -103,10 +113,10 @@ export class SearchOverlayService {
   private setupOverlayListeners(): void {
     if (!this.overlayRef) return;
 
-    // Close on backdrop click
+    // ⚠️ Persistent subscription: overlay lifecycle managed by service, cleaned up on overlay dispose
     this.overlayRef.backdropClick().subscribe(() => this.close());
 
-    // Close on ESC key
+    // ⚠️ Persistent subscription: overlay lifecycle managed by service, cleaned up on overlay dispose
     this.overlayRef.keydownEvents().subscribe((event) => {
       if (event.key === 'Escape') {
         this.close();

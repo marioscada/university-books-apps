@@ -13,8 +13,8 @@
       autocomplete="off"
       autocorrect="off"
       spellcheck="false"
-      [placeholder]="placeholder()"
-      [value]="searchQuery()"
+      [placeholder]="placeholder"
+      [value]="searchQuery$ | async"
       (ionInput)="onSearchInput($event)"
     ></ion-searchbar>
 
@@ -34,55 +34,58 @@
   <!-- Results -->
   <div class="search-dropdown-body">
     <!-- Empty state -->
-    @if (showEmpty()) {
+    @if (showEmpty$ | async) {
       <div class="search-empty">
         <ion-icon
           class="empty-icon"
           name="search-outline"
         ></ion-icon>
-        <p class="empty-message">{{ emptyMessage() }}</p>
+        <p class="empty-message">{{ emptyMessage }}</p>
       </div>
     }
 
     <!-- No results -->
-    @if (showNoResults()) {
+    @if (showNoResults$ | async) {
       <div class="search-no-results">
         <ion-icon
           class="empty-icon"
           name="search-outline"
         ></ion-icon>
-        <p class="empty-message">No results found for "{{ searchQuery() }}"</p>
-        <p class="empty-hint">Try searching for something else</p>
+        <p class="empty-message">{{ noResultsMessageFormatted$ | async }}</p>
+        <p class="empty-hint">{{ noResultsHint }}</p>
       </div>
     }
 
     <!-- Results grouped by category (GitHub-style) -->
-    @if (!showEmpty() && !showNoResults()) {
-      <div class="search-results" role="listbox">
-        @for (category of categoriesWithItems(); track category.config.key) {
-          <div class="search-category">
-            <!-- Category header -->
-            <div class="category-header">
-              <ion-icon
-                class="category-icon"
-                [name]="category.config.icon"
-              ></ion-icon>
-              <span class="category-label">{{ category.config.label }}</span>
-              <span class="category-count">({{ category.items.length }})</span>
-            </div>
+    @if (categoriesWithItems$ | async; as categories) {
+      @if (categories.length > 0) {
+        <div class="search-results" role="listbox">
+          @for (category of categories; track category.config.key) {
+            <div class="search-category">
+              <!-- Category header -->
+              <div class="category-header">
+                <ion-icon
+                  class="category-icon"
+                  [name]="category.config.icon"
+                ></ion-icon>
+                <span class="category-label">{{ category.config.label }}</span>
+                <span class="category-count">({{ category.items.length }})</span>
+              </div>
 
-            <!-- Category items -->
-            <div class="category-items">
-              @for (item of category.items; track item.id) {
-                <app-search-item
-                  [item]="item"
-                  (selected)="onItemSelect($event)"
-                ></app-search-item>
-              }
+              <!-- Category items -->
+              <div class="category-items">
+                @for (item of category.items; track item.id) {
+                  <app-search-item
+                    [item]="item"
+                    [jumpToHint]="jumpToHint"
+                    (selected)="onItemSelect($event)"
+                  ></app-search-item>
+                }
+              </div>
             </div>
-          </div>
-        }
-      </div>
+          }
+        </div>
+      }
     }
   </div>
 </div>
