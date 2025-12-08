@@ -1,0 +1,79 @@
+<div
+  class="search-dropdown"
+  (keydown)="onKeydown($event)"
+  role="dialog"
+  aria-label="Search dialog"
+>
+  <!-- Header -->
+  <div class="search-dropdown-header">
+    <ion-searchbar
+      [placeholder]="placeholder()"
+      [value]="searchQuery()"
+      (ionInput)="onSearchInput($event)"
+      class="search-input"
+      mode="md"
+      animated
+      autocomplete="off"
+      autocorrect="off"
+      spellcheck="false"
+    ></ion-searchbar>
+
+    <button
+      class="close-btn"
+      type="button"
+      aria-label="Close search"
+      (click)="close()"
+    >
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+
+  <!-- Results -->
+  <div class="search-dropdown-body">
+    <!-- Empty state -->
+    @if (showEmpty()) {
+      <div class="search-empty">
+        <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+        <p class="empty-message">{{ emptyMessage() }}</p>
+      </div>
+    }
+
+    <!-- No results -->
+    @if (showNoResults()) {
+      <div class="search-no-results">
+        <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+        <p class="empty-message">No results found for "{{ searchQuery() }}"</p>
+        <p class="empty-hint">Try searching for something else</p>
+      </div>
+    }
+
+    <!-- Results grouped by category (GitHub-style) -->
+    @if (!showEmpty() && !showNoResults()) {
+      <div class="search-results" role="listbox">
+        @for (category of categoriesWithItems(); track category.config.key) {
+          <div class="search-category">
+            <!-- Category header -->
+            <div class="category-header">
+              <ion-icon
+                [name]="category.config.icon"
+                class="category-icon"
+              ></ion-icon>
+              <span class="category-label">{{ category.config.label }}</span>
+              <span class="category-count">({{ category.items.length }})</span>
+            </div>
+
+            <!-- Category items -->
+            <div class="category-items">
+              @for (item of category.items; track item.id) {
+                <app-search-item
+                  [item]="item"
+                  (selected)="onItemSelect($event)"
+                ></app-search-item>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

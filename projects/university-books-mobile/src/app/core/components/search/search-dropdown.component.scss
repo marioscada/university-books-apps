@@ -1,0 +1,198 @@
+@use '../../../../../styles/variables' as vars;
+
+// =============================================================================
+// Search Dropdown (GitHub-style)
+// =============================================================================
+
+.search-dropdown {
+  display: flex;
+  flex-direction: column;
+  background: vars.$surface-1;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  max-height: 80vh;
+}
+
+// =============================================================================
+// Header
+// =============================================================================
+
+.search-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: vars.$surface-2;
+}
+
+.search-input {
+  flex: 1;
+  --background: rgba(0, 0, 0, 0.3);
+  --color: #{vars.$text-color};
+  --placeholder-color: #{vars.$text-color-secondary};
+  --icon-color: #{vars.$text-color-secondary};
+  --border-radius: 8px;
+  --box-shadow: none;
+  padding: 0;
+  height: 40px;
+
+  &::part(native) {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
+    padding-inline-start: 12px;
+    padding-inline-end: 12px;
+
+    &:focus-within {
+      border-color: vars.$accent-green;
+      box-shadow: 0 0 0 1px rgba(vars.$accent-green, 0.3);
+    }
+  }
+}
+
+.close-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: vars.$text-color-secondary;
+  transition: all 0.15s ease;
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: vars.$text-color;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// =============================================================================
+// Body
+// =============================================================================
+
+.search-dropdown-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: vars.$surface-1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: vars.$surface-3;
+    border-radius: 3px;
+
+    &:hover {
+      background: vars.$gray-600;
+    }
+  }
+}
+
+// =============================================================================
+// Empty / No Results States
+// =============================================================================
+
+.search-empty,
+.search-no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  color: vars.$text-color-secondary;
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
+
+.empty-message {
+  color: vars.$text-color;
+  font-size: 14px;
+  font-weight: vars.$font-weight-medium;
+  margin: 0 0 4px 0;
+}
+
+.empty-hint {
+  color: vars.$text-color-secondary;
+  font-size: 12px;
+  margin: 0;
+}
+
+// =============================================================================
+// Results (GitHub-style categorized)
+// =============================================================================
+
+.search-results {
+  padding: 8px 0;
+}
+
+.search-category {
+  & + & {
+    margin-top: 16px;
+  }
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: vars.$surface-2;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.category-icon {
+  font-size: 16px;
+  color: vars.$text-color-secondary;
+}
+
+.category-label {
+  font-size: 12px;
+  font-weight: vars.$font-weight-semibold;
+  color: vars.$text-color;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.category-count {
+  font-size: 12px;
+  color: vars.$text-color-secondary;
+  margin-left: auto;
+}
+
+.category-items {
+  // Items are rendered by app-search-item component
+}
+
+// =============================================================================
+// Accessibility
+// =============================================================================
+
+.search-dropdown:focus-visible,
+.close-btn:focus-visible {
+  outline: 2px solid vars.$accent-green;
+  outline-offset: 2px;
+}

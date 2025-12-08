@@ -1,0 +1,178 @@
+import { Injectable, inject, ComponentRef, signal } from '@angular/core';
+import {
+  Overlay,
+  OverlayRef,
+  ConnectedPosition,
+  FlexibleConnectedPositionStrategy,
+} from '@angular/cdk/overlay';
+import { ComponentPortal } from '@angular/cdk/portal';
+
+/**
+ * Search Overlay Service
+ *
+ * Manages search dropdown overlay using Angular CDK Overlay + Portal pattern.
+ * Inspired by Angular Material Autocomplete implementation.
+ *
+ * Features:
+ * - FlexibleConnectedPositionStrategy for smart positioning
+ * - Reposition scroll strategy
+ * - Backdrop handling (click + ESC)
+ * - Width synchronization with origin element
+ *
+ * @example
+ * ```typescript
+ * const ref = this.searchOverlayService.open(
+ *   elementRef.nativeElement,
+ *   SearchDropdownComponent
+ * );
+ * ref.instance.items.set(searchItems);
+ * ref.instance.itemSelected.subscribe(item => console.log(item));
+ * ```
+ */
+@Injectable({
+  providedIn: 'root',
+})
+export class SearchOverlayService {
+  private readonly overlay = inject(Overlay);
+
+  /** Current active overlay reference */
+  private overlayRef: OverlayRef | null = null;
+
+  /** Current component reference */
+  private componentRef: ComponentRef<any> | null = null;
+
+  /** Overlay open state signal */
+  public readonly isOpen = signal<boolean>(false);
+
+  /**
+   * Open search dropdown overlay
+   *
+   * @param origin Element to position dropdown relative to
+   * @param component Component to render in overlay
+   * @returns Component reference for data binding
+   */
+  public open<T>(origin: HTMLElement, component: any): ComponentRef<T> {
+    // Close existing overlay if open
+    if (this.overlayRef) {
+      this.close();
+    }
+
+    // Create position strategy (GitHub-style: below origin, fallback above)
+    const positionStrategy = this.createPositionStrategy(origin);
+
+    // Create overlay with configuration
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop',
+      width: this.getOverlayWidth(origin),
+      minWidth: 320,
+      maxWidth: 600,
+      maxHeight: '80vh',
+    });
+
+    // Create portal and attach component
+    const portal = new ComponentPortal(component);
+    this.componentRef = this.overlayRef.attach(portal);
+
+    // Setup event listeners
+    this.setupOverlayListeners();
+
+    // Update state
+    this.isOpen.set(true);
+
+    return this.componentRef as ComponentRef<T>;
+  }
+
+  /**
+   * Close dropdown overlay
+   */
+  public close(): void {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = null;
+      this.componentRef = null;
+      this.isOpen.set(false);
+    }
+  }
+
+  /**
+   * Setup overlay event listeners
+   */
+  private setupOverlayListeners(): void {
+    if (!this.overlayRef) return;
+
+    // Close on backdrop click
+    this.overlayRef.backdropClick().subscribe(() => this.close());
+
+    // Close on ESC key
+    this.overlayRef.keydownEvents().subscribe((event) => {
+      if (event.key === 'Escape') {
+        this.close();
+      }
+    });
+  }
+
+  /**
+   * Create connected position strategy
+   * GitHub-style positioning: below origin with fallbacks
+   */
+  private createPositionStrategy(
+    origin: HTMLElement
+  ): FlexibleConnectedPositionStrategy {
+    // Define preferred positions (inspired by Angular Material)
+    const positions: ConnectedPosition[] = [
+      // Primary: below, aligned start
+      {
+        originX: 'start',
+        originY: 'bottom',
+        overlayX: 'start',
+        overlayY: 'top',
+        offsetY: 8,
+      },
+      // Fallback 1: above, aligned start
+      {
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'bottom',
+        offsetY: -8,
+      },
+      // Fallback 2: below, aligned end
+      {
+        originX: 'end',
+        originY: 'bottom',
+        overlayX: 'end',
+        overlayY: 'top',
+        offsetY: 8,
+      },
+      // Fallback 3: above, aligned end
+      {
+        originX: 'end',
+        originY: 'top',
+        overlayX: 'end',
+        overlayY: 'bottom',
+        offsetY: -8,
+      },
+    ];
+
+    return this.overlay
+      .position()
+      .flexibleConnectedTo(origin)
+      .withPositions(positions)
+      .withPush(true)
+      .withFlexibleDimensions(true)
+      .withViewportMargin(16)
+      .withGrowAfterOpen(true);
+  }
+
+  /**
+   * Calculate overlay width based on origin element
+   * Ensures dropdown matches search input width (min 320px)
+   */
+  private getOverlayWidth(origin: HTMLElement): number {
+    const originWidth = origin.offsetWidth;
+    return Math.max(originWidth, 320);
+  }
+}
