@@ -23,10 +23,10 @@ import {
   personOutline,
 } from 'ionicons/icons';
 
-import type { SearchItem, SearchCategory } from '../../models/search-item.model';
-import { SEARCH_CATEGORY_CONFIGS } from '../../models/search-item.model';
-import { SearchOverlayService } from '../../services/search-overlay.service';
-import { SearchItemComponent } from './search-item.component';
+import type { SearchItem, SearchCategory } from '../../../models/search-item.model';
+import { SEARCH_CATEGORY_CONFIGS } from '../../../models/search-item.model';
+import { SearchOverlayService } from '../../../services/search-overlay.service';
+import { SearchItemComponent } from '../search-item/search-item.component';
 
 /**
  * Search Dropdown Component (Pure Presentation)
