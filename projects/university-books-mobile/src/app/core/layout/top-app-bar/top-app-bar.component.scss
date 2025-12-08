@@ -7,15 +7,18 @@
 .top-app-bar {
   position: fixed;
   top: 0;
+  left: 0;
   right: 0;
+  width: 100%;
   z-index: vars.$z-index-fixed;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding: 1rem 1.5rem;
+  background: transparent;
   pointer-events: none; // Allow clicks through empty space
 
-  @media (max-width: vars.$breakpoint-sm - 1) {
+  @media (max-width: calc(vars.$breakpoint-sm - 1px)) {
     padding: 0.875rem 1rem;
   }
 }
