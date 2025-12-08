@@ -1,0 +1,52 @@
+<!--
+  Top App Bar (Material Design Pattern)
+
+  Fixed header bar with:
+  - Search action button (responsive: full on desktop, icon-only on mobile/tablet)
+  - User profile/avatar button
+
+  Pure presentational component - emits events to parent container
+-->
+
+<div class="top-app-bar">
+  <div class="app-bar-actions">
+    <!-- Search Button - Desktop (Expanded with text) -->
+    @if (isDesktop()) {
+      <button
+        #searchButton
+        class="search-button search-button-expanded"
+        type="button"
+        aria-label="Search"
+        (click)="onSearchClick()"
+      >
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+        <span class="search-text">Type</span>
+        <kbd class="search-key">/</kbd>
+        <span class="search-text">to search</span>
+      </button>
+    }
+
+    <!-- Search Button - Mobile/Tablet (Icon only) -->
+    @if (isMobile() || isTablet()) {
+      <button
+        #searchButton
+        class="search-button search-button-icon"
+        type="button"
+        aria-label="Search"
+        (click)="onSearchClick()"
+      >
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+      </button>
+    }
+
+    <!-- User Profile/Avatar Button -->
+    <button
+      class="profile-button"
+      type="button"
+      aria-label="Open user profile"
+      (click)="onProfileClick()"
+    >
+      <ion-icon name="person-circle" class="profile-icon"></ion-icon>
+    </button>
+  </div>
+</div>

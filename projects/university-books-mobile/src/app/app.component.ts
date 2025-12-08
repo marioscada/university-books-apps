@@ -1,11 +1,18 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { NavigationComponent } from './core/components/navigation/navigation.component';
+import { AppShellComponent } from './core/layout/app-shell/app-shell.component';
 
+/**
+ * Root App Component
+ *
+ * Minimal root component that delegates layout to AppShellComponent.
+ * Follows Single Responsibility Principle - only bootstraps the app.
+ *
+ * Layout orchestration is handled by AppShellComponent (Smart Container).
+ */
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavigationComponent],
+  imports: [AppShellComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

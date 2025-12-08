@@ -1,0 +1,42 @@
+@use '../../../../styles/variables' as vars;
+
+// =============================================================================
+// App Shell Layout
+// =============================================================================
+//
+// Main application shell following Material Design App Bar + Drawer pattern
+//
+// Layout Structure:
+// - TopAppBar: Fixed header (search, avatar)
+// - NavigationDrawer: Slide-in sidebar (hamburger, menu)
+// - Content: Main application content (router-outlet)
+//
+// =============================================================================
+
+// =============================================================================
+// Main Content Area
+// =============================================================================
+
+.app-content {
+  min-height: 100vh;
+  background: vars.$background-color;
+  padding: 2rem;
+  padding-top: 5rem; // Space for fixed top app bar
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    padding: 1.5rem;
+    padding-top: 4.5rem;
+  }
+}
+
+// =============================================================================
+// Authentication Container (Unauthenticated State)
+// =============================================================================
+
+.auth-container {
+  min-height: 100vh;
+  background: vars.$background-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

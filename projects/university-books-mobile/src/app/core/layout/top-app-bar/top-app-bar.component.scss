@@ -1,0 +1,154 @@
+@use '../../../../styles/variables' as vars;
+
+// =============================================================================
+// Top App Bar Container (Material Design)
+// =============================================================================
+
+.top-app-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: vars.$z-index-fixed;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+  pointer-events: none; // Allow clicks through empty space
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    padding: 0.875rem 1rem;
+  }
+}
+
+// =============================================================================
+// Actions Container
+// =============================================================================
+
+.app-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  pointer-events: auto; // Restore clicks for buttons
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    gap: 0.625rem;
+  }
+}
+
+// =============================================================================
+// Search Button Shared Styles
+// =============================================================================
+
+.search-button {
+  display: flex;
+  align-items: center;
+  background: vars.$surface-2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all vars.$transition-speed-base ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  &:hover {
+    background: vars.$surface-3;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid vars.$accent-color;
+    outline-offset: 2px;
+  }
+}
+
+// =============================================================================
+// Search Button - Expanded (Desktop)
+// =============================================================================
+
+.search-button-expanded {
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  min-width: 240px;
+
+  .search-icon {
+    font-size: 1.25rem;
+    color: vars.$text-color-secondary;
+  }
+
+  .search-text {
+    font-size: 0.875rem;
+    color: vars.$text-color-secondary;
+    font-weight: vars.$font-weight-medium;
+  }
+
+  .search-key {
+    padding: 0.125rem 0.5rem;
+    background: vars.$surface-1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: vars.$font-weight-bold;
+    color: vars.$text-color;
+    font-family: 'Monaco', 'Courier New', monospace;
+    line-height: 1;
+  }
+}
+
+// =============================================================================
+// Search Button - Icon Only (Mobile/Tablet)
+// =============================================================================
+
+.search-button-icon {
+  width: 3rem;
+  height: 3rem;
+  justify-content: center;
+
+  .search-icon {
+    font-size: 2rem;
+    color: vars.$text-color;
+  }
+}
+
+// =============================================================================
+// Profile Button
+// =============================================================================
+
+.profile-button {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: vars.$surface-2;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all vars.$transition-speed-base ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  &:hover {
+    background: vars.$surface-3;
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid vars.$accent-color;
+    outline-offset: 2px;
+  }
+
+  .profile-icon {
+    font-size: 2rem;
+    color: vars.$text-color-secondary;
+  }
+}

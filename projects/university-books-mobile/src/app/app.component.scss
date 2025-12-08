@@ -3,19 +3,14 @@
 // =============================================================================
 // App Root Layout
 // =============================================================================
+//
+// Minimal root styles - layout is delegated to AppShellComponent
+//
+// =============================================================================
 
 :host {
   display: block;
   min-height: 100vh;
   background: vars.$background-color;
   color: vars.$text-color;
-}
-
-// =============================================================================
-// Main Content Area
-// =============================================================================
-
-.app-main {
-  min-height: 100vh;
-  background: vars.$background-color;
 }

@@ -1,7 +1,12 @@
-<!-- Navigation Component -->
-<app-navigation></app-navigation>
+<!--
+  Root App Component
 
-<!-- Main Content Area -->
-<main class="app-main">
-  <router-outlet />
-</main>
+  Delegates layout orchestration to AppShellComponent.
+  AppShell handles:
+  - TopAppBar (header)
+  - NavigationDrawer (sidebar)
+  - Content (router-outlet)
+  - Profile sidebar
+-->
+
+<app-shell></app-shell>
