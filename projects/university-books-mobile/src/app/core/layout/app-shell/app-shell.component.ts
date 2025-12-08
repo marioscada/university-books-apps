@@ -13,8 +13,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { TopAppBarComponent } from '../top-app-bar/top-app-bar.component';
 import { NavigationDrawerComponent } from '../navigation-drawer/navigation-drawer.component';
-import { UserProfileSidebarComponent } from '../../shared/user-profile-sidebar/user-profile-sidebar.component';
-import { SearchDropdownComponent } from '../../shared/search/search-dropdown/search-dropdown.component';
+import { UserProfileSidebarComponent } from '../../shared/components/user-profile-sidebar/user-profile-sidebar.component';
+import { SearchDropdownComponent } from '../../shared/components/search/search-dropdown/search-dropdown.component';
 
 import { AuthService } from '../../../auth/services/auth.service';
 import { SearchOverlayService } from '../../services/search-overlay.service';

@@ -24,9 +24,9 @@ import {
   personOutline,
 } from 'ionicons/icons';
 
-import type { SearchItem, SearchCategory, SearchCategoryConfig } from '../../../models/search-item.model';
-import { SEARCH_CATEGORY_CONFIGS } from '../../../models/search-item.model';
-import { SearchOverlayService } from '../../../services/search-overlay.service';
+import type { SearchItem, SearchCategory, SearchCategoryConfig } from '../../../../models/search-item.model';
+import { SEARCH_CATEGORY_CONFIGS } from '../../../../models/search-item.model';
+import { SearchOverlayService } from '../../../../services/search-overlay.service';
 import { SearchItemComponent } from '../search-item/search-item.component';
 
 /**

@@ -18,7 +18,7 @@ import {
   animate,
 } from '@angular/animations';
 
-import { AuthService } from '../../../auth/services/auth.service';
+import { AuthService } from '../../../../auth/services/auth.service';
 
 /**
  * User Profile Sidebar Component
