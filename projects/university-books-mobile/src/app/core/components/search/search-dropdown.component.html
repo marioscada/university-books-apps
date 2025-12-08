@@ -1,21 +1,21 @@
 <div
   class="search-dropdown"
-  (keydown)="onKeydown($event)"
   role="dialog"
   aria-label="Search dialog"
+  (keydown)="onKeydown($event)"
 >
   <!-- Header -->
   <div class="search-dropdown-header">
     <ion-searchbar
-      [placeholder]="placeholder()"
-      [value]="searchQuery()"
-      (ionInput)="onSearchInput($event)"
       class="search-input"
       mode="md"
       animated
       autocomplete="off"
       autocorrect="off"
       spellcheck="false"
+      [placeholder]="placeholder()"
+      [value]="searchQuery()"
+      (ionInput)="onSearchInput($event)"
     ></ion-searchbar>
 
     <button
@@ -24,7 +24,10 @@
       aria-label="Close search"
       (click)="close()"
     >
-      <ion-icon name="close-outline"></ion-icon>
+      <ion-icon
+        class="close-icon"
+        name="close-outline"
+      ></ion-icon>
     </button>
   </div>
 
@@ -33,7 +36,10 @@
     <!-- Empty state -->
     @if (showEmpty()) {
       <div class="search-empty">
-        <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+        <ion-icon
+          class="empty-icon"
+          name="search-outline"
+        ></ion-icon>
         <p class="empty-message">{{ emptyMessage() }}</p>
       </div>
     }
@@ -41,7 +47,10 @@
     <!-- No results -->
     @if (showNoResults()) {
       <div class="search-no-results">
-        <ion-icon name="search-outline" class="empty-icon"></ion-icon>
+        <ion-icon
+          class="empty-icon"
+          name="search-outline"
+        ></ion-icon>
         <p class="empty-message">No results found for "{{ searchQuery() }}"</p>
         <p class="empty-hint">Try searching for something else</p>
       </div>
@@ -55,8 +64,8 @@
             <!-- Category header -->
             <div class="category-header">
               <ion-icon
-                [name]="category.config.icon"
                 class="category-icon"
+                [name]="category.config.icon"
               ></ion-icon>
               <span class="category-label">{{ category.config.label }}</span>
               <span class="category-count">({{ category.items.length }})</span>

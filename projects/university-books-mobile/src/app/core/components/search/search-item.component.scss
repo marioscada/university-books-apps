@@ -1,0 +1,109 @@
+@use '../../../../../styles/variables' as vars;
+
+// =============================================================================
+// Search Item Component
+// =============================================================================
+
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  outline: none;
+
+  &:hover,
+  &.search-item-focused {
+    background: vars.$surface-2;
+
+    .search-item-hint {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    background: vars.$surface-3;
+  }
+}
+
+.search-item-icon {
+  font-size: 20px;
+  color: vars.$text-color-secondary;
+  flex-shrink: 0;
+}
+
+.search-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-item-title {
+  color: vars.$text-color;
+  font-weight: vars.$font-weight-medium;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-item-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+  font-size: 12px;
+  color: vars.$text-color-secondary;
+}
+
+.search-item-subtitle,
+.search-item-metadata {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-item-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: vars.$font-weight-bold;
+  color: vars.$white;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  // Badge color variants using attribute selectors (no hardcoded colors in TS)
+  &[data-badge-color='primary'] {
+    background-color: vars.$primary-color;
+  }
+
+  &[data-badge-color='secondary'] {
+    background-color: vars.$gray-500;
+  }
+
+  &[data-badge-color='success'] {
+    background-color: vars.$success;
+  }
+
+  &[data-badge-color='warning'] {
+    background-color: vars.$warning;
+  }
+
+  &[data-badge-color='danger'] {
+    background-color: vars.$error;
+  }
+
+  &[data-badge-color='medium'] {
+    background-color: vars.$gray-500;
+  }
+}
+
+.search-item-hint {
+  font-size: 11px;
+  font-weight: vars.$font-weight-bold;
+  color: vars.$text-color-secondary;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
