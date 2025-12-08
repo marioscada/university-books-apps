@@ -3,7 +3,6 @@ import {
   Input,
   Output,
   EventEmitter,
-  inject,
   ElementRef,
   ChangeDetectionStrategy,
 } from '@angular/core';
@@ -11,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { FocusableOption } from '@angular/cdk/a11y';
 import { IonIcon } from '@ionic/angular/standalone';
 
-import { SearchItem } from '../../models/search-item.model';
+import type { SearchItem } from '../../models/search-item.model';
 
 /**
  * Search Item Component
@@ -44,8 +43,6 @@ import { SearchItem } from '../../models/search-item.model';
   },
 })
 export class SearchItemComponent implements FocusableOption {
-  private readonly elementRef = inject(ElementRef);
-
   /**
    * Search item data
    */
@@ -66,6 +63,8 @@ export class SearchItemComponent implements FocusableOption {
    * Focus state (managed by ListKeyManager)
    */
   public isFocused = false;
+
+  constructor(private readonly elementRef: ElementRef) {}
 
   /**
    * FocusableOption interface implementation

@@ -1,4 +1,4 @@
-import { Injectable, inject, ComponentRef, signal } from '@angular/core';
+import { Injectable, ComponentRef } from '@angular/core';
 import {
   Overlay,
   OverlayRef,
@@ -43,16 +43,16 @@ import { ComponentPortal } from '@angular/cdk/portal';
   providedIn: 'root',
 })
 export class SearchOverlayService {
-  private readonly overlay = inject(Overlay);
-
   /** Current active overlay reference */
   private overlayRef: OverlayRef | null = null;
 
   /** Current component reference */
   private componentRef: ComponentRef<any> | null = null;
 
-  /** Overlay open state signal */
-  public readonly isOpen = signal<boolean>(false);
+  /** Overlay open state */
+  public isOpen = false;
+
+  constructor(private readonly overlay: Overlay) {}
 
   /**
    * Open search dropdown overlay
@@ -90,7 +90,7 @@ export class SearchOverlayService {
     this.setupOverlayListeners();
 
     // Update state
-    this.isOpen.set(true);
+    this.isOpen = true;
 
     return this.componentRef as ComponentRef<T>;
   }
@@ -103,7 +103,7 @@ export class SearchOverlayService {
       this.overlayRef.dispose();
       this.overlayRef = null;
       this.componentRef = null;
-      this.isOpen.set(false);
+      this.isOpen = false;
     }
   }
 

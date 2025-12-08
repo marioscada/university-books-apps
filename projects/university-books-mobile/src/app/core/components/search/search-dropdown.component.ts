@@ -6,7 +6,6 @@ import {
   ViewChildren,
   QueryList,
   AfterViewInit,
-  inject,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -24,11 +23,8 @@ import {
   personOutline,
 } from 'ionicons/icons';
 
-import {
-  SearchItem,
-  SearchCategory,
-  SEARCH_CATEGORY_CONFIGS,
-} from '../../models/search-item.model';
+import type { SearchItem, SearchCategory } from '../../models/search-item.model';
+import { SEARCH_CATEGORY_CONFIGS } from '../../models/search-item.model';
 import { SearchOverlayService } from '../../services/search-overlay.service';
 import { SearchItemComponent } from './search-item.component';
 
@@ -76,8 +72,6 @@ import { SearchItemComponent } from './search-item.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchDropdownComponent implements AfterViewInit {
-  private readonly searchOverlayService = inject(SearchOverlayService);
-
   @ViewChildren(SearchItemComponent)
   itemComponents!: QueryList<SearchItemComponent>;
 
@@ -204,7 +198,7 @@ export class SearchDropdownComponent implements AfterViewInit {
    */
   @Output() itemSelected = new EventEmitter<SearchItem>();
 
-  constructor() {
+  constructor(private readonly searchOverlayService: SearchOverlayService) {
     addIcons({
       searchOutline,
       closeOutline,
@@ -254,7 +248,7 @@ export class SearchDropdownComponent implements AfterViewInit {
       event.preventDefault();
       const activeItem = this.keyManager.activeItem;
       if (activeItem) {
-        this.onItemSelect(activeItem.item());
+        this.onItemSelect(activeItem.item);
       }
       return;
     }
