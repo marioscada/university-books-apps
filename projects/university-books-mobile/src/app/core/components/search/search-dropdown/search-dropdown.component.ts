@@ -7,12 +7,13 @@ import {
   QueryList,
   AfterViewInit,
   ChangeDetectionStrategy,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { FocusKeyManager } from '@angular/cdk/a11y';
-import { IonSearchbar, IonIcon } from '@ionic/angular/standalone';
+import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   searchOutline,
@@ -23,7 +24,7 @@ import {
   personOutline,
 } from 'ionicons/icons';
 
-import type { SearchItem, SearchCategory } from '../../../models/search-item.model';
+import type { SearchItem, SearchCategory, SearchCategoryConfig } from '../../../models/search-item.model';
 import { SEARCH_CATEGORY_CONFIGS } from '../../../models/search-item.model';
 import { SearchOverlayService } from '../../../services/search-overlay.service';
 import { SearchItemComponent } from '../search-item/search-item.component';
@@ -66,10 +67,13 @@ import { SearchItemComponent } from '../search-item/search-item.component';
 @Component({
   selector: 'app-search-dropdown',
   standalone: true,
-  imports: [CommonModule, IonSearchbar, IonIcon, SearchItemComponent],
+  imports: [CommonModule, IonIcon, SearchItemComponent],
   templateUrl: './search-dropdown.component.html',
   styleUrls: ['./search-dropdown.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'class': 'search-dropdown-container'
+  }
 })
 export class SearchDropdownComponent implements AfterViewInit {
   @ViewChildren(SearchItemComponent)
@@ -117,22 +121,30 @@ export class SearchDropdownComponent implements AfterViewInit {
 
   /**
    * Filtered items based on search query
+   * Shows all items initially (empty query = show all)
    */
   public readonly filteredItems$: Observable<SearchItem[]> = this.searchQuery$.pipe(
     map((query) => {
-      const trimmedQuery = query.toLowerCase().trim();
-      if (!trimmedQuery) {
+      // Handle case where items is not yet set
+      if (!this.items) {
         return [];
       }
 
+      const trimmedQuery = query.toLowerCase().trim();
+
+      // Show all items when query is empty
+      if (!trimmedQuery) {
+        return this.items;
+      }
+
+      // Filter items based on query
       return this.items.filter(
         (item) =>
           item.title.toLowerCase().includes(trimmedQuery) ||
           item.subtitle?.toLowerCase().includes(trimmedQuery) ||
           item.metadata?.toLowerCase().includes(trimmedQuery)
       );
-    }),
-    startWith([])
+    })
   );
 
   /**
@@ -141,7 +153,7 @@ export class SearchDropdownComponent implements AfterViewInit {
   public readonly itemsByCategory$: Observable<Map<SearchCategory, SearchItem[]>> =
     this.filteredItems$.pipe(
       map((items) => {
-        const grouped: Map<SearchCategory, SearchItem[]> = new Map();
+        const grouped = new Map<SearchCategory, SearchItem[]>();
 
         // Group items by category
         items.forEach((item) => {
@@ -157,7 +169,7 @@ export class SearchDropdownComponent implements AfterViewInit {
    * Categories with items (for template iteration)
    */
   public readonly categoriesWithItems$: Observable<
-    Array<{ config: any; items: SearchItem[] }>
+    { config: SearchCategoryConfig; items: SearchItem[] }[]
   > = this.itemsByCategory$.pipe(
     map((grouped) =>
       Array.from(grouped.entries()).map(([category, items]) => ({
@@ -198,7 +210,9 @@ export class SearchDropdownComponent implements AfterViewInit {
    */
   @Output() itemSelected = new EventEmitter<SearchItem>();
 
-  constructor(private readonly searchOverlayService: SearchOverlayService) {
+  private readonly searchOverlayService = inject(SearchOverlayService);
+
+  constructor() {
     addIcons({
       searchOutline,
       closeOutline,

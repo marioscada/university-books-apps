@@ -31,7 +31,6 @@ export interface NavigationItem {
  * These items are displayed in both mobile menu and desktop sidebar.
  *
  * Navigation structure based on best practices from leading AI content creation platforms:
- * - Search first (primary action for finding content)
  * - Dashboard (overview and quick actions)
  * - My Books (main workspace for projects)
  * - AI Studio (dedicated AI content generation workspace)
@@ -39,12 +38,6 @@ export interface NavigationItem {
  * - Library (reference materials and research)
  */
 export const NAVIGATION_ITEMS: readonly NavigationItem[] = [
-  {
-    id: 'search',
-    label: 'Search',
-    icon: 'search',
-    route: '/search'
-  },
   {
     id: 'dashboard',
     label: 'Dashboard',

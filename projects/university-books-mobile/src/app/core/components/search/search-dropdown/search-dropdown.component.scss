@@ -1,6 +1,20 @@
 @use '../../../../../styles/variables' as vars;
 
 // =============================================================================
+// Host container
+// =============================================================================
+
+:host {
+  display: block;
+  background: vars.$surface-1;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  max-height: 80vh;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+// =============================================================================
 // Search Dropdown (GitHub-style)
 // =============================================================================
 
@@ -8,8 +22,6 @@
   display: flex;
   flex-direction: column;
   background: vars.$surface-1;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   overflow: hidden;
   max-height: 80vh;
 }
@@ -149,8 +161,11 @@
 }
 
 .search-category {
+  // Add border separator between categories (GitHub-style)
   & + & {
-    margin-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 8px;
+    margin-top: 8px;
   }
 }
 
@@ -159,9 +174,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: vars.$surface-2;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: transparent;
 }
 
 .category-icon {
@@ -171,7 +184,7 @@
 
 .category-label {
   font-size: 12px;
-  font-weight: vars.$font-weight-semibold;
+  font-weight: vars.$font-weight-bold;
   color: vars.$text-color;
   text-transform: uppercase;
   letter-spacing: 0.5px;

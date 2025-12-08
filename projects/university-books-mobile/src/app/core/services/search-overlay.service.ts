@@ -1,4 +1,4 @@
-import { Injectable, ComponentRef } from '@angular/core';
+import { Injectable, ComponentRef, inject, Type } from '@angular/core';
 import {
   Overlay,
   OverlayRef,
@@ -47,12 +47,12 @@ export class SearchOverlayService {
   private overlayRef: OverlayRef | null = null;
 
   /** Current component reference */
-  private componentRef: ComponentRef<any> | null = null;
+  private componentRef: ComponentRef<unknown> | null = null;
 
   /** Overlay open state */
   public isOpen = false;
 
-  constructor(private readonly overlay: Overlay) {}
+  private readonly overlay = inject(Overlay);
 
   /**
    * Open search dropdown overlay
@@ -61,36 +61,49 @@ export class SearchOverlayService {
    * @param component Component to render in overlay
    * @returns Component reference for data binding
    */
-  public open<T>(origin: HTMLElement, component: any): ComponentRef<T> {
+  public open<T>(origin: HTMLElement, component: Type<T>): ComponentRef<T> {
+    console.log('🎪 SearchOverlayService.open() called');
+    console.log('  origin:', origin);
+    console.log('  component:', component);
+
     // Close existing overlay if open
     if (this.overlayRef) {
+      console.log('  ♻️ Closing existing overlay');
       this.close();
     }
 
     // Create position strategy (GitHub-style: below origin, fallback above)
+    console.log('  🎯 Creating position strategy...');
     const positionStrategy = this.createPositionStrategy(origin);
 
     // Create overlay with configuration
+    console.log('  🏗️ Creating overlay...');
+    const isMobile = window.innerWidth < 768;
     this.overlayRef = this.overlay.create({
       positionStrategy,
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-transparent-backdrop',
-      width: this.getOverlayWidth(origin),
-      minWidth: 320,
-      maxWidth: 600,
-      maxHeight: '80vh',
+      width: isMobile ? '90vw' : this.getOverlayWidth(origin),
+      minWidth: isMobile ? 280 : 320,
+      maxWidth: isMobile ? '90vw' : 600,
+      maxHeight: '70vh',
     });
+    console.log('  ✅ Overlay created:', this.overlayRef);
 
     // Create portal and attach component
+    console.log('  📌 Creating portal and attaching component...');
     const portal = new ComponentPortal(component);
     this.componentRef = this.overlayRef.attach(portal);
+    console.log('  ✅ Component attached:', this.componentRef);
 
     // Setup event listeners
+    console.log('  🎧 Setting up event listeners...');
     this.setupOverlayListeners();
 
     // Update state
     this.isOpen = true;
+    console.log('  ✨ Overlay is now open!');
 
     return this.componentRef as ComponentRef<T>;
   }

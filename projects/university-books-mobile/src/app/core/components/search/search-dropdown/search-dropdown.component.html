@@ -4,58 +4,8 @@
   aria-label="Search dialog"
   (keydown)="onKeydown($event)"
 >
-  <!-- Header -->
-  <div class="search-dropdown-header">
-    <ion-searchbar
-      class="search-input"
-      mode="md"
-      animated
-      autocomplete="off"
-      autocorrect="off"
-      spellcheck="false"
-      [placeholder]="placeholder"
-      [value]="searchQuery$ | async"
-      (ionInput)="onSearchInput($event)"
-    ></ion-searchbar>
-
-    <button
-      class="close-btn"
-      type="button"
-      aria-label="Close search"
-      (click)="close()"
-    >
-      <ion-icon
-        class="close-icon"
-        name="close-outline"
-      ></ion-icon>
-    </button>
-  </div>
-
   <!-- Results -->
   <div class="search-dropdown-body">
-    <!-- Empty state -->
-    @if (showEmpty$ | async) {
-      <div class="search-empty">
-        <ion-icon
-          class="empty-icon"
-          name="search-outline"
-        ></ion-icon>
-        <p class="empty-message">{{ emptyMessage }}</p>
-      </div>
-    }
-
-    <!-- No results -->
-    @if (showNoResults$ | async) {
-      <div class="search-no-results">
-        <ion-icon
-          class="empty-icon"
-          name="search-outline"
-        ></ion-icon>
-        <p class="empty-message">{{ noResultsMessageFormatted$ | async }}</p>
-        <p class="empty-hint">{{ noResultsHint }}</p>
-      </div>
-    }
-
     <!-- Results grouped by category (GitHub-style) -->
     @if (categoriesWithItems$ | async; as categories) {
       @if (categories.length > 0) {

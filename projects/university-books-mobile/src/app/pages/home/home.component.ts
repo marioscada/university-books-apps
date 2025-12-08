@@ -27,13 +27,6 @@ export class HomeComponent {
    */
   public readonly dashboardCards: DashboardCard[] = [
     {
-      id: 'search',
-      title: 'Search',
-      description: 'Find books, chapters, and content quickly',
-      icon: 'search',
-      route: '/search'
-    },
-    {
       id: 'my-books',
       title: 'My Books',
       description: 'View and manage your book projects',

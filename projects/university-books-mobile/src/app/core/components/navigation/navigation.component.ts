@@ -4,12 +4,16 @@ import {
   signal,
   computed,
   inject,
+  ViewChild,
+  ElementRef,
+  DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { filter, map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   trigger,
   style,
@@ -21,6 +25,9 @@ import { ResponsiveService } from '../../services/responsive.service';
 import { NAVIGATION_ITEMS, NavigationItem } from './navigation.model';
 import { AuthService } from '../../../auth/services/auth.service';
 import { UserProfileSidebarComponent } from '../user-profile-sidebar/user-profile-sidebar.component';
+import { SearchOverlayService } from '../../services/search-overlay.service';
+import { SearchDropdownComponent } from '../search/search-dropdown/search-dropdown.component';
+import type { SearchItem } from '../../models/search-item.model';
 
 /**
  * Hamburger Navigation Component (GitHub Style)
@@ -76,9 +83,71 @@ export class NavigationComponent {
   private readonly responsive = inject(ResponsiveService);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly searchOverlayService = inject(SearchOverlayService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  @ViewChild('searchButton', { read: ElementRef }) searchButton?: ElementRef;
 
   // Navigation items from model
   public readonly navigationItems = NAVIGATION_ITEMS;
+
+  /**
+   * Mock search items for demonstration
+   */
+  private readonly searchItems: SearchItem[] = [
+    {
+      id: '1',
+      category: 'books',
+      title: 'Introduction to Computer Science',
+      subtitle: 'Complete guide for beginners',
+      metadata: 'Updated 2 days ago',
+      icon: 'book-outline',
+      badge: 'New',
+      badgeColor: 'success'
+    },
+    {
+      id: '2',
+      category: 'books',
+      title: 'Advanced JavaScript Patterns',
+      subtitle: 'Design patterns and best practices',
+      metadata: '15 chapters • 250 pages',
+      icon: 'book-outline'
+    },
+    {
+      id: '3',
+      category: 'chapters',
+      title: 'Data Structures',
+      subtitle: 'Introduction to Computer Science',
+      metadata: 'Chapter 5',
+      icon: 'document-text-outline'
+    },
+    {
+      id: '4',
+      category: 'chapters',
+      title: 'Async Patterns',
+      subtitle: 'Advanced JavaScript Patterns',
+      metadata: 'Chapter 12',
+      icon: 'document-text-outline',
+      badge: 'Draft',
+      badgeColor: 'warning'
+    },
+    {
+      id: '5',
+      category: 'documents',
+      title: 'Project Requirements',
+      subtitle: 'Technical specifications',
+      metadata: 'Last modified yesterday',
+      icon: 'document-outline'
+    },
+    {
+      id: '6',
+      category: 'users',
+      title: 'John Doe',
+      subtitle: 'john.doe@example.com',
+      metadata: 'Collaborator',
+      icon: 'person-outline'
+    }
+  ];
 
   // Responsive state (signals from ResponsiveService)
   public readonly isMobile = this.responsive.isMobile;
@@ -183,5 +252,65 @@ export class NavigationComponent {
    */
   public onAvatarClick(): void {
     this.openProfileSidebar();
+  }
+
+  /**
+   * Open search dropdown overlay
+   */
+  public openSearch(): void {
+    console.log('🔍 openSearch called');
+    console.log('searchButton:', this.searchButton);
+
+    if (!this.searchButton) {
+      console.error('❌ searchButton is not defined');
+      return;
+    }
+
+    console.log('📦 Opening search overlay...');
+    const ref = this.searchOverlayService.open<SearchDropdownComponent>(
+      this.searchButton.nativeElement,
+      SearchDropdownComponent
+    );
+
+    console.log('✅ Overlay opened, binding inputs...');
+
+    // Bind all required inputs
+    ref.instance.items = this.searchItems;
+    ref.instance.placeholder = 'Search books, chapters, documents...';
+    ref.instance.emptyMessage = 'Type to search across your content';
+    ref.instance.noResultsMessage = 'No results found for "{query}"';
+    ref.instance.noResultsHint = 'Try using different keywords or check spelling';
+    ref.instance.jumpToHint = 'Jump to';
+
+    console.log('🎯 Subscribing to itemSelected...');
+    // ⚠️ Persistent subscription: parent component manages dropdown lifecycle
+    ref.instance.itemSelected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((item) => {
+      this.onSearchItemSelected(item);
+    });
+
+    console.log('✨ Search dropdown fully initialized');
+  }
+
+  /**
+   * Handle search item selection
+   */
+  private onSearchItemSelected(item: SearchItem): void {
+    this.searchOverlayService.close();
+
+    // Navigate based on category
+    switch (item.category) {
+      case 'books':
+        this.router.navigate(['/books', item.id]);
+        break;
+      case 'chapters':
+        this.router.navigate(['/books', item.data]);
+        break;
+      case 'documents':
+        this.router.navigate(['/documents', item.id]);
+        break;
+      case 'users':
+        this.router.navigate(['/users', item.id]);
+        break;
+    }
   }
 }

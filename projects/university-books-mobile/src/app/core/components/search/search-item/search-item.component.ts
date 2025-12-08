@@ -5,12 +5,13 @@ import {
   EventEmitter,
   ElementRef,
   ChangeDetectionStrategy,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FocusableOption } from '@angular/cdk/a11y';
 import { IonIcon } from '@ionic/angular/standalone';
 
-import type { SearchItem } from '../../models/search-item.model';
+import type { SearchItem } from '../../../models/search-item.model';
 
 /**
  * Search Item Component
@@ -64,7 +65,7 @@ export class SearchItemComponent implements FocusableOption {
    */
   public isFocused = false;
 
-  constructor(private readonly elementRef: ElementRef) {}
+  private readonly elementRef = inject(ElementRef);
 
   /**
    * FocusableOption interface implementation
@@ -80,6 +81,13 @@ export class SearchItemComponent implements FocusableOption {
    */
   public blur(): void {
     this.isFocused = false;
+  }
+
+  /**
+   * Get label for typeahead (required by ListKeyManager with typeahead)
+   */
+  public getLabel(): string {
+    return this.item.title;
   }
 
   /**
