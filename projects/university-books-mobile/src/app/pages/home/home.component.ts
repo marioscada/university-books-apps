@@ -1,73 +1,201 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 
-interface DashboardCard {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  route: string;
-  badge?: number;
-}
+// Layout & Presentation Components
+import { HomeLayoutComponent } from './components/home-layout/home-layout.component';
+import { HomeHeroComponent } from './components/home-hero/home-hero.component';
+import { QuickActionsComponent } from './components/quick-actions/quick-actions.component';
+import { StatsWidgetComponent } from './components/stats-widget/stats-widget.component';
+import { RecentActivityComponent } from './components/recent-activity/recent-activity.component';
+import { RecommendationsComponent } from './components/recommendations/recommendations.component';
 
+// Models
+import type {
+  QuickAction,
+  UserStats,
+  Recommendation,
+  RecentActivity,
+} from './models';
+
+/**
+ * Home Component (Smart Container)
+ *
+ * Orchestrates the home dashboard by:
+ * - Managing data with signals
+ * - Fetching/computing derived state
+ * - Handling navigation and user actions
+ * - Delegating presentation to child components
+ *
+ * Follows Component Composition Pattern with Content Projection.
+ */
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [
+    CommonModule,
+    HomeLayoutComponent,
+    HomeHeroComponent,
+    QuickActionsComponent,
+    StatsWidgetComponent,
+    RecentActivityComponent,
+    RecommendationsComponent,
+  ],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  styleUrl: './home.component.scss',
 })
 export class HomeComponent {
   private readonly router = inject(Router);
 
+  // ========================================================================
+  // State Management (Signals)
+  // ========================================================================
+
   /**
-   * Dashboard cards matching navigation menu items
+   * User name (would come from auth service in real app)
    */
-  public readonly dashboardCards: DashboardCard[] = [
+  readonly userName = signal('User');
+
+  /**
+   * Quick action cards for main navigation
+   */
+  readonly quickActions = signal<QuickAction[]>([
     {
       id: 'my-books',
       title: 'My Books',
       description: 'View and manage your book projects',
-      icon: 'book',
+      icon: 'book-outline',
       route: '/books',
-      badge: 3
+      badge: '3',
+      badgeColor: 'primary',
     },
     {
       id: 'ai-studio',
       title: 'AI Studio',
       description: 'Generate content with AI assistance',
-      icon: 'bulb',
-      route: '/ai-studio'
+      icon: 'bulb-outline',
+      route: '/ai-studio',
     },
     {
       id: 'templates',
       title: 'Templates',
       description: 'Start from pre-built book templates',
-      icon: 'document-text',
-      route: '/templates'
+      icon: 'document-text-outline',
+      route: '/templates',
     },
     {
       id: 'library',
       title: 'Library',
       description: 'Access reference materials and research',
-      icon: 'library',
-      route: '/library'
+      icon: 'library-outline',
+      route: '/library',
     },
-    {
-      id: 'settings',
-      title: 'Settings',
-      description: 'Manage your account and preferences',
-      icon: 'settings',
-      route: '/settings'
-    }
-  ];
+  ]);
 
   /**
-   * Navigate to a specific route
+   * User statistics (would come from API in real app)
    */
-  public navigateTo(route: string): void {
-    this.router.navigate([route]);
+  readonly userStats = signal<UserStats>({
+    totalBooks: 3,
+    totalChapters: 24,
+    totalPages: 156,
+    lastActivity: new Date(),
+    wordsThisWeek: 8420,
+    writingStreak: 7,
+  });
+
+  /**
+   * Recent activity feed (would come from API in real app)
+   */
+  readonly recentActivities = signal<RecentActivity[]>([
+    {
+      id: 'activity-1',
+      title: 'The Art of Software Architecture',
+      author: 'John Doe',
+      activityType: 'edited',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      preview: 'Added new chapter on microservices patterns...',
+      route: '/books/1',
+      badge: 'Draft',
+      badgeColor: 'warning',
+    },
+    {
+      id: 'activity-2',
+      title: 'Modern Web Development',
+      activityType: 'viewed',
+      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+      route: '/books/2',
+      badge: 'Published',
+      badgeColor: 'success',
+    },
+    {
+      id: 'activity-3',
+      title: 'TypeScript Deep Dive',
+      author: 'Jane Smith',
+      activityType: 'created',
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+      route: '/books/3',
+    },
+  ]);
+
+  /**
+   * AI recommendations (would come from AI service in real app)
+   */
+  readonly recommendations = signal<Recommendation[]>([
+    {
+      id: 'rec-1',
+      title: 'Complete Chapter 3',
+      description: 'You\'re 80% done with this chapter. Finish it to maintain your streak!',
+      icon: 'create-outline',
+      action: 'Continue writing',
+      metadata: '~20 min remaining',
+      route: '/books/1/chapter/3',
+      priority: 'high',
+    },
+    {
+      id: 'rec-2',
+      title: 'Review AI Suggestions',
+      description: 'We generated 5 new content ideas based on your writing style.',
+      icon: 'sparkles-outline',
+      action: 'View suggestions',
+      route: '/ai-studio',
+      priority: 'medium',
+    },
+    {
+      id: 'rec-3',
+      title: 'Try a New Template',
+      description: 'Check out the "Technical Manual" template for structured documentation.',
+      icon: 'document-outline',
+      action: 'Browse templates',
+      route: '/templates',
+      priority: 'low',
+    },
+  ]);
+
+  // ========================================================================
+  // Event Handlers
+  // ========================================================================
+
+  /**
+   * Handle quick action click
+   */
+  onQuickActionClick(action: QuickAction): void {
+    this.router.navigate([action.route]);
+  }
+
+  /**
+   * Handle recent activity click
+   */
+  onActivityClick(activity: RecentActivity): void {
+    this.router.navigate([activity.route]);
+  }
+
+  /**
+   * Handle recommendation click
+   */
+  onRecommendationClick(recommendation: Recommendation): void {
+    if (recommendation.route) {
+      this.router.navigate([recommendation.route]);
+    }
   }
 }

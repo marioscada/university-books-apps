@@ -1,0 +1,64 @@
+<div class="recent-activity">
+  <h2 class="section-title">Recent Activity</h2>
+
+  @if (activities().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="book-outline" class="empty-icon"></ion-icon>
+      <p class="empty-text">No recent activity</p>
+      <p class="empty-subtext">Start working on your books to see activity here</p>
+    </div>
+  } @else {
+    <div class="activity-list">
+      @for (activity of activities(); track activity.id) {
+        <button
+          class="activity-item"
+          type="button"
+          [attr.aria-label]="activity.title"
+          (click)="onActivityClick(activity)"
+        >
+          <!-- Activity Icon -->
+          <div class="activity-type-icon">
+            <ion-icon [name]="getActivityIcon(activity.activityType)"></ion-icon>
+          </div>
+
+          <!-- Activity Content -->
+          <div class="activity-content">
+            <div class="activity-header">
+              <h3 class="activity-title">{{ activity.title }}</h3>
+              @if (activity.badge) {
+                <span
+                  class="activity-badge"
+                  [class.badge-success]="activity.badgeColor === 'success'"
+                  [class.badge-warning]="activity.badgeColor === 'warning'"
+                  [class.badge-danger]="activity.badgeColor === 'danger'"
+                  [class.badge-primary]="activity.badgeColor === 'primary'"
+                >
+                  {{ activity.badge }}
+                </span>
+              }
+            </div>
+
+            @if (activity.author) {
+              <p class="activity-author">by {{ activity.author }}</p>
+            }
+
+            @if (activity.preview) {
+              <p class="activity-preview">{{ activity.preview }}</p>
+            }
+
+            <div class="activity-footer">
+              <span class="activity-type">{{ getActivityLabel(activity.activityType) }}</span>
+              <span class="activity-separator">•</span>
+              <span class="activity-time">{{ activity.timestamp | date: 'short' }}</span>
+            </div>
+          </div>
+
+          <!-- Arrow Icon -->
+          <div class="activity-arrow">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+        </button>
+      }
+    </div>
+  }
+</div>

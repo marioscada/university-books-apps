@@ -1,8 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { personCircleOutline } from 'ionicons/icons';
 
 /**
  * Home Hero Component
@@ -20,7 +17,7 @@ import { personCircleOutline } from 'ionicons/icons';
 @Component({
   selector: 'app-home-hero',
   standalone: true,
-  imports: [CommonModule, IonIcon],
+  imports: [CommonModule],
   templateUrl: './home-hero.component.html',
   styleUrls: ['./home-hero.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,10 +32,6 @@ export class HomeHeroComponent {
    * Current date for display
    */
   readonly currentDate = new Date();
-
-  constructor() {
-    addIcons({ personCircleOutline });
-  }
 
   /**
    * Get greeting based on time of day

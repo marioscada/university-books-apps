@@ -1,0 +1,72 @@
+<div class="stats-widget">
+  <h2 class="section-title">Your Activity</h2>
+
+  <div class="stats-grid">
+    <!-- Total Books -->
+    <div class="stat-card">
+      <div class="stat-icon">
+        <ion-icon name="book-outline"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ stats().totalBooks }}</div>
+        <div class="stat-label">Books</div>
+      </div>
+    </div>
+
+    <!-- Total Chapters -->
+    <div class="stat-card">
+      <div class="stat-icon">
+        <ion-icon name="list-outline"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ stats().totalChapters }}</div>
+        <div class="stat-label">Chapters</div>
+      </div>
+    </div>
+
+    <!-- Total Pages -->
+    <div class="stat-card">
+      <div class="stat-icon">
+        <ion-icon name="document-text-outline"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ stats().totalPages }}</div>
+        <div class="stat-label">Pages</div>
+      </div>
+    </div>
+
+    <!-- Writing Streak (Optional) -->
+    @if (stats().writingStreak !== undefined) {
+      <div class="stat-card stat-card-highlight">
+        <div class="stat-icon">
+          <ion-icon name="flame-outline"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats().writingStreak }}</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+      </div>
+    }
+
+    <!-- Words This Week (Optional) -->
+    @if (stats().wordsThisWeek !== undefined) {
+      <div class="stat-card">
+        <div class="stat-icon">
+          <ion-icon name="create-outline"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats().wordsThisWeek | number }}</div>
+          <div class="stat-label">Words This Week</div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Last Activity -->
+  <div class="last-activity">
+    <ion-icon name="time-outline" class="activity-icon"></ion-icon>
+    <span class="activity-text">
+      Last activity: {{ stats().lastActivity | date: 'short' }}
+    </span>
+  </div>
+</div>
