@@ -20,7 +20,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { SearchOverlayService } from '../../services/search-overlay.service';
 
 import type { SearchItem } from '../../models/search-item.model';
-import type { NavigationItem } from '../../components/navigation/navigation.model';
+import type { NavigationItem } from '../../models/navigation.model';
 
 /**
  * App Shell Component (Layout Orchestrator Pattern)

@@ -19,7 +19,7 @@ import {
 } from '@angular/animations';
 
 import { ResponsiveService } from '../../services/responsive.service';
-import { NAVIGATION_ITEMS, NavigationItem } from '../../components/navigation/navigation.model';
+import { NAVIGATION_ITEMS, NavigationItem } from '../../models/navigation.model';
 
 /**
  * Navigation Drawer Component (Material Design Pattern)
