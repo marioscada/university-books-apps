@@ -1,0 +1,174 @@
+@use '../../../../../../styles/variables' as vars;
+
+// =============================================================================
+// Section Title
+// =============================================================================
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: vars.$font-weight-bold;
+  color: vars.$text-color;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: -0.01em;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+  }
+}
+
+// =============================================================================
+// Actions Grid (Responsive)
+// =============================================================================
+
+.actions-grid {
+  display: grid;
+  gap: 1rem;
+
+  // Desktop: 2 columns
+  @media (min-width: vars.$breakpoint-lg) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // Tablet: 2 columns
+  @media (min-width: vars.$breakpoint-sm) and (max-width: vars.$breakpoint-lg - 1) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  // Mobile: 1 column
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// =============================================================================
+// Action Card
+// =============================================================================
+
+.action-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: vars.$surface-2;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all vars.$transition-speed-base ease;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background: vars.$surface-3;
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    padding: 1.25rem;
+  }
+}
+
+// =============================================================================
+// Action Icon
+// =============================================================================
+
+.action-icon {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: vars.$surface-1;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  ion-icon {
+    font-size: 1.75rem;
+    color: vars.$text-color;
+  }
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    width: 2.5rem;
+    height: 2.5rem;
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+// =============================================================================
+// Action Content
+// =============================================================================
+
+.action-content {
+  flex: 1;
+  min-width: 0; // Allows text truncation
+}
+
+.action-title {
+  font-size: 1rem;
+  font-weight: vars.$font-weight-semibold;
+  color: vars.$text-color;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    font-size: 0.9375rem;
+  }
+}
+
+.action-description {
+  font-size: 0.875rem;
+  color: vars.$text-color-secondary;
+  margin: 0;
+  line-height: 1.4;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    font-size: 0.8125rem;
+  }
+}
+
+// =============================================================================
+// Action Badge
+// =============================================================================
+
+.action-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: vars.$font-weight-bold;
+  border-radius: vars.$border-radius-full;
+  background: vars.$surface-3;
+  color: vars.$text-color;
+
+  &.badge-success {
+    background: rgba(4, 120, 87, 0.2);
+    color: vars.$accent-green;
+  }
+
+  &.badge-warning {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+  }
+
+  &.badge-danger {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+  }
+
+  &.badge-primary {
+    background: rgba(33, 150, 243, 0.2);
+    color: #2196f3;
+  }
+}
