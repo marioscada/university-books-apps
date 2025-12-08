@@ -12,6 +12,11 @@
 @import 'tailwindcss/utilities';
 
 // -----------------------------------------------------------------------------
+// Angular CDK (must come before custom styles)
+// -----------------------------------------------------------------------------
+@import '@angular/cdk/overlay-prebuilt.css';
+
+// -----------------------------------------------------------------------------
 // Custom Base & Utilities (using @import for compatibility with Tailwind)
 // -----------------------------------------------------------------------------
 @import 'base';
