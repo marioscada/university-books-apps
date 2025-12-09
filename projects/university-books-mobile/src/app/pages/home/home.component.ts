@@ -7,7 +7,6 @@ import { HomeLayoutComponent } from './components/home-layout/home-layout.compon
 import { HomeHeroComponent } from './components/home-hero/home-hero.component';
 import { QuickActionsComponent } from './components/quick-actions/quick-actions.component';
 import { StatsWidgetComponent } from './components/stats-widget/stats-widget.component';
-import { RecentActivityComponent } from './components/recent-activity/recent-activity.component';
 import { RecommendationsComponent } from './components/recommendations/recommendations.component';
 
 // Models
@@ -15,7 +14,6 @@ import type {
   QuickAction,
   UserStats,
   Recommendation,
-  RecentActivity,
 } from './models';
 
 /**
@@ -23,7 +21,6 @@ import type {
  *
  * Orchestrates the home dashboard by:
  * - Managing data with signals
- * - Fetching/computing derived state
  * - Handling navigation and user actions
  * - Delegating presentation to child components
  *
@@ -38,7 +35,6 @@ import type {
     HomeHeroComponent,
     QuickActionsComponent,
     StatsWidgetComponent,
-    RecentActivityComponent,
     RecommendationsComponent,
   ],
   templateUrl: './home.component.html',
@@ -105,40 +101,6 @@ export class HomeComponent {
   });
 
   /**
-   * Recent activity feed (would come from API in real app)
-   */
-  readonly recentActivities = signal<RecentActivity[]>([
-    {
-      id: 'activity-1',
-      title: 'The Art of Software Architecture',
-      author: 'John Doe',
-      activityType: 'edited',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-      preview: 'Added new chapter on microservices patterns...',
-      route: '/books/1',
-      badge: 'Draft',
-      badgeColor: 'warning',
-    },
-    {
-      id: 'activity-2',
-      title: 'Modern Web Development',
-      activityType: 'viewed',
-      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
-      route: '/books/2',
-      badge: 'Published',
-      badgeColor: 'success',
-    },
-    {
-      id: 'activity-3',
-      title: 'TypeScript Deep Dive',
-      author: 'Jane Smith',
-      activityType: 'created',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-      route: '/books/3',
-    },
-  ]);
-
-  /**
    * AI recommendations (would come from AI service in real app)
    */
   readonly recommendations = signal<Recommendation[]>([
@@ -181,13 +143,6 @@ export class HomeComponent {
    */
   onQuickActionClick(action: QuickAction): void {
     this.router.navigate([action.route]);
-  }
-
-  /**
-   * Handle recent activity click
-   */
-  onActivityClick(activity: RecentActivity): void {
-    this.router.navigate([activity.route]);
   }
 
   /**

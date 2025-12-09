@@ -52,6 +52,12 @@ export const NAVIGATION_ITEMS: readonly NavigationItem[] = [
     badge: 3
   },
   {
+    id: 'my-activity',
+    label: 'My Activity',
+    icon: 'time',
+    route: '/activity'
+  },
+  {
     id: 'ai-studio',
     label: 'AI Studio',
     icon: 'bulb',

@@ -17,10 +17,11 @@ HomeComponent (Smart/Container)
   └── HomeLayoutComponent (Structural)
       ├── HomeHeroComponent (Presentational)
       ├── QuickActionsComponent (Presentational)
-      ├── RecentActivityComponent (Presentational)
       ├── StatsWidgetComponent (Presentational)
       └── RecommendationsComponent (Presentational)
 ```
+
+**Note**: `RecentActivityComponent` has been moved to the Activity page (`/pages/activity/`), which uses the new enterprise-standard `PageLayout` architecture.
 
 ### 3. Responsive Design Strategy
 - **Desktop (≥1024px)**: 2-column grid (2/3 main + 1/3 sidebar)
@@ -51,11 +52,11 @@ home/
 │   │   ├── stats-widget.component.scss
 │   │   └── stats-widget.component.spec.ts
 │   ├── recent-activity/
-│   │   ├── recent-activity.component.ts   # Recent books feed
-│   │   ├── recent-activity.component.scss
+│   │   ├── recent-activity.component.ts   # Reusable activity feed
+│   │   ├── recent-activity.component.scss # (used by Activity page)
 │   │   └── recent-activity.component.spec.ts
 │   └── recommendations/
-│       ├── recommendations.component.ts    # AI suggestions (sidebar)
+│       ├── recommendations.component.ts    # AI suggestions (reusable)
 │       ├── recommendations.component.scss
 │       └── recommendations.component.spec.ts
 ├── models/
@@ -211,13 +212,13 @@ All feature components follow the same pattern:
 
 #### RecentActivityComponent
 ```typescript
-@Input({ required: true }) books!: Signal<Book[]>;
-@Input({ required: true }) loading!: Signal<boolean>;
-@Output() bookClick = new EventEmitter<Book>();
+@Input({ required: true }) activities!: Signal<RecentActivity[]>;
+@Output() activityClick = new EventEmitter<RecentActivity>();
 ```
-- List of recent books
+- List of recent activity items
 - Loading state
 - Empty state handling
+- **Note**: Now primarily used by Activity page (`/pages/activity/`)
 
 #### RecommendationsComponent
 ```typescript

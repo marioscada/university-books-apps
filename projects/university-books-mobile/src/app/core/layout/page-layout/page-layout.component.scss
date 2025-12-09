@@ -1,0 +1,137 @@
+@use '../../../../styles/variables' as vars;
+
+// =============================================================================
+// Page Layout - Responsive Grid System
+// =============================================================================
+//
+// Mobile-first responsive layout following:
+// - CSS Grid for modern layouts
+// - Breakpoint-based adaptability
+// - Flexbox fallback for content areas
+//
+// Breakpoints:
+// - Mobile: < 768px (single column)
+// - Tablet: 768px - 1024px (grid with optional sidebar)
+// - Desktop: > 1024px (full grid with sidebar)
+//
+// =============================================================================
+
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  max-width: vars.$breakpoint-xl;
+  margin: 0 auto;
+  padding: 0;
+
+  // =============================================================================
+  // Header Region
+  // =============================================================================
+
+  &__header {
+    width: 100%;
+    margin-bottom: 2rem;
+
+    // Mobile: reduce spacing
+    @media (max-width: calc(vars.$breakpoint-sm - 1px)) {
+      margin-bottom: 1.5rem;
+    }
+
+    // Empty state: collapse margin
+    &:empty {
+      display: none;
+    }
+  }
+
+  // =============================================================================
+  // Body (Content + Sidebar)
+  // =============================================================================
+
+  &__body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+
+    // Mobile: single column, reduce spacing
+    @media (max-width: calc(vars.$breakpoint-sm - 1px)) {
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    // Desktop: two columns (content + sidebar)
+    @media (min-width: vars.$breakpoint-lg) {
+      grid-template-columns: 1fr 320px;
+      gap: 2.5rem;
+    }
+  }
+
+  // =============================================================================
+  // Content Region
+  // =============================================================================
+
+  &__content {
+    grid-column: 1;
+    min-width: 0; // Prevent grid blowout
+
+    // Content can have nested flex/grid layouts
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    @media (max-width: calc(vars.$breakpoint-sm - 1px)) {
+      gap: 1.5rem;
+    }
+  }
+
+  // =============================================================================
+  // Sidebar Region (Desktop only)
+  // =============================================================================
+
+  &__sidebar {
+    grid-column: 2;
+
+    // Mobile/Tablet: hide sidebar (or move to bottom)
+    @media (max-width: calc(vars.$breakpoint-lg - 1px)) {
+      display: none;
+    }
+
+    // Empty state: hide
+    &:empty {
+      display: none;
+    }
+  }
+
+  // =============================================================================
+  // Footer Region
+  // =============================================================================
+
+  &__footer {
+    width: 100%;
+    margin-top: auto; // Push to bottom if content is short
+
+    // Empty state: hide
+    &:empty {
+      display: none;
+    }
+  }
+}
+
+// =============================================================================
+// Ionic Content Overrides
+// =============================================================================
+
+ion-content {
+  --background: #{vars.$background-color};
+  --padding-start: 2rem;
+  --padding-end: 2rem;
+  --padding-top: 0;
+  --padding-bottom: 2rem;
+
+  @media (max-width: calc(vars.$breakpoint-sm - 1px)) {
+    --padding-start: 1.5rem;
+    --padding-end: 1.5rem;
+    --padding-bottom: 1.5rem;
+  }
+}

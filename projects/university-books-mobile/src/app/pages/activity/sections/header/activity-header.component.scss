@@ -1,0 +1,24 @@
+@use '../../../../../styles/variables' as vars;
+
+.activity-header {
+  &__title {
+    font-size: 2rem;
+    font-weight: vars.$font-weight-bold;
+    color: vars.$text-color;
+    margin: 0 0 0.5rem 0;
+
+    @media (max-width: calc(vars.$breakpoint-sm - 1px)) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    color: vars.$text-color-secondary;
+    margin: 0;
+
+    @media (max-width: calc(vars.$breakpoint-sm - 1px)) {
+      font-size: 0.875rem;
+    }
+  }
+}

@@ -19,21 +19,23 @@
     [userName]="userName()"
   ></app-home-hero>
 
-  <!-- Primary Content Area: Quick Actions + Recent Activity -->
-  <div homeSection="primary" class="primary-content">
+  <!-- Primary Content Area: Quick Actions -->
+  <div
+    homeSection="primary"
+    class="primary-content"
+  >
     <app-quick-actions
       [actions]="quickActions()"
       (actionClick)="onQuickActionClick($event)"
     ></app-quick-actions>
-
-    <app-recent-activity
-      [activities]="recentActivities()"
-      (activityClick)="onActivityClick($event)"
-    ></app-recent-activity>
+    
   </div>
 
   <!-- Secondary Sidebar: Stats + Recommendations (Desktop Only) -->
-  <div homeSection="secondary" class="secondary-content">
+  <div
+    homeSection="secondary"
+    class="secondary-content"
+  >
     <app-stats-widget
       [stats]="userStats()"
     ></app-stats-widget>
