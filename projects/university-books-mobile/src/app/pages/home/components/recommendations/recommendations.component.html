@@ -1,0 +1,48 @@
+<div class="recommendations">
+  <h2 class="section-title">
+    <ion-icon name="sparkles-outline" class="title-icon"></ion-icon>
+    Recommendations
+  </h2>
+
+  @if (recommendations().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="bulb-outline" class="empty-icon"></ion-icon>
+      <p class="empty-text">No recommendations yet</p>
+      <p class="empty-subtext">Keep using the app to get personalized suggestions</p>
+    </div>
+  } @else {
+    <div class="recommendations-list">
+      @for (recommendation of recommendations(); track recommendation.id) {
+        <button
+          class="recommendation-card"
+          type="button"
+          [class.priority-high]="recommendation.priority === 'high'"
+          [class.priority-medium]="recommendation.priority === 'medium'"
+          [class.priority-low]="recommendation.priority === 'low'"
+          [attr.aria-label]="recommendation.title"
+          (click)="onRecommendationClick(recommendation)"
+        >
+          <!-- Icon -->
+          <div class="recommendation-icon">
+            <ion-icon [name]="recommendation.icon"></ion-icon>
+          </div>
+
+          <!-- Content -->
+          <div class="recommendation-content">
+            <h3 class="recommendation-title">{{ recommendation.title }}</h3>
+            <p class="recommendation-description">{{ recommendation.description }}</p>
+
+            @if (recommendation.metadata) {
+              <p class="recommendation-metadata">{{ recommendation.metadata }}</p>
+            }
+
+            <div class="recommendation-action">
+              <span class="action-text">{{ recommendation.action }}</span>
+              <ion-icon name="arrow-forward-outline" class="action-icon"></ion-icon>
+            </div>
+          </div>
+        </button>
+      }
+    </div>
+  }
+</div>

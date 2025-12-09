@@ -1,0 +1,44 @@
+<!--
+  App Shell Component (Layout Orchestrator)
+
+  Smart container that composes:
+  - TopAppBarComponent (header)
+  - NavigationDrawerComponent (sidebar menu)
+  - Content area (router-outlet)
+  - Profile sidebar (overlay)
+
+  Only renders layout when user is authenticated
+-->
+
+@if (showLayout()) {
+  <!-- Top App Bar (Header) -->
+  <app-top-app-bar
+    [userEmail]="userEmail()"
+    (searchRequested)="onSearchRequested($event)"
+    (profileRequested)="onProfileRequested()"
+  ></app-top-app-bar>
+
+  <!-- Navigation Drawer (Sidebar Menu) -->
+  <app-navigation-drawer
+    (navigationChanged)="onNavigationChanged($event)"
+  ></app-navigation-drawer>
+
+  <!-- Main Content Area -->
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Profile Sidebar (Overlay) -->
+  @if (isProfileSidebarOpen()) {
+    <app-user-profile-sidebar
+      (closeSidebar)="onProfileSidebarClose()"
+    ></app-user-profile-sidebar>
+  }
+}
+
+<!-- Unauthenticated State -->
+@if (!showLayout()) {
+  <div class="auth-container">
+    <router-outlet></router-outlet>
+  </div>
+}

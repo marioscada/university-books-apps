@@ -1,0 +1,92 @@
+<!--
+  Navigation Drawer (Material Design Pattern)
+
+  Components:
+  - Hamburger button (always visible, fixed position)
+  - Backdrop overlay (when drawer is open)
+  - Sidebar drawer (slides in from left)
+
+  Pure presentational component with local UI state
+-->
+
+<!-- Hamburger Menu Button (Fixed Position - Always Visible) -->
+<button
+  class="hamburger-button"
+  type="button"
+  [attr.aria-expanded]="isDrawerOpen()"
+  [attr.aria-label]="isDrawerOpen() ? 'Close navigation menu' : 'Open navigation menu'"
+  (click)="toggleDrawer()"
+>
+  <ion-icon
+    [name]="isDrawerOpen() ? 'close-outline' : 'menu-outline'"
+    class="hamburger-icon"
+  ></ion-icon>
+</button>
+
+<!-- Backdrop Overlay (When drawer is open) -->
+@if (showBackdrop()) {
+  <div
+    [@fadeIn]
+    class="drawer-backdrop"
+    role="button"
+    tabindex="0"
+    aria-label="Close navigation menu"
+    (click)="onBackdropClick()"
+    (keydown.enter)="onBackdropClick()"
+    (keydown.escape)="onBackdropClick()"
+  ></div>
+}
+
+<!-- Navigation Drawer Sidebar -->
+@if (showDrawer()) {
+  <nav
+    [@slideIn]
+    class="navigation-drawer"
+    [class.drawer-mobile]="isMobile()"
+    [class.drawer-tablet]="isTablet()"
+    [class.drawer-desktop]="isDesktop()"
+    aria-label="Main navigation"
+  >
+    <!-- Drawer Header -->
+    <div class="drawer-header">
+      <div class="drawer-logo">
+        <ion-icon name="library" class="logo-icon"></ion-icon>
+        <div class="logo-content">
+          <span class="logo-title">Books</span>
+          <span class="logo-subtitle">Create & Share</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Navigation Items -->
+    <ul class="drawer-nav-list">
+      @for (item of navigationItems; track item.id) {
+        <li class="nav-item">
+          <a
+            [routerLink]="item.route"
+            class="nav-link"
+            [class.nav-link-active]="isActive(item)"
+            [attr.aria-current]="isActive(item) ? 'page' : null"
+            (click)="onNavigate(item)"
+          >
+            <!-- Icon -->
+            <ion-icon [name]="item.icon" class="nav-icon"></ion-icon>
+
+            <!-- Label -->
+            <span class="nav-label">{{ item.label }}</span>
+
+            <!-- Badge (if present) -->
+            @if (item.badge && item.badge > 0) {
+              <span
+                class="nav-badge"
+                [attr.aria-label]="item.badge + ' notifications'"
+              >
+                {{ item.badge }}
+              </span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+}

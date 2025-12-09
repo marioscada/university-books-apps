@@ -18,5 +18,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
     canActivate: [authGuard],
     title: 'Home - University Books'
+  },
+  {
+    path: 'activity',
+    loadComponent: () => import('./pages/activity/activity.component').then((m) => m.ActivityComponent),
+    canActivate: [authGuard],
+    title: 'My Activity - University Books'
   }
 ];

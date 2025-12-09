@@ -1,0 +1,38 @@
+<div class="quick-actions">
+  <h2 class="section-title">Quick Access</h2>
+
+  <div class="actions-grid">
+    @for (action of actions(); track action.id) {
+      <button
+        class="action-card"
+        type="button"
+        [attr.aria-label]="action.title"
+        (click)="onActionClick(action)"
+      >
+        <!-- Icon -->
+        <div class="action-icon">
+          <ion-icon [name]="action.icon"></ion-icon>
+        </div>
+
+        <!-- Content -->
+        <div class="action-content">
+          <h3 class="action-title">{{ action.title }}</h3>
+          <p class="action-description">{{ action.description }}</p>
+        </div>
+
+        <!-- Optional Badge -->
+        @if (action.badge) {
+          <span
+            class="action-badge"
+            [class.badge-success]="action.badgeColor === 'success'"
+            [class.badge-warning]="action.badgeColor === 'warning'"
+            [class.badge-danger]="action.badgeColor === 'danger'"
+            [class.badge-primary]="action.badgeColor === 'primary'"
+          >
+            {{ action.badge }}
+          </span>
+        }
+      </button>
+    }
+  </div>
+</div>

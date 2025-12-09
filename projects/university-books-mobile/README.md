@@ -25,6 +25,13 @@ Navigate to `http://localhost:4200/`
 - **[PROJECT-STRUCTURE.md](../../docs/mobile-app/PROJECT-STRUCTURE.md)** - 📂 Complete project structure
 - **[ARCHITECTURE.md](../../docs/mobile-app/ARCHITECTURE.md)** - 🏗️ Architecture decisions & patterns
 
+### Architecture Documentation
+
+- **[Layout System](../../docs/mobile-app/architecture/)** ⭐ **NEW** - Enterprise-standard region-based layout
+  - [Layout System Architecture](../../docs/mobile-app/architecture/layout-system.md) - AppShell + PageLayout
+  - [Activity Page](../../docs/mobile-app/architecture/activity-page.md) - First PageLayout implementation
+  - [Home Dashboard](../../docs/mobile-app/architecture/home-dashboard.md) - Component composition pattern
+
 ### Integration Guides
 
 - **[AWS Backend Integration](../../docs/AWS-BACKEND-INTEGRATION-GUIDE.md)** - API Gateway + Cognito setup
@@ -32,29 +39,62 @@ Navigate to `http://localhost:4200/`
 
 ## 🏗️ Architecture
 
-Built following official AWS Amplify Gen 2 and Angular 19 (2025) best practices:
+Built following official AWS Amplify Gen 2 and Angular 19 (2025) best practices with **Enterprise-Standard Region-Based Layout Architecture**:
 
 ```
 src/app/
 ├── core/                    Singleton services & app-wide resources
+│   ├── layout/              Layout architecture
+│   │   ├── app-shell/       Global app layout (TopAppBar + NavDrawer)
+│   │   ├── page-layout/     Reusable page skeleton (region-based)
+│   │   ├── top-app-bar/     Fixed header component
+│   │   └── navigation-drawer/  Hamburger menu sidebar
 │   ├── models/              Domain models (business logic)
 │   ├── services/            Business services (AuthService)
 │   ├── config/              Configurations (Amplify, API client)
 │   └── generated/           Auto-generated OpenAPI client
 │
 ├── shared/                  Reusable components
-└── features/                Feature modules (lazy-loaded)
-    └── auth/                Authentication feature
+├── pages/                   Application pages
+│   ├── home/                Home dashboard (Smart Container Pattern)
+│   └── activity/            Activity page (Region-Based Layout)
+│       └── sections/        Section components (header/content/footer)
+└── auth/                    Authentication feature
 ```
+
+### Layout Architecture
+
+**Two-Level Layout System:**
+
+1. **AppShell** (Global) - Application-wide layout wrapper
+   - TopAppBar with search and profile
+   - NavigationDrawer with hamburger menu
+   - Wraps `<router-outlet>` at root level
+   - Always visible when authenticated
+
+2. **PageLayout** (Reusable) - Region-based page skeleton
+   - Content projection with attribute selectors
+   - Named regions: `header`, `content`, `footer`, `sidebar`
+   - Mobile-first responsive CSS Grid
+   - Following Google Angular Material Shell, SAP Fiori, Salesforce Lightning patterns
+
+**Pattern References:**
+- Google Angular Material Shell
+- SAP Fiori Layout Architecture
+- Salesforce Lightning Component Model
+- Microsoft App Shell Architecture
 
 ## ✨ Features
 
 - ✅ **AWS Cognito Authentication** - JWT-based auth with auto token refresh
 - ✅ **Type-safe API Client** - Auto-generated from OpenAPI schema
 - ✅ **Domain Models** - Business logic separated from API types
-- ✅ **Feature-based Structure** - Angular best practice organization
+- ✅ **Enterprise Layout Architecture** - Region-based PageLayout system
+- ✅ **Component Composition Pattern** - Smart/Dumb component separation
+- ✅ **Responsive Design** - Mobile-first with CSS Grid
 - ✅ **AWS Amplify Gen 2** - TypeScript-first backend definitions
-- ✅ **Clean Architecture** - Core/Shared/Features separation
+- ✅ **Clean Architecture** - Core/Shared/Pages separation
+- ✅ **Modern Angular (19)** - Signals, standalone components, inject() pattern
 
 ## 🛠️ Setup
 

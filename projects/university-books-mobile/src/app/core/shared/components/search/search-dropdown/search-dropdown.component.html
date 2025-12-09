@@ -1,0 +1,41 @@
+<div
+  class="search-dropdown"
+  role="dialog"
+  aria-label="Search dialog"
+  (keydown)="onKeydown($event)"
+>
+  <!-- Results -->
+  <div class="search-dropdown-body">
+    <!-- Results grouped by category (GitHub-style) -->
+    @if (categoriesWithItems$ | async; as categories) {
+      @if (categories.length > 0) {
+        <div class="search-results" role="listbox">
+          @for (category of categories; track category.config.key) {
+            <div class="search-category">
+              <!-- Category header -->
+              <div class="category-header">
+                <ion-icon
+                  class="category-icon"
+                  [name]="category.config.icon"
+                ></ion-icon>
+                <span class="category-label">{{ category.config.label }}</span>
+                <span class="category-count">({{ category.items.length }})</span>
+              </div>
+
+              <!-- Category items -->
+              <div class="category-items">
+                @for (item of category.items; track item.id) {
+                  <app-search-item
+                    [item]="item"
+                    [jumpToHint]="jumpToHint"
+                    (selected)="onItemSelect($event)"
+                  ></app-search-item>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>

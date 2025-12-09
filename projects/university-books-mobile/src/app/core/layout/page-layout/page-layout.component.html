@@ -1,0 +1,43 @@
+<!--
+  Page Layout - Region-based Architecture
+
+  Pure skeleton component with named regions for content projection.
+  Each section is injected via attribute selector.
+
+  Regions:
+  - header: Page title, breadcrumbs, actions
+  - content: Main page content
+  - footer: Bottom actions, pagination, recommendations
+  - sidebar: Optional right sidebar (desktop only)
+-->
+
+<ion-content [scrollY]="true">
+  <div class="page-layout">
+
+    <!-- Header Region -->
+    <header class="page-layout__header">
+      <ng-content select="[section='header']"></ng-content>
+    </header>
+
+    <!-- Main Content Area (with optional sidebar) -->
+    <div class="page-layout__body">
+
+      <!-- Primary Content Region -->
+      <main class="page-layout__content">
+        <ng-content select="[section='content']"></ng-content>
+      </main>
+
+      <!-- Sidebar Region (optional, desktop only) -->
+      <aside class="page-layout__sidebar">
+        <ng-content select="[section='sidebar']"></ng-content>
+      </aside>
+
+    </div>
+
+    <!-- Footer Region -->
+    <footer class="page-layout__footer">
+      <ng-content select="[section='footer']"></ng-content>
+    </footer>
+
+  </div>
+</ion-content>

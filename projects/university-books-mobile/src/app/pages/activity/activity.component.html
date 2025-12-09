@@ -1,0 +1,38 @@
+<!--
+  Activity Page - Region-based Layout
+
+  Uses enterprise-standard PageLayout with section-based composition.
+
+  Architecture:
+  - PageLayout provides the skeleton
+  - Section components are injected via attribute selectors
+  - Each section is responsible for its own presentation
+  - Zero layout logic in this template
+
+  Benefits:
+  - Clean separation of concerns
+  - Easily replaceable sections
+  - Consistent layout across pages
+  - Mobile-first responsive
+-->
+
+<app-page-layout>
+
+  <!-- Header Section -->
+  <app-activity-header section="header"></app-activity-header>
+
+  <!-- Content Section (Recent Activity) -->
+  <app-activity-content
+    section="content"
+    [activities]="recentActivities()"
+    (activityClick)="onActivityClick($event)"
+  ></app-activity-content>
+
+  <!-- Footer Section (Recommendations) -->
+  <app-activity-recommendations
+    section="footer"
+    [recommendations]="recommendations()"
+    (recommendationClick)="onRecommendationClick($event)"
+  ></app-activity-recommendations>
+
+</app-page-layout>

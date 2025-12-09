@@ -1,0 +1,21 @@
+<div class="home-container">
+  <!-- Header Section (Full Width) -->
+  <section class="home-header">
+    <ng-content select="[homeSection='header']"></ng-content>
+  </section>
+
+  <!-- Main Grid Layout -->
+  <div class="home-grid">
+    <!-- Primary Content Area (Left Column) -->
+    <section class="home-primary">
+      <ng-content select="[homeSection='primary']"></ng-content>
+    </section>
+
+    <!-- Secondary Sidebar (Right Column - Desktop Only) -->
+    @if (isDesktop()) {
+      <aside class="home-secondary">
+        <ng-content select="[homeSection='secondary']"></ng-content>
+      </aside>
+    }
+  </div>
+</div>
