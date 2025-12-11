@@ -2,18 +2,22 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type PresignedUrlRequest = {
+export type MultipartInitiateRequest = {
   /**
    * Document file name
    */
   fileName: string;
   /**
-   * MIME type of the document
+   * MIME type
    */
   contentType: string;
   /**
-   * File size in bytes (max 100MB)
+   * Total file size in bytes
    */
   fileSize: number;
+  /**
+   * Part size in bytes (5MB-100MB, default 10MB)
+   */
+  partSize?: number;
 };
 

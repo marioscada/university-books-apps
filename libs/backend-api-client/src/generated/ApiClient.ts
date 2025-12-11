@@ -6,11 +6,17 @@ import type { BaseHttpRequest } from './core/BaseHttpRequest';
 import type { OpenAPIConfig } from './core/OpenAPI';
 import { FetchHttpRequest } from './core/FetchHttpRequest';
 import { AuthenticationService } from './services/AuthenticationService';
+import { BooksService } from './services/BooksService';
 import { DocumentsService } from './services/DocumentsService';
+import { DocumentsMultipartService } from './services/DocumentsMultipartService';
+import { TemplatesService } from './services/TemplatesService';
 type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
 export class ApiClient {
   public readonly authentication: AuthenticationService;
+  public readonly books: BooksService;
   public readonly documents: DocumentsService;
+  public readonly documentsMultipart: DocumentsMultipartService;
+  public readonly templates: TemplatesService;
   public readonly request: BaseHttpRequest;
   constructor(config?: Partial<OpenAPIConfig>, HttpRequest: HttpRequestConstructor = FetchHttpRequest) {
     this.request = new HttpRequest({
@@ -25,7 +31,10 @@ export class ApiClient {
       ENCODE_PATH: config?.ENCODE_PATH,
     });
     this.authentication = new AuthenticationService(this.request);
+    this.books = new BooksService(this.request);
     this.documents = new DocumentsService(this.request);
+    this.documentsMultipart = new DocumentsMultipartService(this.request);
+    this.templates = new TemplatesService(this.request);
   }
 }
 

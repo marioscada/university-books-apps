@@ -79,6 +79,6 @@ generated/
 
 ---
 
-**Last Generated**: 2025-12-06T11:31:05.071Z
+**Last Generated**: 2025-12-11T15:52:05.334Z
 **Generator**: openapi-typescript-codegen
 **Source Schema**: schemas/current.json

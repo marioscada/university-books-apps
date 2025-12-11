@@ -4,4 +4,7 @@
 /* eslint-disable */
 
 export { AuthenticationService } from './AuthenticationService';
+export { BooksService } from './BooksService';
+export { DocumentsMultipartService } from './DocumentsMultipartService';
 export { DocumentsService } from './DocumentsService';
+export { TemplatesService } from './TemplatesService';
