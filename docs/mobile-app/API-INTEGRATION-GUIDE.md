@@ -61,7 +61,19 @@ export class AuthService {
   logout(): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.apiUrl}/v1/auth/logout`, {});
   }
+
+  /**
+   * Get current user profile from JWT token
+   * ✅ NEW: Returns user info decoded from access token
+   * ✅ No database query - extracts from JWT claims
+   */
+  getCurrentUser(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/v1/auth/me`);
+  }
 }
+
+// Add type for user profile response
+type UserProfile = paths['/v1/auth/me']['get']['responses']['200']['content']['application/json'];
 ```
 
 ## 📄 Document Service Example
@@ -460,20 +472,109 @@ response.
 When backend API changes:
 
 ```bash
-# 1. Backend developer updates Zod schema
-vim lib/api/schemas/auth.schema.ts
+# ========================================
+# BACKEND (ai-platform-university-books)
+# ========================================
 
-# 2. Regenerate types
+# 1. Backend developer updates Zod schema
+cd ~/ai-platform-university-books
+vim lib/api/v1/schemas/auth/login.schema.ts
+
+# 2. Regenerate OpenAPI spec and types
 npm run generate:all
 
-# 3. Frontend breaks at compile time if changes are incompatible
+# This generates:
+# - dist/openapi.json (OpenAPI 3.1.0 spec)
+# - Copies api-types.ts to frontend if path is configured
+
+# ========================================
+# FRONTEND (university-books-apps)
+# ========================================
+
+# 3. Pull latest backend changes
+cd ~/university-books-apps
+
+# 4. Regenerate frontend types from updated OpenAPI spec
+# Option A: If backend auto-copied types
+npm install  # Types are ready to use
+
+# Option B: Manual regeneration (if needed)
+npm run generate:types
+# This runs: openapi-typescript ../ai-platform-university-books/dist/openapi.json \
+#            -o libs/auth/src/lib/generated/api-types.ts
+
+# 5. Frontend breaks at compile time if changes are incompatible
 # Example: Backend renamed "username" → "email"
-# Frontend: error TS2339: Property 'username' does not exist
+ng build
+# Output: error TS2339: Property 'username' does not exist on type 'LoginRequest'
 
-# 4. Fix frontend code
-# Replace "username" with "email"
+# 6. Fix frontend code
+# Replace all "username" references with "email"
+# IDE will show all errors - fix them one by one
 
-# 5. No runtime surprises! ✅
+# 7. Build succeeds - no runtime surprises! ✅
+ng build --configuration=production
+```
+
+## 🔧 Type Generation Commands
+
+### Backend Commands (ai-platform-university-books)
+
+```bash
+# Generate OpenAPI spec from Zod schemas
+npm run generate:openapi
+
+# Generate TypeScript types for frontend
+npm run generate:types
+
+# Generate both (recommended)
+npm run generate:all
+
+# Validate OpenAPI spec
+npx swagger-cli validate dist/openapi.json
+
+# View OpenAPI spec in browser
+npx serve dist
+# Open: http://localhost:3000/openapi.json
+```
+
+### Frontend Commands (university-books-apps)
+
+```bash
+# Regenerate types from backend OpenAPI spec
+npm run generate:types
+
+# Or manually
+npx openapi-typescript ../ai-platform-university-books/dist/openapi.json \
+  -o libs/auth/src/lib/generated/api-types.ts
+
+# Verify types are correct
+npm run lint
+npm run build
+```
+
+## ⚡ Quick Sync Workflow
+
+After backend changes, sync frontend types:
+
+```bash
+# 1. In backend repo - regenerate OpenAPI
+cd ~/ai-platform-university-books
+npm run generate:all
+
+# 2. In frontend repo - pull new types
+cd ~/university-books-apps
+npm run generate:types
+
+# 3. Fix any TypeScript errors
+npm run lint --fix
+npm run build
+
+# 4. Test the changes
+npm run test
+npm start
+
+# Done! Frontend is synced with backend ✅
 ```
 
 ## 📚 Books Service Example
@@ -823,5 +924,156 @@ const downloadData = await booksService.getDownloadUrl(bookId).toPromise();
 8. **Handle expired download URLs gracefully**
 
 ---
+
+## 🆕 Latest Backend Updates (December 2025)
+
+### New Endpoints
+
+#### 1. **GET /v1/auth/me** - Get Current User Profile
+
+Returns user information extracted from JWT token (no database query).
+
+```typescript
+// Type definition
+type UserProfile = paths['/v1/auth/me']['get']['responses']['200']['content']['application/json'];
+
+// Usage
+const userProfile = await authService.getCurrentUser().toPromise();
+
+// Response structure:
+// {
+//   sub: string;           // User ID (UUID)
+//   email: string;         // User email
+//   username: string;      // Username
+//   tenantId?: string;     // Tenant ID (if multi-tenant)
+//   role?: string;         // User role
+//   iat: number;           // Token issued at (timestamp)
+//   exp: number;           // Token expires at (timestamp)
+// }
+```
+
+**Use Cases:**
+- Display user info in navigation/profile
+- Check user permissions
+- Verify token validity
+- Get tenant context
+
+**Example Component:**
+
+```typescript
+@Component({
+  selector: 'app-profile',
+  template: `
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Profile</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-card *ngIf="user">
+        <ion-card-header>
+          <ion-card-title>{{ user.username }}</ion-card-title>
+          <ion-card-subtitle>{{ user.email }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-label>User ID</ion-label>
+              <ion-note slot="end">{{ user.sub }}</ion-note>
+            </ion-item>
+            <ion-item *ngIf="user.role">
+              <ion-label>Role</ion-label>
+              <ion-note slot="end">{{ user.role }}</ion-note>
+            </ion-item>
+            <ion-item *ngIf="user.tenantId">
+              <ion-label>Tenant</ion-label>
+              <ion-note slot="end">{{ user.tenantId }}</ion-note>
+            </ion-item>
+            <ion-item>
+              <ion-label>Token Expires</ion-label>
+              <ion-note slot="end">{{ user.exp * 1000 | date:'short' }}</ion-note>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  `
+})
+export class ProfilePage implements OnInit {
+  user?: UserProfile;
+
+  constructor(private authService: AuthService) {}
+
+  async ngOnInit() {
+    try {
+      this.user = await this.authService.getCurrentUser().toPromise();
+    } catch (error) {
+      console.error('Failed to load user profile', error);
+    }
+  }
+}
+```
+
+### Updated Type Generation Workflow
+
+The backend has been updated with improved type generation:
+
+1. **New Schema Location**: `lib/api/v1/schemas/` (versioned structure)
+2. **Consolidated Documentation**: See `docs/development/TYPE-GENERATION.md` in backend repo
+3. **Improved OpenAPI Generation**: Better error messages and validation
+
+### Migration Steps
+
+If you're using older generated types:
+
+```bash
+# 1. Pull latest backend changes
+cd ~/ai-platform-university-books
+git pull origin master
+
+# 2. Clean old generated files
+rm -rf dist/
+
+# 3. Rebuild and regenerate
+npm install
+npm run build
+npm run generate:all
+
+# 4. Update frontend types
+cd ~/university-books-apps
+npm run generate:types
+
+# 5. Fix any TypeScript errors
+npm run lint
+npm run build
+
+# 6. Test all endpoints
+npm run test
+```
+
+### Breaking Changes
+
+None in this update! All existing endpoints remain backward compatible.
+
+### New Features Available
+
+✅ `/v1/auth/me` - Get user profile from JWT
+✅ Improved error messages in OpenAPI spec
+✅ Better TypeScript type inference
+✅ Updated documentation with examples
+
+---
+
+## 📖 Documentation Links
+
+- **Backend Type Generation**: `~/ai-platform-university-books/docs/development/TYPE-GENERATION.md`
+- **Backend API Reference**: `~/ai-platform-university-books/docs/06-api/REFERENCE.md`
+- **Refactoring History**: `~/ai-platform-university-books/docs/development/REFACTORING-HISTORY.md`
+
+---
+
+**Last Updated**: December 11, 2025
+**Backend Version**: 2.0.0
+**Frontend Version**: Compatible with backend 2.0.0+
 
 **Enjoy type-safe development! 🚀**
