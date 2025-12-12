@@ -114,10 +114,16 @@
     <div class="menu-content">
       <div class="menu-section">
         @if (user(); as userData) {
-          @if (userData.name) {
+          @if (userData.givenName) {
             <div class="menu-item info-item">
-              <span class="item-label">Name</span>
-              <span class="item-value">{{ userData.name }}</span>
+              <span class="item-label">First Name</span>
+              <span class="item-value">{{ userData.givenName }}</span>
+            </div>
+          }
+          @if (userData.familyName) {
+            <div class="menu-item info-item">
+              <span class="item-label">Last Name</span>
+              <span class="item-value">{{ userData.familyName }}</span>
             </div>
           }
           @if (userData.email) {

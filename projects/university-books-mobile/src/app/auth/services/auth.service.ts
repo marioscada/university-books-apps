@@ -14,12 +14,14 @@
  * @see docs/ANGULAR-IMPLEMENTATION-GUIDE.md
  */
 
-import { Injectable, signal } from '@angular/core';
-import { signIn, signOut, getCurrentUser, fetchAuthSession, fetchUserAttributes, SignInInput, SignInOutput } from 'aws-amplify/auth';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { signIn, signOut, fetchAuthSession, SignInInput, SignInOutput } from 'aws-amplify/auth';
 import { Observable, from, BehaviorSubject } from 'rxjs';
 import { tap, catchError, map, switchMap } from 'rxjs/operators';
 
 import { AuthUser, AuthTokens, AuthState, CognitoError } from '../models/auth.model';
+import { environment } from '../../../environments/environment';
 
 // =============================================================================
 // Service
@@ -29,6 +31,8 @@ import { AuthUser, AuthTokens, AuthState, CognitoError } from '../models/auth.mo
   providedIn: 'root',
 })
 export class AuthService {
+  private readonly http = inject(HttpClient);
+
   // Reactive state using Angular Signals (modern approach)
   private readonly _state = signal<AuthState>({
     isAuthenticated: false,
@@ -60,38 +64,12 @@ export class AuthService {
     try {
       this.setLoading(true);
 
-      const user = await getCurrentUser();
       const session = await fetchAuthSession();
 
-      if (user && session.tokens) {
-        // Try to fetch user attributes, but don't fail if it's not available
-        let email: string | undefined;
-        let emailVerified = false;
-        let name: string | undefined;
-        let givenName: string | undefined;
-        let familyName: string | undefined;
-
-        try {
-          const attributes = await fetchUserAttributes();
-          email = attributes.email;
-          emailVerified = attributes.email_verified === 'true';
-          name = attributes.name;
-          givenName = attributes.given_name;
-          familyName = attributes.family_name;
-        } catch (attrError) {
-          console.warn('Could not fetch user attributes:', attrError);
-          // Use username as fallback
-        }
-
-        const authUser: AuthUser = {
-          userId: user.userId,
-          username: user.username,
-          email: email,
-          emailVerified: emailVerified,
-          name: name,
-          givenName: givenName,
-          familyName: familyName,
-        };
+      if (session.tokens) {
+        // Fetch user data from backend API
+        const token = session.tokens.accessToken.toString();
+        const authUser = await this.fetchUserFromBackend(token);
 
         this.setState({
           isAuthenticated: true,
@@ -111,6 +89,36 @@ export class AuthService {
         error: null,
       });
     }
+  }
+
+  /**
+   * Fetch user data from backend API /v1/auth/me
+   *
+   * @param token - Access token from Cognito
+   * @returns Promise with user data
+   */
+  private async fetchUserFromBackend(token: string): Promise<AuthUser> {
+    const response = await fetch(`${environment.api.baseUrl}/v1/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user data: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    return {
+      userId: data.sub,
+      username: data.username,
+      email: data.email,
+      emailVerified: data.emailVerified,
+      name: data.name,
+      givenName: data.givenName,
+      familyName: data.familyName,
+    };
   }
 
   // ==========================================================================
@@ -136,37 +144,15 @@ export class AuthService {
     return from(signIn(signInInput)).pipe(
       switchMap(async (result) => {
         if (result.isSignedIn) {
-          // Get user details
-          const user = await getCurrentUser();
+          // Get access token and fetch user data from backend
+          const session = await fetchAuthSession();
+          const token = session.tokens?.accessToken.toString();
 
-          // Try to fetch user attributes, but don't fail if it's not available
-          let email: string | undefined;
-          let emailVerified = false;
-          let name: string | undefined;
-          let givenName: string | undefined;
-          let familyName: string | undefined;
-
-          try {
-            const attributes = await fetchUserAttributes();
-            email = attributes.email;
-            emailVerified = attributes.email_verified === 'true';
-            name = attributes.name;
-            givenName = attributes.given_name;
-            familyName = attributes.family_name;
-          } catch (attrError) {
-            console.warn('Could not fetch user attributes:', attrError);
-            // Use username as fallback
+          if (!token) {
+            throw new Error('No access token available after sign in');
           }
 
-          const authUser: AuthUser = {
-            userId: user.userId,
-            username: user.username,
-            email: email,
-            emailVerified: emailVerified,
-            name: name,
-            givenName: givenName,
-            familyName: familyName,
-          };
+          const authUser = await this.fetchUserFromBackend(token);
 
           this.setState({
             isAuthenticated: true,
@@ -215,21 +201,6 @@ export class AuthService {
         this.setLoading(false);
         throw error;
       })
-    );
-  }
-
-  /**
-   * Get current authenticated user
-   *
-   * @returns Observable with current user or null
-   */
-  getCurrentUser$(): Observable<AuthUser | null> {
-    return from(getCurrentUser()).pipe(
-      map((user) => ({
-        userId: user.userId,
-        username: user.username,
-      })),
-      catchError(() => from([null]))
     );
   }
 
