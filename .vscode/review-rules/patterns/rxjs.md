@@ -68,6 +68,9 @@
 - [ ] Use multicasting operators (share, shareReplay) when appropriate
 - [ ] Avoid imperative subscribe when declarative operators work
 - [ ] Keep subscription chains readable (one operator per line)
+- [ ] **Observable Composition**: Create multiple small, specific observables for single responsibilities
+- [ ] Combine small observables using RxJS operators (combineLatest, merge, concat, forkJoin, etc.)
+- [ ] Avoid long observable chains - break into smaller, named observables
 
 ---
 

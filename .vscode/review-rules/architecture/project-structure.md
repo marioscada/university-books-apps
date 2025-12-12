@@ -18,6 +18,11 @@
 - [ ] Organize by feature (not by type)
 - [ ] Core module/folder for singletons
 - [ ] Shared module/folder for reusables
+- [ ] **Component Separation**: pages/ and components/ folders
+- [ ] **Services Organization**: services/ folder with service-specific subdirectories
+- [ ] **Service Models**: service-name.service.model.ts for service-private models
+- [ ] **Service Utils**: service-name.service.utils.ts for service-private utilities
+- [ ] **Shared Service Assets**: services/models/ and services/utils/ for multi-service shared code
 
 ### File Structure
 ```
@@ -29,15 +34,29 @@ src/
 │   │   └── utils/      # Shared utility functions
 │   ├── features/       # Feature modules/components
 │   │   └── users/
-│   │       ├── models/           # Feature-specific models
-│   │       ├── utils/            # Feature-specific utils
-│   │       └── components/
-│   │           └── user-card/
-│   │               ├── user-card.component.ts
-│   │               ├── user-card.component.html
-│   │               ├── user-card.component.scss
-│   │               ├── user-card.model.ts      # Component models
-│   │               └── user-card.utils.ts      # Component utils
+│   │       ├── pages/                 # SMART components (pages, containers)
+│   │       │   └── user-list-page/
+│   │       │       ├── user-list-page.component.ts
+│   │       │       ├── user-list-page.component.html
+│   │       │       ├── user-list-page.component.scss
+│   │       │       ├── user-list-page.model.ts
+│   │       │       └── user-list-page.utils.ts
+│   │       ├── components/            # Presentational components
+│   │       │   └── user-card/
+│   │       │       ├── user-card.component.ts
+│   │       │       ├── user-card.component.html
+│   │       │       ├── user-card.component.scss
+│   │       │       ├── user-card.model.ts
+│   │       │       └── user-card.utils.ts
+│   │       ├── services/              # Feature services
+│   │       │   ├── models/            # Models shared by multiple services
+│   │       │   ├── utils/             # Utils shared by multiple services
+│   │       │   └── user/              # Specific service with private assets
+│   │       │       ├── user.service.ts
+│   │       │       ├── user.service.model.ts    # Service-specific models
+│   │       │       └── user.service.utils.ts    # Service-specific utils
+│   │       ├── models/                # Feature-wide shared models
+│   │       └── utils/                 # Feature-wide shared utils
 │   ├── app.routes.ts
 │   └── app.component.ts
 ├── styles/             # Global styles
@@ -55,8 +74,13 @@ src/
 - [ ] Consistent file naming (kebab-case)
 - [ ] Suffix indicates file type (.component, .service, .pipe, .model, .utils, etc.)
 - [ ] Match file name to export name
-- [ ] Component-specific files: `component-name.model.ts`, `component-name.utils.ts`
-- [ ] Shared files organized in dedicated directories (shared/models/, shared/utils/)
+- [ ] **Smart Components**: Folder `pages/component-name-page/`
+- [ ] **Presentational Components**: Folder `components/component-name/`
+- [ ] **Component Files**: `component-name.component.ts`, `component-name.model.ts`, `component-name.utils.ts`
+- [ ] **Service Files**: `service-name.service.ts`, `service-name.service.model.ts`, `service-name.service.utils.ts`
+- [ ] **Service Private Assets**: Inside service folder (services/service-name/)
+- [ ] **Service Shared Assets**: In services/models/ and services/utils/
+- [ ] **Feature Shared**: In feature-level models/ and utils/
 
 ---
 
@@ -64,12 +88,19 @@ src/
 
 ### Feature Organization
 - [ ] Each feature has its own directory
-- [ ] Features are self-contained
+- [ ] Features are self-contained with clear folder structure:
+  - `pages/` for pages/containers
+  - `components/` for presentational
+  - `services/` for feature services
+  - `models/` for feature-wide shared models
+  - `utils/` for feature-wide shared utilities
 - [ ] Feature routes lazy loaded
 - [ ] Shared code extracted to shared/
-- [ ] No interfaces/types directly in component files (use .model.ts)
-- [ ] No utility functions directly in component files (use .utils.ts)
-- [ ] Check if model/util should be shared before creating component-specific file
+- [ ] No interfaces/types directly in component/service files (use .model.ts)
+- [ ] No utility functions directly in component/service files (use .utils.ts)
+- [ ] Service-specific models/utils inside service folder
+- [ ] Multi-service shared models/utils in services/models/ and services/utils/
+- [ ] Check sharing scope before creating model/util file (service-only, multi-service, feature-wide)
 
 ### Module Organization (if using NgModules)
 - [ ] CoreModule imported once in AppModule

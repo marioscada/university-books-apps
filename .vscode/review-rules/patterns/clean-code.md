@@ -23,6 +23,9 @@
 - [ ] Functions have 2 or fewer arguments (use object parameter for more)
 - [ ] No flag arguments (boolean parameters)
 - [ ] Avoid side effects in functions
+- [ ] **Function Length**: Keep functions short - break long functions into smaller, specific ones
+- [ ] Each small function has a single, clear responsibility
+- [ ] Compose complex operations from multiple simple functions
 
 ### DRY (Don't Repeat Yourself)
 - [ ] No duplicate code

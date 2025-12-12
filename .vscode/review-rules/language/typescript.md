@@ -12,6 +12,18 @@
 
 ## 🔴 CRITICAL ISSUES (Must Fix)
 
+### Import Organization
+- [ ] Leave one blank line between library imports and path imports
+- [ ] Group imports: libraries first, then local/path imports
+- [ ] Example:
+  ```
+  import { Component } from '@angular/core';
+  import { CommonModule } from '@angular/common';
+
+  import { MyService } from './services/my.service';
+  import { MyModel } from './models/my.model';
+  ```
+
 ### Type Safety
 - [ ] No `any` type without explicit justification
 - [ ] Use `unknown` instead of `any` when type is truly unknown
@@ -31,6 +43,9 @@
 - [ ] Function names clearly describe what they do
 - [ ] Use default arguments instead of conditionals
 - [ ] No flag arguments (boolean parameters that change function behavior)
+- [ ] **Function Length**: Keep functions short - break long functions into smaller, specific ones
+- [ ] Each small function has a single, clear responsibility
+- [ ] Compose complex operations from multiple simple functions
 - [ ] Extract utility functions to separate .utils.ts files
 - [ ] Shared utilities in shared/utils/ directory
 - [ ] Component-specific utilities in component-name.utils.ts
