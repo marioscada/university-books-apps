@@ -5,8 +5,14 @@ import { guestGuard } from './auth/guards/guest.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/home',
+    redirectTo: '/landing',
     pathMatch: 'full'
+  },
+  {
+    path: 'landing',
+    loadComponent: () =>
+      import('./pages/landing/landing.component').then((m) => m.LandingComponent),
+    title: 'University Books - Create & Share Academic Books'
   },
   {
     path: 'auth',

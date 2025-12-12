@@ -1,0 +1,29 @@
+<header
+  class="landing-header"
+  [class.scrolled]="isScrolled()"
+>
+  <div class="header-content">
+    <!-- Logo -->
+    <div class="logo">
+      <span class="logo-text">University Books</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="header-nav">
+      <a
+        routerLink="/auth/login"
+        class="nav-link"
+        aria-label="Login"
+      >
+        Login
+      </a>
+      <a
+        routerLink="/auth/register"
+        class="nav-button"
+        aria-label="Sign up for University Books"
+      >
+        Sign Up
+      </a>
+    </nav>
+  </div>
+</header>

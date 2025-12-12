@@ -29,6 +29,11 @@
 // Add your custom global styles below
 // Try to keep global styles minimal - prefer component-scoped styles
 
+// Smooth scroll behavior for full-viewport sections
+html {
+  scroll-behavior: smooth;
+}
+
 // Example: Container utility
 .container {
   width: 100%;

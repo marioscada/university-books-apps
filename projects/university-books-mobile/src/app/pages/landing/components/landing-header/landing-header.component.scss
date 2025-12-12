@@ -1,0 +1,117 @@
+@use '../../../../../../styles/variables' as vars;
+
+// =============================================================================
+// Landing Header
+// =============================================================================
+
+.landing-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: vars.$z-index-fixed;
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+
+  // Initially transparent
+  background: transparent;
+
+  // Scrolled state: solid background + backdrop blur
+  &.scrolled {
+    background: rgba(37, 37, 37, 0.95); // #252525 with opacity
+    backdrop-filter: blur(10px);
+  }
+}
+
+// =============================================================================
+// Header Content
+// =============================================================================
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    padding: 0.875rem 1.25rem;
+  }
+}
+
+// =============================================================================
+// Logo
+// =============================================================================
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: vars.$font-weight-bold;
+  color: vars.$white;
+  letter-spacing: -0.02em;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    font-size: 1.125rem;
+  }
+}
+
+// =============================================================================
+// Navigation
+// =============================================================================
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    gap: 1rem;
+  }
+}
+
+.nav-link {
+  font-size: 0.9375rem;
+  font-weight: vars.$font-weight-medium;
+  color: vars.$white;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: vars.$accent-color;
+  }
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    font-size: 0.875rem;
+  }
+}
+
+.nav-button {
+  display: inline-block;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: vars.$font-weight-medium;
+  color: vars.$white;
+  background: vars.$accent-color;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background: lighten(#2196f3, 10%);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}

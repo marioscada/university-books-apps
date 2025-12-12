@@ -7,18 +7,10 @@
   - Content projection via ng-content slots in HomeLayoutComponent
 
   Layout Structure:
-  - Header: Welcome hero section (full width)
-  - Primary: Quick actions + Recent activity (2/3 width on desktop)
-  - Secondary: Stats + Recommendations (1/3 width on desktop, hidden on mobile)
+  - Primary: Quick actions displayed vertically
 -->
 
 <app-home-layout>
-  <!-- Header Section: Hero Welcome -->
-  <app-home-hero
-    homeSection="header"
-    [userName]="userName()"
-  ></app-home-hero>
-
   <!-- Primary Content Area: Quick Actions -->
   <div
     homeSection="primary"
@@ -28,21 +20,5 @@
       [actions]="quickActions()"
       (actionClick)="onQuickActionClick($event)"
     ></app-quick-actions>
-    
-  </div>
-
-  <!-- Secondary Sidebar: Stats + Recommendations (Desktop Only) -->
-  <div
-    homeSection="secondary"
-    class="secondary-content"
-  >
-    <app-stats-widget
-      [stats]="userStats()"
-    ></app-stats-widget>
-
-    <app-recommendations
-      [recommendations]="recommendations()"
-      (recommendationClick)="onRecommendationClick($event)"
-    ></app-recommendations>
   </div>
 </app-home-layout>

@@ -11,33 +11,3 @@
 // This follows the Component Composition Pattern with Content Projection.
 //
 // =============================================================================
-
-// =============================================================================
-// Primary Content Area
-// =============================================================================
-
-.primary-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-
-  @media (max-width: vars.$breakpoint-sm - 1) {
-    gap: 1.5rem;
-  }
-}
-
-// =============================================================================
-// Secondary Sidebar
-// =============================================================================
-
-.secondary-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-
-  // On mobile, this is handled by HomeLayoutComponent (@if isDesktop)
-  // but we keep the gap style for when it's visible
-  @media (max-width: vars.$breakpoint-sm - 1) {
-    gap: 1.5rem;
-  }
-}

@@ -14,22 +14,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: vars.$surface-2;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all vars.$transition-speed-base ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: none;
 
   &:hover {
-    background: vars.$surface-3;
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   &:active {
-    transform: translateY(0);
+    transform: none;
   }
 
   &:focus-visible {
@@ -39,8 +35,7 @@
 
   .hamburger-icon {
     font-size: 2rem;
-    color: vars.$text-color;
-    transition: transform 0.2s ease;
+    color: vars.$white;
   }
 
   @media (max-width: vars.$breakpoint-sm - 1) {
@@ -76,7 +71,7 @@
   bottom: 0;
   z-index: vars.$z-index-modal;
   width: 280px;
-  background: vars.$surface-2;
+  background: #252525;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
   overflow-y: auto;
@@ -112,11 +107,7 @@
 .drawer-header {
   padding: 1.5rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(
-    135deg,
-    vars.$surface-2 0%,
-    vars.$surface-3 100%
-  );
+  background: #252525;
 }
 
 .drawer-logo {
@@ -252,7 +243,7 @@
 
 .nav-badge {
   padding: 0.25rem 0.625rem;
-  background: vars.$accent-color;
+  background: #0A0A0A;
   color: vars.$white;
   font-size: 0.75rem;
   font-weight: vars.$font-weight-bold;

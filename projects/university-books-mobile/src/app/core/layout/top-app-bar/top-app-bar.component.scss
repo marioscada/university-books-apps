@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: flex-end;
   padding: 1rem 1.5rem;
-  background: transparent;
+  background: #252525;
   pointer-events: none; // Allow clicks through empty space
 
   @media (max-width: calc(vars.$breakpoint-sm - 1px)) {
@@ -45,22 +45,18 @@
 .search-button {
   display: flex;
   align-items: center;
-  background: vars.$surface-2;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all vars.$transition-speed-base ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: none;
 
   &:hover {
-    background: vars.$surface-3;
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   &:active {
-    transform: translateY(0);
+    transform: none;
   }
 
   &:focus-visible {
@@ -127,22 +123,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: vars.$surface-2;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all vars.$transition-speed-base ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: none;
 
   &:hover {
-    background: vars.$surface-3;
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   &:active {
-    transform: translateY(0);
+    transform: none;
   }
 
   &:focus-visible {
@@ -152,6 +144,6 @@
 
   .profile-icon {
     font-size: 2rem;
-    color: vars.$text-color-secondary;
+    color: vars.$white;
   }
 }

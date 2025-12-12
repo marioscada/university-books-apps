@@ -1,43 +1,54 @@
 @use '../../../../../styles/variables' as vars;
 
 // =============================================================================
-// Section Title
-// =============================================================================
-
-.section-title {
-  font-size: 1.25rem;
-  font-weight: vars.$font-weight-bold;
-  color: vars.$text-color;
-  margin: 0 0 1.5rem 0;
-  letter-spacing: -0.01em;
-
-  @media (max-width: vars.$breakpoint-sm - 1) {
-    font-size: 1.125rem;
-    margin-bottom: 1rem;
-  }
-}
-
-// =============================================================================
-// Actions Grid (Responsive)
+// Actions Grid (Single Column - All Devices)
 // =============================================================================
 
 .actions-grid {
-  display: grid;
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0; // Removed gap for full-viewport sections
+}
 
-  // Desktop: 2 columns
-  @media (min-width: vars.$breakpoint-lg) {
-    grid-template-columns: repeat(2, 1fr);
+// =============================================================================
+// Action Card Wrapper (Full-width background)
+// =============================================================================
+
+.action-card-wrapper {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.4;
+    z-index: 0;
   }
 
-  // Tablet: 2 columns
-  @media (min-width: vars.$breakpoint-sm) and (max-width: vars.$breakpoint-lg - 1) {
-    grid-template-columns: repeat(2, 1fr);
+  // Background images for each card
+  &.card-my-books::before {
+    background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000');
   }
 
-  // Mobile: 1 column
-  @media (max-width: vars.$breakpoint-sm - 1) {
-    grid-template-columns: 1fr;
+  &.card-ai-studio::before {
+    background-image: url('https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2000');
+  }
+
+  &.card-templates::before {
+    background-image: url('https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=2000');
+  }
+
+  &.card-library::before {
+    background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2000');
   }
 }
 
@@ -48,30 +59,33 @@
 .action-card {
   position: relative;
   display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: vars.$surface-2;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  align-items: center; // Center content vertically
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   cursor: pointer;
   transition: all vars.$transition-speed-base ease;
   text-align: left;
-  width: 100%;
+  min-height: 100vh; // Full viewport height on desktop/tablet
+  z-index: 1;
+  padding: 0;
 
   &:hover {
-    background: vars.$surface-3;
-    border-color: rgba(255, 255, 255, 0.12);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    .action-content {
+      transform: translateY(-4px);
+    }
   }
 
   &:active {
-    transform: translateY(0);
+    .action-content {
+      transform: translateY(0);
+    }
   }
 
-  @media (max-width: vars.$breakpoint-sm - 1) {
-    padding: 1.25rem;
+  // Mobile: 50vh (2 sections visible)
+  @media (max-width: vars.$breakpoint-md - 1) {
+    min-height: 50vh;
   }
 }
 
@@ -81,26 +95,26 @@
 
 .action-icon {
   flex-shrink: 0;
-  width: 3rem;
-  height: 3rem;
+  width: 4rem;
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
   background: vars.$surface-1;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 
   ion-icon {
-    font-size: 1.75rem;
+    font-size: 2.25rem;
     color: vars.$text-color;
   }
 
   @media (max-width: vars.$breakpoint-sm - 1) {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 3rem;
+    height: 3rem;
 
     ion-icon {
-      font-size: 1.5rem;
+      font-size: 1.75rem;
     }
   }
 }
@@ -110,30 +124,46 @@
 // =============================================================================
 
 .action-content {
-  flex: 1;
-  min-width: 0; // Allows text truncation
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  transition: transform vars.$transition-speed-base ease;
+
+  @media (max-width: vars.$breakpoint-md - 1) {
+    padding: 2rem 1.5rem;
+  }
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    padding: 1.5rem 1.25rem; // Safe margins for mobile (20px)
+  }
 }
 
 .action-title {
-  font-size: 1rem;
-  font-weight: vars.$font-weight-medium;
-  color: vars.$text-color;
-  margin: 0 0 0.25rem 0;
-  line-height: 1.3;
+  font-size: 2rem;
+  font-weight: vars.$font-weight-bold;
+  color: #0A0A0A;
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+  text-shadow: none;
 
   @media (max-width: vars.$breakpoint-sm - 1) {
-    font-size: 0.9375rem;
+    font-size: 1.5rem;
   }
 }
 
 .action-description {
-  font-size: 0.875rem;
-  color: vars.$text-color-secondary;
+  font-size: 1.125rem;
+  color: #4A4A4A;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.6;
+  text-shadow: none;
 
   @media (max-width: vars.$breakpoint-sm - 1) {
-    font-size: 0.8125rem;
+    font-size: 1rem;
   }
 }
 

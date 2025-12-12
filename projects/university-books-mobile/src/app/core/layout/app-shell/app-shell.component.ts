@@ -8,11 +8,12 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { TopAppBarComponent } from '../top-app-bar/top-app-bar.component';
 import { NavigationDrawerComponent } from '../navigation-drawer/navigation-drawer.component';
+import { FooterComponent } from '../footer/footer.component';
 import { UserProfileSidebarComponent } from '../../shared/components/user-profile-sidebar/user-profile-sidebar.component';
 import { SearchDropdownComponent } from '../../shared/components/search/search-dropdown/search-dropdown.component';
 
@@ -65,6 +66,7 @@ import type { NavigationItem } from '../../models/navigation.model';
     RouterModule,
     TopAppBarComponent,
     NavigationDrawerComponent,
+    FooterComponent,
     UserProfileSidebarComponent,
   ],
   templateUrl: './app-shell.component.html',
@@ -72,6 +74,7 @@ import type { NavigationItem } from '../../models/navigation.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShellComponent {
+  private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
   private readonly searchOverlayService = inject(SearchOverlayService);
   private readonly destroyRef = inject(DestroyRef);
@@ -101,9 +104,18 @@ export class AppShellComponent {
   readonly isProfileSidebarOpen = signal(false);
 
   /**
-   * Show layout components (only when authenticated)
+   * Show layout components
+   * Hidden for:
+   * - Landing page (public marketing)
+   * - Auth pages (login/register)
+   * Shown for:
+   * - Authenticated app pages (home, my-books, etc.)
    */
-  readonly showLayout = computed(() => this.isAuthenticated());
+  readonly showLayout = computed(() => {
+    const url = this.router.url;
+    const isPublicRoute = url.startsWith('/landing') || url.startsWith('/auth');
+    return !isPublicRoute && this.isAuthenticated();
+  });
 
   // ==========================================================================
   // Mock Search Data (TODO: Replace with real API)
