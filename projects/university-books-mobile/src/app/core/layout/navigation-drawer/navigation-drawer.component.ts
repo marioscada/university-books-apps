@@ -2,7 +2,6 @@ import {
   Component,
   ChangeDetectionStrategy,
   signal,
-  computed,
   inject,
   output,
 } from '@angular/core';
@@ -20,7 +19,6 @@ import {
 
 import { ResponsiveService } from '../../services/responsive.service';
 import { NAVIGATION_ITEMS, NavigationItem } from '../../models/navigation.model';
-import { BooksService } from '../../../books/services/books.service';
 
 /**
  * Navigation Drawer Component (Material Design Pattern)
@@ -89,22 +87,9 @@ import { BooksService } from '../../../books/services/books.service';
 export class NavigationDrawerComponent {
   private readonly responsive = inject(ResponsiveService);
   private readonly router = inject(Router);
-  private readonly booksService = inject(BooksService);
 
-  // Navigation items with reactive badge for My Books
-  readonly navigationItems = computed<readonly NavigationItem[]>(() => {
-    const totalBooks = this.booksService.totalBooksCount();
-
-    return NAVIGATION_ITEMS.map((item) => {
-      if (item.id === 'my-books') {
-        return {
-          ...item,
-          badge: totalBooks > 0 ? totalBooks : undefined
-        };
-      }
-      return item;
-    });
-  });
+  // Navigation items
+  readonly navigationItems = signal<readonly NavigationItem[]>(NAVIGATION_ITEMS);
 
   // Responsive breakpoints
   readonly isMobile = this.responsive.isMobile;
@@ -128,12 +113,12 @@ export class NavigationDrawerComponent {
   /**
    * Show backdrop overlay when drawer is open
    */
-  readonly showBackdrop = computed(() => this.isDrawerOpen());
+  readonly showBackdrop = this.isDrawerOpen;
 
   /**
    * Show drawer sidebar when open
    */
-  readonly showDrawer = computed(() => this.isDrawerOpen());
+  readonly showDrawer = this.isDrawerOpen;
 
   /**
    * Emitted when user navigates to a route

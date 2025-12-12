@@ -21,15 +21,14 @@
   position: relative;
   z-index: 1; // Below fixed header and hamburger
   min-height: 100vh;
-  background: vars.$background-color;
-  padding: 2rem;
+  background: vars.$white;
   padding-top: 5rem; // Space for fixed top app bar
-  padding-left: 5rem; // Space for fixed hamburger button
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
 
   @media (max-width: calc(vars.$breakpoint-sm - 1px)) {
-    padding: 1.5rem;
-    padding-top: 4.5rem;
-    padding-left: 4.5rem;
+    padding-top: 4.5rem; // Space for fixed top app bar on mobile
   }
 }
 

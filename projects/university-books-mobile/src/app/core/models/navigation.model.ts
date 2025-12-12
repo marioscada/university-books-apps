@@ -30,48 +30,42 @@ export interface NavigationItem {
  * Main navigation menu items for the application.
  * These items are displayed in both mobile menu and desktop sidebar.
  *
- * Navigation structure based on best practices from leading AI content creation platforms:
- * - Dashboard (overview and quick actions)
+ * Navigation structure:
+ * - Home (dashboard and quick actions)
  * - My Books (main workspace for projects)
  * - AI Studio (dedicated AI content generation workspace)
  * - Templates (pre-built structures for different book types)
- * - Library (reference materials and research)
+ * - Study Materials (reference materials and research)
  */
 export const NAVIGATION_ITEMS: readonly NavigationItem[] = [
   {
-    id: 'dashboard',
-    label: 'Dashboard',
-    icon: 'home',
+    id: 'home',
+    label: 'Home',
+    icon: 'home-outline',
     route: '/home'
   },
   {
     id: 'my-books',
     label: 'My Books',
-    icon: 'book',
+    icon: 'book-outline',
     route: '/my-books'
-  },
-  {
-    id: 'my-activity',
-    label: 'My Activity',
-    icon: 'time',
-    route: '/activity'
   },
   {
     id: 'ai-studio',
     label: 'AI Studio',
-    icon: 'bulb',
+    icon: 'bulb-outline',
     route: '/ai-studio'
   },
   {
     id: 'templates',
     label: 'Templates',
-    icon: 'document-text',
+    icon: 'document-text-outline',
     route: '/templates'
   },
   {
     id: 'library',
-    label: 'Library',
-    icon: 'library',
+    label: 'Study Materials',
+    icon: 'library-outline',
     route: '/library'
   }
 ] as const;

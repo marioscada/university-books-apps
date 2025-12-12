@@ -5,7 +5,6 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonIcon } from '@ionic/angular/standalone';
 
 import type { QuickAction } from '../../models';
 
@@ -28,7 +27,7 @@ import type { QuickAction } from '../../models';
 @Component({
   selector: 'app-quick-actions',
   standalone: true,
-  imports: [CommonModule, IonIcon],
+  imports: [CommonModule],
   templateUrl: './quick-actions.component.html',
   styleUrls: ['./quick-actions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -24,7 +24,7 @@
   right: 0;
   height: 100vh;
   width: 320px;
-  background: vars.$surface-1;
+  background: #252525;
   border-left: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
@@ -39,7 +39,7 @@
   }
 
   &::-webkit-scrollbar-track {
-    background: vars.$surface-1;
+    background: #252525;
   }
 
   &::-webkit-scrollbar-thumb {

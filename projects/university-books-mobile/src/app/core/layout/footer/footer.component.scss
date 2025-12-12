@@ -1,0 +1,45 @@
+@use '../../../../styles/variables' as vars;
+
+// =============================================================================
+// App Footer
+// =============================================================================
+
+.app-footer {
+  width: 100%;
+  background: #252525;
+  border-top: 1px solid #404040;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    min-height: 400px;
+  }
+}
+
+// =============================================================================
+// Footer Content
+// =============================================================================
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  text-align: center;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    padding: 0 1rem;
+  }
+}
+
+.footer-copyright {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.5;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    font-size: 0.8125rem;
+  }
+}

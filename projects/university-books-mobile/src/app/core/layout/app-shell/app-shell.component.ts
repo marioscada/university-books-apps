@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { TopAppBarComponent } from '../top-app-bar/top-app-bar.component';
 import { NavigationDrawerComponent } from '../navigation-drawer/navigation-drawer.component';
+import { FooterComponent } from '../footer/footer.component';
 import { UserProfileSidebarComponent } from '../../shared/components/user-profile-sidebar/user-profile-sidebar.component';
 import { SearchDropdownComponent } from '../../shared/components/search/search-dropdown/search-dropdown.component';
 
@@ -65,6 +66,7 @@ import type { NavigationItem } from '../../models/navigation.model';
     RouterModule,
     TopAppBarComponent,
     NavigationDrawerComponent,
+    FooterComponent,
     UserProfileSidebarComponent,
   ],
   templateUrl: './app-shell.component.html',
