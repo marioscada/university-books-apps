@@ -1,0 +1,58 @@
+<footer
+  class="landing-footer"
+  role="contentinfo"
+>
+  <div class="footer-content">
+    <!-- Primary CTA Section -->
+    <div class="footer-cta-section">
+      <h2 class="footer-title">Start Creating Today</h2>
+      <p class="footer-subtitle">
+        Join thousands of academics creating and sharing knowledge through books
+      </p>
+      <a
+        routerLink="/auth/register"
+        class="footer-cta-button"
+        aria-label="Get started with University Books for free"
+      >
+        Get Started Free
+      </a>
+      <p class="footer-note">No credit card required</p>
+    </div>
+
+    <!-- Secondary Navigation -->
+    <nav
+      class="footer-nav"
+      aria-label="Footer navigation"
+    >
+      <a
+        routerLink="/about"
+        class="footer-nav-link"
+      >
+        About
+      </a>
+      <a
+        routerLink="/contact"
+        class="footer-nav-link"
+      >
+        Contact
+      </a>
+      <a
+        routerLink="/terms"
+        class="footer-nav-link"
+      >
+        Terms
+      </a>
+      <a
+        routerLink="/privacy"
+        class="footer-nav-link"
+      >
+        Privacy
+      </a>
+    </nav>
+
+    <!-- Copyright -->
+    <p class="footer-copyright">
+      © {{ currentYear }} University Books. All rights reserved.
+    </p>
+  </div>
+</footer>

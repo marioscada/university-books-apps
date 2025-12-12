@@ -1,0 +1,18 @@
+<section
+  class="features-showcase"
+  aria-label="Features"
+>
+  @for (feature of features(); track feature.id) {
+    <div
+      class="feature-wrapper"
+      [attr.data-feature]="feature.id"
+    >
+      <article class="feature-section">
+        <div class="feature-content">
+          <h2 class="feature-title">{{ feature.title }}</h2>
+          <p class="feature-description">{{ feature.description }}</p>
+        </div>
+      </article>
+    </div>
+  }
+</section>
