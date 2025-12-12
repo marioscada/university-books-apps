@@ -61,7 +61,7 @@ export class HomeComponent {
       title: 'My Books',
       description: 'View and manage your book projects',
       icon: 'book-outline',
-      route: '/books',
+      route: '/my-books',
       badge: '3',
       badgeColor: 'primary',
     },

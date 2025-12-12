@@ -10,7 +10,7 @@
 
 import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { Amplify } from 'aws-amplify';
 
@@ -18,6 +18,7 @@ import { routes } from './app.routes';
 import { amplifyConfig } from './core/config/amplify.config';
 import { configureApiClient } from './core/config/api-client.config';
 import { AuthService } from './auth/services/auth.service';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 // =============================================================================
 // Amplify Configuration
@@ -58,8 +59,8 @@ export const appConfig: ApplicationConfig = {
     // Router configuration
     provideRouter(routes),
 
-    // HTTP Client (for generated API client)
-    provideHttpClient(),
+    // HTTP Client with auth interceptor
+    provideHttpClient(withInterceptors([authInterceptor])),
 
     // Animations (for Angular animations like slide-in, fade-in, etc.)
     provideAnimations(),

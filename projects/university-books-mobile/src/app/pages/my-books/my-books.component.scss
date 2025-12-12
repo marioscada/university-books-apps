@@ -1,0 +1,23 @@
+.loading-container,
+.error-container,
+.empty-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.books-container {
+  padding: 16px;
+
+  pre {
+    background-color: var(--ion-color-light);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+}
