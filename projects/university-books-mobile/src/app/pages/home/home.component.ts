@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, DestroyRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -33,6 +33,7 @@ import type {
 @Component({
   selector: 'app-home',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     HomeLayoutComponent,

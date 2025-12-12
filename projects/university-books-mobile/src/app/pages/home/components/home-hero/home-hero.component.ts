@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -26,32 +26,32 @@ export class HomeHeroComponent {
   /**
    * User's display name
    */
-  @Input({ required: true }) userName!: string;
+  readonly userName = input.required<string>();
 
   /**
    * Current date for display
    */
-  readonly currentDate = new Date();
+  private readonly currentDate = signal(new Date());
 
   /**
    * Get greeting based on time of day
    */
-  get greeting(): string {
+  readonly greeting = computed(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
     if (hour < 18) return 'Good afternoon';
     return 'Good evening';
-  }
+  });
 
   /**
    * Get formatted date string
    */
-  get formattedDate(): string {
-    return this.currentDate.toLocaleDateString('en-US', {
+  readonly formattedDate = computed(() => {
+    return this.currentDate().toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
-  }
+  });
 }
