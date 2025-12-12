@@ -1,0 +1,138 @@
+@use 'variables' as vars;
+
+// =============================================================================
+// Landing Page Shared Styles
+// =============================================================================
+// Reusable mixins and utilities for landing page full-viewport sections
+// Following DRY principle to avoid code duplication
+
+// =============================================================================
+// Mixins
+// =============================================================================
+
+/**
+ * Full-viewport section mixin
+ * Creates a section that takes full viewport height on desktop/tablet,
+ * half viewport on mobile (for 2-section view)
+ *
+ * @example
+ * .my-section {
+ *   @include full-viewport-section;
+ * }
+ */
+@mixin full-viewport-section {
+  min-height: 100vh; // Desktop/tablet
+
+  @media (max-width: vars.$breakpoint-md - 1) {
+    min-height: 50vh; // Mobile: 2 sections visible
+  }
+}
+
+/**
+ * Full-width background wrapper mixin
+ * Creates a container that extends beyond parent to full viewport width
+ * with background image support
+ *
+ * @example
+ * .feature-wrapper {
+ *   @include full-width-background;
+ * }
+ */
+@mixin full-width-background {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%); // Center and expand to full width
+  overflow: hidden;
+
+  // Background image overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.4; // Balanced for readability
+    z-index: 0;
+  }
+}
+
+/**
+ * Centered content container mixin
+ * Creates a max-width constrained container with responsive padding
+ *
+ * @example
+ * .content {
+ *   @include centered-content-container;
+ * }
+ */
+@mixin centered-content-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2.5rem 3rem; // Desktop
+
+  @media (max-width: vars.$breakpoint-md - 1) {
+    padding: 2rem 1.5rem; // Tablet
+  }
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    padding: 1.5rem 1.25rem; // Mobile: safe margins (20px)
+  }
+}
+
+/**
+ * Landing section title mixin
+ * Responsive typography for section headings
+ *
+ * @example
+ * .section-title {
+ *   @include landing-section-title;
+ * }
+ */
+@mixin landing-section-title {
+  font-weight: vars.$font-weight-bold;
+  color: vars.$white;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 1.5rem 0;
+
+  // Desktop
+  font-size: 2.5rem;
+
+  @media (max-width: vars.$breakpoint-md - 1) {
+    font-size: 2rem; // Tablet
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    font-size: 1.75rem; // Mobile
+  }
+}
+
+/**
+ * Landing section description mixin
+ * Responsive typography for section descriptions
+ *
+ * @example
+ * .section-description {
+ *   @include landing-section-description;
+ * }
+ */
+@mixin landing-section-description {
+  font-weight: vars.$font-weight-regular;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 700px;
+
+  // Desktop
+  font-size: 1.25rem;
+
+  @media (max-width: vars.$breakpoint-sm - 1) {
+    font-size: 1.125rem; // Mobile
+  }
+}
