@@ -6,9 +6,9 @@ Perform COMPLETE comprehensive code review on: {{glob_pattern}}
 
 **Default scope**: Current directory if no pattern specified
 **Usage examples**:
-- /review-all (current directory - comprehensive)
-- /review-all src/app/features/books/** (specific feature)
-- /review-all **/* (entire project - LONG execution time)
+- /rw-all (current directory - comprehensive)
+- /rw-all src/app/features/books/** (specific feature)
+- /rw-all **/* (entire project - LONG execution time)
 
 Reference rules: .vscode/review-rules/complete-review.md
 
