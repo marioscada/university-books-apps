@@ -53,8 +53,20 @@ export class AuthService {
   // ==========================================================================
 
   constructor() {
-    // Check if user is already authenticated on service creation
-    this.checkAuthStatus();
+    // Auth initialization handled by APP_INITIALIZER in app.config.ts
+    // This ensures auth state is ready before routing starts
+  }
+
+  /**
+   * Initialize authentication state (called by APP_INITIALIZER)
+   *
+   * This method is called BEFORE Angular bootstraps the app,
+   * preventing the flash of login page when user is already authenticated.
+   *
+   * @returns Promise that resolves when auth state is determined
+   */
+  public initializeAuth(): Promise<void> {
+    return this.checkAuthStatus();
   }
 
   /**

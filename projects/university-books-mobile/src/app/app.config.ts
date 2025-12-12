@@ -65,6 +65,17 @@ export const appConfig: ApplicationConfig = {
     // Animations (for Angular animations like slide-in, fade-in, etc.)
     provideAnimations(),
 
+    // Initialize authentication state BEFORE app bootstrap
+    // Prevents flash of login page when user is already authenticated
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (authService: AuthService) => {
+        return () => authService.initializeAuth();
+      },
+      deps: [AuthService],
+      multi: true,
+    },
+
     // Configure API Client on app initialization
     {
       provide: APP_INITIALIZER,

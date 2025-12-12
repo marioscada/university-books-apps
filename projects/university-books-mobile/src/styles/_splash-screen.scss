@@ -1,0 +1,69 @@
+// =============================================================================
+// Splash Screen Styles
+// =============================================================================
+// Responsive splash screen shown before Angular bootstraps
+// Follows Ionic breakpoints: xs, sm, md, lg, xl
+// @see src/app/core/services/responsive.service.ts
+
+@use 'variables' as vars;
+
+// -----------------------------------------------------------------------------
+// Splash Screen Container
+// -----------------------------------------------------------------------------
+
+.app-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: vars.$white;
+  font-family: vars.$font-family-base;
+}
+
+// -----------------------------------------------------------------------------
+// Logo with Responsive Sizing and Scale Animation
+// -----------------------------------------------------------------------------
+
+.app-loading-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: vars.$black;
+  border-radius: vars.$border-radius-xl;
+  color: vars.$white;
+  font-weight: vars.$font-weight-bold;
+
+  // Mobile Portrait (xs: 0-575px)
+  width: 80px;
+  height: 80px;
+  font-size: 40px;
+
+  // Mobile Landscape (sm: 576-767px)
+  @media (min-width: #{vars.$breakpoint-sm}) {
+    width: 96px;
+    height: 96px;
+    font-size: 48px;
+  }
+
+  // Tablet Portrait (md: 768-991px)
+  @media (min-width: #{vars.$breakpoint-md}) {
+    width: 112px;
+    height: 112px;
+    font-size: 56px;
+  }
+
+  // Tablet Landscape (lg: 992-1199px)
+  @media (min-width: #{vars.$breakpoint-lg}) {
+    width: 128px;
+    height: 128px;
+    font-size: 64px;
+  }
+
+  // Desktop (xl: 1200px+)
+  @media (min-width: #{vars.$breakpoint-xl}) {
+    width: 144px;
+    height: 144px;
+    font-size: 72px;
+  }
+}
