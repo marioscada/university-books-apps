@@ -1,6 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 // Layout & Presentation Components
 import { HomeLayoutComponent } from './components/home-layout/home-layout.component';
@@ -8,6 +9,9 @@ import { HomeHeroComponent } from './components/home-hero/home-hero.component';
 import { QuickActionsComponent } from './components/quick-actions/quick-actions.component';
 import { StatsWidgetComponent } from './components/stats-widget/stats-widget.component';
 import { RecommendationsComponent } from './components/recommendations/recommendations.component';
+
+// Services
+import { BooksService } from '../../books/services/books.service';
 
 // Models
 import type {
@@ -29,6 +33,7 @@ import type {
 @Component({
   selector: 'app-home',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     HomeLayoutComponent,
@@ -40,8 +45,25 @@ import type {
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   private readonly router = inject(Router);
+  private readonly booksService = inject(BooksService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  // ========================================================================
+  // Lifecycle Hooks
+  // ========================================================================
+
+  ngOnInit(): void {
+    // Load books count for badge display
+    // Using limit=1 since we only need pagination.total, not the actual books
+    this.booksService
+      .listBooks({ page: '1', limit: '1', status: 'PUBLISHED' })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: (err) => console.error('Failed to load books count:', err)
+      });
+  }
 
   // ========================================================================
   // State Management (Signals)
@@ -54,17 +76,22 @@ export class HomeComponent {
 
   /**
    * Quick action cards for main navigation
+   * Badge for My Books is computed from BooksService
    */
-  readonly quickActions = signal<QuickAction[]>([
-    {
-      id: 'my-books',
-      title: 'My Books',
-      description: 'View and manage your book projects',
-      icon: 'book-outline',
-      route: '/books',
-      badge: '3',
-      badgeColor: 'primary',
-    },
+  readonly quickActions = computed<QuickAction[]>(() => {
+    const totalBooks = this.booksService.totalBooksCount();
+    const badge = totalBooks > 0 ? String(totalBooks) : undefined;
+
+    return [
+      {
+        id: 'my-books',
+        title: 'My Books',
+        description: 'View and manage your book projects',
+        icon: 'book-outline',
+        route: '/my-books',
+        badge,
+        badgeColor: 'primary',
+      },
     {
       id: 'ai-studio',
       title: 'AI Studio',
@@ -79,14 +106,15 @@ export class HomeComponent {
       icon: 'document-text-outline',
       route: '/templates',
     },
-    {
-      id: 'library',
-      title: 'Library',
-      description: 'Access reference materials and research',
-      icon: 'library-outline',
-      route: '/library',
-    },
-  ]);
+      {
+        id: 'library',
+        title: 'Library',
+        description: 'Access reference materials and research',
+        icon: 'library-outline',
+        route: '/library',
+      },
+    ];
+  });
 
   /**
    * User statistics (would come from API in real app)

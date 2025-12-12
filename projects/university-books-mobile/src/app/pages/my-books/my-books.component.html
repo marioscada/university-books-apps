@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>My Books</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <p>{{ error() }}</p>
+    </div>
+  } @else if (booksData()) {
+    <div class="books-container">
+      <pre>{{ booksData() | json }}</pre>
+    </div>
+  } @else {
+    <div class="empty-container">
+      <p>No books available</p>
+    </div>
+  }
+</ion-content>
