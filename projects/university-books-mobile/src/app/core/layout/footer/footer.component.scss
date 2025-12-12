@@ -8,13 +8,14 @@
   width: 100%;
   background: #252525;
   border-top: 1px solid #404040;
-  min-height: 480px;
+  min-height: 100vh; // Full viewport height on desktop/tablet
   display: flex;
   align-items: center;
   margin-top: auto;
 
-  @media (max-width: vars.$breakpoint-sm - 1) {
-    min-height: 400px;
+  // Mobile: 50vh (2 sections visible)
+  @media (max-width: vars.$breakpoint-md - 1) {
+    min-height: 50vh;
   }
 }
 
