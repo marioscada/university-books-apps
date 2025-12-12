@@ -70,18 +70,18 @@ export class HomeComponent implements OnInit {
   readonly quickActions = computed<QuickAction[]>(() => {
     return [
       {
-        id: 'my-books',
-        title: 'My Books',
-        description: 'View and manage your book projects',
-        icon: 'book-outline',
-        route: '/my-books',
-      },
-      {
         id: 'ai-studio',
         title: 'AI Studio',
         description: 'Generate content with AI assistance',
         icon: 'bulb-outline',
         route: '/ai-studio',
+      },
+      {
+        id: 'my-books',
+        title: 'My Books',
+        description: 'View and manage your book projects',
+        icon: 'book-outline',
+        route: '/my-books',
       },
       {
         id: 'templates',

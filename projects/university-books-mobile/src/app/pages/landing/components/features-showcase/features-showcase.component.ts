@@ -52,15 +52,6 @@ export class FeaturesShowcaseComponent {
    */
   readonly features = signal<Feature[]>([
     {
-      id: 'my-books',
-      title: 'My Books',
-      description:
-        'Create and manage your book projects with powerful editing tools. ' +
-        'Organize chapters, track progress, and collaborate with ease.',
-      image:
-        'https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000',
-    },
-    {
       id: 'ai-studio',
       title: 'AI Studio',
       description:
@@ -68,6 +59,15 @@ export class FeaturesShowcaseComponent {
         'Let AI help you overcome writer\'s block and refine your ideas.',
       image:
         'https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2000',
+    },
+    {
+      id: 'my-books',
+      title: 'My Books',
+      description:
+        'Create and manage your book projects with powerful editing tools. ' +
+        'Organize chapters, track progress, and collaborate with ease.',
+      image:
+        'https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000',
     },
     {
       id: 'templates',

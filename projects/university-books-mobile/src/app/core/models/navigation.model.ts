@@ -32,8 +32,8 @@ export interface NavigationItem {
  *
  * Navigation structure:
  * - Home (dashboard and quick actions)
- * - My Books (main workspace for projects)
  * - AI Studio (dedicated AI content generation workspace)
+ * - My Books (main workspace for projects)
  * - Templates (pre-built structures for different book types)
  * - Study Materials (reference materials and research)
  */
@@ -45,16 +45,16 @@ export const NAVIGATION_ITEMS: readonly NavigationItem[] = [
     route: '/home'
   },
   {
-    id: 'my-books',
-    label: 'My Books',
-    icon: 'book-outline',
-    route: '/my-books'
-  },
-  {
     id: 'ai-studio',
     label: 'AI Studio',
     icon: 'bulb-outline',
     route: '/ai-studio'
+  },
+  {
+    id: 'my-books',
+    label: 'My Books',
+    icon: 'book-outline',
+    route: '/my-books'
   },
   {
     id: 'templates',
