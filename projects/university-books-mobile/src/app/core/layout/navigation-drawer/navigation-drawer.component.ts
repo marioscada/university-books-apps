@@ -20,6 +20,7 @@ import {
 
 import { ResponsiveService } from '../../services/responsive.service';
 import { NAVIGATION_ITEMS, NavigationItem } from '../../models/navigation.model';
+import { BooksService } from '../../../books/services/books.service';
 
 /**
  * Navigation Drawer Component (Material Design Pattern)
@@ -88,9 +89,22 @@ import { NAVIGATION_ITEMS, NavigationItem } from '../../models/navigation.model'
 export class NavigationDrawerComponent {
   private readonly responsive = inject(ResponsiveService);
   private readonly router = inject(Router);
+  private readonly booksService = inject(BooksService);
 
-  // Navigation items from model
-  readonly navigationItems = NAVIGATION_ITEMS;
+  // Navigation items with reactive badge for My Books
+  readonly navigationItems = computed<readonly NavigationItem[]>(() => {
+    const totalBooks = this.booksService.totalBooksCount();
+
+    return NAVIGATION_ITEMS.map((item) => {
+      if (item.id === 'my-books') {
+        return {
+          ...item,
+          badge: totalBooks > 0 ? totalBooks : undefined
+        };
+      }
+      return item;
+    });
+  });
 
   // Responsive breakpoints
   readonly isMobile = this.responsive.isMobile;

@@ -1,6 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import {
   Book,
   ListBooksResponse,
@@ -23,6 +23,12 @@ import { environment } from '../../../environments/environment';
 export class BooksService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.api.baseUrl}/v1/books`;
+
+  /**
+   * Total count of books available
+   * Updated automatically when listBooks() is called
+   */
+  public readonly totalBooksCount = signal<number>(0);
 
   /**
    * List books with pagination and filters
@@ -53,7 +59,14 @@ export class BooksService {
       if (params.status) httpParams = httpParams.set('status', params.status);
     }
 
-    return this.http.get<ListBooksResponse>(this.baseUrl, { params: httpParams });
+    return this.http.get<ListBooksResponse>(this.baseUrl, { params: httpParams }).pipe(
+      tap((response) => {
+        // Update total count from pagination metadata
+        if (response.pagination?.total !== undefined) {
+          this.totalBooksCount.set(response.pagination.total);
+        }
+      })
+    );
   }
 
   /**

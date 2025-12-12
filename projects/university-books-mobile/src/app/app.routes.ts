@@ -26,6 +26,11 @@ export const routes: Routes = [
     title: 'My Activity - University Books'
   },
   {
+    path: 'books',
+    redirectTo: '/my-books',
+    pathMatch: 'full'
+  },
+  {
     path: 'my-books',
     loadComponent: () => import('./pages/my-books/my-books.component').then((m) => m.MyBooksComponent),
     canActivate: [authGuard],

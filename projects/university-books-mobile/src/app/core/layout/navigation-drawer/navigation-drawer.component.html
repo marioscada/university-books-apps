@@ -60,7 +60,7 @@
 
     <!-- Drawer Navigation Items -->
     <ul class="drawer-nav-list">
-      @for (item of navigationItems; track item.id) {
+      @for (item of navigationItems(); track item.id) {
         <li class="nav-item">
           <a
             [routerLink]="item.route"

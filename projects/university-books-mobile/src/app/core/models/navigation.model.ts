@@ -48,8 +48,7 @@ export const NAVIGATION_ITEMS: readonly NavigationItem[] = [
     id: 'my-books',
     label: 'My Books',
     icon: 'book',
-    route: '/books',
-    badge: 3
+    route: '/my-books'
   },
   {
     id: 'my-activity',
