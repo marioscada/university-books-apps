@@ -25,10 +25,11 @@
         aria-label="Back"
         (click)="backToMenu()"
       >
-        <ion-icon
-          name="arrow-back"
+        <mat-icon
+          fontSet="material-symbols-outlined"
           class="back-icon"
-        ></ion-icon>
+          aria-hidden="true"
+        >arrow_back</mat-icon>
       </button>
     }
 
@@ -38,17 +39,19 @@
       aria-label="Close"
       (click)="onClose()"
     >
-      <ion-icon
-        name="close"
+      <mat-icon
+        fontSet="material-symbols-outlined"
         class="close-icon"
-      ></ion-icon>
+        aria-hidden="true"
+      >close</mat-icon>
     </button>
 
     <div class="user-info">
-      <ion-icon
-        name="person-circle"
+      <mat-icon
+        fontSet="material-symbols-outlined"
         class="user-avatar"
-      ></ion-icon>
+        aria-hidden="true"
+      >account_circle</mat-icon>
       @if (displayName()) {
         <div class="user-name">{{ displayName() }}</div>
       }
@@ -65,10 +68,11 @@
           type="button"
           (click)="showAccount()"
         >
-          <ion-icon
-            name="person-outline"
+          <mat-icon
+            fontSet="material-symbols-outlined"
             class="item-icon"
-          ></ion-icon>
+            aria-hidden="true"
+          >person</mat-icon>
           <span>Account</span>
         </button>
 
@@ -76,10 +80,11 @@
           class="menu-item clickable"
           type="button"
         >
-          <ion-icon
-            name="settings-outline"
+          <mat-icon
+            fontSet="material-symbols-outlined"
             class="item-icon"
-          ></ion-icon>
+            aria-hidden="true"
+          >settings</mat-icon>
           <span>Settings</span>
         </button>
       </div>
@@ -98,10 +103,11 @@
             [disabled]="logoutState.loading"
             (click)="onLogout()"
           >
-            <ion-icon
-              name="log-out-outline"
+            <mat-icon
+              fontSet="material-symbols-outlined"
               class="item-icon"
-            ></ion-icon>
+              aria-hidden="true"
+            >logout</mat-icon>
             <span>{{ logoutState.loading ? 'Signing out...' : 'Sign out' }}</span>
           </button>
         </div>
@@ -136,11 +142,12 @@
             <div class="menu-item info-item">
               <span class="item-label">Status</span>
               <span class="item-value">
-                <ion-icon
-                  [name]="userData.emailVerified ? 'checkmark-circle' : 'close-circle'"
+                <mat-icon
+                  fontSet="material-symbols-outlined"
+                  aria-hidden="true"
                   [class.verified-icon]="userData.emailVerified"
                   [class.unverified-icon]="!userData.emailVerified"
-                ></ion-icon>
+                >{{ userData.emailVerified ? 'check_circle' : 'cancel' }}</mat-icon>
                 {{ userData.emailVerified ? 'Verified' : 'Not verified' }}
               </span>
             </div>

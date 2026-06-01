@@ -14,10 +14,11 @@
             <div class="search-category">
               <!-- Category header -->
               <div class="category-header">
-                <ion-icon
+                <mat-icon
                   class="category-icon"
-                  [name]="category.config.icon"
-                ></ion-icon>
+                  fontSet="material-symbols-outlined"
+                  aria-hidden="true"
+                >{{ category.config.icon }}</mat-icon>
                 <span class="category-label">{{ category.config.label }}</span>
                 <span class="category-count">({{ category.items.length }})</span>
               </div>

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { MatIconModule } from '@angular/material/icon';
 import { Subject, of } from 'rxjs';
 import { switchMap, map, catchError, startWith, tap, shareReplay } from 'rxjs/operators';
 import {
@@ -31,7 +31,7 @@ import { AuthService } from '../../../auth/services/auth.service';
 @Component({
   selector: 'app-user-profile-sidebar',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './user-profile-sidebar.component.html',
   styleUrls: ['./user-profile-sidebar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -12,7 +12,7 @@ export const MOCK_SEARCH_ITEMS: readonly SearchItem[] = [
     title: 'Introduction to Computer Science',
     subtitle: 'Complete guide for beginners',
     metadata: 'Updated 2 days ago',
-    icon: 'book-outline',
+    icon: 'book',
     badge: 'New',
     badgeColor: 'success',
   },
@@ -22,7 +22,7 @@ export const MOCK_SEARCH_ITEMS: readonly SearchItem[] = [
     title: 'Advanced JavaScript Patterns',
     subtitle: 'Design patterns and best practices',
     metadata: '15 chapters • 250 pages',
-    icon: 'book-outline',
+    icon: 'book',
   },
   {
     id: '3',
@@ -30,7 +30,7 @@ export const MOCK_SEARCH_ITEMS: readonly SearchItem[] = [
     title: 'Data Structures',
     subtitle: 'Introduction to Computer Science',
     metadata: 'Chapter 5',
-    icon: 'document-text-outline',
+    icon: 'article',
   },
   {
     id: '4',
@@ -38,7 +38,7 @@ export const MOCK_SEARCH_ITEMS: readonly SearchItem[] = [
     title: 'Async Patterns',
     subtitle: 'Advanced JavaScript Patterns',
     metadata: 'Chapter 12',
-    icon: 'document-text-outline',
+    icon: 'article',
     badge: 'Draft',
     badgeColor: 'warning',
   },
@@ -48,7 +48,7 @@ export const MOCK_SEARCH_ITEMS: readonly SearchItem[] = [
     title: 'Project Requirements',
     subtitle: 'Technical specifications',
     metadata: 'Last modified yesterday',
-    icon: 'document-outline',
+    icon: 'description',
   },
   {
     id: '6',
@@ -56,6 +56,6 @@ export const MOCK_SEARCH_ITEMS: readonly SearchItem[] = [
     title: 'John Doe',
     subtitle: 'john.doe@example.com',
     metadata: 'Collaborator',
-    icon: 'person-outline',
+    icon: 'person',
   },
 ];

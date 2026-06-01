@@ -8,10 +8,11 @@
   (keydown.enter)="onSelect()"
 >
   <!-- Icon -->
-  <ion-icon
+  <mat-icon
     class="search-item-icon"
-    [name]="item.icon"
-  ></ion-icon>
+    fontSet="material-symbols-outlined"
+    aria-hidden="true"
+  >{{ item.icon }}</mat-icon>
 
   <!-- Content -->
   <div class="search-item-content">
