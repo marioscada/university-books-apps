@@ -76,8 +76,10 @@
   color: vars.$text-color-secondary;
   transition: all 0.15s ease;
 
-  ion-icon {
+  mat-icon {
     font-size: 24px;
+    width: 24px;
+    height: 24px;
   }
 
   &:hover {
