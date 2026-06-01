@@ -1,11 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { SiteShellComponent } from '../site-shell/site-shell.component';
 import { SiteHeaderNavComponent } from '../site-header-nav/site-header-nav.component';
@@ -44,7 +42,6 @@ import type { SearchItem } from '../../../core/models/search-item.model';
 })
 export class AuthShellComponent {
   private readonly searchOverlay = inject(SearchOverlayService);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly brand = BRAND;
   readonly navItems = APP_NAV_ITEMS;
@@ -64,10 +61,7 @@ export class AuthShellComponent {
     ref.instance.noResultsMessage = 'No results found for "{query}"';
     ref.instance.noResultsHint = 'Try using different keywords or check spelling';
     ref.instance.jumpToHint = 'Jump to';
-
-    ref.instance.itemSelected
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((item: SearchItem) => this.onSearchItemSelected(item));
+    ref.instance.onSelect = (item: SearchItem) => this.onSearchItemSelected(item);
   }
 
   private onSearchItemSelected(_item: SearchItem): void {

@@ -40,7 +40,7 @@ export class SiteHeaderNavComponent {
   /** Apertura del menu mobile (collegata a site-shell.toggleSidebar). */
   readonly toggleSidebar = output<void>();
   /** Click sul bottone di ricerca: emette l'elemento origine per l'overlay. */
-  readonly search = output<HTMLElement>();
+  readonly searchRequested = output<HTMLElement>();
   /** Click sul bottone profilo. */
   readonly profile = output<void>();
 
@@ -49,7 +49,7 @@ export class SiteHeaderNavComponent {
   }
 
   onSearch(origin: HTMLElement): void {
-    this.search.emit(origin);
+    this.searchRequested.emit(origin);
   }
 
   onProfile(): void {

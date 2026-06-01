@@ -62,22 +62,15 @@ export class SearchOverlayService {
    * @returns Component reference for data binding
    */
   public open<T>(origin: HTMLElement, component: Type<T>): ComponentRef<T> {
-    console.log('🎪 SearchOverlayService.open() called');
-    console.log('  origin:', origin);
-    console.log('  component:', component);
-
     // Close existing overlay if open
     if (this.overlayRef) {
-      console.log('  ♻️ Closing existing overlay');
       this.close();
     }
 
     // Create position strategy (GitHub-style: below origin, fallback above)
-    console.log('  🎯 Creating position strategy...');
     const positionStrategy = this.createPositionStrategy(origin);
 
     // Create overlay with configuration
-    console.log('  🏗️ Creating overlay...');
     const isMobile = window.innerWidth < 768;
     this.overlayRef = this.overlay.create({
       positionStrategy,
@@ -89,21 +82,15 @@ export class SearchOverlayService {
       maxWidth: isMobile ? '90vw' : 600,
       maxHeight: '70vh',
     });
-    console.log('  ✅ Overlay created:', this.overlayRef);
 
     // Create portal and attach component
-    console.log('  📌 Creating portal and attaching component...');
     const portal = new ComponentPortal(component);
     this.componentRef = this.overlayRef.attach(portal);
-    console.log('  ✅ Component attached:', this.componentRef);
 
-    // Setup event listeners
-    console.log('  🎧 Setting up event listeners...');
+    // Setup event listeners (backdrop click + ESC)
     this.setupOverlayListeners();
 
-    // Update state
     this.isOpen = true;
-    console.log('  ✨ Overlay is now open!');
 
     return this.componentRef as ComponentRef<T>;
   }

@@ -35,6 +35,9 @@
   position: fixed;
   inset: 0;
   z-index: 19;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
   background: rgba(0, 0, 0, 0.25); // scrim morbido come mariosite
 }
 

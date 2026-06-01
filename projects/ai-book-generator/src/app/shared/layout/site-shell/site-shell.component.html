@@ -2,7 +2,7 @@
   SCAFFOLD (Fase 1) — drawer via signal + CSS (niente Material).
   In Fase 2 sostituire con <mat-sidenav-container> di mariosite.
 -->
-@if (screenType$ | async; as screenType) {
+@if (screenType(); as screenType) {
   <div class="site-shell">
     @if (headerTemplate(); as header) {
       <ng-container
@@ -22,7 +22,11 @@
     <!-- Drawer mobile (overlay) -->
     @if (sidebarTemplate(); as sidebar) {
       @if (sidebarOpen()) {
-        <div class="site-shell__backdrop" (click)="closeSidebar()"></div>
+        <button
+          type="button"
+          class="site-shell__backdrop"
+          aria-label="Chiudi menu"
+          (click)="closeSidebar()"></button>
         <aside class="site-shell__drawer">
           <ng-container
             *ngTemplateOutlet="sidebar; context: { closeMenu: closeSidebar, screenType: screenType }"></ng-container>

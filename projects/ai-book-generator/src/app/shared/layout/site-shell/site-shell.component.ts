@@ -6,7 +6,7 @@ import {
   signal,
   TemplateRef,
 } from '@angular/core';
-import { NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 
 import { BreakpointHelperService } from '../../services/breakpoint-helper.service';
 
@@ -24,13 +24,13 @@ import { BreakpointHelperService } from '../../services/breakpoint-helper.servic
   selector: 'app-site-shell',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet, AsyncPipe],
+  imports: [NgTemplateOutlet],
   templateUrl: './site-shell.component.html',
   styleUrl: './site-shell.component.scss',
 })
 export class SiteShellComponent {
   private readonly breakpointHelper = inject(BreakpointHelperService);
-  readonly screenType$ = this.breakpointHelper.screenType$;
+  readonly screenType = this.breakpointHelper.screenType;
 
   readonly headerTemplate = contentChild<TemplateRef<unknown>>('header');
   readonly sidebarTemplate = contentChild<TemplateRef<unknown>>('sidebar');

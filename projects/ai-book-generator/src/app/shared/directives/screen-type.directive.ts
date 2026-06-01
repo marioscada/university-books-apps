@@ -1,5 +1,4 @@
-import { Directive, ElementRef, Renderer2, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Directive, ElementRef, Renderer2, effect, inject } from '@angular/core';
 
 import { BreakpointHelperService, ScreenType } from '../services/breakpoint-helper.service';
 
@@ -20,14 +19,10 @@ export class ScreenTypeDirective {
 
   // === Constructor (setup) ===
   constructor() {
-    // ⚠️ Subscribe (non async pipe): la direttiva applica le classi all'host
-    // in modo imperativo via Renderer2 — niente template da pipare. Cleanup
-    // via takeUntilDestroyed().
-    this.breakpointHelperService.screenType$
-      .pipe(takeUntilDestroyed())
-      .subscribe((screenType: ScreenType) => {
-        this.updateClass(screenType);
-      });
+    // Reattività signals-first: l'effect ricalcola le classi dell'host a ogni
+    // variazione del viewport e si auto-distrugge col destroy della direttiva.
+    // Nessuna subscription da gestire.
+    effect(() => this.updateClass(this.breakpointHelperService.screenType()));
   }
 
   // === Private methods ===

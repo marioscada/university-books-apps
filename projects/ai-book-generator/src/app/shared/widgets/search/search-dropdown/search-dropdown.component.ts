@@ -1,8 +1,6 @@
 import {
   Component,
   Input,
-  Output,
-  EventEmitter,
   ViewChildren,
   QueryList,
   AfterViewInit,
@@ -57,11 +55,9 @@ import { SearchItemComponent } from '../search-item/search-item.component';
  * ref.instance.noResultsHint = 'Try searching for something else';
  * ref.instance.jumpToHint = 'Jump to';
  *
- * // ⚠️ Persistent subscription: parent component manages dropdown lifecycle
- * ref.instance.itemSelected.pipe(takeUntilDestroyed()).subscribe(item => {
- *   // Parent handles navigation logic
- *   this.router.navigate(['/books', item.id]);
- * });
+ * // Notifica della selezione via callback (componente creato da CDK Portal:
+ * // niente template event-binding, niente subscription da gestire).
+ * ref.instance.onSelect = (item) => this.router.navigate(['/books', item.id]);
  * ```
  */
 @Component({
@@ -206,9 +202,10 @@ export class SearchDropdownComponent implements AfterViewInit {
   );
 
   /**
-   * Item selected event (parent handles navigation)
+   * Callback di selezione: il parent gestisce la navigazione. Impostato
+   * imperativamente sull'istanza creata via overlay (vedi esempio in testa).
    */
-  @Output() itemSelected = new EventEmitter<SearchItem>();
+  @Input() onSelect?: (item: SearchItem) => void;
 
   private readonly searchOverlayService = inject(SearchOverlayService);
 
@@ -279,7 +276,7 @@ export class SearchDropdownComponent implements AfterViewInit {
    * Parent component handles navigation logic
    */
   public onItemSelect(item: SearchItem): void {
-    this.itemSelected.emit(item);
+    this.onSelect?.(item);
     this.close();
   }
 
