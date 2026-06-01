@@ -8,12 +8,12 @@ This monorepo contains all client applications for the University Educational Bo
 
 ## 📦 Projects
 
-### 1. **university-books-mobile** 📱
+### 1. **ai-book-generator** 📱
 Mobile application for accessing educational books
 
 - **Type**: Angular application
 - **Platform**: Web/Mobile (Ionic/Capacitor ready)
-- **Branch naming**: `feat/university-books-mobile/*`
+- **Branch naming**: `feat/ai-book-generator/*`
 - **Port**: 4200
 - **Status**: ✅ Active development
 
@@ -36,7 +36,7 @@ Third project (to be renamed/repurposed)
 npm install
 
 # Start development servers
-npm run start:mobile        # university-books-mobile on http://localhost:4200
+npm run start:mobile        # ai-book-generator on http://localhost:4200
 npm run start:second        # cicd-second-project on http://localhost:4201
 npm run start:third         # cicd-third-project on http://localhost:4202
 
@@ -57,7 +57,7 @@ npm run lint:mobile
 
 ---
 
-## 📱 university-books-mobile
+## 📱 ai-book-generator
 
 ### Features
 - 📚 Book browsing and reading
@@ -79,21 +79,21 @@ npm run lint:mobile
 
 ```bash
 # Serve development
-ng serve university-books-mobile
+ng serve ai-book-generator
 
 # Build production
-ng build university-books-mobile --configuration=production
+ng build ai-book-generator --configuration=production
 
 # Run tests
-ng test university-books-mobile
+ng test ai-book-generator
 
 # Lint
-ng lint university-books-mobile
+ng lint ai-book-generator
 ```
 
 ### Environment Configuration
 
-Create environment files in `projects/university-books-mobile/src/environments/`:
+Create environment files in `projects/ai-book-generator/src/environments/`:
 
 #### Development (`environment.ts`)
 ```typescript
@@ -124,7 +124,7 @@ export const environment = {
 ```
 university-books-apps/
 ├── projects/
-│   ├── university-books-mobile/    # 📱 Mobile app
+│   ├── ai-book-generator/    # 📱 Mobile app
 │   │   ├── src/
 │   │   │   ├── app/               # Application code
 │   │   │   ├── environments/      # Environment configs
@@ -153,9 +153,9 @@ university-books-apps/
 
 ### Mobile App Features
 ```
-feat/university-books-mobile/feature-name
-fix/university-books-mobile/bug-description
-chore/university-books-mobile/task-description
+feat/ai-book-generator/feature-name
+fix/ai-book-generator/bug-description
+chore/ai-book-generator/task-description
 ```
 
 ### Backend/Infrastructure
@@ -165,9 +165,9 @@ fix/university-books-aws/bug-description
 ```
 
 ### Examples
-- `feat/university-books-mobile/book-reader`
-- `feat/university-books-mobile/offline-sync`
-- `fix/university-books-mobile/auth-token-refresh`
+- `feat/ai-book-generator/book-reader`
+- `feat/ai-book-generator/offline-sync`
+- `fix/ai-book-generator/auth-token-refresh`
 - `feat/university-books-aws/mobile-app-integration`
 
 ---
@@ -196,7 +196,7 @@ fix/university-books-aws/bug-description
 
 ### Architecture
 - [Monorepo Structure](docs/MONOREPO.md) - Structure and organization
-- [Shared Module](projects/university-books-mobile/src/shared/README.md) - Shared components
+- [Shared Module](projects/ai-book-generator/src/shared/README.md) - Shared components
 
 ### DevOps & Deployment
 - [Docker Setup](docs/DOCKER-MONOREPO.md) - Containerization
@@ -262,7 +262,7 @@ npm run configure
 
 | Project | Status | Branch | Port | Last Updated |
 |---------|--------|--------|------|--------------|
-| university-books-mobile | 🟢 Active | feat/university-books-mobile/* | 4200 | 2025-12-04 |
+| ai-book-generator | 🟢 Active | feat/ai-book-generator/* | 4200 | 2025-12-04 |
 | cicd-second-project | ⚪ Inactive | - | 4201 | - |
 | cicd-third-project | ⚪ Inactive | - | 4202 | - |
 
@@ -305,4 +305,4 @@ University Educational Books Platform Team
 
 **Last Updated**: December 2025
 **Version**: 2.0.0 (Monorepo restructure)
-**Main Project**: university-books-mobile
+**Main Project**: ai-book-generator

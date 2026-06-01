@@ -9,7 +9,7 @@ Modern Angular mobile application for the University Books platform, built with 
 npm install
 
 # Start development server
-npm run start:university-books-mobile
+npm run start:ai-book-generator
 ```
 
 Navigate to `http://localhost:4200/`
@@ -127,7 +127,7 @@ See `.env.example` for all available variables.
 
 ```bash
 # Start dev server
-npm run start:university-books-mobile
+npm run start:ai-book-generator
 
 # Build for production
 npm run build
@@ -208,7 +208,7 @@ npm run e2e
 
 ## 🚀 Deployment
 
-Built artifacts are in `dist/university-books-mobile/`
+Built artifacts are in `dist/ai-book-generator/`
 
 Deploy to:
 - AWS Amplify Hosting (recommended)

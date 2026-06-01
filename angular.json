@@ -3,15 +3,15 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "university-books-mobile": {
+    "ai-book-generator": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "projects/university-books-mobile",
-      "sourceRoot": "projects/university-books-mobile/src",
+      "root": "projects/ai-book-generator",
+      "sourceRoot": "projects/ai-book-generator/src",
       "prefix": "app",
       "architect": {
         "build": {
@@ -19,25 +19,25 @@
           "options": {
             "stylePreprocessorOptions": {
               "includePaths": [
-                "projects/university-books-mobile/src/styles"
+                "projects/ai-book-generator/src"
               ]
             },
-            "outputPath": "dist/university-books-mobile",
-            "index": "projects/university-books-mobile/src/index.html",
-            "browser": "projects/university-books-mobile/src/main.ts",
+            "outputPath": "dist/ai-book-generator",
+            "index": "projects/ai-book-generator/src/index.html",
+            "browser": "projects/ai-book-generator/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "projects/university-books-mobile/tsconfig.app.json",
+            "tsConfig": "projects/ai-book-generator/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/university-books-mobile/public"
+                "input": "projects/ai-book-generator/public"
               }
             ],
             "styles": [
-              "projects/university-books-mobile/src/styles.scss"
+              "projects/ai-book-generator/src/styles.scss"
             ],
             "scripts": []
           },
@@ -58,8 +58,8 @@
               "outputHashing": "all",
               "fileReplacements": [
                 {
-                  "replace": "projects/university-books-mobile/src/environments/environment.ts",
-                  "with": "projects/university-books-mobile/src/environments/environment.prod.ts"
+                  "replace": "projects/ai-book-generator/src/environments/environment.ts",
+                  "with": "projects/ai-book-generator/src/environments/environment.prod.ts"
                 }
               ]
             },
@@ -75,10 +75,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "university-books-mobile:build:production"
+              "buildTarget": "ai-book-generator:build:production"
             },
             "development": {
-              "buildTarget": "university-books-mobile:build:development"
+              "buildTarget": "ai-book-generator:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -94,16 +94,16 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "projects/university-books-mobile/tsconfig.spec.json",
+            "tsConfig": "projects/ai-book-generator/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/university-books-mobile/public"
+                "input": "projects/ai-book-generator/public"
               }
             ],
             "styles": [
-              "projects/university-books-mobile/src/styles.scss"
+              "projects/ai-book-generator/src/styles.scss"
             ],
             "scripts": []
           }
@@ -112,8 +112,8 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "projects/university-books-mobile/src/**/*.ts",
-              "projects/university-books-mobile/src/**/*.html"
+              "projects/ai-book-generator/src/**/*.ts",
+              "projects/ai-book-generator/src/**/*.html"
             ]
           }
         }

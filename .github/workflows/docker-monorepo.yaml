@@ -15,7 +15,7 @@ jobs:
     name: Detect Changed Projects
     runs-on: ubuntu-latest
     outputs:
-      university-books-mobile: ${{ steps.filter.outputs.university-books-mobile }}
+      ai-book-generator: ${{ steps.filter.outputs.ai-book-generator }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,17 +25,17 @@ jobs:
         id: filter
         with:
           filters: |
-            university-books-mobile:
-              - 'projects/university-books-mobile/**'
+            ai-book-generator:
+              - 'projects/ai-book-generator/**'
               - 'libs/**'
               - 'package*.json'
               - 'angular.json'
 
   # Build University Books Mobile
-  build-university-books-mobile:
+  build-ai-book-generator:
     name: Build University Books Mobile
     needs: detect-changes
-    if: needs.detect-changes.outputs.university-books-mobile == 'true'
+    if: needs.detect-changes.outputs.ai-book-generator == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,24 +51,24 @@ jobs:
           file: docker/Dockerfile.monorepo
           push: false
           load: true
-          tags: university-books-mobile:latest
+          tags: ai-book-generator:latest
           build-args: |
-            PROJECT_NAME=university-books-mobile
+            PROJECT_NAME=ai-book-generator
             BUILD_CONFIGURATION=production
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Test University Books Mobile
         run: |
-          docker run -d -p 8080:80 --name test-university-books-mobile university-books-mobile:latest
+          docker run -d -p 8080:80 --name test-ai-book-generator ai-book-generator:latest
           sleep 5
           curl -f http://localhost:8080/ || exit 1
-          docker stop test-university-books-mobile
+          docker stop test-ai-book-generator
 
   # Summary
   build-summary:
     name: Build Summary
-    needs: [detect-changes, build-university-books-mobile]
+    needs: [detect-changes, build-ai-book-generator]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -78,4 +78,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Project | Changed | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|---------|---------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| University Books Mobile | ${{ needs.detect-changes.outputs.university-books-mobile }} | ${{ needs.build-university-books-mobile.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| University Books Mobile | ${{ needs.detect-changes.outputs.ai-book-generator }} | ${{ needs.build-ai-book-generator.result || 'skipped' }} |" >> $GITHUB_STEP_SUMMARY
