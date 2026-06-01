@@ -1,0 +1,59 @@
+<app-auth-shell>
+  <section class="page">
+    <div class="site-container page__inner">
+      <header class="page__head page__head--row">
+        <div>
+          <p class="page__eyebrow">Library</p>
+          <h1 class="page__title">Sources</h1>
+          <p class="page__subtitle">Il materiale sorgente che alimenta i tuoi progetti.</p>
+        </div>
+        <button type="button" class="site-cta-pill page__action" (click)="onUpload()">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">upload</mat-icon>
+          <span>Upload</span>
+        </button>
+      </header>
+
+      <!-- Cartelle -->
+      <div class="filters" role="tablist" aria-label="Cartelle">
+        @for (folder of folders; track folder.value) {
+          <button
+            type="button"
+            class="filter-chip filter-chip--icon"
+            role="tab"
+            [class.is-active]="activeFolder() === folder.value"
+            [attr.aria-selected]="activeFolder() === folder.value"
+            (click)="setFolder(folder.value)">
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ folder.icon }}</mat-icon>
+            <span>{{ folder.label }}</span>
+          </button>
+        }
+      </div>
+
+      <!-- Fonti -->
+      @if (visibleFiles().length) {
+        <div class="grid">
+          @for (file of visibleFiles(); track file.id) {
+            <article class="card">
+              <span class="card__icon" aria-hidden="true">
+                <mat-icon fontSet="material-symbols-outlined">{{ file.icon }}</mat-icon>
+              </span>
+              <div class="card__body">
+                <h2 class="card__title">{{ file.name }}</h2>
+                <p class="card__meta">{{ file.type }} · {{ file.sizeLabel }} · {{ file.addedLabel }}</p>
+                @if (file.tags.length) {
+                  <div class="tags">
+                    @for (tag of file.tags; track tag) {
+                      <span class="tag">{{ tag }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      } @else {
+        <p class="empty">Nessuna fonte in questa cartella.</p>
+      }
+    </div>
+  </section>
+</app-auth-shell>

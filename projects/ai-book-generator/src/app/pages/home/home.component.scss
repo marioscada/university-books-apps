@@ -1,0 +1,123 @@
+// Dashboard privata.
+.dash {
+  padding-block: var(--section-padding-block, clamp(40px, 6vw, 80px));
+  min-height: 60vh;
+}
+
+.dash__inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 4vw, 44px);
+}
+
+.dash__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dash__title {
+  font-size: var(--site-display-small, clamp(2rem, 3vw, 2.75rem));
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.dash__cta {
+  flex: 0 0 auto;
+}
+
+.dash__block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dash__block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dash__block-title {
+  font-size: var(--site-title-large, 1.5rem);
+  font-weight: 600;
+  margin: 0;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.dash__link {
+  font-size: var(--site-body-small, 0.875rem);
+  text-decoration: none;
+  color: var(--site-accent-blue, #7aa7ff);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
+}
+
+.card--link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+
+  &:hover {
+    border-color: var(--site-accent-blue, #7aa7ff);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #e8efff;
+  color: var(--site-accent-blue, #7aa7ff);
+}
+
+.card__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.card__title {
+  font-size: var(--site-title-medium, 1.125rem);
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.card__meta {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  margin: 0;
+}

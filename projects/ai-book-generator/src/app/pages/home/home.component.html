@@ -1,0 +1,53 @@
+<app-auth-shell>
+  <section class="dash">
+    <div class="site-container dash__inner">
+      <header class="dash__head">
+        <h1 class="dash__title">Welcome back, {{ userName() }}</h1>
+        <a class="site-cta-pill dash__cta" routerLink="/create">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+          <span>Create New</span>
+        </a>
+      </header>
+
+      <div class="dash__block">
+        <div class="dash__block-head">
+          <h2 class="dash__block-title">Recent Projects</h2>
+          <a class="dash__link" routerLink="/collection">Vedi tutti</a>
+        </div>
+        <div class="grid">
+          @for (project of recentProjects(); track project.id) {
+            <a class="card card--link" [routerLink]="project.route">
+              <span class="card__icon" aria-hidden="true">
+                <mat-icon fontSet="material-symbols-outlined">{{ project.icon }}</mat-icon>
+              </span>
+              <div class="card__body">
+                <h3 class="card__title">{{ project.title }}</h3>
+                <p class="card__meta">{{ project.kindLabel }}</p>
+              </div>
+            </a>
+          }
+        </div>
+      </div>
+
+      <div class="dash__block">
+        <div class="dash__block-head">
+          <h2 class="dash__block-title">Recent Sources</h2>
+          <a class="dash__link" routerLink="/library">Vedi tutte</a>
+        </div>
+        <div class="grid">
+          @for (source of recentSources(); track source.id) {
+            <a class="card card--link" routerLink="/library">
+              <span class="card__icon" aria-hidden="true">
+                <mat-icon fontSet="material-symbols-outlined">{{ source.icon }}</mat-icon>
+              </span>
+              <div class="card__body">
+                <h3 class="card__title">{{ source.name }}</h3>
+                <p class="card__meta">{{ source.typeLabel }}</p>
+              </div>
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</app-auth-shell>

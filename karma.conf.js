@@ -22,7 +22,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/university-books-mobile'),
+      dir: require('path').join(__dirname, './coverage/ai-book-generator'),
       subdir: '.',
       reporters: [
         { type: 'html' },

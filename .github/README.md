@@ -76,7 +76,7 @@ Il controllo delle subscriptions è **obbligatorio** e viene eseguito in tutti i
 ### Output di esempio:
 
 ```bash
-🔍 Checking RxJS subscriptions in: university-books-mobile
+🔍 Checking RxJS subscriptions in: ai-book-generator
 
 📊 Finding all subscriptions...
    Found 2 subscription(s)
@@ -90,7 +90,7 @@ Il controllo delle subscriptions è **obbligatorio** e viene eseguito in tutti i
 🔎 Checking for Observable properties that should use async pipe...
    ✅ No Observable properties in components (or all converted to signals)
 
-✅ university-books-mobile: All checks passed! (2 subscriptions)
+✅ ai-book-generator: All checks passed! (2 subscriptions)
 ```
 
 ### Se il check fallisce:
@@ -160,8 +160,8 @@ I workflow sono in `.github/workflows/`:
 
 ```bash
 # ✅ CORRETTO
-git checkout -b feat/university-books-mobile/auth-implementation
-git checkout -b fix/university-books-mobile/login-validation
+git checkout -b feat/ai-book-generator/auth-implementation
+git checkout -b fix/ai-book-generator/login-validation
 git checkout -b refactor/backend-api-client/error-handling
 
 # ❌ SBAGLIATO - Manca nome progetto
@@ -171,7 +171,7 @@ git checkout -b feature/login-ui
 
 **Pattern:** `<type>/<project-name>/<short-description>`
 - **type:** feat, fix, refactor, docs, test, chore
-- **project-name:** university-books-mobile, backend-api-client
+- **project-name:** ai-book-generator, backend-api-client
 - **description:** 2-4 parole kebab-case
 
 ### 2. Prima di creare una PR

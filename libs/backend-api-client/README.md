@@ -16,7 +16,7 @@ This library contains **auto-generated** TypeScript code that provides type-safe
 
 This is a **shared library** used by all Angular projects in the monorepo that communicate with the same backend:
 
-- `university-books-mobile` (current)
+- `ai-book-generator` (current)
 - `university-books-web` (future)
 - `university-books-admin` (future)
 
@@ -99,7 +99,7 @@ OpenAPI.TOKEN = async () => {
 };
 ```
 
-See `projects/university-books-mobile/src/app/core/config/api-client.config.ts` for complete example.
+See `projects/ai-book-generator/src/app/core/config/api-client.config.ts` for complete example.
 
 ## 🔄 Regeneration
 

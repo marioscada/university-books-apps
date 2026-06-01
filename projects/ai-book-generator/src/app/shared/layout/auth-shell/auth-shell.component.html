@@ -1,0 +1,40 @@
+<!--
+  AuthShell — shell autenticata riusabile. Le pagine proiettano il contenuto
+  del corpo centrale tramite <ng-content>.
+-->
+<app-site-shell>
+  <ng-template #header let-toggleSidebar="toggleSidebar">
+    <app-site-header-nav
+      [brand]="brand"
+      logoRoute="/home"
+      [navItems]="navItems"
+      [showSearch]="true"
+      [showProfile]="true"
+      (toggleSidebar)="toggleSidebar()"
+      (searchRequested)="onSearch($event)"
+      (profile)="onProfile()" />
+  </ng-template>
+
+  <ng-template #sidebar let-closeMenu="closeMenu">
+    <app-site-mobile-menu
+      [brand]="brand"
+      [navItems]="navItems"
+      (closeMenu)="closeMenu()" />
+  </ng-template>
+
+  <ng-template #main>
+    <ng-content />
+  </ng-template>
+
+  <ng-template #footer>
+    <app-site-footer-block
+      [brand]="brand"
+      [columns]="footerColumns"
+      [showAuthOnly]="true" />
+  </ng-template>
+</app-site-shell>
+
+<!-- Sidebar profilo (overlay) — riuso del componente esistente. -->
+@if (profileOpen()) {
+  <app-user-profile-sidebar (closeSidebar)="onProfileClose()" />
+}

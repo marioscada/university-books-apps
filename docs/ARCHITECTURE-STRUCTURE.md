@@ -79,7 +79,7 @@ features/auth/
 ## 📂 Struttura Completa
 
 ```
-projects/university-books-mobile/src/app/
+projects/ai-book-generator/src/app/
 │
 ├── core/                           # App-wide singleton services
 │   ├── services/

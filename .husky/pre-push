@@ -8,14 +8,14 @@ if [ "$branch" = "master" ]; then
 fi
 
 # Check branch naming convention: feat|fix|refactor/project-name/branch-name
-if ! echo "$branch" | grep -qE "^(feat|fix|refactor)/(university-books-mobile|api-client|auth|ci)/"; then
+if ! echo "$branch" | grep -qE "^(feat|fix|refactor)/(ai-book-generator|api-client|auth|ci)/"; then
   echo "Error: Branch name must follow pattern: feat|fix|refactor/{project}/branch-name"
   echo "Current branch: $branch"
   echo ""
-  echo "Valid projects: university-books-mobile, api-client, auth, ci"
+  echo "Valid projects: ai-book-generator, api-client, auth, ci"
   echo ""
   echo "Examples:"
-  echo "  feat/university-books-mobile/add-login"
+  echo "  feat/ai-book-generator/add-login"
   echo "  fix/api-client/fix-auth"
   echo "  refactor/auth/cleanup-code"
   exit 1

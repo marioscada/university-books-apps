@@ -1,0 +1,76 @@
+// Footer dark — unica area scura del sito (fedele a mariosite).
+// Margini/gutter/max-width vengono dal `.site-container` GLOBALE (theme/_sections),
+// non ridefiniti qui. Il contenuto è CENTRATO.
+
+:host {
+  display: block;
+  background: var(--site-dark-surface, #1a1d21);
+  color: var(--site-dark-on-surface, #fff);
+}
+
+.site-footer {
+  padding-block: var(--section-padding-block, clamp(40px, 6vw, 80px));
+  // Floor: la banda scura legge come una vera "fine capitolo".
+  min-height: clamp(360px, 32vw, 460px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(32px, 5vw, 56px);
+  overflow: hidden;
+}
+
+// Griglia colonne — CENTRATA orizzontalmente; le colonne distribuite con gap.
+.footer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  column-gap: clamp(48px, 8vw, 120px);
+  row-gap: clamp(40px, 6vw, 64px);
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center; // contenuto della colonna centrato
+  text-align: center;
+  min-width: 0;
+}
+
+.footer-col-title {
+  font-size: var(--site-label-large, 0.875rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--site-dark-on-surface, #fff);
+  margin: 0 0 12px;
+}
+
+.footer-col-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center; // voci centrate
+  gap: 8px;
+}
+
+// Barra inferiore — copyright centrato, separato da un filo.
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--site-dark-outline, rgba(255, 255, 255, 0.15));
+}
+
+.copyright {
+  font-size: var(--site-body-small, 0.875rem);
+  line-height: 1.5;
+  color: var(--site-dark-on-surface-variant, rgba(255, 255, 255, 0.65));
+}

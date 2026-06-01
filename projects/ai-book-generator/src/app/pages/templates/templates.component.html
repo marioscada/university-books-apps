@@ -1,0 +1,26 @@
+<app-auth-shell>
+  <section class="page">
+    <div class="site-container page__inner">
+      <header class="page__head">
+        <p class="page__eyebrow">Templates</p>
+        <h1 class="page__title">Parti da un template</h1>
+        <p class="page__subtitle">Strutture pre-pronte: scegline una e l’AI precompila tipo e struttura.</p>
+      </header>
+
+      <div class="grid">
+        @for (template of templates; track template.id) {
+          <a class="card card--link" [routerLink]="['/create']" [queryParams]="{ template: template.id }">
+            <span class="card__icon" aria-hidden="true">
+              <mat-icon fontSet="material-symbols-outlined">{{ template.icon }}</mat-icon>
+            </span>
+            <div class="card__body">
+              <h2 class="card__title">{{ template.name }}</h2>
+              <p class="card__meta">{{ template.description }}</p>
+            </div>
+            <span class="card__status" data-status="ready">{{ template.kindLabel }}</span>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+</app-auth-shell>

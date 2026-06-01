@@ -1,0 +1,33 @@
+<app-auth-shell>
+  <section class="page">
+    <div class="site-container page__inner page__inner--center">
+      <header class="page__head page__head--center">
+        <p class="page__eyebrow">Pricing</p>
+        <h1 class="page__title">Abbonamenti</h1>
+        <p class="page__subtitle">Scegli il piano giusto per te. Cambi quando vuoi.</p>
+      </header>
+
+      <div class="plans">
+        @for (plan of plans; track plan.id) {
+          <article class="plan" [class.plan--featured]="plan.featured">
+            @if (plan.featured) {
+              <span class="plan__badge">Consigliato</span>
+            }
+            <h2 class="plan__name">{{ plan.name }}</h2>
+            <p class="plan__price">{{ plan.price }}<span class="plan__period">{{ plan.period }}</span></p>
+            <p class="plan__desc">{{ plan.description }}</p>
+            <ul class="plan__features">
+              @for (feature of plan.features; track feature) {
+                <li class="plan__feature">
+                  <mat-icon class="plan__check" fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
+                  <span>{{ feature }}</span>
+                </li>
+              }
+            </ul>
+            <a class="site-cta-pill plan__cta" routerLink="/create">{{ plan.cta }}</a>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+</app-auth-shell>

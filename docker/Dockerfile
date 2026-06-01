@@ -31,7 +31,7 @@ RUN apk add --no-cache curl
 COPY docker/config/nginx.conf /etc/nginx/nginx.conf
 
 # Copy built app from build stage
-COPY --from=build /app/dist/university-books-mobile/browser /usr/share/nginx/html
+COPY --from=build /app/dist/ai-book-generator/browser /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80

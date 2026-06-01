@@ -1,0 +1,64 @@
+// =============================================================================
+// styles.scss — UNICO entry point degli stili globali (stile mariosite).
+// =============================================================================
+// Ordine di emissione (come mariosite):
+//   1. token (:root --site-*) + reset
+//   2. Tailwind base + components
+//   3. mat.theme(...) → token --mat-sys-* (GLOBALE su html)
+//   4. body/html defaults + partial site (sections, blocks, mat-button)
+//   5. Tailwind utilities PER ULTIMO — vincono la cascade
+//
+// `@use` (Sass: tutti prima). I partial vivono in `src/theme/`.
+
+@use '@angular/material' as mat;
+@use './theme/tokens';
+@use './theme/reset';
+@use './theme/sections';
+@use './theme/blocks';
+@use './theme/mat-button';
+
+@import '@angular/cdk/overlay-prebuilt.css';
+
+@tailwind base;
+@tailwind components;
+
+// Material 3 light, palette azure — GLOBALE (mirror mariosite).
+html {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Inter,
+      density: 0,
+    )
+  );
+
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--mat-sys-surface-container-lowest, #ffffff);
+  color: var(--mat-sys-on-surface, #1a1d21);
+  font-family: Inter, 'Helvetica Neue', sans-serif;
+}
+
+// Anchor di scroll sotto l'header sticky.
+section[id] {
+  scroll-margin-top: var(--header-height, 88px);
+}
+
+// Drawer mobile che copre l'header sticky (mirror mariosite).
+.mat-sidenav-container.mat-drawer-container {
+  z-index: auto;
+}
+.mat-drawer.mat-sidenav-fixed {
+  z-index: 20;
+}
+.mat-drawer-container .mat-drawer-backdrop {
+  z-index: 19;
+}
+
+@tailwind utilities;

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380" role="img" aria-label="Generated book example">
+  <rect width="300" height="380" rx="10" fill="#1a1d21"/>
+  <rect x="24" y="24" width="252" height="332" rx="6" fill="#23272e"/>
+  <rect x="48" y="60" width="160" height="16" rx="4" fill="#7aa7ff"/>
+  <rect x="48" y="92" width="204" height="26" rx="4" fill="#ffffff" opacity="0.9"/>
+  <rect x="48" y="124" width="170" height="26" rx="4" fill="#ffffff" opacity="0.9"/>
+  <rect x="48" y="180" width="204" height="9" rx="4" fill="#ffffff" opacity="0.25"/>
+  <rect x="48" y="198" width="204" height="9" rx="4" fill="#ffffff" opacity="0.25"/>
+  <rect x="48" y="216" width="150" height="9" rx="4" fill="#ffffff" opacity="0.25"/>
+  <text x="150" y="330" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#ffffff" opacity="0.5">University Book · 120 pp</text>
+</svg>

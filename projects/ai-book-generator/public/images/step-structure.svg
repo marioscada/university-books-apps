@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 267" role="img" aria-label="AI structures and writes">
+  <rect width="400" height="267" rx="12" fill="#f1f5f9"/>
+  <rect x="40" y="36" width="320" height="195" rx="10" fill="#ffffff" stroke="#e3e5e8"/>
+  <g font-family="Inter, sans-serif" font-size="12" fill="#5b6068">
+    <circle cx="64" cy="64" r="5" fill="#16a34a"/><rect x="80" y="58" width="180" height="12" rx="6" fill="#1a1d21" opacity="0.85"/>
+    <circle cx="64" cy="96" r="5" fill="#16a34a"/><rect x="80" y="90" width="220" height="10" rx="5" fill="#cdd9ec"/>
+    <circle cx="64" cy="124" r="5" fill="#16a34a"/><rect x="80" y="118" width="160" height="10" rx="5" fill="#cdd9ec"/>
+    <circle cx="64" cy="152" r="5" fill="#7aa7ff"/><rect x="80" y="146" width="200" height="10" rx="5" fill="#dde6f3"/>
+    <circle cx="64" cy="180" r="5" fill="#cdd9ec"/><rect x="80" y="174" width="140" height="10" rx="5" fill="#eef2f7"/>
+    <circle cx="64" cy="208" r="5" fill="#cdd9ec"/><rect x="80" y="202" width="180" height="10" rx="5" fill="#eef2f7"/>
+  </g>
+</svg>

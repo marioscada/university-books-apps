@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380" role="img" aria-label="Generated study notes example">
+  <rect width="300" height="380" rx="10" fill="#1f1430"/>
+  <rect x="24" y="24" width="252" height="332" rx="6" fill="#2c1d45"/>
+  <rect x="48" y="60" width="140" height="16" rx="4" fill="#c4a7ff"/>
+  <rect x="48" y="92" width="180" height="24" rx="4" fill="#ffffff" opacity="0.92"/>
+  <rect x="48" y="150" width="60" height="60" rx="8" fill="#ffffff" opacity="0.12"/>
+  <rect x="120" y="160" width="132" height="9" rx="4" fill="#ffffff" opacity="0.25"/>
+  <rect x="120" y="178" width="132" height="9" rx="4" fill="#ffffff" opacity="0.25"/>
+  <rect x="120" y="196" width="90" height="9" rx="4" fill="#ffffff" opacity="0.25"/>
+  <text x="150" y="330" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#ffffff" opacity="0.6">Study Notes</text>
+</svg>

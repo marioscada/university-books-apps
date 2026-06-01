@@ -18,7 +18,7 @@ Modern mobile application starter built with:
 ```
 university-books-apps/
 ├── projects/
-│   └── university-books-mobile/       # Main mobile app
+│   └── ai-book-generator/       # Main mobile app
 │       └── src/
 │           ├── app/
 │           │   ├── core/              # Core business logic (TODO)
@@ -81,7 +81,7 @@ The app will be available at `http://localhost:4200`
 ### Development
 
 ```bash
-npm start              # Start dev server (university-books-mobile)
+npm start              # Start dev server (ai-book-generator)
 npm run watch          # Build with watch mode
 npm test               # Run unit tests
 npm run test:ci        # Run tests in CI mode (headless)
@@ -96,7 +96,7 @@ npm run build          # Production build
 ### Linting
 
 ```bash
-npm run lint           # Lint university-books-mobile
+npm run lint           # Lint ai-book-generator
 npm run lint:auth      # Lint auth library
 npm run lint:all       # Lint all projects
 ```
@@ -210,7 +210,7 @@ Coverage reports are generated in `/coverage` directory.
 npm run build
 ```
 
-Output: `dist/university-books-mobile/`
+Output: `dist/ai-book-generator/`
 
 ### Mobile Build (iOS/Android)
 
