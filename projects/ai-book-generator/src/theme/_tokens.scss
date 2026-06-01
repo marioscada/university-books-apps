@@ -1,0 +1,74 @@
+// =============================================================================
+// _tokens.scss — design tokens (CSS custom properties) del tema mariosite.
+// =============================================================================
+// Portati 1:1 da ~/marianoscada-site/projects/site-web/src/styles.scss (:root).
+// NOTA: questo partial è additivo. Diventa attivo quando `src/styles.scss`
+// farà `@use 'theme/tokens'` (vedi docs/MIGRATION-TO-WEBSITE.md, Fase 2).
+
+:root {
+  // --- Shell layout ---------------------------------------------------------
+  --header-height: 88px;
+  --footer-min-height: auto;
+  // Container marketing: mirror mariosite (.site-container = 1200px).
+  --page-max-width: 1200px;
+  --page-padding-inline: 20px; // → 24px @600, 32px @1200 (vedi sotto)
+
+  // --- Sezioni --------------------------------------------------------------
+  --section-padding-block: clamp(40px, 6vw, 80px);
+  --section-min-height: clamp(360px, 32vw, 440px);
+  --section-text-stack-gap: clamp(14px, 1.4vw, 18px);
+  --section-title-size: var(--site-headline-large);
+  --section-subtitle-size: var(--site-title-large);
+  --section-body-size: var(--site-body-large);
+
+  // Sfondo alternato (zebra striping) — bianco vs slate-100.
+  --section-band-alt: #f1f5f9;
+
+  // --- Media / hero ---------------------------------------------------------
+  --page-hero-aspect-ratio: 16 / 9;
+  --session-media-frame-width: clamp(280px, 32vw, 400px);
+  --session-media-frame-aspect-ratio: 3 / 2;
+  --session-media-frame-height: clamp(187px, 21.3vw, 267px);
+
+  // --- Brand / accent -------------------------------------------------------
+  --site-success: #16a34a;
+  --site-accent-blue: #7aa7ff;
+  --site-nav-item-active-color: var(--site-accent-blue);
+  --site-nav-item-indicator-height: 0;
+
+  // --- Dark surface (footer + drawer mobile) --------------------------------
+  --site-dark-surface: #1a1d21;
+  --site-dark-on-surface: #ffffff;
+  --site-dark-on-surface-variant: rgba(255, 255, 255, 0.65);
+  --site-dark-outline: rgba(255, 255, 255, 0.15);
+  --site-footer-watermark-color: rgba(255, 255, 255, 0.04);
+
+  // --- Sidebar widths (mirror) ----------------------------------------------
+  --sidebar-width-sm: 78px;
+  --sidebar-width-large: 200px;
+  --sidebar-width-extra-large: 250px;
+
+  // --- Tipografia -----------------------------------------------------------
+  --site-display-large: clamp(3rem, 5vw, 4.5rem); // ~48 → 72px
+  --site-display-medium: clamp(2.25rem, 3.4vw, 3.25rem); // ~36 → 52px
+  --site-display-small: clamp(2rem, 3vw, 2.75rem); // ~32 → 44px
+  --site-headline-large: clamp(1.625rem, 2.25vw, 2rem); // ~26 → 32px
+  --site-title-large: 1.5rem; // 24px
+  --site-title-medium: 1.125rem; // 18px
+  --site-body-large: 1.0625rem; // 17px
+  --site-body-medium: 1rem; // 16px
+  --site-body-small: 0.875rem; // 14px
+  --site-label-large: 0.875rem; // 14px (eyebrow)
+}
+
+@media (min-width: 600px) {
+  :root {
+    --page-padding-inline: 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --page-padding-inline: 32px;
+  }
+}

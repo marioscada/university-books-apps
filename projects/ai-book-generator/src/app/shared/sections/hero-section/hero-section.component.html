@@ -1,0 +1,37 @@
+<!--
+  Page hero (fedele a mariosite): immagine full-bleed + scrim che sfuma da
+  sinistra (scuro, testo leggibile) a destra (trasparente). Senza immagine
+  resta il backdrop scuro. CTA su immagine via .site-cta-pill--on-image.
+-->
+@if (data(); as hero) {
+  <section
+    class="hero-section"
+    [id]="hero.sectionId ?? null"
+    [attr.aria-label]="hero.ariaLabel ?? hero.title">
+    @if (hero.imageSrc) {
+      <img
+        class="hero-section__image hero-section__image--loaded"
+        [src]="hero.imageSrc"
+        [alt]="hero.imageAlt ?? ''"
+        fetchpriority="high"
+        decoding="async" />
+    }
+    <div class="hero-section__scrim" aria-hidden="true"></div>
+    <div class="hero-section__content">
+      <div class="site-container hero-section__inner">
+        @if (hero.eyebrow) {
+          <p class="hero-section__eyebrow">{{ hero.eyebrow }}</p>
+        }
+        <h1 class="hero-section__title">{{ hero.title }}</h1>
+        @if (hero.subtitle) {
+          <p class="hero-section__subtitle">{{ hero.subtitle }}</p>
+        }
+        @if (hero.cta; as cta) {
+          <a
+            class="hero-section__cta site-cta-pill site-cta-pill--on-image"
+            [routerLink]="cta.route">{{ cta.label }}</a>
+        }
+      </div>
+    </div>
+  </section>
+}

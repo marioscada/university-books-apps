@@ -1,0 +1,22 @@
+<section class="output-types">
+  <div class="site-container output-types__inner">
+    @if (eyebrow()) {
+      <p class="output-types__eyebrow">{{ eyebrow() }}</p>
+    }
+    @if (title()) {
+      <h2 class="output-types__title">{{ title() }}</h2>
+    }
+
+    <div class="output-types__grid">
+      @for (item of items(); track item.label) {
+        <article class="output-card">
+          <span class="output-card__icon" aria-hidden="true">
+            <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
+          </span>
+          <h3 class="output-card__title">{{ item.label }}</h3>
+          <p class="output-card__desc">{{ item.description }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380" role="img" aria-label="Generated manual example">
+  <rect width="300" height="380" rx="10" fill="#0f3d57"/>
+  <rect x="24" y="24" width="252" height="332" rx="6" fill="#14506f"/>
+  <rect x="48" y="60" width="120" height="16" rx="4" fill="#7ad6ff"/>
+  <rect x="48" y="92" width="190" height="24" rx="4" fill="#ffffff" opacity="0.92"/>
+  <rect x="48" y="160" width="204" height="9" rx="4" fill="#ffffff" opacity="0.22"/>
+  <rect x="48" y="178" width="180" height="9" rx="4" fill="#ffffff" opacity="0.22"/>
+  <rect x="48" y="196" width="204" height="9" rx="4" fill="#ffffff" opacity="0.22"/>
+  <text x="150" y="330" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#ffffff" opacity="0.6">Technical Manual</text>
+</svg>

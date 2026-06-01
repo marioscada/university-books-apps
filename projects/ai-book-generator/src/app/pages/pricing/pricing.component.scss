@@ -1,0 +1,162 @@
+.page {
+  padding-block: var(--section-padding-block, clamp(40px, 6vw, 80px));
+  min-height: 60vh;
+}
+
+.page__inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 4vw, 40px);
+}
+
+.page__inner--center {
+  align-items: center;
+}
+
+.page__head--center {
+  text-align: center;
+}
+
+.page__eyebrow {
+  font-size: var(--site-label-large, 0.875rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--site-accent-blue, #7aa7ff);
+  margin: 0 0 8px;
+}
+
+.page__title {
+  font-size: var(--site-display-small, clamp(2rem, 3vw, 2.75rem));
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.page__subtitle {
+  font-size: var(--site-body-large, 1.0625rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  margin: 0;
+}
+
+// --- Piani -----------------------------------------------------------------
+.plans {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  align-items: stretch;
+}
+
+.plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(24px, 3vw, 32px);
+  border-radius: 20px;
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
+}
+
+// Piano evidenziato: banda scura come hero/footer.
+.plan--featured {
+  background: var(--site-dark-surface, #1a1d21);
+  border-color: var(--site-dark-surface, #1a1d21);
+
+  .plan__name,
+  .plan__price {
+    color: var(--site-dark-on-surface, #fff);
+  }
+  .plan__period,
+  .plan__desc,
+  .plan__feature {
+    color: var(--site-dark-on-surface-variant, rgba(255, 255, 255, 0.7));
+  }
+  .plan__check {
+    color: var(--site-accent-blue, #7aa7ff);
+  }
+  // CTA chiara su fondo scuro.
+  .plan__cta {
+    background: var(--site-dark-on-surface, #fff);
+    color: var(--site-dark-surface, #1a1d21);
+    border-color: transparent;
+
+    &:hover {
+      background: var(--site-accent-blue, #7aa7ff);
+      color: #fff;
+    }
+  }
+}
+
+.plan__badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--site-accent-blue, #7aa7ff);
+  color: #fff;
+}
+
+.plan__name {
+  font-size: var(--site-title-large, 1.5rem);
+  font-weight: 600;
+  margin: 0;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.plan__price {
+  font-size: var(--site-display-small, clamp(2rem, 3vw, 2.75rem));
+  font-weight: 700;
+  margin: 0;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.plan__period {
+  font-size: var(--site-body-medium, 1rem);
+  font-weight: 400;
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.plan__desc {
+  font-size: var(--site-body-medium, 1rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  margin: 0;
+}
+
+.plan__features {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+}
+
+.plan__feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--site-body-medium, 1rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.plan__check {
+  color: var(--site-success, #16a34a);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.plan__cta {
+  margin-top: auto;
+  align-self: stretch;
+  justify-content: center;
+}

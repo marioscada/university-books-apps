@@ -1,0 +1,24 @@
+<!-- Footer dark (fedele a mariosite). Container e gutter centralizzati via
+     `.site-container`; contenuto centrato. -->
+<footer class="site-footer" role="contentinfo">
+  @if (visibleColumns().length) {
+    <div class="site-container footer-grid">
+      @for (column of visibleColumns(); track column.title) {
+        <nav class="footer-col" [attr.aria-label]="column.title">
+          <h2 class="footer-col-title">{{ column.title }}</h2>
+          <ul class="footer-col-list">
+            @for (item of column.items; track item.label) {
+              <li>
+                <app-footer-link [item]="item" />
+              </li>
+            }
+          </ul>
+        </nav>
+      }
+    </div>
+  }
+
+  <div class="site-container footer-bottom">
+    <small class="copyright">© {{ year() }} {{ brand() }}. All rights reserved.</small>
+  </div>
+</footer>

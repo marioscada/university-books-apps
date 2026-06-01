@@ -1,0 +1,39 @@
+// =============================================================================
+// _sections.scss — container + wrapper di sezione GLOBALI.
+// =============================================================================
+// `.site-container` = MIRROR di mariosite: base da generic-styles/_layout.scss
+// (max-width 1200, min-width 300, mx-auto, box-sizing) + override marketing da
+// site-web/styles.scss (margin-block 0, padding-inline = --page-padding-inline).
+// È l'UNICA fonte per i margini/padding del contenuto: header, hero, sezioni
+// e footer lo usano → contenuto confinato identico, bg full-bleed.
+
+.site-container {
+  margin: 0 auto;
+  padding-inline: var(--page-padding-inline, 20px);
+  max-width: 1200px;
+  min-width: 300px;
+  width: 100%;
+  z-index: 0;
+  box-sizing: border-box;
+}
+
+.site-section {
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-section {
+  display: flex;
+  flex-basis: min-content;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+  margin-inline: auto;
+  min-width: 270px;
+
+  > * {
+    width: 100%;
+  }
+}

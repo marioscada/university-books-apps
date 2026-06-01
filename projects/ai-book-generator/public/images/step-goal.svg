@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 267" role="img" aria-label="Choose output type">
+  <rect width="400" height="267" rx="12" fill="#f1f5f9"/>
+  <g font-family="Inter, sans-serif">
+    <rect x="40" y="40" width="150" height="70" rx="10" fill="#7aa7ff"/>
+    <text x="115" y="82" text-anchor="middle" fill="#fff" font-size="15" font-weight="600">Book</text>
+    <rect x="210" y="40" width="150" height="70" rx="10" fill="#ffffff" stroke="#cdd9ec"/>
+    <text x="285" y="82" text-anchor="middle" fill="#5b6068" font-size="15">Summary</text>
+    <rect x="40" y="125" width="150" height="70" rx="10" fill="#ffffff" stroke="#cdd9ec"/>
+    <text x="115" y="167" text-anchor="middle" fill="#5b6068" font-size="14">Study Notes</text>
+    <rect x="210" y="125" width="150" height="70" rx="10" fill="#ffffff" stroke="#cdd9ec"/>
+    <text x="285" y="167" text-anchor="middle" fill="#5b6068" font-size="14">Manual</text>
+  </g>
+</svg>

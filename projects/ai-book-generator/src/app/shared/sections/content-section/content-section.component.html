@@ -1,0 +1,35 @@
+<!-- Blocco contenuto polimorfico (fedele a mariosite). Lo sfondo alternato
+     è applicato dall'host via :nth-of-type nello SCSS. -->
+@if (data(); as section) {
+  <section
+    class="content-section"
+    [class]="'content-section--' + (section.layout ?? 'text-left')"
+    [id]="section.id"
+    [attr.aria-label]="section.title">
+    <div class="site-container content-section__inner">
+      <div class="content-section__text">
+        @if (section.eyebrow) {
+          <p class="content-section__eyebrow">{{ section.eyebrow }}</p>
+        }
+        <h2 class="content-section__title">{{ section.title }}</h2>
+        @if (section.subtitle) {
+          <p class="content-section__subtitle">{{ section.subtitle }}</p>
+        }
+        @if (section.body) {
+          <p class="content-section__body">{{ section.body }}</p>
+        }
+        @if (section.cta; as cta) {
+          <a class="content-section__cta site-cta-pill" [routerLink]="cta.route">{{ cta.label }}</a>
+        }
+      </div>
+
+      @if (section.media; as media) {
+        <div
+          class="content-section__media content-section__media--image"
+          [class.content-section__media--grayscale]="media.grayscale">
+          <img class="content-section__image" [src]="media.src" [alt]="media.alt" loading="lazy" decoding="async" />
+        </div>
+      }
+    </div>
+  </section>
+}

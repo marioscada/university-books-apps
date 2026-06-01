@@ -1,0 +1,230 @@
+// Stili pagina app generica (riusano i token globali del tema).
+.page {
+  padding-block: var(--section-padding-block, clamp(40px, 6vw, 80px));
+  min-height: 60vh;
+}
+
+.page__inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vw, 32px);
+}
+
+.page__eyebrow {
+  font-size: var(--site-label-large, 0.875rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--site-accent-blue, #7aa7ff);
+  margin: 0;
+}
+
+.page__title {
+  font-size: var(--site-display-small, clamp(2rem, 3vw, 2.75rem));
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.page__subtitle {
+  font-size: var(--site-body-large, 1.0625rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  margin: 0;
+}
+
+// --- Filtri (chip) ---------------------------------------------------------
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
+  background: var(--mat-sys-surface, #fff);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  font-size: var(--site-body-small, 0.875rem);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--site-accent-blue, #7aa7ff);
+  }
+
+  &.is-active {
+    background: var(--mat-sys-on-surface, #1a1d21);
+    color: var(--mat-sys-surface-container-lowest, #fff);
+    border-color: var(--mat-sys-on-surface, #1a1d21);
+  }
+}
+
+// Chip con icona (es. cartelle Library).
+.filter-chip--icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Head con azione a destra (es. Upload in Library).
+.page__head--row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page__action {
+  flex: 0 0 auto;
+}
+
+// Tag delle fonti (Library).
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.tag {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--section-band-alt, #f1f5f9);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+// --- Griglia card ----------------------------------------------------------
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--mat-sys-surface, #fff);
+  border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
+}
+
+// Variante cliccabile (es. template → /create). Eredita .card.
+.card--link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+
+  &:hover {
+    border-color: var(--site-accent-blue, #7aa7ff);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #e8efff;
+  color: var(--site-accent-blue, #7aa7ff);
+}
+
+.card__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.card__title {
+  font-size: var(--site-title-medium, 1.125rem);
+  font-weight: 600;
+  margin: 0 0 4px;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.card__meta {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  margin: 0;
+}
+
+.card__status {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  // Completed (verde) · Processing (blu) · Draft (grigio).
+  &[data-status='completed'],
+  &[data-status='ready'] {
+    background: #e7f6ec;
+    color: #16a34a;
+  }
+  &[data-status='processing'],
+  &[data-status='generating'] {
+    background: #eaf1ff;
+    color: #3b82f6;
+  }
+  &[data-status='draft'] {
+    background: #f1f5f9;
+    color: #5b6068;
+  }
+}
+
+// Bottone menu azioni (kebab).
+.card__menu-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--section-band-alt, #f1f5f9);
+  }
+}
+
+// Voce di menu distruttiva (Delete).
+::ng-deep .mat-mdc-menu-item.is-danger {
+  --mat-menu-item-label-text-color: #dc2626;
+  color: #dc2626;
+
+  .mat-icon {
+    color: #dc2626;
+  }
+}
+
+.empty {
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  font-size: var(--site-body-large, 1.0625rem);
+}

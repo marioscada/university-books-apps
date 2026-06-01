@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 267" role="img" aria-label="Export anywhere">
+  <rect width="400" height="267" rx="12" fill="#f1f5f9"/>
+  <g font-family="Inter, sans-serif" font-size="14" font-weight="600">
+    <rect x="44" y="70" width="150" height="56" rx="10" fill="#ffffff" stroke="#cdd9ec"/><text x="119" y="104" text-anchor="middle" fill="#1a1d21">PDF</text>
+    <rect x="206" y="70" width="150" height="56" rx="10" fill="#ffffff" stroke="#cdd9ec"/><text x="281" y="104" text-anchor="middle" fill="#1a1d21">DOCX</text>
+    <rect x="44" y="141" width="150" height="56" rx="10" fill="#ffffff" stroke="#cdd9ec"/><text x="119" y="175" text-anchor="middle" fill="#1a1d21">EPUB</text>
+    <rect x="206" y="141" width="150" height="56" rx="10" fill="#7aa7ff"/><text x="281" y="175" text-anchor="middle" fill="#fff">Markdown</text>
+  </g>
+</svg>

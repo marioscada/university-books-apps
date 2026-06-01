@@ -1,0 +1,19 @@
+<section class="output-showcase">
+  <div class="site-container output-showcase__inner">
+    @if (eyebrow()) {
+      <p class="output-showcase__eyebrow">{{ eyebrow() }}</p>
+    }
+    @if (title()) {
+      <h2 class="output-showcase__title">{{ title() }}</h2>
+    }
+
+    <div class="output-showcase__grid">
+      @for (item of items(); track item.caption) {
+        <figure class="showcase-card">
+          <img class="showcase-card__img" [src]="item.src" [alt]="item.alt" loading="lazy" decoding="async" />
+          <figcaption class="showcase-card__caption">{{ item.caption }}</figcaption>
+        </figure>
+      }
+    </div>
+  </div>
+</section>

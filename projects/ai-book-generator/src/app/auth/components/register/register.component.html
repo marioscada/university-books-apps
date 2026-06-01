@@ -1,0 +1,225 @@
+<div class="register-container">
+  <div class="register-card">
+    <h1 class="register-title">Create Account</h1>
+    <p class="register-subtitle">Sign up to get started</p>
+
+    @if (step() === 'register') {
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <!-- First Name Field -->
+      <div class="form-group">
+        <label for="givenName">First Name</label>
+        <input
+          id="givenName"
+          type="text"
+          formControlName="givenName"
+          placeholder="Mario"
+          [class.error]="givenName?.invalid && givenName?.touched"
+        />
+        @if (givenName?.invalid && givenName?.touched) {
+          <div class="error-message">
+            @if (givenName?.errors?.['required']) {
+              <span>First name is required</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Last Name Field -->
+      <div class="form-group">
+        <label for="familyName">Last Name</label>
+        <input
+          id="familyName"
+          type="text"
+          formControlName="familyName"
+          placeholder="Scada"
+          [class.error]="familyName?.invalid && familyName?.touched"
+        />
+        @if (familyName?.invalid && familyName?.touched) {
+          <div class="error-message">
+            @if (familyName?.errors?.['required']) {
+              <span>Last name is required</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          [class.error]="email?.invalid && email?.touched"
+        />
+        @if (email?.invalid && email?.touched) {
+          <div class="error-message">
+            @if (email?.errors?.['required']) {
+              <span>Email is required</span>
+            }
+            @if (email?.errors?.['email']) {
+              <span>Please enter a valid email</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Create a strong password"
+          [class.error]="password?.invalid && password?.touched"
+        />
+        @if (password?.invalid && password?.touched) {
+          <div class="error-message">
+            @if (password?.errors?.['required']) {
+              <span>Password is required</span>
+            }
+            @if (password?.errors?.['minlength']) {
+              <span>Password must be at least 12 characters</span>
+            }
+            @if (password?.errors?.['passwordStrength']) {
+              <span>Password must contain uppercase, lowercase, number, and special character</span>
+            }
+          </div>
+        }
+        <div class="password-hint">
+          Must be at least 12 characters with uppercase, lowercase, number, and special character (!&#64;#$%^&*...)
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          formControlName="confirmPassword"
+          placeholder="Re-enter your password"
+          [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || passwordMismatch"
+        />
+        @if (confirmPassword?.invalid && confirmPassword?.touched) {
+          <div class="error-message">
+            @if (confirmPassword?.errors?.['required']) {
+              <span>Please confirm your password</span>
+            }
+          </div>
+        }
+        @if (passwordMismatch) {
+          <div class="error-message">
+            <span>Passwords do not match</span>
+          </div>
+        }
+      </div>
+
+      <!-- Success Message -->
+      @if (successMessage()) {
+        <div class="alert alert-success">
+          {{ successMessage() }}
+        </div>
+      }
+
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="alert alert-error">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="loading() || registerForm.invalid"
+      >
+        @if (loading()) {
+          <span class="spinner"></span>
+          <span>Creating account...</span>
+        } @else {
+          <span>Sign Up</span>
+        }
+      </button>
+    </form>
+    }
+
+    @if (step() === 'verify') {
+    <form [formGroup]="confirmationForm" (ngSubmit)="onConfirm()" class="register-form">
+      <p class="verify-message">
+        We've sent a verification code to <strong>{{ userEmail }}</strong>.
+        Please check your email and enter the code below.
+      </p>
+
+      <!-- Verification Code Field -->
+      <div class="form-group">
+        <label for="code">Verification Code</label>
+        <input
+          id="code"
+          type="text"
+          formControlName="code"
+          placeholder="Enter 6-digit code"
+          maxlength="6"
+          [class.error]="code?.invalid && code?.touched"
+        />
+        @if (code?.invalid && code?.touched) {
+          <div class="error-message">
+            @if (code?.errors?.['required']) {
+              <span>Verification code is required</span>
+            }
+            @if (code?.errors?.['minlength']) {
+              <span>Please enter the complete 6-digit code</span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Success Message -->
+      @if (successMessage()) {
+        <div class="alert alert-success">
+          {{ successMessage() }}
+        </div>
+      }
+
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="alert alert-error">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="loading() || confirmationForm.invalid"
+      >
+        @if (loading()) {
+          <span class="spinner"></span>
+          <span>Verifying...</span>
+        } @else {
+          <span>Verify Email</span>
+        }
+      </button>
+
+      <!-- Back to Register -->
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="step.set('register')"
+        [disabled]="loading()"
+      >
+        Back to Registration
+      </button>
+    </form>
+    }
+
+    <!-- Footer -->
+    <div class="register-footer">
+      <p>Already have an account? <a routerLink="/auth/login">Sign in</a></p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+// =============================================================================
+// _blocks.scss — blocchi/CTA GLOBALI centralizzati (fedele a mariosite).
+// =============================================================================
+// Single source of truth: ogni CTA del sito usa `.site-cta-pill`. Le sezioni
+// decidono solo l'allineamento (`align-self`), MAI il colore. Adattato da
+// ~/marianoscada-site/projects/site-web/src/theme/_blocks.scss (rimosse le
+// dipendenze da generic-styles `@extend`, sostituite con i token --mat-sys-*).
+
+.site-inner-block {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin-inline: auto;
+}
+
+// Outline pill CTA — bordo nero sottile, testo nero su bianco; hover riempie
+// di nero solido. Applicare con `class="site-cta-pill"` su <a>/<button>.
+.site-cta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-container-lowest, #ffffff);
+  color: var(--mat-sys-on-surface, #1a1d21);
+  border: 1px solid var(--mat-sys-on-surface, #1a1d21);
+  font-size: var(--site-body-medium, 1rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.12s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--mat-sys-on-surface, #1a1d21);
+    color: var(--mat-sys-surface-container-lowest, #ffffff);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-on-surface, #1a1d21);
+    outline-offset: 3px;
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+
+  // Mobile (< 900px): pill pre-riempito nero. Su touch non c'è hover, quindi
+  // l'outline → fill non scatterebbe mai e un pill outline leggerebbe come
+  // bottone passivo. CENTRALIZZATO qui: ogni pill si comporta identico.
+  @media (max-width: 899px) {
+    background: var(--mat-sys-on-surface, #1a1d21);
+    color: var(--mat-sys-surface-container-lowest, #ffffff);
+  }
+}
+
+// Variante per CTA su immagine/scrim scuro (hero). Combinare con
+// `.site-cta-pill`. Eredita tutto e diverge solo dove serve sul fondo scuro:
+// niente outline visibile, e RESTA chiaro su mobile (il backdrop è scuro lì).
+.site-cta-pill--on-image {
+  border-color: transparent;
+
+  &:focus-visible {
+    outline-color: var(--mat-sys-surface-container-lowest, #ffffff);
+  }
+
+  @media (max-width: 899px) {
+    background: var(--mat-sys-surface-container-lowest, #ffffff);
+    color: var(--mat-sys-on-surface, #1a1d21);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-cta-pill {
+    transition-property: background-color, color;
+  }
+
+  .site-cta-pill:active {
+    transform: none;
+    opacity: 0.85;
+  }
+}

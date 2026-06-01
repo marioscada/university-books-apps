@@ -1,0 +1,7 @@
+@if (item(); as link) {
+  @if (link.route) {
+    <a class="footer-link" [routerLink]="link.route">{{ link.label }}</a>
+  } @else if (link.href) {
+    <a class="footer-link" [href]="link.href" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
+  }
+}

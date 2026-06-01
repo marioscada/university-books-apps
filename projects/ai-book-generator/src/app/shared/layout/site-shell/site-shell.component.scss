@@ -1,0 +1,48 @@
+// SiteShell — primitiva di layout. Struttura e stili di SICUREZZA fedeli a
+// mariosite (site-shell.component.scss) + customer-portal (template):
+//   • host a colonna, min-height 100vh, width 100%
+//   • overflow-x: clip sul wrapper di scroll → un figlio full-bleed non può
+//     mai rendere l'area trascinabile orizzontalmente
+// I margini/padding del CONTENUTO vivono nel `.site-container` (theme/_sections),
+// non qui: lo shell fornisce solo lo scheletro full-bleed.
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.site-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.site-shell__main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  // Sicurezza: il bg di hero/sezioni è full-bleed; clip impedisce lo scroll
+  // orizzontale accidentale (mirror mat-sidenav-content di mariosite).
+  overflow-x: clip;
+}
+
+// Drawer mobile (scaffold) — sostituito da mat-sidenav in Fase 2 successiva.
+.site-shell__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+  background: rgba(0, 0, 0, 0.25); // scrim morbido come mariosite
+}
+
+.site-shell__drawer {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 20;
+  width: min(320px, 85vw);
+  background: var(--site-dark-surface, #1a1d21);
+  overflow-y: auto;
+}

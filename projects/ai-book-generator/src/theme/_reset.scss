@@ -1,0 +1,49 @@
+// =============================================================================
+// _reset.scss — reset globale minimale, MIRROR di mariosite/customer-portal.
+// =============================================================================
+// Mirror 1:1 di ~/marianoscada-site/projects/generic-styles/scss/_reset.scss.
+// Globale (su html, non più scoped): box-sizing, azzera i margini di default
+// (body 8px, h1-h6, p), media block-level, form control normalizzati,
+// overflow-x: clip per impedire scroll orizzontale da figli full-bleed.
+
+html {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}

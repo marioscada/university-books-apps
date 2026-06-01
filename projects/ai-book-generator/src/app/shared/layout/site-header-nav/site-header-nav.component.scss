@@ -1,0 +1,166 @@
+// Pattern responsive (fedele a mariosite): `[appScreenType]` aggiunge
+// isSmall|isMedium|isLarge|isXLarge sull'host <header>; gli stili scoped
+// reagiscono in modo dichiarativo (`&.isSmall`, `&.isMedium`).
+
+:host {
+  // Body scrollabile: sticky tiene l'header fissato durante lo scroll.
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: block;
+}
+
+header {
+  background: var(--mat-sys-surface-container-lowest, #ffffff);
+  border-bottom: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
+}
+
+.header-inner {
+  min-height: var(--header-height, 88px);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+// --- SINISTRA: logo --------------------------------------------------------
+.logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--mat-sys-on-surface, #1a1d21);
+  flex: 0 0 auto;
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-on-surface, #1a1d21);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  // Logo immagine: stessa altezza di mariosite (header chrome 88px).
+  &__mark {
+    display: block;
+    height: clamp(36px, 4.5vw, 52px);
+    width: auto;
+  }
+}
+
+// --- CENTRO: nav (occupa lo spazio centrale → voci centrate) ---------------
+.nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  flex: 1 1 auto;
+
+  .nav-link {
+    text-decoration: none;
+    font-size: var(--site-body-medium, 1rem);
+    color: var(--mat-sys-on-surface, #1a1d21);
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--site-accent-blue, #7aa7ff);
+    }
+
+    &.is-active {
+      color: var(--site-nav-item-active-color, #7aa7ff);
+      font-weight: 600;
+    }
+  }
+}
+
+// --- DESTRA: azioni --------------------------------------------------------
+.header-zone-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0 0 auto;
+  // Spinge le azioni all'estrema destra. Con la nav centrale (`.has-nav`)
+  // è la nav (flex:1) a occupare il centro; senza nav (landing pubblica)
+  // serve questo per non lasciare Login/Sign Up appiccicati al logo.
+  margin-left: auto;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.search-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
+  border-radius: 999px;
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+
+  &__text {
+    font-size: var(--site-body-small, 0.875rem);
+  }
+
+  &__key {
+    font-size: 0.75rem;
+    padding: 1px 6px;
+    border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
+    border-radius: 4px;
+  }
+}
+
+.auth-link {
+  text-decoration: none;
+  font-size: var(--site-body-medium, 1rem);
+  color: var(--mat-sys-on-surface, #1a1d21);
+
+  &:hover {
+    color: var(--site-accent-blue, #7aa7ff);
+  }
+}
+
+.auth-cta {
+  padding: 8px 18px;
+}
+
+// --- MOBILE: hamburger -----------------------------------------------------
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+// Pattern mariosite: su tablet/mobile (isMedium = 600–959, isSmall = <600)
+// nav + azioni vivono nel drawer; logo resta a sinistra, hamburger a destra.
+// SOLO quando c'è una nav da collassare (`.has-nav`).
+header {
+  &.isMedium,
+  &.isSmall {
+    .logo-link {
+      margin-right: auto;
+    }
+
+    // Con nav: collassa nav+azioni nel drawer, mostra hamburger.
+    &.has-nav {
+      .nav-links,
+      .header-zone-right {
+        display: none;
+      }
+
+      .hamburger-btn {
+        display: inline-flex;
+      }
+    }
+
+    // Senza nav (es. landing pubblica): niente hamburger, i pochi link auth
+    // restano visibili a destra.
+    &:not(.has-nav) {
+      .hamburger-btn {
+        display: none;
+      }
+    }
+  }
+}

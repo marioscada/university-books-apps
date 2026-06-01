@@ -1,0 +1,33 @@
+<div class="mobile-menu">
+  <div class="mobile-menu__top">
+    <a class="mobile-menu__brand" routerLink="/" (click)="onClose()">
+      <img class="mobile-menu__logo" src="images/logo.png" [alt]="brand()" decoding="async" />
+      <span>{{ brand() }}</span>
+    </a>
+    <button type="button" class="mobile-menu__close" aria-label="Chiudi menu" (click)="onClose()">
+      <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+    </button>
+  </div>
+
+  <nav class="mobile-menu__nav" aria-label="Mobile">
+    @for (item of navItems(); track item.id) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="is-active"
+        class="mobile-menu__link"
+        (click)="onClose()">
+        @if (item.icon) {
+          <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
+        }
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  @if (showAuthLinks()) {
+    <div class="mobile-menu__actions">
+      <a routerLink="/auth/login" class="mobile-menu__signin" (click)="onClose()">Sign In</a>
+      <a routerLink="/auth/register" class="mobile-menu__cta" (click)="onClose()">Get Started</a>
+    </div>
+  }
+</div>

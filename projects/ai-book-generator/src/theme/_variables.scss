@@ -1,0 +1,179 @@
+// =============================================================================
+// Variables
+// =============================================================================
+// Global SCSS variables: colors, spacing, breakpoints, etc.
+// Usage: @use '../styles/variables' as vars;
+//        color: vars.$primary-color;
+
+// -----------------------------------------------------------------------------
+// Colors - Black Gradient Theme (Inspired by Modern Presentation Apps)
+// -----------------------------------------------------------------------------
+
+// ━━━ BASE COLORS ━━━
+$white: #FFFFFF;
+$black: #000000;
+
+// ━━━ BLACK GRADIENT BACKGROUNDS ━━━
+// Sfumature di nero per creare profondità visiva
+$background-color: #0A0A0A;    // Nero principale (quasi puro)
+$surface-1: #141414;           // Superficie elevata livello 1
+$surface-2: #1E1E1E;           // Superficie elevata livello 2
+$surface-3: #282828;           // Superficie elevata livello 3
+$surface-color: $surface-1;    // Alias per card/surface
+$surface-variant: $surface-2;  // Variante superficie
+
+// ━━━ PRIMARY PALETTE ━━━
+$primary-color: #3B82F6;       // Blue per azioni primarie
+$primary-light: #60A5FA;       // Light blue
+$primary-dark: #2563EB;        // Dark blue
+$primary-contrast: #FFFFFF;    // Testo su primary
+
+// ━━━ ACCENT COLORS ━━━
+$accent-yellow: #FBBF24;       // Yellow accent (come nello screenshot)
+$accent-green: #047857;        // Green accent (darker/more opaque)
+$accent-blue: #3B82F6;         // Blue accent
+$accent-orange: #F97316;       // Orange accent
+
+// ━━━ ACTION COLOR ━━━
+// Per link (login, logout, forgot password)
+$accent-color: #60A5FA;        // Blue 400
+$accent-light: #93C5FD;        // Blue 300
+$accent-dark: #3B82F6;         // Blue 500
+$accent-contrast: #FFFFFF;     // Testo su accent
+
+// ━━━ GRAY SCALE ━━━
+$gray-50: #F9FAFB;             // Quasi bianco
+$gray-100: #F3F4F6;            // Molto chiaro
+$gray-200: #E5E7EB;            // Chiaro
+$gray-300: #D1D5DB;            // Medio chiaro
+$gray-400: #9CA3AF;            // Medio
+$gray-500: #6B7280;            // Medio scuro
+$gray-600: #4B5563;            // Scuro
+$gray-700: #374151;            // Più scuro
+$gray-800: #1F2937;            // Molto scuro
+$gray-900: #111827;            // Quasi nero
+
+// ━━━ SEMANTIC COLORS ━━━
+$success: #10B981;             // Green
+$warning: #FBBF24;             // Yellow
+$error: #EF4444;               // Red
+$info: #3B82F6;                // Blue
+
+// ━━━ TEXT COLORS ━━━
+// Bianco soft per icone, scritte e titoli (come "Origin" nell'immagine)
+$text-color: #E8E8E8;          // Testo principale (bianco soft, non acceso)
+$text-color-secondary: #A1A1AA; // Testo secondario (grigio chiaro)
+$text-color-light: #A1A1AA;    // Alias (backward compatibility)
+$text-color-disabled: #71717A; // Testo disabilitato
+$text-on-primary: $white;      // Testo su colore primario (può restare bianco puro)
+$text-on-accent: $white;       // Testo su accent
+$text-on-dark: #E8E8E8;        // Testo su sfondo scuro (bianco soft)
+
+// -----------------------------------------------------------------------------
+// Typography
+// -----------------------------------------------------------------------------
+
+$font-family-base: 'Roboto', sans-serif, 'Helvetica Neue', Arial, sans-serif;
+$font-family-heading: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+$font-family-mono: 'Roboto Mono', 'Courier New', monospace;
+
+// Font sizes
+$font-size-xs: 0.75rem;   // 12px
+$font-size-sm: 0.875rem;  // 14px
+$font-size-base: 1rem;    // 16px
+$font-size-lg: 1.125rem;  // 18px
+$font-size-xl: 1.25rem;   // 20px
+$font-size-2xl: 1.5rem;   // 24px
+$font-size-3xl: 1.875rem; // 30px
+$font-size-4xl: 2.25rem;  // 36px
+
+// Font weights
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+// Line heights
+$line-height-tight: 1.25;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+// -----------------------------------------------------------------------------
+// Spacing
+// -----------------------------------------------------------------------------
+
+$spacing-unit: 0.25rem; // 4px
+
+$spacing-0: 0;
+$spacing-1: $spacing-unit;      // 4px
+$spacing-2: $spacing-unit * 2;  // 8px
+$spacing-3: $spacing-unit * 3;  // 12px
+$spacing-4: $spacing-unit * 4;  // 16px
+$spacing-5: $spacing-unit * 5;  // 20px
+$spacing-6: $spacing-unit * 6;  // 24px
+$spacing-8: $spacing-unit * 8;  // 32px
+$spacing-10: $spacing-unit * 10; // 40px
+$spacing-12: $spacing-unit * 12; // 48px
+$spacing-16: $spacing-unit * 16; // 64px
+$spacing-20: $spacing-unit * 20; // 80px
+
+// -----------------------------------------------------------------------------
+// Breakpoints (Mobile-first)
+// -----------------------------------------------------------------------------
+
+$breakpoint-xs: 0;
+$breakpoint-sm: 576px;  // Small devices (landscape phones)
+$breakpoint-md: 768px;  // Medium devices (tablets)
+$breakpoint-lg: 992px;  // Large devices (desktops)
+$breakpoint-xl: 1200px; // Extra large devices (large desktops)
+$breakpoint-xxl: 1400px; // Extra extra large devices
+
+// -----------------------------------------------------------------------------
+// Border & Radius
+// -----------------------------------------------------------------------------
+
+$border-width: 1px;
+$border-color: $gray-300;
+$border-style: solid;
+
+$border-radius-sm: 0.125rem; // 2px
+$border-radius: 0.25rem;     // 4px
+$border-radius-lg: 0.5rem;   // 8px
+$border-radius-xl: 1rem;     // 16px
+$border-radius-full: 9999px; // Rounded full (pills, circles)
+
+// -----------------------------------------------------------------------------
+// Shadows
+// -----------------------------------------------------------------------------
+
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+// -----------------------------------------------------------------------------
+// Z-index layers
+// -----------------------------------------------------------------------------
+
+$z-index-dropdown: 1000;
+$z-index-sticky: 1020;
+$z-index-fixed: 1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal: 1050;
+$z-index-popover: 1060;
+$z-index-tooltip: 1070;
+
+// -----------------------------------------------------------------------------
+// Transitions
+// -----------------------------------------------------------------------------
+
+$transition-speed-fast: 150ms;
+$transition-speed-base: 300ms;
+$transition-speed-slow: 500ms;
+
+$transition-timing: ease-in-out;
+
+$transition-base: all $transition-speed-base $transition-timing;
+$transition-fast: all $transition-speed-fast $transition-timing;
+$transition-slow: all $transition-speed-slow $transition-timing;

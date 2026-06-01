@@ -1,0 +1,63 @@
+<app-auth-shell>
+  <section class="page">
+    <div class="site-container page__inner">
+      <header class="page__head">
+        <p class="page__eyebrow">Collection</p>
+        <h1 class="page__title">La tua collezione</h1>
+        <p class="page__subtitle">Tutto ciò che hai realizzato, classificato per categoria.</p>
+      </header>
+
+      <!-- Filtri per categoria -->
+      <div class="filters" role="tablist" aria-label="Filtra per categoria">
+        @for (tab of filters; track tab.value) {
+          <button
+            type="button"
+            class="filter-chip"
+            role="tab"
+            [class.is-active]="activeFilter() === tab.value"
+            [attr.aria-selected]="activeFilter() === tab.value"
+            (click)="setFilter(tab.value)">{{ tab.label }}</button>
+        }
+      </div>
+
+      <!-- Griglia elementi -->
+      @if (visibleItems().length) {
+        <div class="grid">
+          @for (item of visibleItems(); track item.id) {
+            <article class="card">
+              <span class="card__icon" aria-hidden="true">
+                <mat-icon fontSet="material-symbols-outlined">{{ kindMeta[item.kind].icon }}</mat-icon>
+              </span>
+              <div class="card__body">
+                <h2 class="card__title">{{ item.title }}</h2>
+                <p class="card__meta">{{ kindMeta[item.kind].label }} · {{ item.completedLabel }}</p>
+              </div>
+
+              <!-- Menu azioni -->
+              <button
+                type="button"
+                class="card__menu-btn"
+                aria-label="Azioni elemento"
+                [matMenuTriggerFor]="actionsMenu">
+                <mat-icon fontSet="material-symbols-outlined">more_vert</mat-icon>
+              </button>
+              <mat-menu #actionsMenu="matMenu">
+                @for (action of actionsFor(item); track action.id) {
+                  <button
+                    mat-menu-item
+                    [class.is-danger]="action.danger"
+                    (click)="onAction(action, item)">
+                    <mat-icon fontSet="material-symbols-outlined">{{ action.icon }}</mat-icon>
+                    <span>{{ action.label }}</span>
+                  </button>
+                }
+              </mat-menu>
+            </article>
+          }
+        </div>
+      } @else {
+        <p class="empty">Nessun elemento in questa categoria.</p>
+      }
+    </div>
+  </section>
+</app-auth-shell>
