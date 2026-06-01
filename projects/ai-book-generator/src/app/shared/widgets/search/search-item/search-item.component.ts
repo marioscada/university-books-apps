@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FocusableOption } from '@angular/cdk/a11y';
-import { IonIcon } from '@ionic/angular/standalone';
+import { MatIconModule } from '@angular/material/icon';
 
 import type { SearchItem } from '../../../../core/models/search-item.model';
 
@@ -35,7 +35,7 @@ import type { SearchItem } from '../../../../core/models/search-item.model';
 @Component({
   selector: 'app-search-item',
   standalone: true,
-  imports: [CommonModule, IonIcon],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './search-item.component.html',
   styleUrls: ['./search-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

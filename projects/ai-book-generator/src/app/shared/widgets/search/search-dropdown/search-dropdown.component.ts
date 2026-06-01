@@ -11,16 +11,7 @@ import { CommonModule } from '@angular/common';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { FocusKeyManager } from '@angular/cdk/a11y';
-import { IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  searchOutline,
-  closeOutline,
-  bookOutline,
-  documentTextOutline,
-  documentOutline,
-  personOutline,
-} from 'ionicons/icons';
+import { MatIconModule } from '@angular/material/icon';
 
 import type { SearchItem, SearchCategory, SearchCategoryConfig } from '../../../../core/models/search-item.model';
 import { SEARCH_CATEGORY_CONFIGS } from '../../../../core/models/search-item.model';
@@ -63,7 +54,7 @@ import { SearchItemComponent } from '../search-item/search-item.component';
 @Component({
   selector: 'app-search-dropdown',
   standalone: true,
-  imports: [CommonModule, IonIcon, SearchItemComponent],
+  imports: [CommonModule, MatIconModule, SearchItemComponent],
   templateUrl: './search-dropdown.component.html',
   styleUrls: ['./search-dropdown.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -208,17 +199,6 @@ export class SearchDropdownComponent implements AfterViewInit {
   @Input() onSelect?: (item: SearchItem) => void;
 
   private readonly searchOverlayService = inject(SearchOverlayService);
-
-  constructor() {
-    addIcons({
-      searchOutline,
-      closeOutline,
-      bookOutline,
-      documentTextOutline,
-      documentOutline,
-      personOutline,
-    });
-  }
 
   ngAfterViewInit(): void {
     // Initialize CDK ListKeyManager for keyboard navigation

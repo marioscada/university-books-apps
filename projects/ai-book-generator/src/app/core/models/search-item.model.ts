@@ -18,7 +18,7 @@ export type SearchCategory = 'books' | 'chapters' | 'documents' | 'users';
  *   title: 'Introduction to Computer Science',
  *   subtitle: 'Chapter 5: Data Structures',
  *   metadata: 'Updated 2 days ago',
- *   icon: 'book-outline',
+ *   icon: 'book',
  *   badge: 'New',
  *   badgeColor: 'success',
  *   data: { bookId: '123', chapterId: '456' }
@@ -52,7 +52,7 @@ export interface SearchItem {
   metadata?: string;
 
   /**
-   * Icon name (Ionicons)
+   * Icon name (Material Symbols)
    */
   icon: string;
 
@@ -91,25 +91,25 @@ export const SEARCH_CATEGORY_CONFIGS: Record<SearchCategory, SearchCategoryConfi
   books: {
     key: 'books',
     label: 'Books',
-    icon: 'book-outline',
+    icon: 'book',
     emptyMessage: 'No books found',
   },
   chapters: {
     key: 'chapters',
     label: 'Chapters',
-    icon: 'document-text-outline',
+    icon: 'article',
     emptyMessage: 'No chapters found',
   },
   documents: {
     key: 'documents',
     label: 'Documents',
-    icon: 'document-outline',
+    icon: 'description',
     emptyMessage: 'No documents found',
   },
   users: {
     key: 'users',
     label: 'Users',
-    icon: 'person-outline',
+    icon: 'person',
     emptyMessage: 'No users found',
   },
 };
