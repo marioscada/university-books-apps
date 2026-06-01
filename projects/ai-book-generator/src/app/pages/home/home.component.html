@@ -1,14 +1,9 @@
 <app-auth-shell>
+  <!-- Hero full-bleed (stile mariosite, stili globali in hero-section). -->
+  <app-hero-section [data]="hero()" />
+
   <section class="dash">
     <div class="site-container dash__inner">
-      <header class="dash__head">
-        <h1 class="dash__title">Welcome back, {{ userName() }}</h1>
-        <a class="site-cta-pill dash__cta" routerLink="/create">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
-          <span>Create New</span>
-        </a>
-      </header>
-
       <div class="dash__block">
         <div class="dash__block-head">
           <h2 class="dash__block-title">Recent Projects</h2>

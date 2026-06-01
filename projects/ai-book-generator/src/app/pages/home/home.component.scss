@@ -1,33 +1,14 @@
-// Dashboard privata.
+// Dashboard privata. L'hero full-bleed vive in hero-section (stili globali);
+// qui restano solo i blocchi di contenuto confinati in .site-container.
 .dash {
   padding-block: var(--section-padding-block, clamp(40px, 6vw, 80px));
-  min-height: 60vh;
+  min-height: 40vh;
 }
 
 .dash__inner {
   display: flex;
   flex-direction: column;
   gap: clamp(28px, 4vw, 44px);
-}
-
-.dash__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.dash__title {
-  font-size: var(--site-display-small, clamp(2rem, 3vw, 2.75rem));
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin: 0;
-  color: var(--mat-sys-on-surface, #1a1d21);
-}
-
-.dash__cta {
-  flex: 0 0 auto;
 }
 
 .dash__block {

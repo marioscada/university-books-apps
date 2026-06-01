@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
+import { HeroSectionComponent } from '../../shared/sections/hero-section/hero-section.component';
+import { HeroSectionData } from '../../shared/sections/hero-section/hero-section.types';
 
 /** Card sintetica di un progetto recente nella dashboard. */
 interface DashboardProject {
@@ -30,12 +32,23 @@ interface DashboardSource {
   selector: 'app-home',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AuthShellComponent, RouterLink, MatIconModule],
+  imports: [AuthShellComponent, HeroSectionComponent, RouterLink, MatIconModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {
   readonly userName = signal<string>('Mario');
+
+  /** Hero full-bleed della dashboard (riusa HeroSectionComponent, stile mariosite). */
+  readonly hero = computed<HeroSectionData>(() => ({
+    ariaLabel: 'Dashboard',
+    eyebrow: 'AI Book Generator',
+    title: `Welcome back, ${this.userName()}`,
+    subtitle: "Trasforma il tuo materiale in libri, riassunti e manuali con l'AI.",
+    cta: { label: 'Create New', route: '/create' },
+    imageSrc: 'images/home-hero.webp',
+    imageAlt: '',
+  }));
 
   readonly recentProjects = signal<DashboardProject[]>([
     { id: 'p1', title: 'AI & Machine Learning Book', kindLabel: 'Book', icon: 'menu_book', route: '/collection' },
