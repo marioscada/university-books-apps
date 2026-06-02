@@ -23,6 +23,8 @@ import { configureApiClient } from './core/config/api-client.config';
 import { AuthService } from './auth/services/auth.service';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { LocaleService } from './shared/services/locale.service';
+import { API_PORT } from './core/data/api-port';
+import { MockApiService } from './core/data/mock-api.service';
 
 // =============================================================================
 // Amplify Configuration
@@ -68,6 +70,10 @@ export const appConfig: ApplicationConfig = {
 
     // Animations (for Angular animations like slide-in, fade-in, etc.)
     provideAnimations(),
+
+    // Data layer (mock v1): l'ApiPort è mappato al MockApiService. Quando arriva
+    // il backend reale basta cambiare questa riga, senza toccare store/UI.
+    { provide: API_PORT, useExisting: MockApiService },
 
     // i18n (ngx-translate) — pattern mariosite/customer-portal, default EN.
     // I file flat dot-path vivono in /public/i18n/<lang>.json.

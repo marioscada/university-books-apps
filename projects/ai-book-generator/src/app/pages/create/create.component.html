@@ -26,11 +26,11 @@
           @for (work of inProgress(); track work.id) {
             <mat-card appearance="outlined" class="project-card">
               <a class="project-card__link" routerLink="/create" [attr.aria-label]="'Apri ' + work.title"></a>
-              <span class="cover-art cover-art--{{ work.cover }}" aria-hidden="true"></span>
+              <span class="cover-art cover-art--{{ work.coverTheme }}" aria-hidden="true"></span>
 
               <div class="project-card__body">
                 <div class="project-card__head">
-                  <span class="status status--{{ work.statusTone }}">{{ work.status }}</span>
+                  <span class="status status--{{ work.statusTone }}">{{ work.statusLabelKey | translate }}</span>
                   <button
                     mat-icon-button
                     class="project-card__menu"
