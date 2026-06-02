@@ -8,10 +8,13 @@
  * @see docs/AWS-BACKEND-INTEGRATION-GUIDE.md
  */
 
-import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, provideAppInitializer, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideTranslateService, TranslateService } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
+import { firstValueFrom } from 'rxjs';
 import { Amplify } from 'aws-amplify';
 
 import { routes } from './app.routes';
@@ -19,6 +22,7 @@ import { amplifyConfig } from './core/config/amplify.config';
 import { configureApiClient } from './core/config/api-client.config';
 import { AuthService } from './auth/services/auth.service';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { LocaleService } from './shared/services/locale.service';
 
 // =============================================================================
 // Amplify Configuration
@@ -65,28 +69,26 @@ export const appConfig: ApplicationConfig = {
     // Animations (for Angular animations like slide-in, fade-in, etc.)
     provideAnimations(),
 
-    // Initialize authentication state BEFORE app bootstrap
-    // Prevents flash of login page when user is already authenticated
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (authService: AuthService) => {
-        return () => authService.initializeAuth();
-      },
-      deps: [AuthService],
-      multi: true,
-    },
+    // i18n (ngx-translate) — pattern mariosite/customer-portal, default EN.
+    // I file flat dot-path vivono in /public/i18n/<lang>.json.
+    provideTranslateService({ fallbackLang: 'en', lang: 'en' }),
+    provideTranslateHttpLoader({ prefix: '/i18n/', suffix: '.json' }),
 
-    // Configure API Client on app initialization
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (authService: AuthService) => {
-        return () => {
-          configureApiClient(authService);
-          console.log('✅ API client configured');
-        };
-      },
-      deps: [AuthService],
-      multi: true,
-    },
+    // Init dello stato auth PRIMA del bootstrap (evita il flash della login).
+    provideAppInitializer(() => inject(AuthService).initializeAuth()),
+
+    // Configura l'API client all'avvio.
+    provideAppInitializer(() => {
+      configureApiClient(inject(AuthService));
+    }),
+
+    // Gate del boot sul caricamento delle traduzioni della lingua attiva:
+    // finché il JSON non è pronto resta lo splash col logo (no flash di chiavi).
+    // Iniettare LocaleService ne esegue il costruttore (flag SVG + effect use()).
+    provideAppInitializer(() => {
+      const translate = inject(TranslateService);
+      const locale = inject(LocaleService);
+      return firstValueFrom(translate.use(locale.currentLocale()));
+    }),
   ],
 };

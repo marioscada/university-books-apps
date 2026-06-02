@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
+import { PageHeaderComponent } from '../../shared/layout/page-header/page-header.component';
 
 interface PricingPlan {
   id: string;
@@ -24,7 +25,7 @@ interface PricingPlan {
   selector: 'app-pricing',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AuthShellComponent, RouterLink, MatIconModule],
+  imports: [AuthShellComponent, PageHeaderComponent, RouterLink, MatIconModule],
   templateUrl: './pricing.component.html',
   styleUrl: './pricing.component.scss',
 })

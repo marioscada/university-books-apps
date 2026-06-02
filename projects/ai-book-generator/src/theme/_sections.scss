@@ -24,6 +24,39 @@
   gap: 12px;
 }
 
+// `.page` = wrapper GLOBALE delle pagine app: full-bleed, sfondo bianco, spazio
+// verticale generoso. Contenuto confinato in `.site-container` (di solito su
+// `.page__inner`).
+.page {
+  background: #ffffff;
+  padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px));
+  min-height: 60vh;
+}
+
+.page__inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 4vw, 44px);
+}
+
+// Bande full-bleed ALTERNATE (come la landing): bianco di default,
+// `.band--alt` usa lo slate `--section-band-alt`. Il contenuto sta in
+// `.site-container`; `.band__inner` dà il flusso verticale interno.
+.band {
+  padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px));
+  background: #ffffff;
+}
+
+.band--alt {
+  background: var(--section-band-alt, #f1f5f9);
+}
+
+.band__inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(24px, 3vw, 36px);
+}
+
 .form-section {
   display: flex;
   flex-basis: min-content;

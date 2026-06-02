@@ -50,47 +50,35 @@ export class LandingComponent {
   // 1. HERO
   readonly hero: HeroSectionData = {
     sectionId: 'hero',
-    eyebrow: 'AI Book Generator',
-    title: 'Trasforma il tuo materiale\nin un libro professionale',
-    subtitle:
-      'Carica documenti, appunti o link e lascia che l’AI li trasformi in libri, manuali e riassunti pronti da esportare.',
-    imageSrc: 'images/hero-mockup.svg',
-    imageAlt: 'Esempio di libro generato',
+    title: 'Dai tuoi appunti a un libro.',
+    subtitle: 'Manuali e riassunti professionali in minuti.',
+    imageSrc: 'images/landing-hero.webp',
+    imageAlt: 'I tuoi documenti trasformati in un libro AI Books Generator',
     cta: { label: 'Generate', route: this.authRoute },
   };
 
-  // 3. HOW IT WORKS — 4 blocchi alternati
+  // HOW IT WORKS — 3 blocchi alternati (lo step "scegli cosa generare" è
+  // coperto dalla sezione Output types "Un solo strumento, tanti formati").
   readonly howItWorks: readonly ContentSectionData[] = [
     {
       id: 'upload',
-      eyebrow: 'Step 1',
       title: 'Carica il tuo materiale',
       body: 'PDF, Word, PowerPoint, immagini, URL o semplici note testuali. Trascina tutto in un’unica area: l’AI legge e capisce le tue fonti.',
       layout: 'text-left',
       media: { src: 'images/step-upload.svg', alt: 'Area di upload con drag & drop' },
     },
     {
-      id: 'goal',
-      eyebrow: 'Step 2',
-      title: 'Scegli cosa generare',
-      body: 'Libro, riassunto, appunti di studio, corso di formazione, manuale tecnico o report di ricerca. Tu scegli l’obiettivo, l’AI adatta tono e struttura.',
-      layout: 'text-right',
-      media: { src: 'images/step-goal.svg', alt: 'Selezione del tipo di output' },
-    },
-    {
       id: 'write',
-      eyebrow: 'Step 3',
       title: 'L’AI struttura e scrive',
       body: 'Analizza i documenti, estrae i concetti chiave, organizza i capitoli e genera il contenuto. Tu vedi l’avanzamento in tempo reale.',
-      layout: 'text-left',
+      layout: 'text-right',
       media: { src: 'images/step-structure.svg', alt: 'Outline dei capitoli generati' },
     },
     {
       id: 'export',
-      eyebrow: 'Step 4',
       title: 'Esporta dove vuoi',
       body: 'Rivedi e modifica i capitoli, poi esporta in PDF, DOCX, EPUB o Markdown. Pronto da condividere, stampare o pubblicare.',
-      layout: 'text-right',
+      layout: 'text-left',
       media: { src: 'images/step-export.svg', alt: 'Formati di esportazione' },
     },
   ];

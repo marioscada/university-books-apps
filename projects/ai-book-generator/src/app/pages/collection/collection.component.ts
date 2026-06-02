@@ -1,8 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
+import { PageHeaderComponent } from '../../shared/layout/page-header/page-header.component';
+import { CoverTheme } from '../../shared/layout/icon-tile/icon-tile.component';
 import {
   CollectionAction,
   CollectionFilter,
@@ -15,12 +20,12 @@ interface FilterTab {
   label: string;
 }
 
-/** Metadati per categoria (icona Material + etichetta). */
-const KIND_META: Record<CollectionKind, { icon: string; label: string }> = {
-  book: { icon: 'menu_book', label: 'Libri' },
-  summary: { icon: 'summarize', label: 'Riassunti' },
-  course: { icon: 'cast_for_education', label: 'Corsi' },
-  notes: { icon: 'school', label: 'Note' },
+/** Metadati per categoria (etichetta + tema copertina). */
+const KIND_META: Record<CollectionKind, { label: string; cover: CoverTheme }> = {
+  book: { label: 'Libri', cover: 'aurora' },
+  summary: { label: 'Riassunti', cover: 'rose' },
+  course: { label: 'Corsi', cover: 'ocean' },
+  notes: { label: 'Note', cover: 'gold' },
 };
 
 /**
@@ -34,7 +39,15 @@ const KIND_META: Record<CollectionKind, { icon: string; label: string }> = {
   selector: 'app-collection',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AuthShellComponent, MatIconModule, MatMenuModule],
+  imports: [
+    AuthShellComponent,
+    PageHeaderComponent,
+    MatIconModule,
+    MatMenuModule,
+    MatCardModule,
+    MatChipsModule,
+    MatButtonModule,
+  ],
   templateUrl: './collection.component.html',
   styleUrl: './collection.component.scss',
 })

@@ -4,8 +4,8 @@
   @if (visibleColumns().length) {
     <div class="site-container footer-grid">
       @for (column of visibleColumns(); track column.title) {
-        <nav class="footer-col" [attr.aria-label]="column.title">
-          <h2 class="footer-col-title">{{ column.title }}</h2>
+        <nav class="footer-col" [attr.aria-label]="column.title | translate">
+          <h2 class="footer-col-title">{{ column.title | translate }}</h2>
           <ul class="footer-col-list">
             @for (item of column.items; track item.label) {
               <li>
@@ -19,6 +19,6 @@
   }
 
   <div class="site-container footer-bottom">
-    <small class="copyright">© {{ year() }} {{ brand() }}. All rights reserved.</small>
+    <small class="copyright">{{ 'i18n.Footer.copyright' | translate: { year: year() } }}</small>
   </div>
 </footer>

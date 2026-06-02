@@ -13,24 +13,24 @@
     <!-- 1. Hero -->
     <app-hero-section [data]="hero" />
 
-    <!-- 3. How it works (sfondi alternati automatici) -->
-    @for (section of howItWorks; track section.id) {
-      <app-content-section [data]="section" />
-    }
-
-    <!-- 4. Output types -->
+    <!-- 2. Cosa ottieni — formati disponibili -->
     <app-output-types
       eyebrow="Cosa puoi creare"
       title="Un solo strumento, tanti formati"
       [items]="outputTypes" />
 
-    <!-- 5. Output showcase -->
+    <!-- 3. Come funziona (sfondi alternati automatici) -->
+    @for (section of howItWorks; track section.id) {
+      <app-content-section [data]="section" />
+    }
+
+    <!-- 4. Esempi reali -->
     <app-output-showcase
       eyebrow="Esempi reali"
       title="Ecco cosa otterrai"
       [items]="showcase" />
 
-    <!-- 10. CTA finale (banda scura) -->
+    <!-- 5. CTA finale (banda scura) -->
     <app-content-section class="cta-band" [data]="finalCta" />
   </ng-template>
 

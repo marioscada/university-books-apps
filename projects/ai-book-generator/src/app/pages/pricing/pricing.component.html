@@ -1,11 +1,11 @@
 <app-auth-shell>
-  <section class="page">
-    <div class="site-container page__inner page__inner--center">
-      <header class="page__head page__head--center">
-        <p class="page__eyebrow">Pricing</p>
-        <h1 class="page__title">Abbonamenti</h1>
-        <p class="page__subtitle">Scegli il piano giusto per te. Cambi quando vuoi.</p>
-      </header>
+  <section class="band">
+    <div class="site-container band__inner band__inner--center">
+      <app-page-header
+        center
+        title="Simple pricing for every creator"
+        subtitle="Scegli il piano giusto per te. Cambi quando vuoi.">
+      </app-page-header>
 
       <div class="plans">
         @for (plan of plans; track plan.id) {

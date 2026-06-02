@@ -1,25 +1,53 @@
 # Create Page — Design & Flow (AI Book Generator)
 
-> Documento di lavoro per la pagina **Create** (il cuore del prodotto: trasforma
-> materiale dell'utente in libro / riassunto / manuale / corso) e per la nuova
-> pagina **Home**. Raccoglie la proposta iniziale (ChatGPT), la **valutazione**
-> critica e le **alternative** consigliate. Riferimenti UX: Stripe, Linear,
-> Vercel, Notion.
+> Documento di lavoro per la pagina **Create** (il cuore del prodotto: hub dei
+> lavori in corso + avvio di nuovi, e wizard di generazione). Riferimenti UX:
+> Stripe, Linear, Vercel, Notion. La proposta wizard iniziale è più sotto.
 
 ---
 
-## 0. Navigazione (aggiornata)
+## 0. Direzione corrente (giugno 2026) — AUTORITATIVA
 
-Voci menu (header + footer), uguali in entrambi:
+Architettura dell'area autenticata aggiornata:
 
-`Home · Create · Projects · Library · Pricing`
+- **Niente pagina Home.** È stata rimossa: ogni `/home` cade sul catch-all → `/landing`.
+- **Hero marketing solo sulla landing.** Le pagine interne (autenticate) NON hanno
+  hero: sono pagine "applicazione" (dati/lavori), stile dashboard SaaS — densità e
+  funzione, non vetrina (pattern Notion / Linear / Vercel).
+- **Post-login → `/create`.** `/create` è l'hub: **"Continue creating"** = card dei
+  lavori in corso da continuare + **"+ New project"** + **Recent activity**.
+- **Templates NON è una pagina**: è un **componente dump** usato dentro `/create`
+  all'avvio di un nuovo progetto (scelta del template). Rimosso da menu e rotte.
 
-- **Home** → landing/marketing: spiega *cosa ottieni* con istruzioni a sezioni
-  (testo + immagini/illustrazioni "che ti aspettano" per capire l'output).
-- **Create** → il wizard guidato (questa pagina). È il vecchio "home" autenticato.
-- **Projects** → i progetti generati/in corso dell'utente.
-- **Library** → materiali/output salvati, template, fonti riutilizzabili.
+### Navigazione (header + footer)
+
+`Create · Collection · Library · Pricing`
+
+- **Create** → hub lavori in corso + nuovo (questa pagina).
+- **Collection** → archivio storico dei lavori completati, per categoria.
+- **Library** → fonti/materiali caricati e riutilizzabili.
 - **Pricing** → piani.
+
+### Design system delle pagine interne (rif. mockup `sito.png`)
+
+Tutte e 4 le pagine condividono lo stesso layout dashboard:
+
+- **Header app** condiviso (logo + nav + search + profilo), senza bordo inferiore.
+- **Page header**: titolo pagina + (opz.) sottotitolo a sinistra, **azione primaria**
+  in alto a destra (es. "+ New project"). → candidato a componente `page-header`.
+- **Card** uniformi (anteprima/icona, titolo, metadati, menu azioni). → candidato a
+  componente riusabile `work-card` / `entity-card`.
+- **Griglia** responsive (`repeat(auto-fill, minmax(...))`), fondo chiaro, accenti
+  blu solo su CTA/stati attivi. Token globali in `theme/_tokens.scss`.
+
+Pagine mappate: Create = "Continue creating" · Collection = "Your collection" ·
+Library = elenco fonti · Pricing = "Simple pricing for every creator".
+
+### Scelte v1 (mock data finché non c'è l'API)
+- Create: page-header ("Continue creating" + "+ New project") · griglia work-card
+  in corso (titolo, tipo, % avanzamento, ultima modifica, menu) · sezione
+  "Recent activity". Pannello laterale: rimandato (v2).
+- Dati mock nei componenti finché non si collega l'API di backend.
 
 ---
 

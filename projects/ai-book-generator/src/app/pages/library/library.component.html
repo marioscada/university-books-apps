@@ -1,55 +1,64 @@
 <app-auth-shell>
-  <section class="page">
-    <div class="site-container page__inner">
-      <header class="page__head page__head--row">
-        <div>
-          <p class="page__eyebrow">Library</p>
-          <h1 class="page__title">Sources</h1>
-          <p class="page__subtitle">Il materiale sorgente che alimenta i tuoi progetti.</p>
-        </div>
-        <button type="button" class="site-cta-pill page__action" (click)="onUpload()">
+  <!-- Banda 1 (bianco): intestazione + azione + cartelle -->
+  <section class="band">
+    <div class="site-container band__inner">
+      <app-page-header
+        title="Sources"
+        subtitle="Il materiale sorgente che alimenta i tuoi progetti.">
+        <button type="button" class="site-cta-pill" (click)="onUpload()">
           <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">upload</mat-icon>
           <span>Upload</span>
         </button>
-      </header>
+      </app-page-header>
 
-      <!-- Cartelle -->
-      <div class="filters" role="tablist" aria-label="Cartelle">
+      <mat-chip-listbox
+        class="filters"
+        aria-label="Cartelle"
+        [value]="activeFolder()"
+        (change)="setFolder($event.value)">
         @for (folder of folders; track folder.value) {
-          <button
-            type="button"
-            class="filter-chip filter-chip--icon"
-            role="tab"
-            [class.is-active]="activeFolder() === folder.value"
-            [attr.aria-selected]="activeFolder() === folder.value"
-            (click)="setFolder(folder.value)">
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ folder.icon }}</mat-icon>
-            <span>{{ folder.label }}</span>
-          </button>
+          <mat-chip-option [value]="folder.value" [selected]="activeFolder() === folder.value">
+            <mat-icon matChipAvatar fontSet="material-symbols-outlined">{{ folder.icon }}</mat-icon>
+            {{ folder.label }}
+          </mat-chip-option>
         }
-      </div>
+      </mat-chip-listbox>
+    </div>
+  </section>
 
-      <!-- Fonti -->
+  <!-- Banda 2 (slate): fonti — min-height + scroll interno -->
+  <section class="band band--alt">
+    <div class="site-container">
       @if (visibleFiles().length) {
-        <div class="grid">
-          @for (file of visibleFiles(); track file.id) {
-            <article class="card">
-              <span class="card__icon" aria-hidden="true">
-                <mat-icon fontSet="material-symbols-outlined">{{ file.icon }}</mat-icon>
-              </span>
-              <div class="card__body">
-                <h2 class="card__title">{{ file.name }}</h2>
-                <p class="card__meta">{{ file.type }} · {{ file.sizeLabel }} · {{ file.addedLabel }}</p>
-                @if (file.tags.length) {
-                  <div class="tags">
-                    @for (tag of file.tags; track tag) {
-                      <span class="tag">{{ tag }}</span>
-                    }
+        <div class="scroll-area">
+          <div class="cards-grid">
+            @for (file of visibleFiles(); track file.id) {
+              <mat-card appearance="outlined" class="project-card">
+                <span class="cover-art cover-art--{{ file.cover }}" aria-hidden="true"></span>
+
+                <div class="project-card__body">
+                  <div class="project-card__head">
+                    <span class="status status--muted">{{ file.type }}</span>
                   </div>
-                }
-              </div>
-            </article>
-          }
+
+                  <h3 class="project-card__title">{{ file.name }}</h3>
+
+                  <div class="project-card__foot">
+                    <span>{{ file.sizeLabel }}</span>
+                    <span>{{ file.addedLabel }}</span>
+                  </div>
+
+                  @if (file.tags.length) {
+                    <div class="entity-card__tags">
+                      @for (tag of file.tags; track tag) {
+                        <span class="entity-card__tag">{{ tag }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+              </mat-card>
+            }
+          </div>
         </div>
       } @else {
         <p class="empty">Nessuna fonte in questa cartella.</p>

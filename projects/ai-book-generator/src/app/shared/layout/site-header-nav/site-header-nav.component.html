@@ -2,19 +2,19 @@
   <div class="site-container header-inner">
     <!-- SINISTRA: logo -->
     <a class="logo-link" [routerLink]="logoRoute()" [attr.aria-label]="brand()">
-      <img class="logo-link__mark" src="images/logo.png" [alt]="brand()" decoding="async" fetchpriority="high" />
+      <img class="logo-link__mark" src="images/logo.webp" [alt]="brand()" decoding="async" fetchpriority="high" />
     </a>
 
     <!-- CENTRO: voci di navigazione -->
     @if (navItems().length) {
       <nav class="nav-links" aria-label="Primary">
         @for (item of navItems(); track item.id) {
-          <a [routerLink]="item.route" routerLinkActive="is-active" class="nav-link">{{ item.label }}</a>
+          <a [routerLink]="item.route" routerLinkActive="is-active" class="nav-link">{{ item.label | translate }}</a>
         }
       </nav>
     }
 
-    <!-- DESTRA: azioni (search + login / profilo) -->
+    <!-- DESTRA: azioni (search + language + login / avatar) -->
     <div class="header-zone-right">
       @if (showSearch()) {
         <button #searchBtn type="button" class="action-btn search-btn" (click)="onSearch(searchBtn)" aria-label="Search">
@@ -31,10 +31,16 @@
       }
 
       @if (showProfile()) {
-        <button type="button" class="action-btn profile-btn" (click)="onProfile()" aria-label="User profile">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">account_circle</mat-icon>
+        <button type="button" class="profile-btn" (click)="onProfile()" aria-label="Profilo utente">
+          <span class="avatar" aria-hidden="true">M</span>
         </button>
       }
+
+      <!-- Language switcher (come mariosite) — per ultimo, dopo l'avatar -->
+      <app-language-switcher
+        [currentLocale]="currentLocale()"
+        [locales]="locales"
+        (localeChange)="onLocaleChange($event)" />
     </div>
 
     <!-- MOBILE: hamburger (visibile solo su isMedium/isSmall) -->

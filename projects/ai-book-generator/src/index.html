@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>University Books</title>
+  <title>AI Book Generator</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -12,13 +12,38 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- Splash di boot col logo: visibile finché Angular non si avvia (il boot è
+       gated sul caricamento i18n). Stili inline → appaiono prima del bundle CSS. -->
+  <style>
+    .app-loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      z-index: 9999;
+    }
+    .app-loading__logo {
+      width: clamp(140px, 30vw, 200px);
+      height: auto;
+      animation: app-loading-pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes app-loading-pulse {
+      0%, 100% { opacity: 0.5; transform: scale(0.98); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .app-loading__logo { animation: none; }
+    }
+  </style>
 </head>
 <body>
   <app-root>
-    <!-- Splash Screen (removed automatically by Angular after bootstrap) -->
-    <!-- Styles in src/styles/_splash-screen.scss -->
+    <!-- Splash (Angular sostituisce il contenuto di <app-root> al bootstrap). -->
     <div class="app-loading">
-      <div class="app-loading-logo">UB</div>
+      <img class="app-loading__logo" src="images/logo.webp" alt="AI Book Generator" />
     </div>
   </app-root>
 </body>

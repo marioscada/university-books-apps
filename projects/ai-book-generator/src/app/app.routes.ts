@@ -5,8 +5,9 @@ import { guestGuard } from './auth/guards/guest.guard';
 /**
  * Routing dell'app.
  * Pubblico: /landing (vetrina) + /auth.
- * Autenticato (area app): /home (dashboard) + /create + /projects + /library +
- * /templates + /pricing.
+ * Autenticato (area app): /create (home post-login: lavori in corso + nuovi) +
+ * /collection + /library + /pricing.
+ * NB: i Templates non sono una pagina ma un componente usato dentro /create.
  *
  * ⚠️ TEMPORANEO (dev): authGuard staccato sulle route autenticate per navigare
  * senza login mentre si recuperano le credenziali Cognito. RIPRISTINARE
@@ -30,14 +31,7 @@ export const routes: Routes = [
     canActivate: [guestGuard],
   },
   {
-    // Dashboard privata: prima pagina dopo il login.
-    path: 'home',
-    loadComponent: () => import('./pages/home/home.component').then((m) => m.HomeComponent),
-    // canActivate: [authGuard], // TODO ripristinare
-    title: 'Dashboard - AI Book Generator',
-  },
-  {
-    // Il cuore del prodotto: wizard di generazione.
+    // Home post-login: lavori in corso da continuare + avvio di nuovi.
     path: 'create',
     loadComponent: () => import('./pages/create/create.component').then((m) => m.CreateComponent),
     // canActivate: [authGuard], // TODO ripristinare
@@ -55,12 +49,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/library/library.component').then((m) => m.LibraryComponent),
     // canActivate: [authGuard], // TODO ripristinare
     title: 'Library - AI Book Generator',
-  },
-  {
-    path: 'templates',
-    loadComponent: () => import('./pages/templates/templates.component').then((m) => m.TemplatesComponent),
-    // canActivate: [authGuard], // TODO ripristinare
-    title: 'Templates - AI Book Generator',
   },
   {
     path: 'pricing',

@@ -1,43 +1,11 @@
-.page {
-  padding-block: var(--section-padding-block, clamp(40px, 6vw, 80px));
-  min-height: 60vh;
+// Pricing — header via page-header (center), wrapper via .band (theme).
+// Qui restano solo i piani (componente "pricing table" specifico).
+:host {
+  display: block;
 }
 
-.page__inner {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(24px, 4vw, 40px);
-}
-
-.page__inner--center {
+.band__inner--center {
   align-items: center;
-}
-
-.page__head--center {
-  text-align: center;
-}
-
-.page__eyebrow {
-  font-size: var(--site-label-large, 0.875rem);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--site-accent-blue, #7aa7ff);
-  margin: 0 0 8px;
-}
-
-.page__title {
-  font-size: var(--site-display-small, clamp(2rem, 3vw, 2.75rem));
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  margin: 0 0 8px;
-  color: var(--mat-sys-on-surface, #1a1d21);
-}
-
-.page__subtitle {
-  font-size: var(--site-body-large, 1.0625rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
-  margin: 0;
 }
 
 // --- Piani -----------------------------------------------------------------
@@ -56,8 +24,9 @@
   gap: 12px;
   padding: clamp(24px, 3vw, 32px);
   border-radius: 20px;
-  background: var(--mat-sys-surface, #fff);
-  border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border-color, #eceff3);
+  box-shadow: var(--card-shadow);
 }
 
 // Piano evidenziato: banda scura come hero/footer.
@@ -75,7 +44,7 @@
     color: var(--site-dark-on-surface-variant, rgba(255, 255, 255, 0.7));
   }
   .plan__check {
-    color: var(--site-accent-blue, #7aa7ff);
+    color: var(--accent-500, #039fce);
   }
   // CTA chiara su fondo scuro.
   .plan__cta {
@@ -84,7 +53,7 @@
     border-color: transparent;
 
     &:hover {
-      background: var(--site-accent-blue, #7aa7ff);
+      background: var(--accent-500, #039fce);
       color: #fff;
     }
   }
@@ -100,7 +69,7 @@
   letter-spacing: 0.04em;
   padding: 4px 10px;
   border-radius: 999px;
-  background: var(--site-accent-blue, #7aa7ff);
+  background: var(--accent-500, #039fce);
   color: #fff;
 }
 
@@ -149,7 +118,7 @@
 }
 
 .plan__check {
-  color: var(--site-success, #16a34a);
+  color: var(--accent-500, #039fce);
   font-size: 20px;
   width: 20px;
   height: 20px;

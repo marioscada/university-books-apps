@@ -11,8 +11,8 @@
 }
 
 header {
+  // Nessun bordo inferiore: l'header si fonde con la pagina (come mariosite).
   background: var(--mat-sys-surface-container-lowest, #ffffff);
-  border-bottom: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
 }
 
 .header-inner {
@@ -37,10 +37,10 @@ header {
     border-radius: 4px;
   }
 
-  // Logo immagine: stessa altezza di mariosite (header chrome 88px).
+  // Logo immagine: altezza dal token globale (identica a mariosite).
   &__mark {
     display: block;
-    height: clamp(36px, 4.5vw, 52px);
+    height: var(--logo-height, clamp(36px, 4.5vw, 52px));
     width: auto;
   }
 }
@@ -107,6 +107,44 @@ header {
     padding: 1px 6px;
     border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
     border-radius: 4px;
+  }
+}
+
+// Avatar profilo (header autenticato).
+.profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 50%;
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-500, #039fce);
+    outline-offset: 2px;
+  }
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--site-dark-surface, #1a1d21);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 18%);
+  transition: box-shadow 0.15s ease, transform 0.12s ease;
+
+  .profile-btn:hover & {
+    box-shadow: 0 3px 8px rgb(15 23 42 / 28%);
+    transform: translateY(-1px);
   }
 }
 

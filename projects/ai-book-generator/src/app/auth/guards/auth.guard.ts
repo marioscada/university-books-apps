@@ -7,8 +7,8 @@ import { AuthService } from '../services/auth.service';
  *
  * Usage:
  * {
- *   path: 'home',
- *   component: HomeComponent,
+ *   path: 'create',
+ *   component: CreateComponent,
  *   canActivate: [authGuard]
  * }
  */

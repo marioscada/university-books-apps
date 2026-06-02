@@ -1,7 +1,6 @@
 // Page hero — full-bleed image con overlay testo a SINISTRA e scrim che
-// sfuma a destra. Aspect-ratio bloccato al token --page-hero-aspect-ratio
-// su mobile; su desktop banda full-width ad altezza controllata.
-// Fedele a ~/marianoscada-site/.../hero-section.component.scss.
+// sfuma a destra. Altezza/colori/scrim da token globali (theme/_tokens.scss):
+// punto centrale unico per tutte le pagine.
 
 :host {
   display: block;
@@ -14,12 +13,11 @@
   background-color: var(--site-dark-surface, #1a1d21);
 }
 
-// Desktop: banda full-width con altezza controllata (vw-based) → stessa
-// posizione del testo su ogni pagina.
+// Desktop: banda full-width con altezza controllata dal token globale.
 @media (min-width: 900px) {
   .hero-section {
     aspect-ratio: auto;
-    height: clamp(460px, 57vw, 640px);
+    height: var(--page-hero-height, clamp(460px, 57vw, 640px));
   }
 }
 
@@ -39,17 +37,12 @@
   opacity: 1;
 }
 
-// Scrim — forte a sinistra per il contrasto del testo, trasparente oltre la
-// metà così il contenuto dell'immagine a destra resta visibile.
+// Scrim — leggero a sinistra (token globale) per il contrasto del testo,
+// trasparente oltre la metà così l'immagine a destra resta visibile.
 .hero-section__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to right,
-    rgb(0 0 0 / 70%) 0%,
-    rgb(0 0 0 / 45%) 30%,
-    transparent 65%
-  );
+  background: var(--page-hero-scrim);
   pointer-events: none;
   z-index: 1;
 }
@@ -69,7 +62,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--section-text-stack-gap, 16px);
-  color: var(--site-dark-on-surface, #ffffff);
+  color: var(--page-hero-text-color, #1a1d21);
 }
 
 .hero-section__eyebrow {
@@ -77,7 +70,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--site-accent-blue, #7aa7ff);
+  color: var(--page-hero-eyebrow-color, #1d4ed8);
   margin: 0;
 }
 
@@ -104,11 +97,10 @@
   margin-top: clamp(16px, 2vw, 24px);
 }
 
-// Mobile + small tablet: testo centrato sopra l'immagine intera (16/9),
-// scrim uniforme per leggibilità su tutta la larghezza.
+// Mobile + small tablet: testo centrato sopra l'immagine intera (16/9).
 @media (max-width: 899px) {
   .hero-section__scrim {
-    background: rgb(0 0 0 / 50%);
+    background: var(--page-hero-scrim-mobile, rgb(255 255 255 / 62%));
   }
 
   .hero-section__inner {

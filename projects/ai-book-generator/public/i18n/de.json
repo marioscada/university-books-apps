@@ -1,5 +1,8 @@
 {
   "i18n.Brand.name": "AI Book Generator",
+  "i18n.Common.LanguageSwitcher.Language.de": "Deutsch",
+  "i18n.Common.LanguageSwitcher.Language.en": "Englisch",
+  "i18n.Common.LanguageSwitcher.Language.it": "Italienisch",
   "i18n.Common.loading": "Wird geladen...",
   "i18n.Common.profile": "Benutzerprofil",
   "i18n.Common.search": "Suchen",
@@ -22,6 +25,7 @@
   "i18n.Footer.Resources.privacy": "Datenschutz",
   "i18n.Footer.Resources.title": "Ressourcen",
   "i18n.Footer.copyright": "© {year} AI Book Generator. Alle Rechte vorbehalten.",
+  "i18n.Header.Nav.collection": "Sammlung",
   "i18n.Header.Nav.create": "Erstellen",
   "i18n.Header.Nav.home": "Start",
   "i18n.Header.Nav.library": "Bibliothek",
