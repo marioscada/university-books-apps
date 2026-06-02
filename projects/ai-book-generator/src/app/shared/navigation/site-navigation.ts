@@ -12,11 +12,9 @@ export const BRAND = 'AI Book Generator';
 
 /** Route principali dell'area app (Home = dashboard, prima voce). */
 export const APP_NAV_ITEMS: readonly SiteNavItem[] = [
-  { id: 'home', label: 'Home', route: '/home', icon: 'home' },
   { id: 'create', label: 'Create', route: '/create', icon: 'add_circle' },
   { id: 'collection', label: 'Collection', route: '/collection', icon: 'collections_bookmark' },
   { id: 'library', label: 'Library', route: '/library', icon: 'local_library' },
-  { id: 'templates', label: 'Templates', route: '/templates', icon: 'dashboard_customize' },
   { id: 'pricing', label: 'Pricing', route: '/pricing', icon: 'sell' },
 ];
 
@@ -25,11 +23,9 @@ export const APP_FOOTER_COLUMNS: readonly FooterColumn[] = [
   {
     title: 'Product',
     items: [
-      { label: 'Home', route: '/home', authOnly: true },
       { label: 'Create', route: '/create', authOnly: true },
       { label: 'Collection', route: '/collection', authOnly: true },
       { label: 'Library', route: '/library', authOnly: true },
-      { label: 'Templates', route: '/templates', authOnly: true },
       { label: 'Pricing', route: '/pricing' },
     ],
   },

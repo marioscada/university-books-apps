@@ -27,7 +27,7 @@ export class SiteHeaderNavComponent {
   readonly navItems = input<readonly SiteNavItem[]>([]);
   /** Etichetta del brand mostrata accanto al logo. */
   readonly brand = input<string>('AI Book Generator');
-  /** Destinazione del click sul logo (landing pubblica: '/'; area app: '/home'). */
+  /** Destinazione del click sul logo (landing pubblica: '/'; area app: '/create'). */
   readonly logoRoute = input<string>('/');
 
   /** Mostra il bottone di ricerca a destra (come top-app-bar). */

@@ -19,8 +19,8 @@ export const guestGuard: CanActivateFn = (_route, _state) => {
   const isAuthenticated = authService.state().isAuthenticated;
 
   if (isAuthenticated) {
-    // Already logged in, redirect to home
-    router.navigate(['/home']);
+    // Already logged in, redirect to the post-login home (Create)
+    router.navigate(['/create']);
     return false;
   }
 

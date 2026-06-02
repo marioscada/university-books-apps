@@ -38,7 +38,7 @@ export class LoginComponent {
         tap((state) => {
           // ✅ Navigation side effect (eseguito dall'async pipe)
           if (state.success) {
-            this.router.navigate(['/home']);
+            this.router.navigate(['/create']);
           }
         }),
         catchError((error: unknown) => {
@@ -70,8 +70,8 @@ export class LoginComponent {
       const loading = this.authService.state().loading;
 
       if (isAuthenticated && !loading) {
-        // Get return URL from query params or default to /home
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/home';
+        // Get return URL from query params or default to /create
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/create';
         this.router.navigateByUrl(returnUrl);
       }
     });
