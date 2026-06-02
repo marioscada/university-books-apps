@@ -6,33 +6,34 @@
 .mobile-menu {
   display: flex;
   flex-direction: column;
-  gap: 24px;
   height: 100%;
   padding: 24px;
   background: var(--site-dark-surface, #1a1d21);
   color: var(--site-dark-on-surface, #fff);
 }
 
-.mobile-menu__top {
+// Riga in alto: solo la X, allineata a destra (mirror mariosite).
+.mobile-menu__header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
-.mobile-menu__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--site-title-large, 1.5rem);
-  font-weight: 600;
+// Logo centrato con respiro sopra/sotto (stessa posizione di mariosite).
+.mobile-menu__logo-link {
+  display: flex;
+  justify-content: center;
   text-decoration: none;
-  color: var(--site-dark-on-surface, #fff);
+  padding-block: clamp(24px, 9vw, 56px) clamp(28px, 7vw, 44px);
 }
 
 .mobile-menu__logo {
   display: block;
-  height: 40px;
+  // Altezza dal token globale (identica a mariosite, variante mobile).
+  height: var(--logo-height-mobile, clamp(32px, 7vw, 44px));
   width: auto;
+  // Il drawer è scuro e il wordmark è nero: lo schiarisco per renderlo
+  // leggibile (display-only, asset invariato — pattern mariosite).
+  filter: brightness(0) invert(1);
 }
 
 .mobile-menu__close {

@@ -1,13 +1,15 @@
 <div class="mobile-menu">
-  <div class="mobile-menu__top">
-    <a class="mobile-menu__brand" routerLink="/" (click)="onClose()">
-      <img class="mobile-menu__logo" src="images/logo.png" [alt]="brand()" decoding="async" />
-      <span>{{ brand() }}</span>
-    </a>
+  <!-- Riga in alto: solo la X (a destra), come mariosite. -->
+  <header class="mobile-menu__header">
     <button type="button" class="mobile-menu__close" aria-label="Chiudi menu" (click)="onClose()">
       <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
     </button>
-  </div>
+  </header>
+
+  <!-- Logo centrato (stessa posizione/dimensione di mariosite), senza testo brand. -->
+  <a class="mobile-menu__logo-link" routerLink="/" [attr.aria-label]="brand()" (click)="onClose()">
+    <img class="mobile-menu__logo" src="images/logo.webp" [alt]="brand()" decoding="async" />
+  </a>
 
   <nav class="mobile-menu__nav" aria-label="Mobile">
     @for (item of navItems(); track item.id) {
