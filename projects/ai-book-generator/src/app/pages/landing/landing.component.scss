@@ -1,18 +1,20 @@
 // CTA finale come banda scura (sezione 10 della landing).
 // La content-section è di default bianca; qui la rendiamo dark surface come
 // l'hero, contenuto centrato, banda compatta (no min-height da sezione piena).
+// `!important` perché il `.cta-band` deve vincere sulla zebra
+// `:nth-of-type(even)` della content-section a prescindere dalla sua posizione.
 :host ::ng-deep .cta-band {
-  background: var(--site-dark-surface, #1a1d21);
+  background: var(--site-dark-surface, #1a1d21) !important;
 
   .content-section {
     min-height: 0;
   }
 
   .content-section__title {
-    color: var(--site-dark-on-surface, #ffffff);
+    color: var(--site-dark-on-surface, #ffffff) !important;
   }
 
   .content-section__body {
-    color: var(--site-dark-on-surface-variant, rgba(255, 255, 255, 0.7));
+    color: var(--site-dark-on-surface-variant, rgba(255, 255, 255, 0.7)) !important;
   }
 }
