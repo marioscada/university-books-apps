@@ -1,0 +1,59 @@
+:host {
+  display: block;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.page-header__eyebrow {
+  margin: 0;
+  font-size: var(--site-label-large, 0.875rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--page-hero-eyebrow-color, #1d4ed8);
+}
+
+.page-header__title {
+  margin: 0;
+  font-size: var(--site-display-small, clamp(1.75rem, 3vw, 2.5rem));
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.page-header__subtitle {
+  margin: 0;
+  font-size: var(--site-body-large, 1.0625rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.page-header__actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+// Variante centrata (Pricing): titolo/sottotitolo al centro, niente azione.
+.page-header--center {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  .page-header__text {
+    align-items: center;
+  }
+}

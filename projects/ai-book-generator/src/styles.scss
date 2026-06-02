@@ -15,6 +15,7 @@
 @use './theme/reset';
 @use './theme/sections';
 @use './theme/blocks';
+@use './theme/components';
 @use './theme/mat-button';
 
 @import '@angular/cdk/overlay-prebuilt.css';

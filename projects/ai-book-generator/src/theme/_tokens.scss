@@ -9,9 +9,25 @@
   // --- Shell layout ---------------------------------------------------------
   --header-height: 88px;
   --footer-min-height: auto;
+  // Logo wordmark — dimensioni GLOBALI identiche a mariosite (header +
+  // mobile drawer). Mirror di site-header-nav/site-mobile-menu .scss.
+  --logo-height: clamp(36px, 4.5vw, 52px);
+  --logo-height-mobile: clamp(32px, 7vw, 44px);
   // Container marketing: mirror mariosite (.site-container = 1200px).
   --page-max-width: 1200px;
   --page-padding-inline: 20px; // → 24px @600, 32px @1200 (vedi sotto)
+
+  // --- Pagine app (dashboard) — GLOBALI -------------------------------------
+  // Canvas soft delle pagine autenticate: contrasto tonale dal bianco (M3
+  // surface vs surface-container) così le card bianche "staccano" senza bordi
+  // pesanti (Refactoring UI: usa due sfondi/ombra, non i bordi).
+  --page-padding-block: clamp(40px, 6vw, 72px); // spazio header↔contenuto generoso
+  // Card / blocchi su canvas
+  --card-bg: #ffffff;
+  --card-radius: 16px;
+  --card-border-color: #eceff3;
+  --card-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 2px 6px rgb(15 23 42 / 5%);
+  --card-shadow-hover: 0 10px 30px rgb(15 23 42 / 10%);
 
   // --- Sezioni --------------------------------------------------------------
   --section-padding-block: clamp(40px, 6vw, 80px);
@@ -25,14 +41,38 @@
   --section-band-alt: #f1f5f9;
 
   // --- Media / hero ---------------------------------------------------------
-  --page-hero-aspect-ratio: 16 / 9;
+  // PUNTO CENTRALE dello stile hero: regola l'altezza/proporzioni dell'hero di
+  // OGNI pagina (home, landing, …) tramite HeroSectionComponent. Cambia qui →
+  // cambia ovunque.
+  --page-hero-aspect-ratio: 16 / 9;        // mobile/tablet (< 900px)
+  --page-hero-height: clamp(460px, 57vw, 640px); // desktop (>= 900px)
+  // Altezza GLOBALE dell'immagine negli header delle pagine app (Create…),
+  // così il band header ha la stessa altezza ovunque.
+  --page-header-media-height: clamp(130px, 15vw, 170px);
+  // Hero su immagini CHIARE: testo scuro, eyebrow blu forte, scrim chiaro
+  // (sfuma il bianco a sinistra per far risaltare il testo). Cambia qui → ovunque.
+  --page-hero-text-color: #1a1d21;
+  // Accent del progetto (no blu forte): eyebrow + accenti usano --site-accent-blue.
+  --page-hero-eyebrow-color: var(--site-accent-blue, #7aa7ff);
+  --page-hero-scrim: linear-gradient(
+    to right,
+    rgb(255 255 255 / 85%) 0%,
+    rgb(255 255 255 / 55%) 32%,
+    transparent 66%
+  );
+  --page-hero-scrim-mobile: rgb(255 255 255 / 62%);
   --session-media-frame-width: clamp(280px, 32vw, 400px);
   --session-media-frame-aspect-ratio: 3 / 2;
   --session-media-frame-height: clamp(187px, 21.3vw, 267px);
 
   // --- Brand / accent -------------------------------------------------------
+  // Accent del progetto = accent di customer-portal ($accent-palette).
+  --accent-100: #dcf7ff;
+  --accent-400: #47c2e8;
+  --accent-500: #039fce; // accent principale
+  --accent-700: #0289b2;
   --site-success: #16a34a;
-  --site-accent-blue: #7aa7ff;
+  --site-accent-blue: var(--accent-500); // retro-compat: punta all'accent
   --site-nav-item-active-color: var(--site-accent-blue);
   --site-nav-item-indicator-height: 0;
 
