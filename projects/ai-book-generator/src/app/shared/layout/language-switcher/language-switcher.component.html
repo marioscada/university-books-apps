@@ -16,14 +16,14 @@
 </button>
 
 <mat-menu #menu="matMenu">
-  @for (item of menuItems(); track item.id) {
+  @for (item of locales(); track item.id) {
     <button
       mat-menu-item
       type="button"
       [class.is-active]="item.id === currentLocale()"
       (click)="onSelect(item.id)">
       <mat-icon [svgIcon]="item.id" aria-hidden="true"></mat-icon>
-      <span>{{ item.name }}</span>
+      <span>{{ item.name | translate }}</span>
     </button>
   }
 </mat-menu>

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { SiteNavItem } from '../site-header-nav/site-header-nav.types';
 
@@ -13,7 +14,7 @@ import { SiteNavItem } from '../site-header-nav/site-header-nav.types';
   selector: 'app-site-mobile-menu',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterLinkActive, MatIconModule],
+  imports: [RouterLink, RouterLinkActive, MatIconModule, TranslateModule],
   templateUrl: './site-mobile-menu.component.html',
   styleUrl: './site-mobile-menu.component.scss',
 })

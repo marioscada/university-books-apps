@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { SiteNavItem } from './site-header-nav.types';
 import { ScreenTypeDirective } from '../../directives/screen-type.directive';
@@ -26,6 +27,7 @@ import { LocaleService } from '../../services/locale.service';
     MatIconModule,
     ScreenTypeDirective,
     LanguageSwitcherComponent,
+    TranslateModule,
   ],
   templateUrl: './site-header-nav.component.html',
   styleUrl: './site-header-nav.component.scss',
@@ -55,11 +57,11 @@ export class SiteHeaderNavComponent {
   // Lingua condivisa da TUTTO il sito (singleton): la scelta persiste tra le
   // pagine e tra le sessioni.
   private readonly localeService = inject(LocaleService);
-  readonly currentLocale = this.localeService.locale;
+  readonly currentLocale = this.localeService.currentLocale;
   readonly locales = this.localeService.locales;
 
   onLocaleChange(locale: string): void {
-    this.localeService.set(locale);
+    this.localeService.setLocale(locale);
   }
 
   onToggle(): void {

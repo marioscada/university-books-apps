@@ -60,8 +60,62 @@ print('chiavi identiche:', set(d['en'])==set(d['it'])==set(d['de']))
 "
 ```
 
-> NB: l'i18n al momento NON è cablato (ngx-translate non installato). I file sono
-> pronti; il wiring si farà quando deciso.
+> NB: l'i18n è cablato con **ngx-translate v17** (standalone: `provideTranslateService`
+> + `provideTranslateHttpLoader` da `/i18n/`, default **EN**). Un `provideAppInitializer`
+> blocca il boot finché il JSON della lingua attiva non è caricato → splash col logo,
+> niente flash di chiavi. La lingua vive nel `LocaleService` singleton (signal +
+> `translate.use` + `localStorage` + `<html lang>`). Tradotti: header e footer.
+
+---
+
+## Convenzioni di codice (mirror mariosite) — OBBLIGATORIE
+
+### Prima di scegliere: leggi i docs UFFICIALI
+Prima di qualunque scelta **architetturale** o di **pattern Angular/Material/libreria**,
+**consulta sempre la documentazione ufficiale** (angular.dev, material.angular.io, la doc
+della libreria) e usa l'**API non deprecata** della **nostra versione di Angular (19)**.
+Es.: `provideAppInitializer` (non `APP_INITIALIZER`), signal inputs/outputs, `inject()`.
+Niente scelte "a memoria": verifica.
+
+### Reattività al 100% (signals-first)
+- `signal` / `computed` / `effect`; input/output con `input()` / `output()`.
+- `ChangeDetectionStrategy.OnPush` ovunque; `inject()` (no constructor DI verboso).
+- Niente `.subscribe()` nei `.ts` salvo casi concordati (vedi memory).
+
+### Organizzazione del file `.ts` (banner a sezioni, come mariosite)
+```ts
+@Component({ standalone: true, changeDetection: ChangeDetectionStrategy.OnPush, … })
+export class XComponent {
+  // === DI ===
+  private readonly svc = inject(MyService);
+
+  // === Inputs ===
+  readonly data = input.required<Foo>();
+
+  // === Outputs ===
+  readonly changed = output<Foo>();
+
+  // === State ===
+  private readonly _open = signal(false);
+
+  // === Derived state ===
+  protected readonly label = computed(() => …);
+
+  // === Constructor (setup) ===
+  constructor() { effect(() => …); }
+
+  // === Public methods ===
+  open(): void { … }
+
+  // === Private methods ===
+  private compute(): void { … }
+}
+```
+
+### Organizzazione del template (DOM)
+- Markup semantico; control flow nuovo `@if` / `@for` (con `track`) / `@switch`.
+- Classi BEM (`block__element--modifier`); stili condivisi **globali** in `theme/`.
+- Niente logica nel template oltre binding/condizioni; il resto in `computed`/metodi.
 
 ---
 

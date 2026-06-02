@@ -9,7 +9,7 @@
     @if (navItems().length) {
       <nav class="nav-links" aria-label="Primary">
         @for (item of navItems(); track item.id) {
-          <a [routerLink]="item.route" routerLinkActive="is-active" class="nav-link">{{ item.label }}</a>
+          <a [routerLink]="item.route" routerLinkActive="is-active" class="nav-link">{{ item.label | translate }}</a>
         }
       </nav>
     }

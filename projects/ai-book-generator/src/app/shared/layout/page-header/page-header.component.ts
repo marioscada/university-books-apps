@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, input } from '@angular/core';
 
 /**
  * PageHeader — intestazione condivisa delle pagine interne (dashboard):
@@ -32,6 +32,6 @@ export class PageHeaderComponent {
   readonly title = input.required<string>();
   readonly subtitle = input<string>();
   readonly eyebrow = input<string>();
-  /** Layout centrato (pagine marketing tipo Pricing). */
-  readonly center = input<boolean>(false);
+  /** Layout centrato (pagine marketing tipo Pricing). Usabile come bare attribute. */
+  readonly center = input(false, { transform: booleanAttribute });
 }

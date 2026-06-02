@@ -10,39 +10,42 @@ import { FooterColumn } from '../layout/site-footer-block/site-footer-block.type
 
 export const BRAND = 'AI Book Generator';
 
-/** Route principali dell'area app (Home = dashboard, prima voce). */
+/**
+ * Route principali dell'area app. `label` = CHIAVE i18n (risolta con `| translate`
+ * nei template di header/mobile-menu/footer).
+ */
 export const APP_NAV_ITEMS: readonly SiteNavItem[] = [
-  { id: 'create', label: 'Create', route: '/create', icon: 'add_circle' },
-  { id: 'collection', label: 'Collection', route: '/collection', icon: 'collections_bookmark' },
-  { id: 'library', label: 'Library', route: '/library', icon: 'local_library' },
-  { id: 'pricing', label: 'Pricing', route: '/pricing', icon: 'sell' },
+  { id: 'create', label: 'i18n.Header.Nav.create', route: '/create', icon: 'add_circle' },
+  { id: 'collection', label: 'i18n.Header.Nav.collection', route: '/collection', icon: 'collections_bookmark' },
+  { id: 'library', label: 'i18n.Header.Nav.library', route: '/library', icon: 'local_library' },
+  { id: 'pricing', label: 'i18n.Header.Nav.pricing', route: '/pricing', icon: 'sell' },
 ];
 
-/** Colonne del footer (uniche per tutto il sito; authOnly filtrate in landing). */
+/** Colonne del footer (label/title = chiavi i18n; authOnly filtrate in landing). */
 export const APP_FOOTER_COLUMNS: readonly FooterColumn[] = [
   {
-    title: 'Product',
+    title: 'i18n.Footer.Product.title',
     items: [
-      { label: 'Create', route: '/create', authOnly: true },
-      { label: 'Collection', route: '/collection', authOnly: true },
-      { label: 'Library', route: '/library', authOnly: true },
-      { label: 'Pricing', route: '/pricing' },
+      { label: 'i18n.Header.Nav.create', route: '/create', authOnly: true },
+      { label: 'i18n.Header.Nav.collection', route: '/collection', authOnly: true },
+      { label: 'i18n.Header.Nav.library', route: '/library', authOnly: true },
+      { label: 'i18n.Header.Nav.pricing', route: '/pricing' },
     ],
   },
   {
-    title: 'Resources',
+    title: 'i18n.Footer.Resources.title',
     items: [
-      { label: 'About', route: '/about' },
-      { label: 'Contact', route: '/contact' },
-      { label: 'Privacy', route: '/privacy' },
+      { label: 'i18n.Footer.Resources.about', route: '/about' },
+      { label: 'i18n.Footer.Resources.contact', route: '/contact' },
+      { label: 'i18n.Footer.Resources.privacy', route: '/privacy' },
     ],
   },
   {
-    title: 'Legal',
+    title: 'i18n.Footer.Legal.title',
     items: [
-      { label: 'Terms', route: '/terms' },
-      { label: 'Cookie Policy', route: '/cookie' },
-      { label: 'Imprint', route: '/imprint' },
+      { label: 'i18n.Footer.Legal.terms', route: '/terms' },
+      { label: 'i18n.Footer.Legal.cookie', route: '/cookie' },
+      { label: 'i18n.Footer.Legal.imprint', route: '/imprint' },
     ],
   },
 ];

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { FooterColumn } from './site-footer-block.types';
 import { FooterLinkComponent } from '../footer-link/footer-link.component';
@@ -16,7 +17,7 @@ import { FooterLinkComponent } from '../footer-link/footer-link.component';
   selector: 'app-site-footer-block',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FooterLinkComponent],
+  imports: [FooterLinkComponent, TranslateModule],
   templateUrl: './site-footer-block.component.html',
   styleUrl: './site-footer-block.component.scss',
 })
