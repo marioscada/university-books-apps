@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 
 import { SiteNavItem } from './site-header-nav.types';
 import { ScreenTypeDirective } from '../../directives/screen-type.directive';
+import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
+import { LocaleService } from '../../services/locale.service';
 
 /**
  * SiteHeaderNav — header sticky a 3 zone (fedele a mariosite):
@@ -18,7 +20,13 @@ import { ScreenTypeDirective } from '../../directives/screen-type.directive';
   selector: 'app-site-header-nav',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterLinkActive, MatIconModule, ScreenTypeDirective],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    MatIconModule,
+    ScreenTypeDirective,
+    LanguageSwitcherComponent,
+  ],
   templateUrl: './site-header-nav.component.html',
   styleUrl: './site-header-nav.component.scss',
 })
@@ -43,6 +51,16 @@ export class SiteHeaderNavComponent {
   readonly searchRequested = output<HTMLElement>();
   /** Click sul bottone profilo. */
   readonly profile = output<void>();
+
+  // Lingua condivisa da TUTTO il sito (singleton): la scelta persiste tra le
+  // pagine e tra le sessioni.
+  private readonly localeService = inject(LocaleService);
+  readonly currentLocale = this.localeService.locale;
+  readonly locales = this.localeService.locales;
+
+  onLocaleChange(locale: string): void {
+    this.localeService.set(locale);
+  }
 
   onToggle(): void {
     this.toggleSidebar.emit();

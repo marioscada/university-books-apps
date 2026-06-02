@@ -1,0 +1,29 @@
+<button
+  mat-button
+  class="language-switcher"
+  type="button"
+  [matMenuTriggerFor]="menu"
+  [attr.aria-label]="ariaLabel()">
+  <mat-icon
+    class="language-switcher__flag"
+    [svgIcon]="currentLocale()"
+    aria-hidden="true"></mat-icon>
+  <span class="language-switcher__label">{{ displayLabel() }}</span>
+  <mat-icon
+    class="language-switcher__chevron"
+    fontSet="material-symbols-outlined"
+    aria-hidden="true">expand_more</mat-icon>
+</button>
+
+<mat-menu #menu="matMenu">
+  @for (item of menuItems(); track item.id) {
+    <button
+      mat-menu-item
+      type="button"
+      [class.is-active]="item.id === currentLocale()"
+      (click)="onSelect(item.id)">
+      <mat-icon [svgIcon]="item.id" aria-hidden="true"></mat-icon>
+      <span>{{ item.name }}</span>
+    </button>
+  }
+</mat-menu>
