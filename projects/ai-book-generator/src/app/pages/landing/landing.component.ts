@@ -50,12 +50,10 @@ export class LandingComponent {
   // 1. HERO
   readonly hero: HeroSectionData = {
     sectionId: 'hero',
-    eyebrow: 'AI Book Generator',
-    title: 'Trasforma il tuo materiale\nin un libro professionale',
-    subtitle:
-      'Carica documenti, appunti o link e lascia che l’AI li trasformi in libri, manuali e riassunti pronti da esportare.',
-    imageSrc: 'images/hero-mockup.svg',
-    imageAlt: 'Esempio di libro generato',
+    title: 'Dai tuoi appunti a un libro.',
+    subtitle: 'Manuali e riassunti professionali in minuti.',
+    imageSrc: 'images/landing-hero.webp',
+    imageAlt: 'I tuoi documenti trasformati in un libro AI Books Generator',
     cta: { label: 'Generate', route: this.authRoute },
   };
 
