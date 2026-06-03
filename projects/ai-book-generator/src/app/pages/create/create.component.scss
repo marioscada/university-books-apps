@@ -1,84 +1,169 @@
-// Create — stili SPECIFICI: hero (testo + immagine) e recent activity.
-// Le card (project-card, cover-art, add-card) sono GLOBALI in theme/_components.
+// Create launcher — SOLO layout. La separazione delle aree è data dalle BANDE
+// alternate globali (.band / .band--alt, come landing). Token globali ovunque.
 :host {
   display: block;
 }
 
-// --- Hero: testo + bottone a sinistra, immagine a destra --------------------
-.dash-hero {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  align-items: center;
-  gap: clamp(24px, 4vw, 56px);
-}
-
-.dash-hero__text {
+// Titolo/sottotitolo usano le classi GLOBALI .page-title / .page-subtitle.
+.create__head {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
 }
 
-.dash-hero__title {
-  margin: 0;
-  font-size: var(--site-display-small, clamp(2rem, 3vw, 2.75rem));
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--mat-sys-on-surface, #1a1d21);
-}
-
-.dash-hero__subtitle {
-  margin: 0;
-  font-size: var(--site-body-large, 1.0625rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
-}
-
-.dash-hero__cta {
-  margin-top: 6px;
-}
-
-.dash-hero__media {
+// Statistiche — gruppo centrato sull'asse X (non stirate a tutta larghezza).
+.create-stats {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+.create-stats > app-stat-card {
+  flex: 1 1 220px;
+  max-width: 300px;
 }
 
-.dash-hero__media img {
+// Sezione (titolo + contenuto)
+.create-sec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.create-sec__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.create-sec__head--row {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.create-sec__title {
+  margin: 0;
+  font-size: var(--site-title-medium);
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.create-sec__desc {
+  margin: 0;
+  font-size: var(--site-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+.create-sec__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  color: var(--accent-700);
+  font-weight: 600;
+  font-size: var(--site-body-small);
+  text-decoration: none;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Griglie wrappanti (tante file quante servono, NO scroll)
+.create-row {
+  display: grid;
+  gap: var(--space-2);
+}
+.create-row--types {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+.create-row--templates {
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+.create-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-2);
+}
+.create-cover {
   display: block;
   width: 100%;
-  height: auto;
-  // Altezza dal token globale → band header uguale alle altre pagine.
-  max-height: var(--page-header-media-height, 160px);
-  object-fit: contain;
+  height: 100%;
+  min-height: 140px;
 }
 
-@media (max-width: 899px) {
-  .dash-hero {
-    grid-template-columns: 1fr;
-  }
-  .dash-hero__media {
-    display: none;
-  }
+// Card "nuovo progetto da zero"
+.add-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 220px;
+  padding: var(--space-2);
+  text-align: center;
+  font: inherit;
+  cursor: pointer;
+  border: 1px dashed var(--card-border-color);
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  color: var(--mat-sys-on-surface-variant);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-
-// --- Recent activity --------------------------------------------------------
-.activity__title {
-  margin: 0;
-  font-size: var(--site-title-large, 1.5rem);
+.add-card:hover {
+  border-color: var(--accent-400);
+  box-shadow: var(--card-shadow-hover);
+}
+.add-card__icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: var(--accent-500);
+}
+.add-card__title {
   font-weight: 600;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
+}
+.add-card__sub {
+  font-size: var(--site-body-small);
 }
 
-.activity__card.mat-mdc-card {
-  border-radius: var(--card-radius, 16px);
-  box-shadow: var(--card-shadow);
-  padding-block: 4px;
+// Banner suggerimenti — fondo tinto (gradiente accent→rosa) per staccare.
+.suggest-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border-color);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent-100) 70%, var(--card-bg)),
+    color-mix(in srgb, var(--tone-rose-bg) 55%, var(--card-bg))
+  );
+}
+.suggest-banner__spark {
+  flex: 0 0 auto;
+  color: var(--accent-500);
+}
+.suggest-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+}
+.suggest-banner__title {
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.suggest-banner__desc {
+  font-size: var(--site-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+.suggest-banner__cta {
+  flex: 0 0 auto;
 }
 
-.activity__card .mat-mdc-list-item-icon {
-  color: var(--accent-500, #039fce);
-}
-
-.activity__time {
-  font-size: var(--site-body-small, 0.8125rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+@media (max-width: 600px) {
+  .create-sec__head--row {
+    flex-direction: column;
+  }
 }

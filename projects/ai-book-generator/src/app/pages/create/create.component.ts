@@ -1,56 +1,64 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
-import { StatusTone } from '../../shared/layout/icon-tile/icon-tile.component';
+import {
+  EntityCardComponent,
+  type StatusTone,
+} from '../../shared/ui/entity-card/entity-card.component';
+import { SelectionCardComponent } from '../../shared/ui/selection-card/selection-card.component';
+import {
+  StatCardComponent,
+  type StatTone,
+} from '../../shared/ui/stat-card/stat-card.component';
 import { ProjectsStore } from '../../core/state/projects.store';
-import type { Project, ProjectStatus } from '../../core/domain';
+import { SourcesStore } from '../../core/state/sources.store';
+import type { Project, ProjectKind, ProjectStatus } from '../../core/domain';
 
-/** Voce della timeline "Recent activity". */
-interface ActivityEntry {
+/** Stat in cima alla pagina. */
+interface CreateStat {
+  labelKey: string;
+  value: string;
+  icon: string;
+  tone: StatTone;
+}
+
+/** Scelta rapida di tipo nel launcher (label/desc/hint via i18n `Create.Type.<id>`). */
+interface TypeChoice {
   id: string;
-  text: string;
-  timeLabel: string;
+  kind: ProjectKind;
   icon: string;
 }
 
-/** Card "lavoro in corso" derivata dal dominio per il rendering. */
-interface ProjectCardVm {
+/** Modello (mock) della sezione "Ispirati a un modello". */
+interface TemplateItem {
   id: string;
   title: string;
-  /** Tono visivo della label di stato (classe status--*). */
-  statusTone: StatusTone;
-  /** Chiave i18n della label di stato. */
-  statusLabelKey: string;
   coverTheme: Project['coverTheme'];
-  /** Avanzamento 0–100 (dal job corrente, mock). */
-  progress: number;
-  updatedLabel: string;
+  kind: ProjectKind;
+  meta: string;
 }
 
-/** ProjectStatus → tono visivo `status--*` esistente (visual invariato). */
+/** ProjectStatus → tono `entity-card`. */
 const STATUS_TONE: Record<ProjectStatus, StatusTone> = {
-  draft: 'draft',
-  queued: 'gen',
-  processing: 'gen',
-  review: 'review',
-  published: 'done',
-  archived: 'muted',
-  failed: 'muted',
+  draft: 'neutral',
+  queued: 'accent',
+  processing: 'accent',
+  review: 'warning',
+  published: 'success',
+  archived: 'neutral',
+  failed: 'danger',
 };
 
 /**
- * Create — hub post-login: lavori in corso da continuare + avvio di nuovi.
- * Hero (testo + immagine), card con copertine astratte. I dati delle card
- * provengono dal dominio via `ProjectsStore` (F1); la recent-activity resta mock
- * fino alle fasi successive. Vedi docs/PRODUCT-ARCHITECTURE.md §5.
+ * Create — pagina "Crea": **launcher** di creazione (inizia da zero · scegli un
+ * tipo · ispirati a un modello · suggerimenti AI) + sezione **"Continua a creare"**
+ * (progetti vivi dallo store). Tipi/modelli preselezionano il `kind` nel wizard
+ * (`/create/new?kind=`). Vedi docs/UI-SPEC-CREATION-AND-GENERATION.md §A0.
  */
 @Component({
   selector: 'app-create',
@@ -60,43 +68,83 @@ const STATUS_TONE: Record<ProjectStatus, StatusTone> = {
     AuthShellComponent,
     RouterLink,
     MatIconModule,
-    MatMenuModule,
-    MatCardModule,
-    MatProgressBarModule,
-    MatListModule,
     MatButtonModule,
+    MatMenuModule,
     TranslateModule,
+    EntityCardComponent,
+    SelectionCardComponent,
+    StatCardComponent,
   ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
 })
 export class CreateComponent {
   private readonly store = inject(ProjectsStore);
+  private readonly sourcesStore = inject(SourcesStore);
+  private readonly router = inject(Router);
 
-  /** Card "in corso" mappate dai progetti vivi dello store. */
-  readonly inProgress = computed<ProjectCardVm[]>(() =>
-    this.store.activeProjects().map((project) => this.toCardVm(project)),
-  );
+  /** Progetti "vivi" da continuare. */
+  readonly activeProjects = this.store.activeProjects;
 
-  readonly recentActivity = signal<ActivityEntry[]>([
-    { id: 'a1', icon: 'auto_stories', text: 'Generato il capitolo 5 di "AI & Machine Learning Book"', timeLabel: '2 ore fa' },
-    { id: 'a2', icon: 'upload_file', text: 'Caricato "Appunti_Algoritmi.pdf"', timeLabel: 'ieri' },
-    { id: 'a3', icon: 'edit_note', text: 'Modificato l’outline di "Physics Summary"', timeLabel: '2 giorni fa' },
-  ]);
+  /** Stat in cima (progetti attivi · fonti · generazioni in corso). */
+  readonly stats = computed<CreateStat[]>(() => {
+    const all = this.store.entities();
+    const active = this.activeProjects().length;
+    const generating = all.filter((p) => p.status === 'processing' || p.status === 'queued').length;
+    const sources = this.sourcesStore.entities().length;
+    return [
+      { labelKey: 'i18n.Create.Stat.active', value: String(active), icon: 'layers', tone: 'accent' },
+      { labelKey: 'i18n.Create.Stat.sources', value: String(sources), icon: 'folder_open', tone: 'success' },
+      { labelKey: 'i18n.Create.Stat.generating', value: String(generating), icon: 'auto_awesome', tone: 'info' },
+    ];
+  });
 
-  private toCardVm(project: Project): ProjectCardVm {
-    const job = this.store.jobsByProject()[project.id] ?? null;
-    return {
-      id: project.id,
-      title: project.title,
-      statusTone: STATUS_TONE[project.status],
-      statusLabelKey: `i18n.Project.Status.${project.status}`,
-      coverTheme: project.coverTheme,
-      // Progress dal job corrente (mock) se presente; in review l'output è
-      // pronto (100%), altrimenti 0 (draft non ancora lanciato).
-      progress: job?.progress ?? (project.status === 'review' ? 100 : 0),
-      updatedLabel: project.lastActivityLabel ?? relativeTime(project.updatedAt),
-    };
+  /** 7 tipi del mock (Libro · Manuale · Guida · Report · Tesi · Corso · Personalizzato). */
+  readonly types: readonly TypeChoice[] = [
+    { id: 'book', kind: 'book', icon: 'menu_book' },
+    { id: 'manual', kind: 'manual', icon: 'build' },
+    { id: 'guide', kind: 'study_guide', icon: 'school' },
+    { id: 'report', kind: 'research_report', icon: 'analytics' },
+    { id: 'thesis', kind: 'research_report', icon: 'history_edu' },
+    { id: 'course', kind: 'training_course', icon: 'cast_for_education' },
+    { id: 'custom', kind: 'custom', icon: 'tune' },
+  ];
+
+  /** Modelli mock (preselezionano un tipo nel wizard). */
+  readonly templates: readonly TemplateItem[] = [
+    { id: 't1', title: 'Guida introduttiva all’Intelligenza Artificiale', coverTheme: 'aurora', kind: 'book', meta: 'Libro · 12 capitoli' },
+    { id: 't2', title: 'Manuale di Fotografia Digitale', coverTheme: 'ember', kind: 'manual', meta: 'Manuale · 7 sezioni' },
+    { id: 't3', title: 'Marketing Digitale: strategie e strumenti', coverTheme: 'mint', kind: 'study_guide', meta: 'Guida · 12 sezioni' },
+    { id: 't4', title: 'Analisi di Mercato 2024', coverTheme: 'ocean', kind: 'research_report', meta: 'Report · 14 sezioni' },
+    { id: 't5', title: 'Tesi: IA e Apprendimento Automatico', coverTheme: 'gold', kind: 'research_report', meta: 'Accademico' },
+  ];
+
+  statusTone(status: ProjectStatus): StatusTone {
+    return STATUS_TONE[status];
+  }
+
+  progressOf(project: Project): number | null {
+    if (project.status === 'processing' || project.status === 'queued') {
+      return this.store.jobsByProject()[project.id]?.progress ?? 0;
+    }
+    return null;
+  }
+
+  metaLabel(project: Project): string {
+    return project.lastActivityLabel ?? relativeTime(project.updatedAt);
+  }
+
+  startBlank(): void {
+    void this.router.navigate(['/create/new']);
+  }
+  startKind(kind: ProjectKind): void {
+    void this.router.navigate(['/create/new'], { queryParams: { kind } });
+  }
+  useTemplate(template: TemplateItem): void {
+    void this.router.navigate(['/create/new'], { queryParams: { kind: template.kind } });
+  }
+  openProject(id: string): void {
+    void this.router.navigate(['/project', id]);
   }
 }
 
@@ -111,6 +159,5 @@ function relativeTime(iso: string): string {
   if (hours < 24) {
     return `${hours}h`;
   }
-  const days = Math.round(hours / 24);
-  return `${days}d`;
+  return `${Math.round(hours / 24)}d`;
 }

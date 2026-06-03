@@ -372,6 +372,26 @@
 }
 
 // =============================================================================
+// Titolo / sottotitolo di PAGINA — stile GLOBALE single-source. Il titolo usa
+// l'accent del progetto; il sottotitolo è prominente. Usalo in ogni pagina.
+// =============================================================================
+.page-title {
+  margin: 0;
+  font-size: clamp(1.875rem, 3.2vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: var(--accent-500);
+}
+.page-subtitle {
+  margin: 8px 0 0;
+  font-size: var(--site-title-medium);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--mat-sys-on-surface);
+}
+
+// =============================================================================
 // Dropdown / overlay panels (menu · select · autocomplete) — stile GLOBALE UNICO
 // (single source): stessa superficie/bordo/raggio/ombra ovunque, voce attiva in
 // accent. Cambiando qui → tutti i dropdown del sito.
