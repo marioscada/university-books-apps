@@ -54,6 +54,12 @@ export interface ApiPort {
   getSource(id: string): Promise<Source>;
   /** POST /sources — crea una nota inline (mock, ingest immediato `ready`). */
   createNote(name: string): Promise<Source>;
+  /**
+   * POST /sources (upload). Mock: crea una Source dal file (tipo dedotto da
+   * estensione/mime), ingest immediato `ready`. Con backend AWS diventerà un PUT
+   * presigned su S3 + record via API Gateway, dietro questa stessa firma.
+   */
+  createUpload(input: CreateUploadInput): Promise<Source>;
   /** PATCH /sources/:id (tags/folder/category) */
   patchSource(id: string, patch: PatchSourceInput): Promise<Source>;
   /** DELETE /sources/:id */
@@ -75,6 +81,12 @@ export interface ListProjectsFilter {
 export interface CreateProjectInput {
   title: string;
   kind: ProjectKind;
+}
+
+export interface CreateUploadInput {
+  name: string;
+  sizeBytes: number;
+  mime?: string;
 }
 
 export interface PatchProjectInput {

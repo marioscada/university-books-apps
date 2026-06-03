@@ -10,24 +10,41 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import type { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { pipe, debounceTime, tap } from 'rxjs';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
-import { PageHeaderComponent } from '../../shared/layout/page-header/page-header.component';
+import { SelectionCardComponent } from '../../shared/ui/selection-card/selection-card.component';
+import { WizardProgressComponent } from '../../shared/ui/wizard-progress/wizard-progress.component';
+import {
+  SourceUploadComponent,
+  type UploadItem,
+} from '../../shared/ui/source-upload/source-upload.component';
+import {
+  LivePreviewPanelComponent,
+  type PreviewVm,
+} from './components/live-preview-panel/live-preview-panel.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { SourcesStore } from '../../core/state/sources.store';
+import { BreakpointHelperService } from '../../shared/services/breakpoint-helper.service';
+import { LocaleService } from '../../shared/services/locale.service';
 import type {
+  CoverTheme,
   OutputFormat,
   ProcessingMode,
   ProjectKind,
@@ -35,92 +52,107 @@ import type {
   StructureConfig,
 } from '../../core/domain';
 
-/** Tipi di progetto selezionabili (Step 1) — label via i18n. */
+/** Numero di step core (Obiettivo · Fonti · Istruzioni · Genera). */
+const TOTAL_STEPS = 4;
+
 const PROJECT_KINDS: readonly ProjectKind[] = [
-  'book',
-  'summary',
-  'manual',
-  'study_guide',
-  'research_report',
-  'training_course',
-  'documentation',
-  'custom',
+  'book', 'summary', 'manual', 'study_guide',
+  'research_report', 'training_course', 'documentation', 'custom',
 ];
 
-/** Modalità di elaborazione (Step 4) — label/desc via i18n. */
-const PROCESSING_MODES: readonly ProcessingMode[] = [
-  'fast_draft',
-  'balanced',
-  'deep_research',
-  'academic',
-  'business',
-  'educational',
-  'technical',
+/** Modalità mostrate come Selection Card (le 6 del brief). */
+const MODES: readonly ProcessingMode[] = [
+  'fast_draft', 'balanced', 'deep_research', 'academic', 'business', 'technical',
 ];
 
-/** Modalità riservate ai piani a pagamento (gating soft in `free`). */
-const PRO_MODES: ReadonlySet<ProcessingMode> = new Set<ProcessingMode>([
-  'deep_research',
-  'academic',
-]);
+const PRO_MODES: ReadonlySet<ProcessingMode> = new Set<ProcessingMode>(['deep_research', 'academic']);
 
-/** Toggle booleani della struttura (Step 5) — label via i18n. */
-const STRUCTURE_TOGGLES = [
-  'bibliography',
-  'glossary',
-  'quiz',
-  'exercises',
-  'tables',
-  'images',
-] as const;
-type StructureToggle = (typeof STRUCTURE_TOGGLES)[number];
+/** Toggle "contenuti" e "layout" della struttura. */
+const CONTENT_FLAGS = ['bibliography', 'glossary', 'quiz', 'exercises', 'appendices'] as const;
+const LAYOUT_FLAGS = ['tables', 'images'] as const;
+type StructureFlag = (typeof CONTENT_FLAGS)[number] | (typeof LAYOUT_FLAGS)[number];
 
-/** Formati di output (Step 6). */
-const OUTPUT_FORMATS: readonly OutputFormat[] = [
-  'pdf',
-  'docx',
-  'epub',
-  'markdown',
-  'html',
-];
+const OUTPUT_FORMATS: readonly OutputFormat[] = ['pdf', 'docx', 'epub', 'markdown', 'html'];
+const LANGUAGES: readonly string[] = ['it', 'en', 'fr', 'de', 'es'];
 
-/** Lingue ISO disponibili (Step 6). */
-const LANGUAGES: readonly string[] = ['en', 'it', 'de'];
+/** Icona Material per ogni tipo di pubblicazione. */
+const KIND_ICON: Record<ProjectKind, string> = {
+  book: 'menu_book',
+  summary: 'short_text',
+  manual: 'build',
+  study_guide: 'school',
+  research_report: 'science',
+  training_course: 'cast_for_education',
+  documentation: 'description',
+  custom: 'tune',
+};
 
-/** Settings di partenza (mirror di `ProjectSettings`) per un nuovo wizard. */
+/** Icona Material per ogni modalità AI. */
+const MODE_ICON: Record<ProcessingMode, string> = {
+  fast_draft: 'bolt',
+  balanced: 'balance',
+  deep_research: 'travel_explore',
+  academic: 'school',
+  business: 'business_center',
+  educational: 'cast_for_education',
+  technical: 'engineering',
+};
+
+const FORMAT_ICON: Record<OutputFormat, string> = {
+  pdf: 'picture_as_pdf',
+  docx: 'description',
+  epub: 'auto_stories',
+  markdown: 'code',
+  html: 'language',
+};
+
+/** Tema cover per tipo (anteprima). */
+const KIND_COVER: Record<ProjectKind, CoverTheme> = {
+  book: 'aurora', summary: 'mint', manual: 'ocean', study_guide: 'gold',
+  research_report: 'ember', training_course: 'rose', documentation: 'ocean', custom: 'aurora',
+};
+
+/** Smart defaults per tipo (modalità, capitoli, bibliografia, formati). */
+interface KindDefaults {
+  mode: ProcessingMode;
+  chapters: number;
+  bibliography: boolean;
+  formats: OutputFormat[];
+}
+const KIND_DEFAULTS: Record<ProjectKind, KindDefaults> = {
+  book: { mode: 'balanced', chapters: 10, bibliography: true, formats: ['pdf', 'epub'] },
+  summary: { mode: 'fast_draft', chapters: 2, bibliography: false, formats: ['pdf'] },
+  manual: { mode: 'technical', chapters: 8, bibliography: true, formats: ['pdf', 'docx'] },
+  study_guide: { mode: 'balanced', chapters: 6, bibliography: false, formats: ['pdf'] },
+  research_report: { mode: 'academic', chapters: 6, bibliography: true, formats: ['pdf', 'docx'] },
+  training_course: { mode: 'balanced', chapters: 8, bibliography: false, formats: ['pdf'] },
+  documentation: { mode: 'technical', chapters: 6, bibliography: false, formats: ['pdf', 'html'] },
+  custom: { mode: 'balanced', chapters: 0, bibliography: false, formats: ['pdf'] },
+};
+
 function defaultSettings(): ProjectSettings {
   return {
     instructions: '',
     processingMode: 'balanced',
     structure: {
-      length: 'medium',
-      tone: 'neutral',
-      depth: 'standard',
-      bibliography: false,
-      glossary: false,
-      quiz: false,
-      exercises: false,
-      tables: false,
-      images: false,
+      length: 'medium', tone: 'neutral', depth: 'standard',
+      bibliography: false, glossary: false, quiz: false, exercises: false,
+      appendices: false, tables: false, images: false,
     },
     outputFormats: ['pdf'],
-    language: 'en',
+    language: 'it',
   };
 }
 
 /**
- * NewProjectWizard — wizard a 7 step (F4), **resumable come Draft**, UI **Material**.
+ * NewProjectWizard — container *smart* del redesign "Nuovo Progetto".
  *
- * Stepper = **`mat-stepper`** (Material) lineare; i controlli sono componenti
- * Material (button-toggle, selection-list, radio, slide-toggle, chip, select, list).
- *
- * Resumability = il draft È la persistenza: dopo lo Step 1 (kind+title) si crea la
- * draft via `store.create`; ogni passaggio in avanti fa autosave dei settings via
- * `store.updateSettings`/`updateDraftMeta` (PATCH). "Salva ed esci" lascia la draft
- * nella Create hub; con `?draft=:id` il wizard riapre quella draft prefillando lo stato.
- *
- * Business logic NELLO store: il componente legge signal e chiama metodi (mai il
- * mock direttamente). OnPush, signals-first, nessuna sottoscrizione RxJS.
+ * 4 step (Obiettivo · Fonti · Istruzioni · Genera) + pannello "Opzioni avanzate"
+ * (Modalità/Struttura/Output a smart-default per tipo). Layout 2 colonne con
+ * **Live Preview** reattiva (pattern Vercel). Stato in **signal locali**;
+ * persistenza/dominio via `ProjectsStore`. Componenti dumb riusabili per le parti
+ * (SelectionCard, WizardProgress, SourceUpload, LivePreviewPanel), ognuno
+ * self-responsive; il container orchestra. Resumable via `?draft=:id`.
  */
 @Component({
   selector: 'app-new-project-wizard',
@@ -128,20 +160,26 @@ function defaultSettings(): ProjectSettings {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AuthShellComponent,
-    PageHeaderComponent,
     FormsModule,
+    TextFieldModule,
     MatStepperModule,
+    MatCardModule,
+    MatTabsModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatRadioModule,
     MatSlideToggleModule,
+    MatExpansionModule,
     MatChipsModule,
-    MatButtonToggleModule,
-    MatListModule,
+    MatDividerModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
     TranslateModule,
+    SelectionCardComponent,
+    WizardProgressComponent,
+    SourceUploadComponent,
+    LivePreviewPanelComponent,
   ],
   templateUrl: './new-project.component.html',
   styleUrl: './new-project.component.scss',
@@ -150,56 +188,98 @@ export class NewProjectWizardComponent {
   private readonly store = inject(ProjectsStore);
   private readonly sourcesStore = inject(SourcesStore);
   private readonly router = inject(Router);
+  private readonly translate = inject(TranslateService);
+  private readonly locale = inject(LocaleService);
+  private readonly breakpoint = inject(BreakpointHelperService);
 
-  /** Draft da riprendere (query param `?draft=:id`, opzionale). */
+  /** Draft da riprendere (`?draft=:id`). */
   readonly draft = input<string>();
 
-  // --- Cataloghi statici (per i template) ----------------------------------
+  // --- Cataloghi (template) -------------------------------------------------
   readonly kinds = PROJECT_KINDS;
-  readonly modes = PROCESSING_MODES;
-  readonly structureToggles = STRUCTURE_TOGGLES;
-  readonly outputFormats = OUTPUT_FORMATS;
+  readonly modes = MODES;
+  readonly contentFlags = CONTENT_FLAGS;
+  readonly layoutFlags = LAYOUT_FLAGS;
+  readonly formats = OUTPUT_FORMATS;
   readonly languages = LANGUAGES;
   readonly lengths = ['short', 'medium', 'long'] as const;
-  readonly tones = ['neutral', 'formal', 'friendly', 'technical', 'academic'] as const;
   readonly depths = ['overview', 'standard', 'deep'] as const;
+  readonly kindIcon = KIND_ICON;
+  readonly modeIcon = MODE_ICON;
+  readonly formatIcon = FORMAT_ICON;
 
-  /** Fonti disponibili dalla Library (Step 2). */
-  readonly availableSources = this.sourcesStore.entities;
-
-  /** Piano corrente (gating soft) dallo store. */
-  readonly plan = this.store.plan;
-
-  // --- Stato wizard (signal-driven) ----------------------------------------
-  /** Indice dello step Material selezionato (0..6). */
+  // --- Stato wizard (signal locali) ----------------------------------------
   readonly selectedIndex = signal(0);
-  /** Id della draft creata/ripresa (la persistenza). */
   readonly projectId = signal<string | null>(null);
-
-  // Stato in-progress che mirrora ProjectSettings + i campi dello Step 1/2.
   readonly title = signal('');
   readonly kind = signal<ProjectKind>('book');
   readonly sourceIds = signal<string[]>([]);
+  readonly uploads = signal<UploadItem[]>([]);
   readonly settings = signal<ProjectSettings>(defaultSettings());
-  /** Nome della nota inline da creare (Step 2). */
-  readonly noteName = signal('');
-
-  /** Vero durante operazioni async (crea/patch/genera) → disabilita i CTA. */
+  /** Una volta che l'utente tocca "Avanzate", gli smart-default non sovrascrivono. */
+  readonly advancedDirty = signal(false);
   readonly busy = signal(false);
 
-  /** Esiste una draft persistita → "Salva ed esci" disponibile. */
+  // --- Derivati -------------------------------------------------------------
+  readonly availableSources = this.sourcesStore.entities;
+  readonly plan = this.store.plan;
+  readonly isHandset = computed(() => {
+    const s = this.breakpoint.screenType();
+    return s === 'small' || s === 'medium';
+  });
+
   readonly hasDraft = computed(() => this.projectId() !== null);
-
-  /** Step 1 completo = titolo non vuoto (gating lineare dello stepper). */
+  readonly isLastStep = computed(() => this.selectedIndex() === TOTAL_STEPS - 1);
   readonly step1Complete = computed(() => this.title().trim().length > 0);
+  readonly canAdvance = computed(() => this.selectedIndex() !== 0 || this.step1Complete());
 
-  /** Una modalità è bloccata dal piano corrente. */
-  readonly isModeLocked = (mode: ProcessingMode): boolean =>
-    this.plan() === 'free' && PRO_MODES.has(mode);
+  /** Step etichette (tradotte) per WizardProgress. */
+  readonly stepLabels = computed(() => {
+    this.locale.currentLocale();
+    return ['goal', 'sources', 'instructions', 'generate'].map((k) =>
+      this.translate.instant(`i18n.Wizard.Step.${k}.title`),
+    );
+  });
+  readonly completedSteps = computed(() =>
+    Array.from({ length: TOTAL_STEPS }, (_, i) => i < this.selectedIndex()),
+  );
+
+  /** Fonti di libreria (escludendo gli upload di sessione, mostrati a parte). */
+  readonly librarySources = computed(() => {
+    const uploadedIds = new Set(this.uploads().map((u) => u.id));
+    return this.availableSources().filter((s) => !uploadedIds.has(s.id));
+  });
+
+  /** View-model dell'anteprima live (reattivo a stato + lingua). */
+  readonly preview = computed<PreviewVm>(() => {
+    this.locale.currentLocale();
+    const s = this.settings();
+    const chapters = s.structure.chapters;
+    return {
+      title: this.title().trim(),
+      kindLabel: this.translate.instant(`i18n.Project.Kind.${this.kind()}`),
+      sourcesCount: this.sourceIds().length,
+      estChapters: chapters && chapters > 0 ? String(chapters) : this.translate.instant('i18n.Wizard.Preview.auto'),
+      modeLabel: this.translate.instant(`i18n.Wizard.Mode.${s.processingMode}.label`),
+      formats: s.outputFormats.map((f) => this.translate.instant(`i18n.Wizard.Output.Format.${f}`)),
+      languageLabel: this.translate.instant(`i18n.Common.LanguageSwitcher.Language.${s.language}`),
+      coverTheme: KIND_COVER[this.kind()],
+    };
+  });
+
+  /** Autosave in background (debounce) sui cambi di stato. */
+  private readonly persistKey = computed(() =>
+    JSON.stringify({ t: this.title(), k: this.kind(), src: this.sourceIds(), s: this.settings() }),
+  );
+  private readonly autosave = rxMethod<string>(
+    pipe(
+      debounceTime(800),
+      tap(() => void this.persist()),
+    ),
+  );
 
   constructor() {
-    // Resume: se arriva `?draft=:id`, prefilla lo stato dalla draft persistita
-    // (lo store si auto-inizializza; l'effect reagisce appena l'entità è in store).
+    // Resume da `?draft=:id`: prefilla quando l'entità è nello store.
     effect(() => {
       const draftId = this.draft();
       if (!draftId || this.projectId() === draftId) {
@@ -207,102 +287,143 @@ export class NewProjectWizardComponent {
       }
       const project = this.store.entities().find((p) => p.id === draftId);
       if (!project) {
-        return; // entità non ancora caricata: l'effect riproverà al prossimo tick.
+        return;
       }
       this.projectId.set(project.id);
       this.title.set(project.title);
       this.kind.set(project.kind);
       this.sourceIds.set([...project.sourceIds]);
       this.settings.set(structuredClone(project.settings));
-      // Riapre direttamente sul primo step di configurazione.
+      this.advancedDirty.set(true);
       this.selectedIndex.set(1);
     });
+    // Autosave reattivo (parte solo dopo che esiste una draft).
+    this.autosave(this.persistKey);
   }
 
-  // --- Navigazione mat-stepper ---------------------------------------------
-
-  /** Cambio step: autosave del passo precedente quando si va avanti. */
+  // --- Navigazione ----------------------------------------------------------
   onStepChange(event: StepperSelectionEvent): void {
     this.selectedIndex.set(event.selectedIndex);
     if (event.selectedIndex > event.previouslySelectedIndex) {
-      void this.autosave(event.previouslySelectedIndex);
+      void this.autosaveStep(event.previouslySelectedIndex);
     }
   }
 
-  // --- Step 1: kind ---------------------------------------------------------
+  goTo(index: number): void {
+    this.selectedIndex.set(Math.max(0, Math.min(TOTAL_STEPS - 1, index)));
+  }
 
+  async next(): Promise<void> {
+    if (this.busy() || !this.canAdvance() || this.isLastStep()) {
+      return;
+    }
+    await this.autosaveStep(this.selectedIndex());
+    this.selectedIndex.update((i) => Math.min(TOTAL_STEPS - 1, i + 1));
+  }
+
+  back(): void {
+    this.selectedIndex.update((i) => Math.max(0, i - 1));
+  }
+
+  // --- Step 1: kind + title -------------------------------------------------
   selectKind(kind: ProjectKind): void {
     this.kind.set(kind);
+    if (!this.advancedDirty()) {
+      this.applyDefaults(kind);
+    }
+  }
+
+  private applyDefaults(kind: ProjectKind): void {
+    const d = KIND_DEFAULTS[kind];
+    this.settings.update((s) => ({
+      ...s,
+      processingMode: d.mode,
+      outputFormats: [...d.formats],
+      structure: { ...s.structure, chapters: d.chapters > 0 ? d.chapters : undefined, bibliography: d.bibliography },
+    }));
   }
 
   // --- Step 2: sources ------------------------------------------------------
-
-  /** Crea una nota inline e la seleziona subito. */
-  async onAddNote(): Promise<void> {
-    const name = this.noteName().trim();
-    if (!name || this.busy()) {
-      return;
-    }
-    this.busy.set(true);
-    try {
-      const note = await this.sourcesStore.createNote(name);
-      this.sourceIds.update((ids) => [...ids, note.id]);
-      this.noteName.set('');
-    } finally {
-      this.busy.set(false);
+  isSourceSelected(id: string): boolean {
+    return this.sourceIds().includes(id);
+  }
+  toggleSource(id: string): void {
+    this.sourceIds.update((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
+  }
+  async onFilesAdded(files: File[]): Promise<void> {
+    for (const file of files) {
+      const source = await this.sourcesStore.createUpload({ name: file.name, sizeBytes: file.size, mime: file.type });
+      this.uploads.update((u) => [...u, { id: source.id, name: source.name, type: source.type, sizeBytes: source.sizeBytes }]);
+      this.sourceIds.update((ids) => [...ids, source.id]);
     }
   }
+  onUploadRemoved(id: string): void {
+    this.uploads.update((u) => u.filter((x) => x.id !== id));
+    this.sourceIds.update((ids) => ids.filter((x) => x !== id));
+  }
 
-  // --- Step 3: instructions -------------------------------------------------
-
+  // --- Step 3: instructions + advanced --------------------------------------
   setInstructions(value: string): void {
     this.settings.update((s) => ({ ...s, instructions: value }));
   }
+  applyPrompt(text: string): void {
+    this.settings.update((s) => ({ ...s, instructions: s.instructions ? `${s.instructions}\n${text}` : text }));
+  }
+  readonly suggestedPrompts = computed(() => {
+    this.locale.currentLocale();
+    return ['examples', 'glossary', 'simple', 'exercises'].map((k) => ({
+      key: k,
+      text: this.translate.instant(`i18n.Wizard.Prompt.${k}`),
+    }));
+  });
 
-  // --- Step 4: processing mode ---------------------------------------------
-
+  onAdvancedToggle(): void {
+    this.advancedDirty.set(true);
+  }
   selectMode(mode: ProcessingMode): void {
-    if (this.isModeLocked(mode)) {
+    if (this.plan() === 'free' && PRO_MODES.has(mode)) {
       return;
     }
+    this.advancedDirty.set(true);
     this.settings.update((s) => ({ ...s, processingMode: mode }));
   }
-
-  // --- Step 5: structure ----------------------------------------------------
-
+  isModeLocked(mode: ProcessingMode): boolean {
+    return this.plan() === 'free' && PRO_MODES.has(mode);
+  }
   patchStructure(patch: Partial<StructureConfig>): void {
+    this.advancedDirty.set(true);
     this.settings.update((s) => ({ ...s, structure: { ...s.structure, ...patch } }));
   }
-
-  toggleStructureFlag(flag: StructureToggle, value: boolean): void {
-    this.patchStructure({ [flag]: value });
+  toggleFlag(flag: StructureFlag, value: boolean): void {
+    this.patchStructure({ [flag]: value } as Partial<StructureConfig>);
   }
-
-  isStructureFlag(flag: StructureToggle): boolean {
+  isFlag(flag: StructureFlag): boolean {
     return this.settings().structure[flag];
   }
-
-  /** Numero capitoli dall'input (null/0 = auto). */
   setChapters(value: number | null): void {
     const n = value ?? 0;
     this.patchStructure({ chapters: Number.isFinite(n) && n > 0 ? n : undefined });
   }
-
-  // --- Step 6: output & language -------------------------------------------
-
-  setFormats(formats: OutputFormat[]): void {
-    this.settings.update((s) => ({ ...s, outputFormats: [...formats] }));
+  toggleFormat(format: OutputFormat): void {
+    this.advancedDirty.set(true);
+    this.settings.update((s) => ({
+      ...s,
+      outputFormats: s.outputFormats.includes(format)
+        ? s.outputFormats.filter((f) => f !== format)
+        : [...s.outputFormats, format],
+    }));
   }
-
+  isFormat(format: OutputFormat): boolean {
+    return this.settings().outputFormats.includes(format);
+  }
   setLanguage(language: string): void {
+    this.advancedDirty.set(true);
     this.settings.update((s) => ({ ...s, language }));
   }
 
-  // --- Step 7: finish -------------------------------------------------------
-
-  /** Genera ora: persiste i settings, lancia la generazione → Workspace. */
+  // --- Step 4: finish -------------------------------------------------------
   async onGenerate(): Promise<void> {
-    const id = this.projectId();
+    const id = await this.ensureDraft();
     if (!id || this.busy()) {
       return;
     }
@@ -316,9 +437,8 @@ export class NewProjectWizardComponent {
     }
   }
 
-  /** Salva come bozza: persiste i settings e va al Workspace della draft. */
   async onSaveDraft(): Promise<void> {
-    const id = this.projectId();
+    const id = await this.ensureDraft();
     if (!id || this.busy()) {
       return;
     }
@@ -331,26 +451,8 @@ export class NewProjectWizardComponent {
     }
   }
 
-  /** Salva ed esci: autosave e ritorno alla Create hub (draft visibile lì). */
-  async onSaveExit(): Promise<void> {
-    if (this.busy()) {
-      return;
-    }
-    this.busy.set(true);
-    try {
-      if (this.hasDraft()) {
-        await this.persist();
-      }
-      await this.router.navigate(['/create']);
-    } finally {
-      this.busy.set(false);
-    }
-  }
-
   // --- Persistenza ----------------------------------------------------------
-
-  /** Autosave del passo: crea la draft uscendo dallo Step 1, poi PATCH. */
-  private async autosave(previousIndex: number): Promise<void> {
+  private async autosaveStep(previousIndex: number): Promise<void> {
     if (previousIndex === 0) {
       await this.ensureDraft();
     } else {
@@ -358,31 +460,27 @@ export class NewProjectWizardComponent {
     }
   }
 
-  /** Crea la draft (una sola volta) con title+kind dello Step 1. */
-  private async ensureDraft(): Promise<void> {
-    if (this.projectId()) {
-      await this.persist();
-      return;
+  private async ensureDraft(): Promise<string | null> {
+    const existing = this.projectId();
+    if (existing) {
+      return existing;
     }
     const title = this.title().trim();
     if (!title) {
-      return;
+      return null;
     }
     const project = await this.store.create(title, this.kind());
     this.projectId.set(project.id);
     await this.persist();
+    return project.id;
   }
 
-  /** PATCH di settings + metadati (titolo, fonti) della draft corrente. */
   private async persist(): Promise<void> {
     const id = this.projectId();
     if (!id) {
       return;
     }
     await this.store.updateSettings(id, this.settings());
-    await this.store.updateDraftMeta(id, {
-      title: this.title().trim(),
-      sourceIds: this.sourceIds(),
-    });
+    await this.store.updateDraftMeta(id, { title: this.title().trim(), sourceIds: this.sourceIds() });
   }
 }

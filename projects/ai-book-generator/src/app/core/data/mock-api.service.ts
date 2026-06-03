@@ -13,6 +13,7 @@ import type {
   ApiPort,
   ListProjectsFilter,
   CreateProjectInput,
+  CreateUploadInput,
   PatchProjectInput,
   ListSourcesFilter,
   PatchSourceInput,
@@ -25,6 +26,18 @@ const NETWORK_DELAY_MS = 120;
 const JOB_TICK_MS = 1000;
 /** Incremento di progress per tick. */
 const JOB_PROGRESS_STEP = 4;
+
+/** Deduce il `SourceType` dall'estensione del nome file (o dal mime). */
+function inferSourceType(name: string, mime?: string): Source['type'] {
+  const ext = name.split('.').pop()?.toLowerCase() ?? '';
+  if (ext === 'pdf' || mime === 'application/pdf') return 'pdf';
+  if (ext === 'doc' || ext === 'docx') return 'docx';
+  if (ext === 'ppt' || ext === 'pptx') return 'pptx';
+  if (ext === 'csv') return 'csv';
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(ext) || mime?.startsWith('image/')) return 'image';
+  if (['mp3', 'wav', 'm4a', 'aac', 'ogg'].includes(ext) || mime?.startsWith('audio/')) return 'audio';
+  return 'note';
+}
 
 /** Pipeline standard di un job `generate` (label come chiavi i18n). */
 const GENERATE_STEPS: readonly Omit<JobStep, 'status'>[] = [
@@ -114,6 +127,7 @@ export class MockApiService implements ApiPort {
           glossary: false,
           quiz: false,
           exercises: false,
+          appendices: false,
           tables: false,
           images: false,
         },
@@ -305,6 +319,28 @@ export class MockApiService implements ApiPort {
     };
     this.sources.set(note.id, note);
     return structuredClone(note);
+  }
+
+  async createUpload(input: CreateUploadInput): Promise<Source> {
+    await this.delay();
+    const now = new Date().toISOString();
+    const source: Source = {
+      id: this.newId('src'),
+      workspaceId: 'ws-personal',
+      ownerId: 'user-1',
+      name: input.name,
+      type: inferSourceType(input.name, input.mime),
+      mime: input.mime,
+      sizeBytes: input.sizeBytes,
+      uploadedAt: now,
+      ingestStatus: 'ready',
+      lastAnalyzedAt: now,
+      tags: [],
+      usedInProjectIds: [],
+      permission: 'owner',
+    };
+    this.sources.set(source.id, source);
+    return structuredClone(source);
   }
 
   async patchSource(id: string, patch: PatchSourceInput): Promise<Source> {

@@ -40,6 +40,7 @@ export interface StructureConfig {
   glossary: boolean;
   quiz: boolean;
   exercises: boolean;
+  appendices: boolean;
   tables: boolean;
   images: boolean;
 }

@@ -1,102 +1,208 @@
-// New Project Wizard — SOLO layout glue. I componenti Material (mat-stepper,
-// mat-button-toggle, mat-selection-list, mat-radio, mat-list, mat-chip, mat-button)
-// ereditano lo stile dal tema globale M3 (mat.theme() in styles.scss). Niente
-// stile bespoke qui.
+// New Project Wizard (container) — SOLO layout. I componenti (mat-card, stepper,
+// selection-card, ecc.) ereditano lo stile dal tema globale M3.
 :host {
   display: block;
 }
 
-.wizard-stepper {
-  background: transparent;
+.np-page {
+  padding-block: clamp(20px, 3vw, 36px);
 }
 
-.wizard-subtitle {
-  margin: 0 0 8px;
-  color: var(--mat-sys-on-surface-variant);
+// Header pagina compatto
+.np-head {
+  margin-bottom: 20px;
+}
+.np-head__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--mat-sys-on-surface, #0d1117);
+}
+.np-head__sub {
+  margin: 6px 0 0;
+  color: var(--mat-sys-on-surface-variant, #5b6068);
 }
 
-.wizard-hint {
-  margin: 8px 0 0;
-  color: var(--mat-sys-on-surface-variant);
+// Layout 2 colonne (config + preview sticky)
+.np-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: clamp(20px, 2.5vw, 32px);
+  align-items: start;
+}
+.np-grid.is-stacked {
+  grid-template-columns: 1fr;
 }
 
-.wizard-hint--upgrade {
+.np-config {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--accent-500);
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
 }
 
-// Selettore kind: lascia andare a capo i toggle Material.
-.wizard-kinds {
-  flex-wrap: wrap;
-  margin-bottom: 16px;
+.np-card.mat-mdc-card {
+  padding: clamp(20px, 2.5vw, 32px);
+  border-radius: var(--card-radius, 16px);
+  border: 1px solid var(--card-border-color, #eceff3);
+  box-shadow: var(--card-shadow);
 }
 
-.wizard-field {
-  width: 100%;
-  max-width: 640px;
-}
-
-.wizard-field--inline {
-  flex: 1 1 160px;
-}
-
-.wizard-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.wizard-note {
+// Intestazione step (icona + titolo + desc)
+.np-step-head {
   display: flex;
   align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.np-step-head__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--accent-100, #dcf7ff);
+  color: var(--accent-700, #0289b2);
+}
+.np-step-head__title {
+  margin: 0;
+  font-size: var(--site-title-medium, 1.125rem);
+  font-weight: 700;
+}
+.np-step-head__desc {
+  margin: 2px 0 0;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+// Griglie di Selection Card
+.np-cards {
+  display: grid;
+  gap: 12px;
+}
+.np-cards--4 {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+.np-cards--3 {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+.np-cards--2 {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.np-field {
+  width: 100%;
+  margin-top: 16px;
+}
+.np-field--inline {
+  flex: 1 1 140px;
+  margin-top: 0;
+}
+.np-row {
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
-.wizard-sources {
-  max-width: 640px;
+.np-tabs {
+  margin-top: 4px;
 }
 
-// Step 4 — modalità (mat-radio-group in colonna; label + desc impilati).
-.wizard-modes {
+.np-subtitle {
+  margin: 20px 0 10px;
+  font-size: var(--site-body-medium, 1rem);
+  font-weight: 700;
+}
+
+// Prompt suggeriti (riga scrollabile)
+.np-prompts__row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.np-prompt {
+  flex: 0 0 240px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--card-border-color, #eceff3);
+  border-radius: 12px;
+  background: var(--card-bg, #fff);
+}
+.np-prompt__text {
+  margin: 0;
+  font-size: var(--site-body-small, 0.875rem);
+}
+.np-prompt button {
+  align-self: flex-start;
 }
 
-.wizard-mode__label {
+// Opzioni avanzate
+.np-advanced {
+  margin-top: 20px;
+}
+.np-divider {
+  margin: 20px 0;
+}
+.np-toggles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+// Riepilogo (Step 4)
+.np-summary {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+.np-summary__row {
+  display: grid;
+  grid-template-columns: 160px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--card-border-color, #eceff3);
+}
+.np-summary__row dt {
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+.np-summary__row dd {
+  margin: 0;
   font-weight: 600;
 }
 
-.wizard-mode__badge {
-  margin-left: 8px;
-  color: var(--accent-500);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.7rem;
-  letter-spacing: 0.04em;
-}
-
-.wizard-mode__desc {
-  display: block;
-  color: var(--mat-sys-on-surface-variant);
-  font-size: var(--site-body-small);
-}
-
-.wizard-toggles {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
-}
-
-.wizard-recap__chip {
-  margin-right: 6px;
-}
-
-.wizard-actions {
+// Footer sticky
+.np-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 12px;
-  margin-top: 24px;
+  padding: 14px clamp(16px, 2vw, 20px);
+  background: color-mix(in srgb, var(--card-bg, #fff) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--card-border-color, #eceff3);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+}
+.np-footer__spacer {
+  flex: 1 1 auto;
+}
+
+// Colonna preview sticky
+.np-preview {
+  position: sticky;
+  top: calc(var(--header-height, 88px) + 16px);
+}
+.np-preview.is-top {
+  position: static;
 }

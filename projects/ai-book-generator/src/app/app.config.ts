@@ -12,6 +12,7 @@ import { ApplicationConfig, provideZoneChangeDetection, provideAppInitializer, i
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { MatIconRegistry } from '@angular/material/icon';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { firstValueFrom } from 'rxjs';
@@ -75,6 +76,14 @@ export const appConfig: ApplicationConfig = {
     // Data layer (mock v1): l'ApiPort è mappato al MockApiService. Quando arriva
     // il backend reale basta cambiare questa riga, senza toccare store/UI.
     { provide: API_PORT, useExisting: MockApiService },
+
+    // Icone: il progetto carica SOLO "Material Symbols Outlined" (index.html).
+    // Impostiamo il fontSet di default così anche le icone interne dei componenti
+    // Material (es. mat-stepper edit/done) usano Symbols e non renderizzano la
+    // ligature come testo ("create"→"cr"). Vedi i18n/mariosite.
+    provideAppInitializer(() => {
+      inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
+    }),
 
     // i18n (ngx-translate) — pattern mariosite/customer-portal, default EN.
     // I file flat dot-path vivono in /public/i18n/<lang>.json.

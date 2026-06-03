@@ -4,6 +4,7 @@ import { withEntities, setAllEntities, addEntity } from '@ngrx/signals/entities'
 
 import type { Source } from '../domain';
 import { API_PORT } from '../data/api-port';
+import type { CreateUploadInput } from '../data/api-port';
 
 /**
  * SourcesStore — SignalStore (NgRx) per le fonti (Library).
@@ -30,6 +31,13 @@ export const SourcesStore = signalStore(
         const note = await api.createNote(name);
         patchState(store, addEntity(note));
         return note;
+      },
+
+      /** Crea una fonte da upload (mock) e la aggiunge allo store. */
+      async createUpload(input: CreateUploadInput): Promise<Source> {
+        const source = await api.createUpload(input);
+        patchState(store, addEntity(source));
+        return source;
       },
     };
   }),

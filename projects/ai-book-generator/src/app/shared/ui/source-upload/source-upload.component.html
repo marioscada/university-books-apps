@@ -1,0 +1,36 @@
+<div
+  class="dropzone"
+  [class.is-dragging]="isDragging()"
+  role="button"
+  tabindex="0"
+  [attr.aria-label]="'i18n.Upload.dropzone' | translate"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  (click)="fileInput.click()"
+  (keydown.enter)="fileInput.click()"
+  (keydown.space)="$event.preventDefault(); fileInput.click()">
+  <mat-icon class="dropzone__icon" fontSet="material-symbols-outlined" aria-hidden="true">cloud_upload</mat-icon>
+  <p class="dropzone__title">{{ 'i18n.Upload.title' | translate }}</p>
+  <p class="dropzone__hint">{{ 'i18n.Upload.supported' | translate }}</p>
+  <input #fileInput type="file" multiple hidden (change)="onFileInput($event)" />
+</div>
+
+@if (items().length) {
+  <ul class="files">
+    @for (item of items(); track item.id) {
+      <li class="files__row">
+        <mat-icon class="files__type" fontSet="material-symbols-outlined" aria-hidden="true">{{ iconFor(item.type) }}</mat-icon>
+        <span class="files__name">{{ item.name }}</span>
+        <span class="files__size">{{ formatSize(item.sizeBytes) }}</span>
+        <button
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="'i18n.Upload.remove' | translate"
+          (click)="removed.emit(item.id)">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+        </button>
+      </li>
+    }
+  </ul>
+}

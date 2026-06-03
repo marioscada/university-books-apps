@@ -28,6 +28,7 @@ function seedSettings(language = 'en'): ProjectSettings {
       glossary: false,
       quiz: false,
       exercises: false,
+      appendices: false,
       tables: false,
       images: false,
     },
