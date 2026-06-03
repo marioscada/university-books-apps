@@ -76,7 +76,14 @@ Ogni blocco ha: **Obiettivo** · **File da creare/modificare** · **Contratto/fi
 
 ---
 
-## 3. BLOCCO CORRENTE — **F1: Domain model + Mock API + SignalStores**
+## 3. BLOCCO **F1 — Domain model + Mock API + SignalStores** ✅ COMPLETATO
+
+> Esito (commit `dff5c5f`): dominio, `ApiPort`+mock, `ProjectsStore`/`SourcesStore`,
+> Create cablata. In sede di check sono stati applicati: **self-init** via
+> `withHooks.onInit`; polling **reattivo `rxMethod`** (niente `setTimeout` nel codice
+> di produzione); `RUNTIME_CONFIG` **InjectionToken** per `pollIntervalMs` (no magic
+> number); cleanup mock via `DestroyRef`. Tutte le verifiche verdi. Vedi
+> `ngrx-signalstore-references` (memoria) per le regole consolidate.
 
 > Obiettivo: fondazione **senza UI nuova**. Definire i tipi del dominio, il mock
 > API conforme al contratto, e gli store SignalStore (Projects, Sources). Cablare
@@ -142,19 +149,94 @@ npx ng build ai-book-generator --configuration development
 
 ---
 
-## 4. Prossimi blocchi (anteprima — verranno dettagliati dopo il check di F1)
-- **F2** Routing + `Project Workspace` shell dinamico per stato (mock).
-- **F3** Create hub "live" completa (needs-attention, transizioni).
-- **F4** New Project Wizard (7 step, resumable).
-- **F5** Workspace per stato (live/review/published).
-- **F6** Project AI Chat + operazioni tipizzate.
-- **F7** Library (metadati, ingest, relazioni).
-- **F8** Versioning (compare/restore/derive).
-- **F9** Collection allineata + quote + notifiche.
+## 4. BLOCCO CORRENTE — **F2: Routing + Project Workspace shell**
+
+> Obiettivo: da `/create`, click su una card → `/project/:id`, pagina **Workspace**
+> il cui layout cambia in base allo `status` live (dal `ProjectsStore`, mock). È la
+> **shell per-stato** + il cablaggio della **state machine** (`PRODUCT-ARCHITECTURE.md §2`).
+> I contenuti ricchi (outline/capitoli/preview/log/versioni) sono F5/F8.
+> NB: il "Create hub live" (card dallo store, progress che avanza) — elencato come F3
+> nel doc — è **già stato assorbito in F1**; F2 aggiunge navigazione + Workspace.
+
+### 4.1 Routing
+- `app.config.ts`: `provideRouter(routes, withComponentInputBinding())` — oggi è solo `provideRouter(routes)`; serve per bindare il param `:id` su `input()`.
+- `app.routes.ts`: due route lazy (stesso pattern + commento authGuard TEMP delle altre):
+  - `project/:id` → `ProjectWorkspaceComponent`
+  - `create/new` → `NewProjectComponent`
+
+### 4.2 File da creare
+```
+pages/project/
+  project-workspace.component.ts|html|scss   // shell dinamica per stato
+pages/project-new/
+  new-project.component.ts|html|scss          // stub funzionale (vero wizard = F4)
+```
+
+### 4.3 `ProjectWorkspaceComponent`
+- Standalone, OnPush, signals. `id = input.required<string>()` (route binding).
+- Inietta `ProjectsStore` (si auto-inizializza via `withHooks` → deep-link ok):
+  - `project = computed(() => store.entities().find(p => p.id === this.id()))`
+  - `job = computed(() => store.jobsByProject()[this.id()])`
+  - non trovato dopo il load → empty state globale (`.empty`, `i18n.Workspace.notFound`).
+- `<app-page-header>` (titolo = `project().title`, eyebrow = label stato i18n).
+- **Layout per stato** con `@switch (project().status)`, riusando bande/card/`status--*`/`accent-progress` globali:
+
+| Stato | Shell | Azione → metodo store |
+|---|---|---|
+| `draft` | pannello bozza | **Generate** → `store.generate(id)` |
+| `queued`/`processing` | **live**: `accent-progress` (`job.progress`), step corrente (i18n), ETA | **Cancel** → `store.cancel(id)` |
+| `review` | sezioni placeholder (outline/capitoli/preview/export come card) | **Publish** → `store.publish(id)` |
+| `failed` | errore + log placeholder | **Retry** → `store.generate(id)` |
+| `published` | info versione placeholder | **Archive** → `store.archive(id)` |
+| `archived` | pannello archiviato | **Reopen** → `store.reopen(id)` |
+
+- **Nessun polling nel componente**: legge solo signal; lo store già polla via `rxMethod`. A 100% lo store passa `processing → review` e il layout cambia da solo.
+- **Azioni avanzate** (Regenerate, New version, Derive, Compare): bottoni **presenti ma disabilitati** con tooltip i18n "in arrivo". Non inventano comportamenti.
+
+### 4.4 `NewProjectComponent` (stub funzionale)
+- Campo titolo + select `kind` + **Create** → `store.create(title, kind)` → `router.navigate(['/project', nuovoId])` (apre la draft). Niente 7 step (F4), ma il loop è camminabile end-to-end col mock.
+
+### 4.5 Navigazione Create (`create.component.html`)
+- Card progetto → `[routerLink]="['/project', work.id]"`.
+- Add-card → `routerLink="/create/new"`.
+
+### 4.6 i18n (en/it/de, alfabetico, una lingua per file)
+- `i18n.Workspace.*`: titoli per stato + label azioni + `notFound` + label "in arrivo".
+- `i18n.Job.Step.{analyze,outline,chapters,render,extract}` — ora visibili nel live panel (in F1 differite): aggiungerle.
+- `i18n.NewProject.{title,titleField,kind,create}`.
+
+### 4.7 Criteri di accettazione
+1. Da `/create`, click su card → `/project/:id` con layout coerente allo stato.
+2. Il seed `processing` mostra progress che **avanza** e a 100% il Workspace **auto-passa a `review`** senza reload.
+3. Ciclo via store: draft→Generate→processing→review→Publish→published; Cancel→draft; failed→Retry.
+4. Deep-link diretto `/project/:id` funziona (self-init store).
+5. `/create/new` crea una draft e naviga al suo Workspace.
+6. Stili **solo globali**; i18n per ogni testo; **tsc + check:subscriptions + lint + ng build verdi**.
+
+### 4.8 Cosa NON fare in F2
+- Niente wizard a step (F4), niente outline/capitoli/preview/export reali (F5), niente chat (F6), library (F7), versioning UI (F8).
+- Non toccare `theme/`. Nessuna nuova dipendenza. authGuard resta staccato (TEMP dev) come il resto.
+
+### 4.9 Comandi di verifica
+```
+npx tsc -p projects/ai-book-generator/tsconfig.app.json --noEmit
+npm run check
+npx ng build ai-book-generator --configuration development
+```
 
 ---
 
-## 5. Riferimenti ufficiali consultati
+## 5. Prossimi blocchi (anteprima)
+- **F4** New Project Wizard (7 step, resumable, gating piani) → sostituisce lo stub `/create/new`.
+- **F5** Workspace dettagli per stato (live step/log/ETA, review outline/capitoli/preview/export, published versioni).
+- **F6** Project AI Chat + operazioni tipizzate (rigenerazione parziale).
+- **F7** Library (metadati, ingest, relazione many-to-many, stato uso).
+- **F8** Versioning UX (compare/restore/derive summary/slides/quiz).
+- **F9** Collection allineata + quote/gating + notifiche.
+
+---
+
+## 6. Riferimenti ufficiali consultati
 - Angular coding style guide — https://angular.dev/style-guide
 - Angular signals (state) — https://angular.dev/guide/signals
 - NgRx SignalStore — https://ngrx.io/guide/signals/signal-store
