@@ -82,73 +82,103 @@ Modalità AI · Output (formati) · Lingua · **cover del libro** generata col t
 configuri il progetto". In fondo nota: *"I suggerimenti e i valori stimati si basano
 sulle tue scelte e potranno variare."*
 
-### Step 1 — Obiettivo
-- Titolo card: **"Che cosa vuoi creare?"** + *"Scegli il tipo di pubblicazione che
-  l'AI dovrà generare."* (icona `track_changes`).
-- **Selection Cards** in griglia (4 col desktop / 2 mobile), una per `ProjectKind`:
-  Libro · Riassunto · Manuale · Guida allo studio · Relazione di ricerca · Corso di
-  formazione · Documentazione · Personalizzato. Ogni card: **icona + titolo +
-  descrizione breve**; stato selezionato = ring accento + check.
-- Campo **"Titolo del progetto *"** (`mat-form-field` outline) + hint *"Potrai
-  modificarlo successivamente."*
+### Step 1 — Obiettivo (immagine 1)
+- **Intestazione card**: pastiglia-icona `track_changes` (bg azzurro) +
+  **"Che cosa vuoi creare?"** + *"Scegli il tipo di pubblicazione che l'AI dovrà
+  generare."*
+- **Griglia Selection Card 4×2** (un `ProjectKind` ciascuna): icona + titolo +
+  descrizione:
+  | Tipo | Icona | Descrizione |
+  |---|---|---|
+  | **Libro** | `menu_book` | "Crea un libro strutturato a capitoli." |
+  | **Riassunto** | `short_text` | "Sintetizza e organizza contenuti complessi." |
+  | **Manuale** | `build` | "Genera manuali tecnici e pratici." |
+  | **Guida allo studio** | `school` | "Crea guide di studio ed educational." |
+  | **Relazione di ricerca** | `science` | "Redigi report accademici e ricerche dettagliate." |
+  | **Corso di formazione** | `cast_for_education` | "Crea corsi e materiali didattici completi." |
+  | **Documentazione** | `description` | "Genera documentazione professionale." |
+  | **Personalizzato** | `tune` | "Configurazione libera secondo le tue esigenze." |
+  - Selezionata (es. Libro) = **ring accento + spunta** in alto a destra.
+- **Campo "Titolo del progetto *"** (outline), placeholder *"Inserisci un titolo per
+  il progetto"*, hint *"Potrai modificarlo successivamente."*
 - Alla scelta del tipo → **smart defaults** (modalità, capitoli, bibliografia,
-  formati) precompilati, finché l'utente non tocca "Opzioni avanzate".
+  formati) precompilati finché non si toccano le Avanzate.
+- **Anteprima (step 1)**: Tipo = **Libro** · Titolo = **Non impostato** · Fonti =
+  **0 file selezionati** · Capitoli stimati = **8–12 capitoli** · Modalità AI =
+  **Balanced** · Output = **PDF** · Lingua = **Italiano** + cover *"AI BOOK / Titolo
+  del tuo progetto"*.
 
-### Step 2 — Fonti
-- Titolo: **"Da quali materiali vuoi partire?"** + *"Carica nuovi contenuti oppure
-  seleziona materiali già presenti nella tua libreria."* (icona `folder_open`).
-- **Tab**: `Carica nuovi file` | `Libreria`.
-  - **Carica nuovi file**: dropzone drag&drop *"Trascina i file qui oppure clicca
-    per sfogliare"* + hint *"PDF, DOCX, PPTX, immagini, audio, CSV — max 200MB per
-    file"* + bottone **"Seleziona file"**. Sotto, **"File caricati (n)"**: lista con
-    icona-tipo, nome, `tipo · dimensione`, **chip stato "Pronto"** (verde), azioni
-    anteprima (occhio) e elimina. Bottone **"+ Aggiungi URL"**.
-  - **Libreria**: ricerca + materiali esistenti come **card con selezione multipla**
-    (checkbox visivo sulla card).
-- Empty state curato quando non c'è nulla.
-- Il contatore fonti alimenta il Live Preview (es. *"3 file caricati · 36,3 MB"*).
+### Step 2 — Fonti (immagine 2)
+- Intestazione: icona `folder_open` + **"Da quali materiali vuoi partire?"** +
+  *"Carica nuovi contenuti oppure seleziona materiali già presenti nella tua
+  libreria."*
+- **Tab** `Carica nuovi file` | `Libreria`.
+  - **Carica nuovi file**: dropzone con icona cloud, *"Trascina i file qui oppure
+    clicca per sfogliare"* + hint *"PDF, DOCX, PPTX, immagini, audio, CSV — max 200MB
+    per file"* + bottone **"Seleziona file"** (con chevron).
+  - **"File caricati (3)"**: righe con **icona-tipo** (PDF rosso · DOCX blu · PPTX
+    arancione), **nome file**, sottotitolo `TIPO · dimensione` (es. "PDF · 12.4 MB"),
+    **chip verde "Pronto"**, azioni **anteprima (occhio)** + **elimina (cestino)**.
+    Sotto: riepilogo *"3 file · 36.3 MB total"* + bottone **"+ Aggiungi URL"**.
+  - **Libreria**: card a **selezione multipla** (checkbox visivo) delle fonti
+    esistenti; empty state curato.
+- **Anteprima (step 2)**: Fonti = **3 file caricati · 36.3 MB totali**.
 
-### Step 3 — Istruzioni
-- Titolo: **"Cosa deve fare l'AI?"** + *"Scrivi le istruzioni e il contesto che
-  guideranno la generazione dei contenuti."* (icona `edit_note`).
-- **Textarea** estesa (auto-resize), placeholder *"Descrivi cosa deve generare l'AI,
-  il tono, il pubblico di riferimento, gli obiettivi e gli aspetti che ritieni più
-  importanti."* + contatore **"n / 4000 caratteri"** + bottone **"Suggerimenti AI"**
-  (split-button).
+### Step 3 — Istruzioni (immagine 3)
+- Intestazione: icona `edit_note` + **"Cosa deve fare l'AI?"** + *"Scrivi le
+  istruzioni e il contesto che guideranno la generazione dei contenuti."*
+- **Textarea "Istruzioni per l'AI *"** auto-resize, placeholder *"Descrivi cosa deve
+  generare l'AI, il tono, il pubblico di riferimento, gli obiettivi e gli aspetti che
+  ritieni più importanti."* + contatore **"n / 4000 caratteri"** + split-button
+  **"Suggerimenti AI"**.
 - **"Prompt suggeriti"** (*"Seleziona un prompt per iniziare più velocemente."*):
-  riga scrollabile di card con testo + bottone **"+ Usa"** (riempie/appende la
-  textarea). Suggerimenti contestuali al tipo scelto.
-- **"Opzioni avanzate"** (`mat-expansion-panel`, collassato): contiene
-  **Modalità AI** (selection cards), **Struttura** (capitoli, lunghezza, profondità
-  + toggle Bibliografia/Glossario/Quiz/Esercizi/Appendici/Tabelle/Immagini) e
-  **Output** (formati come selection cards multi + lingua). Default professionali
-  per tipo; modalità `Deep Research`/`Academic` con badge **"Pro"** e disabilitate
-  in piano `free`.
+  riga scrollabile (freccia) di card, ognuna con testo + bottone **"+ Usa"**. Es.:
+  "Genera un libro completo con struttura a capitoli, linguaggio chiaro e approccio
+  professionale." · "Crea un manuale tecnico dettagliato con esempi pratici e casi
+  d'uso reali." · "Scrivi un testo accademico rigoroso con citazioni, bibliografia e
+  fonti." · "Produci una guida pratica step-by-step con checklist e best practices."
+- **"Opzioni aggiuntive"** — nel mock sono **3 feature-card toggle**:
+  1. ℹ️ **"Includi riferimenti e citazioni"** — *"Aggiungi fonti e citazioni nel
+     testo"* — toggle **ON**.
+  2. 🌐 **"Mantieni la lingua originale delle fonti"** — *"Consigliato per testi
+     accademici"* — toggle **OFF**.
+  3. 🎯 **"Rispondi a un pubblico specifico"** — *"Imposta il livello e il target del
+     contenuto"* — chevron **›** (espande).
+- *Implementazione attuale*: un **`mat-expansion-panel` "Opzioni avanzate"** con
+  **Modalità AI** (selection cards), **Struttura** (capitoli/lunghezza/profondità +
+  toggle Bibliografia/Glossario/Quiz/Esercizi/Appendici/Tabelle/Immagini) e
+  **Output** (formati selection-card multi + lingua); `Deep Research`/`Academic` con
+  badge **"Pro"**, disabilitati in `free`. → **da riconciliare**: tenere i 3 quick
+  toggle del mock e/o l'expansion completa.
+- **Anteprima (step 3)**: Titolo = (es.) **"L'intelligenza artificiale spiegata
+  semplice"** · Istruzioni = **definite** · cover col titolo aggiornato.
 
-### Step 4 — Genera (Riepilogo)
-- Titolo: **"Riepilogo del progetto"** + *"Tutto è pronto! Controlla i dettagli qui
-  sotto. Puoi modificare qualsiasi sezione prima di generare."* (icona
-  `rocket_launch`) + bottone **"Modifica"** globale.
-- **Griglia di 6 card riepilogo**, ognuna con icona + campi e link "Modifica" →
-  step relativo:
-  1. **Obiettivo**: Tipo di progetto · Titolo.
-  2. **Fonti**: Totale file (n + dimensione) · Tipologia (chip PDF/DOCX/PPTX + URL).
-  3. **Istruzioni**: Lunghezza istruzioni (caratteri) · Prompt suggeriti (n) ·
-     "Visualizza istruzioni".
-  4. **Modalità AI**: Modalità selezionata (chip "Balanced") + descrizione.
-  5. **Struttura**: Capitoli stimati (es. "8–12") · Include (icone dei contenuti
-     attivi + "+n").
-  6. **Output**: Formato (PDF) · Lingua (Italiano).
-- **Barra "Stima generazione"**: *"In base alla modalità selezionata e alla quantità
-  di fonti."* + **Tempo stimato** (~6–8 min) + **Costo stimato** (es. 12 crediti).
-- **"Opzioni avanzate"** (collassabile) — impostazioni aggiuntive di generazione.
-- Live Preview: badge **"Pronto per la generazione"** + cover + riepilogo + box
-  verde **"Qualità garantita"** (*"I contenuti saranno generati con la massima
-  qualità possibile in base alle tue fonti."*).
-- Footer: Indietro · Salva bozza · **"Genera progetto"** (CTA grande, sottotitolo
+### Step 4 — Genera / Riepilogo (immagine 4)
+- Intestazione: icona `rocket_launch` + **"Riepilogo del progetto"** + bottone
+  **"Modifica"** + *"Tutto è pronto! Controlla i dettagli qui sotto. Puoi modificare
+  qualsiasi sezione prima di generare."*
+- **Griglia di 6 card** (icona + campi), ognuna con "Modifica" → step relativo:
+  1. **Obiettivo**: Tipo di progetto = **Libro** · Titolo (link accento).
+  2. **Fonti**: Totale file = **3 file (36.3 MB)** · Tipologia = chip **PDF / DOCX /
+     PPTX** + **"+ URL"**.
+  3. **Istruzioni**: Lunghezza istruzioni = **1.245 caratteri** · Prompt suggeriti =
+     **4 utilizzati** · link **"Visualizza istruzioni"**.
+  4. **Modalità AI**: chip **"Balanced"** + *"Equilibrio ideale tra qualità e tempo
+     di generazione."*
+  5. **Struttura**: Capitoli stimati = **8–12 capitoli** · Include = icone contenuti
+     attivi + **"+2"**.
+  6. **Output**: Formato = **PDF** · Lingua = **Italiano**.
+- **Barra "Stima generazione"** (azzurro tenue): *"In base alla modalità selezionata
+  e alla quantità di fonti."* + **Tempo stimato ~6–8 min** + **Costo stimato 12
+  crediti**.
+- **"Opzioni avanzate"** (collassabile) — *"Impostazioni aggiuntive di generazione"*.
+- Footer: Indietro · Salva bozza · **"Genera progetto"** (CTA grande + sottotitolo
   *"Inizia la generazione con l'AI"*).
-- Nota di sicurezza a piè pagina: *"I tuoi dati sono al sicuro. Nessun contenuto
-  verrà condiviso con terze parti."*
+- Nota a piè: *"I tuoi dati sono al sicuro. Nessun contenuto verrà condiviso con
+  terze parti."*
+- **Anteprima (step 4)**: badge **"Pronto per la generazione"** + cover + riepilogo +
+  box verde **"Qualità garantita"** (*"I contenuti saranno generati con la massima
+  qualità possibile in base alle tue fonti."*).
 
 ### Footer wizard (sticky, tutte le step)
 `[ ← Indietro ]   [ Salva bozza ]   [ Avanti → ] / [ ✦ Genera progetto ]`
