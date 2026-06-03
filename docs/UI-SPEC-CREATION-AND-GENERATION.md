@@ -161,33 +161,77 @@ sulle tue scelte e potranno variare."*
 ## B. Schermata "Generazione in corso" (Workspace · stato `processing`)
 
 Accessibile dopo "Genera progetto" → `/project/:id` con `status = processing`.
+Layout 2 colonne: **colonna sinistra** (stato + azioni, ~65%) + **Anteprima
+progetto** sticky a destra (~35%). Bande: header su bianco, corpo su slate.
 
-- Header: **"✦ Generazione in corso"** + *"L'AI sta generando i tuoi contenuti.
-  Puoi lasciare questa pagina: ti avviseremo al termine."*
-- Chips: **"Tempo stimato: 6–8 min"** · **"Iniziato: oggi, 10:42"**.
-- **Card "Stato generazione"**: i 5 step del `Job` come stepper orizzontale con
-  stato per ciascuno (`done`/`running`/`pending`):
-  1. **Analisi delle fonti** — Completato
-  2. **Pianificazione struttura** — Completato
-  3. **Generazione contenuti** — In corso (spinner)
-  4. **Revisione e coerenza** — In attesa
-  5. **Impaginazione e output** — In attesa
-  - **Progress bar** + percentuale (es. *"58% completato"*).
-  - Box **"Operazione in corso"**: *"Stiamo scrivendo il Capitolo 4: Algoritmi di
-    apprendimento"* + *"Analisi, sintesi e generazione contenuti in corso…"* +
-    bottone **"Visualizza log"**.
-- **Card "Azioni disponibili"** (3 azioni-card con icona + chevron):
-  **Metti in pausa** (*"Pausa temporaneamente la generazione."*) ·
-  **Modifica progetto** (*"Torna indietro e modifica le istruzioni o le fonti."*) ·
-  **Annulla generazione** (*"Interrompi e rimuovi il progetto."*, rossa).
-- Nota privacy: *"I tuoi dati sono al sicuro. Le tue fonti e i contenuti generati
-  sono privati e crittografati. Nessun contenuto verrà condiviso con terze parti."*
-- **Live Preview** (destra): badge **"In generazione"** + cover + riepilogo + box
-  *"Ti avviseremo non appena la generazione sarà completata. Puoi chiudere questa
-  pagina."*
+### B.1 Header pagina (compatto)
+- Icona **✦** (sparkle, accento) a sinistra del titolo.
+- **H1: "Generazione in corso"** (peso forte, ~2rem).
+- Sottotitolo (1 riga, grigio): *"L'AI sta generando i tuoi contenuti. Puoi
+  lasciare questa pagina: ti avviseremo al termine."*
+- Due **chip pill outlined** con icona (sotto il sottotitolo):
+  - 🕐 *"Tempo stimato: 6–8 min"* (da `Job.etaSeconds`)
+  - 🕐 *"Iniziato: oggi, 10:42"* (da `Job.startedAt`)
 
-Mapping dominio: gli step = `Job.steps[].labelKey/status`; progress = `Job.progress`;
-ETA = `Job.etaSeconds`; "operazione in corso" = step `running` + `currentStepKey`.
+### B.2 Card "Stato generazione"
+Card bianca, bordo sottile, padding generoso.
+- Titolo sezione **"Stato generazione"** (bold).
+- **Stepper orizzontale a 5 segmenti** con linee di connessione:
+  | # | Step (label) | Pallino | Stato sotto-label | Colore |
+  |---|---|---|---|---|
+  | 1 | Analisi delle fonti | cerchio pieno accento + ✓ bianco | **Completato** | verde `--site-success` |
+  | 2 | Pianificazione struttura | cerchio pieno accento + ✓ | **Completato** | verde |
+  | 3 | Generazione contenuti | cerchio accento + **spinner** | **In corso…** | accento |
+  | 4 | Revisione e coerenza | cerchio grigio + **＋** | **In attesa** | grigio |
+  | 5 | Impaginazione e output | cerchio grigio + ＋ | **In attesa** | grigio |
+  - **Connettori**: segmenti completati = accento pieno; da fare = grigio
+    (`--card-border-color`). La linea cresce col progresso.
+- **Progress bar** (sotto lo stepper): riempita ~accento fino alla %; a destra
+  testo **"58% completato"** (da `Job.progress`).
+- **Box "Operazione in corso"** (sfondo azzurro tenue `--accent-100` al ~40%,
+  angoli arrotondati):
+  - Riga label: ✦ **"Operazione in corso"** (accento).
+  - Titolo (bold): *"Stiamo scrivendo il Capitolo 4: Algoritmi di apprendimento"*.
+  - Sottotesto (grigio): *"Analisi, sintesi e generazione contenuti in corso…"*.
+  - A destra: bottone **"Visualizza log"** (`mat-stroked-button`, icona lista) →
+    apre il modal log (vedi §C.1).
+
+### B.3 Card "Azioni disponibili"
+Card bianca separata. Titolo **"Azioni disponibili"** + **3 azioni-card** in riga
+(ognuna: pastiglia-icona circolare + titolo bold + descrizione + chevron `›`,
+cliccabile su tutta la card):
+1. ⏸️ (icona pausa, bg azzurro) **"Metti in pausa"** — *"Pausa temporaneamente la
+   generazione."* → §C.2
+2. ✏️ (icona edit, bg azzurro) **"Modifica progetto"** — *"Torna indietro e modifica
+   le istruzioni o le fonti."* → §C.3
+3. ⏹️ (icona stop, **bg rosso** `--mat-sys-error` tenue) **"Annulla generazione"** —
+   *"Interrompi e rimuovi il progetto."* → §C.4 (dialog di conferma)
+
+### B.4 Nota privacy (piè della colonna sinistra)
+Icona scudo + **"I tuoi dati sono al sicuro"** (bold) + *"Le tue fonti e i contenuti
+generati sono privati e crittografati. Nessun contenuto verrà condiviso con terze
+parti."*
+
+### B.5 Pannello "Anteprima progetto" (colonna destra, sticky)
+- Titolo **"Anteprima progetto"** + **badge "In generazione"** (pill verde tenue).
+- **Cover del libro** (3D, blu scuro con onda): titolo del progetto in maiuscolo
+  (es. "L'INTELLIGENZA ARTIFICIALE SPIEGATA SEMPLICE") + sottotitolo
+  ("Comprendere l'AI nel mondo reale"); a destra della cover un breve testo
+  descrittivo (*"Guida completa per comprendere l'intelligenza artificiale con
+  esempi pratici e linguaggio chiaro."*).
+- **Lista riepilogo** (icona + label + valore): Tipo di progetto = **Libro** ·
+  Capitoli stimati = **8–12** · Fonti = **3 file (36.3 MB)** · Modalità AI =
+  **Balanced** · Formato = **PDF** · Lingua = **Italiano**.
+- **Box notifica** (azzurro tenue): 🔔 *"Ti avviseremo non appena la generazione
+  sarà completata."* + *"Puoi chiudere questa pagina."*
+
+### B.6 Mapping dominio
+- Step stepper = `Job.steps[].labelKey` + `status` (`done`/`running`/`pending`).
+- Progress = `Job.progress`; ETA = `Job.etaSeconds`; inizio = `Job.startedAt`.
+- "Operazione in corso" = step `running` (`currentStepKey`) + dettaglio capitolo.
+- Lo stepper a **5 step** richiede di estendere il mock `GENERATE_STEPS` (oggi 4:
+  analyze/outline/chapters/render) a 5: **analyze · outline · chapters · review ·
+  render** con label i18n `i18n.Job.Step.{analyze,outline,chapters,review,render}`.
 
 ---
 
