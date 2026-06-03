@@ -1,5 +1,4 @@
-// Model setup — 3 colonne (Struttura · Impostazioni · Anteprima). Token globali,
-// niente literal di colore: ritematizzabile dal solo tema globale.
+// Model setup — toolbar con tab + viste. Token globali, niente literal di colore.
 :host {
   display: block;
 }
@@ -11,14 +10,15 @@
   padding-block: var(--space-3, 24px) var(--space-4, 32px);
 }
 
-// --- Header -----------------------------------------------------------------
-.setup__head {
+// --- Toolbar ----------------------------------------------------------------
+.setup-bar {
   display: flex;
   align-items: center;
   gap: var(--space-2, 16px);
+  flex-wrap: wrap;
 }
 
-.setup__back {
+.setup-bar__back {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -30,50 +30,119 @@
   color: var(--mat-sys-on-surface);
   cursor: pointer;
   flex: 0 0 auto;
-  transition: border-color 0.15s ease, background 0.15s ease;
 }
-.setup__back:hover {
+.setup-bar__back:hover {
   border-color: var(--accent-400);
 }
 
-.setup__heading {
+.setup-bar__id {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
-.setup__eyebrow {
-  font-size: 0.75rem;
+.setup-bar__eyebrow {
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--accent-700);
 }
-.setup__title {
+.setup-bar__titlerow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.setup-bar__title {
   margin: 0;
-  font-size: clamp(1.5rem, 2.4vw, 1.875rem);
+  font-size: clamp(1.375rem, 2.2vw, 1.75rem);
   font-weight: 800;
   color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.setup__source {
+.setup-bar__titlefield {
+  min-width: 260px;
+}
+.setup-bar__pencil {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: var(--site-body-small, 0.875rem);
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: none;
   color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
 
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: var(--accent-600, var(--accent-700));
   }
 }
+.setup-bar__pencil:hover {
+  background: var(--accent-100);
+  color: var(--accent-700);
+}
+.setup-bar__source {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}
 
-// --- Griglia 3 colonne ------------------------------------------------------
-.setup-grid {
+// Tab a pillole centrate
+.setup-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline: auto;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--field-bg);
+  border: 1px solid var(--card-border-color);
+}
+.setup-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--site-body-small, 0.875rem);
+  cursor: pointer;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+.setup-tab.is-active {
+  background: var(--card-bg);
+  color: var(--accent-700);
+  box-shadow: var(--card-shadow);
+}
+
+.setup-bar__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+// --- Tab Impostazioni: 2 colonne -------------------------------------------
+.setup-settings {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(300px, 360px);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: var(--space-2, 16px);
   align-items: start;
 }
@@ -88,7 +157,6 @@
   border: 1px solid var(--card-border-color);
   box-shadow: var(--card-shadow);
 }
-
 .setup-card__head {
   display: flex;
   flex-direction: column;
@@ -106,116 +174,15 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
-// --- Colonna 1: Struttura ---------------------------------------------------
-.part-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.setup-preset {
   display: flex;
   flex-direction: column;
-}
-
-.part-row {
+  gap: 6px;
+  padding-top: var(--space-1, 8px);
   border-top: 1px solid var(--card-border-color);
-  padding: 4px 0;
-}
-.part-row:first-child {
-  border-top: none;
-}
-.part-row.is-off {
-  opacity: 0.5;
-}
-
-.part-row__main {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1, 8px);
-  min-height: 44px;
-}
-
-.part-row__label {
-  flex: 1 1 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface);
-  min-width: 0;
-}
-.part-row__count {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--accent-700);
-  background: var(--accent-100);
-  border-radius: 999px;
-  padding: 1px 8px;
-}
-
-.part-row__edit {
-  flex: 0 0 auto;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font: inherit;
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  color: var(--accent-700);
-  padding: 4px 6px;
-  border-radius: 8px;
-}
-.part-row__edit:hover {
-  background: var(--accent-100);
-}
-
-.part-row__lock {
-  flex: 0 0 auto;
-  color: var(--mat-sys-on-surface-variant);
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-}
-
-.part-editor {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--space-2, 16px);
-  padding: var(--space-1, 8px) 0 var(--space-2, 16px);
-}
-.part-editor__words {
-  flex: 1 1 160px;
 }
 
 // --- Campi (label sopra) ----------------------------------------------------
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.field__label {
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
-}
-.field__readonly {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-  padding: 10px 12px;
-  border-radius: var(--field-radius, 10px);
-  background: var(--field-bg);
-  border: 1px solid var(--field-border-color, var(--card-border-color));
-
-  strong {
-    font-size: 1.0625rem;
-    color: var(--mat-sys-on-surface);
-  }
-  span {
-    font-size: var(--site-body-small, 0.875rem);
-    color: var(--mat-sys-on-surface-variant);
-  }
-}
-
 .setup-fields {
   display: flex;
   flex-direction: column;
@@ -226,60 +193,24 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--space-2, 16px);
 }
-
-// --- Stepper ----------------------------------------------------------------
-.stepper {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.stepper--wide {
-  align-self: flex-start;
-}
-.stepper__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--field-border-color, var(--card-border-color));
-  background: var(--card-bg);
-  color: var(--mat-sys-on-surface);
-  cursor: pointer;
-  transition: border-color 0.12s ease, background 0.12s ease;
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-}
-.stepper__btn:hover:not(:disabled) {
-  border-color: var(--accent-400);
-}
-.stepper__btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.stepper__value {
-  min-width: 40px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.0625rem;
+.field__label {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
   color: var(--mat-sys-on-surface);
 }
-.stepper__range {
-  margin-left: 6px;
-  font-size: 0.75rem;
-  color: var(--mat-sys-on-surface-variant);
-}
 
-// --- Segmented control (interlinea / allineamento / formato) ----------------
+// Segmented control
 .seg {
   display: inline-flex;
-  flex-wrap: wrap;
   gap: 6px;
+}
+.seg--wrap {
+  flex-wrap: wrap;
 }
 .seg__btn {
   display: inline-flex;
@@ -294,7 +225,6 @@
   font-size: var(--site-body-small, 0.875rem);
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
 
   mat-icon {
     font-size: 18px;
@@ -311,7 +241,6 @@
   background: var(--accent-100);
 }
 
-// --- Color field ------------------------------------------------------------
 .color-field {
   display: inline-flex;
   align-items: center;
@@ -335,83 +264,42 @@
   text-transform: uppercase;
 }
 
-// --- Colonna 3: Anteprima ---------------------------------------------------
-.setup-col--preview {
-  position: sticky;
-  top: var(--space-2, 16px);
-}
-.preview {
-  gap: var(--space-2, 16px);
-}
-.preview-cover {
-  border-radius: 14px;
-  aspect-ratio: 3 / 4;
-  max-height: 260px;
-  display: flex;
-  align-items: flex-end;
-  padding: var(--space-2, 16px);
-}
-.preview-cover__title {
-  font-weight: 800;
-  font-size: 1.125rem;
-  line-height: 1.2;
-  color: #fff;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
-}
-
-.preview-stats {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-.preview-stat {
-  display: flex;
+// --- Tab Fonti (placeholder) ------------------------------------------------
+.setup-empty {
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2, 16px);
-  padding: 10px 0;
-  border-top: 1px solid var(--card-border-color);
-
-  dt {
-    font-size: var(--site-body-small, 0.875rem);
-    color: var(--mat-sys-on-surface-variant);
-  }
-  dd {
-    margin: 0;
-    font-weight: 700;
-    color: var(--mat-sys-on-surface);
-    text-align: right;
-  }
-}
-.preview-stat:first-child {
-  border-top: none;
-}
-
-.preview-hint {
-  display: flex;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 12px;
-  background: var(--accent-100);
+  justify-content: center;
+  gap: var(--space-1, 8px);
+  min-height: 240px;
+  text-align: center;
   color: var(--mat-sys-on-surface-variant);
-  font-size: var(--site-body-small, 0.875rem);
 
   mat-icon {
-    flex: 0 0 auto;
-    color: var(--accent-700);
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    opacity: 0.6;
+  }
+  p {
+    margin: 0;
   }
 }
 
-.preview-cta {
+// --- Tab Verifica -----------------------------------------------------------
+.setup-review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 16px);
+  max-width: 720px;
+  margin-inline: auto;
+  width: 100%;
+}
+.setup-review__cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 100%;
-  padding: 14px 20px;
+  align-self: center;
+  padding: 14px 28px;
   border: none;
   border-radius: 12px;
   background: var(--accent-500);
@@ -419,35 +307,30 @@
   font: inherit;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.12s ease;
 }
-.preview-cta:hover {
+.setup-review__cta:hover {
   background: var(--accent-600, var(--accent-700));
-  transform: translateY(-1px);
 }
 
 // --- Responsive -------------------------------------------------------------
-@media (max-width: 1080px) {
-  .setup-grid {
-    grid-template-columns: 1fr 1fr;
+@media (max-width: 1100px) {
+  .setup-tabs {
+    order: 3;
+    width: 100%;
+    margin-inline: 0;
+    justify-content: center;
   }
-  .setup-col--preview {
-    grid-column: 1 / -1;
-    position: static;
+  .setup-bar__actions {
+    margin-left: auto;
   }
 }
-@media (max-width: 720px) {
-  .setup-grid {
+@media (max-width: 860px) {
+  .setup-settings {
     grid-template-columns: 1fr;
   }
+}
+@media (max-width: 600px) {
   .setup-fields__row {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .preview-cta:hover,
-  .setup__back {
-    transform: none;
   }
 }

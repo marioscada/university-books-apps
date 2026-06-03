@@ -1,246 +1,220 @@
 <app-auth-shell>
   <div class="setup site-container">
-    <!-- Header -->
-    <header class="setup__head">
-      <button class="setup__back" type="button" (click)="back()" [attr.aria-label]="'i18n.Setup.back' | translate">
+    <!-- Toolbar -->
+    <header class="setup-bar">
+      <button class="setup-bar__back" type="button" (click)="back()" [attr.aria-label]="'i18n.Setup.back' | translate">
         <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
       </button>
-      <div class="setup__heading">
-        <span class="setup__eyebrow">{{ 'i18n.Setup.eyebrow' | translate }}</span>
-        <h1 class="setup__title">{{ (template()?.nameKey ?? 'i18n.Models.custom.name') | translate }}</h1>
-        @if (template()) {
-          <span class="setup__source">
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">verified</mat-icon>
-            {{ template()!.sourceKey | translate }}
-          </span>
+
+      <div class="setup-bar__id">
+        <span class="setup-bar__eyebrow">{{ 'i18n.Setup.eyebrow' | translate }}</span>
+        <div class="setup-bar__titlerow">
+          @if (editingTitle()) {
+            <app-text-field
+              class="setup-bar__titlefield"
+              [placeholder]="'i18n.Setup.bookTitlePlaceholder' | translate"
+              [value]="title()"
+              (valueChange)="title.set($event)" />
+            <button class="setup-bar__pencil" type="button" (click)="editingTitle.set(false)" aria-label="ok">
+              <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
+            </button>
+          } @else {
+            <h1 class="setup-bar__title">{{ displayTitle() }}</h1>
+            <button class="setup-bar__pencil" type="button" (click)="editingTitle.set(true)" [attr.aria-label]="'i18n.Setup.edit' | translate">
+              <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+            </button>
+          }
+          @if (template()) {
+            <span class="setup-bar__source">{{ template()!.sourceKey | translate }}</span>
+          }
+        </div>
+      </div>
+
+      <nav class="setup-tabs" [attr.aria-label]="'i18n.Setup.eyebrow' | translate">
+        @for (tab of tabs; track tab.id) {
+          <button
+            class="setup-tab"
+            type="button"
+            [class.is-active]="activeTab() === tab.id"
+            [attr.aria-pressed]="activeTab() === tab.id"
+            (click)="activeTab.set(tab.id)">
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ tab.icon }}</mat-icon>
+            {{ tab.labelKey | translate }}
+          </button>
         }
+      </nav>
+
+      <div class="setup-bar__actions">
+        <button mat-stroked-button type="button" (click)="saveDraft()">{{ 'i18n.Setup.saveDraft' | translate }}</button>
+        <button mat-flat-button color="primary" type="button" (click)="createProject()">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
+          {{ 'i18n.Setup.createProject' | translate }}
+        </button>
       </div>
     </header>
 
-    <div class="setup-grid">
-      <!-- Colonna 1: Struttura -->
-      <section class="setup-col setup-card" aria-labelledby="structure-title">
-        <header class="setup-card__head">
-          <h2 id="structure-title" class="setup-card__title">{{ 'i18n.Setup.structure.title' | translate }}</h2>
-          <p class="setup-card__sub">{{ 'i18n.Setup.structure.subtitle' | translate }}</p>
-        </header>
+    <!-- Contenuto per tab -->
+    @switch (activeTab()) {
+      @case ('preview') {
+        <app-result-preview
+          [title]="'i18n.Setup.preview.title' | translate"
+          [subtitle]="'i18n.Setup.preview.subtitle' | translate"
+          [refreshLabel]="'i18n.Setup.refresh' | translate"
+          [fitLabel]="'i18n.Setup.fit' | translate"
+          [coverKicker]="modelName()"
+          [coverTitle]="displayTitle()"
+          coverBrand="SCADÁ"
+          [coverTheme]="template()?.coverTheme ?? 'ocean'"
+          [summaryTitle]="'i18n.Setup.preview.summaryTitle' | translate"
+          [summaryText]="'i18n.Setup.preview.summaryText' | translate"
+          [tocLabel]="'i18n.Setup.indice' | translate"
+          [tocEntries]="tocEntries()"
+          [pages]="pagePreviews()"
+          [excludedLabel]="'i18n.Setup.excluded' | translate"
+          [device]="device()"
+          [stats]="previewStats()"
+          (deviceChange)="setDevice($event)"
+          (refresh)="refreshPreview()"
+          (fit)="setDevice('desktop')" />
+      }
 
-        <ul class="part-list">
-          @for (p of parts(); track p.key) {
-            <li class="part-row" [class.is-off]="!p.included">
-              <div class="part-row__main">
-                <span class="part-row__label">
-                  {{ p.labelKey | translate }}
-                  @if (p.repeatable) {
-                    <span class="part-row__count">×{{ p.count }}</span>
-                  }
-                </span>
+      @case ('settings') {
+        <div class="setup-settings">
+          <section class="setup-card">
+            <header class="setup-card__head">
+              <h2 class="setup-card__title">{{ 'i18n.Setup.structure.title' | translate }}</h2>
+              <p class="setup-card__sub">{{ 'i18n.Setup.structure.subtitle' | translate }}</p>
+            </header>
 
-                <button class="part-row__edit" type="button" (click)="toggleEditor(p.key)">
-                  {{ 'i18n.Setup.edit' | translate }}
-                </button>
+            <app-doc-structure-list
+              [parts]="docParts()"
+              [addSectionLabel]="'i18n.Setup.structure.add' | translate"
+              [editLabel]="'i18n.Setup.edit' | translate"
+              [countLabel]="'i18n.Setup.count' | translate"
+              [wordsLabel]="'i18n.Setup.wordsPerUnit' | translate"
+              [activeLabel]="'i18n.Setup.legend.active' | translate"
+              [disabledLabel]="'i18n.Setup.legend.disabled' | translate"
+              [reorderHint]="'i18n.Setup.legend.reorder' | translate"
+              [requiredLabel]="'i18n.Setup.required' | translate"
+              (toggle)="togglePart($event)"
+              (countChange)="changeCount($event)"
+              (wordChange)="changeWord($event)"
+              (reorder)="reorderParts($event)"
+              (addSection)="addSection()" />
 
-                @if (p.optional) {
-                  <mat-slide-toggle
-                    [checked]="p.included"
-                    (change)="togglePart(p.key)"
-                    [attr.aria-label]="p.labelKey | translate" />
-                } @else {
-                  <mat-icon class="part-row__lock" fontSet="material-symbols-outlined"
-                    [matTooltip]="'i18n.Setup.required' | translate" aria-hidden="true">lock</mat-icon>
-                }
-              </div>
-
-              @if (editingKey() === p.key) {
-                <div class="part-editor">
-                  @if (p.repeatable) {
-                    <div class="field">
-                      <label class="field__label">{{ 'i18n.Setup.count' | translate }}</label>
-                      <div class="stepper">
-                        <button type="button" class="stepper__btn" (click)="bumpCount(p.key, -1)"
-                          [disabled]="p.count <= p.countMin" aria-label="-">
-                          <mat-icon fontSet="material-symbols-outlined">remove</mat-icon>
-                        </button>
-                        <span class="stepper__value">{{ p.count }}</span>
-                        <button type="button" class="stepper__btn" (click)="bumpCount(p.key, 1)"
-                          [disabled]="p.count >= p.countMax" aria-label="+">
-                          <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
-                        </button>
-                        <span class="stepper__range">{{ p.countMin }}–{{ p.countMax }}</span>
-                      </div>
-                    </div>
-                  }
-                  <app-text-field
-                    class="part-editor__words"
-                    [label]="(p.repeatable ? 'i18n.Setup.wordsPerUnit' : 'i18n.Setup.words') | translate"
-                    type="number"
-                    [value]="p.wordCount + ''"
-                    (valueChange)="setWordCount(p.key, num($event))" />
-                </div>
-              }
-            </li>
-          }
-        </ul>
-      </section>
-
-      <!-- Colonna 2: Impostazioni generali -->
-      <section class="setup-col setup-card" aria-labelledby="settings-title">
-        <header class="setup-card__head">
-          <h2 id="settings-title" class="setup-card__title">{{ 'i18n.Setup.settings.title' | translate }}</h2>
-          <p class="setup-card__sub">{{ 'i18n.Setup.settings.subtitle' | translate }}</p>
-        </header>
-
-        <div class="setup-fields">
-          <app-text-field
-            [label]="'i18n.Setup.bookTitle' | translate"
-            [placeholder]="'i18n.Setup.bookTitlePlaceholder' | translate"
-            [value]="title()"
-            (valueChange)="title.set($event)" />
-
-          @if (repeatablePart(); as rep) {
-            <div class="field">
-              <label class="field__label">{{ 'i18n.Setup.numberOf' | translate }} {{ rep.labelKey | translate | lowercase }}</label>
-              <div class="stepper stepper--wide">
-                <button type="button" class="stepper__btn" (click)="bumpCount(rep.key, -1)"
-                  [disabled]="rep.count <= rep.countMin" aria-label="-">
-                  <mat-icon fontSet="material-symbols-outlined">remove</mat-icon>
-                </button>
-                <span class="stepper__value">{{ rep.count }}</span>
-                <button type="button" class="stepper__btn" (click)="bumpCount(rep.key, 1)"
-                  [disabled]="rep.count >= rep.countMax" aria-label="+">
-                  <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
-                </button>
-              </div>
-            </div>
-
-            <app-text-field
-              [label]="'i18n.Setup.wordsPerUnit' | translate"
-              type="number"
-              [value]="rep.wordCount + ''"
-              (valueChange)="setWordCount(rep.key, num($event))" />
-          }
-
-          <div class="field">
-            <label class="field__label">{{ 'i18n.Setup.manuscriptLength' | translate }}</label>
-            <div class="field__readonly">
-              <strong>{{ formatNumber(totalWords()) }}</strong>
-              <span>{{ 'i18n.Setup.words' | translate | lowercase }}</span>
-            </div>
-          </div>
-
-          <div class="setup-fields__row">
-            <app-select-field
-              [label]="'i18n.Setup.font' | translate"
-              [options]="fontOptions"
-              [value]="typo().fontFamily"
-              (valueChange)="patchTypo({ fontFamily: $event })" />
-            <app-select-field
-              [label]="'i18n.Setup.fontSize' | translate"
-              [options]="sizeOptions"
-              [value]="typo().fontSizePt + ''"
-              (valueChange)="patchTypo({ fontSizePt: num($event) })" />
-          </div>
-
-          <div class="setup-fields__row">
-            <div class="field">
-              <label class="field__label" for="text-color">{{ 'i18n.Setup.textColor' | translate }}</label>
-              <div class="color-field">
-                <input id="text-color" type="color" class="color-field__input"
-                  [value]="typo().textColor"
-                  (input)="patchTypo({ textColor: $any($event.target).value })" />
-                <span class="color-field__value">{{ typo().textColor }}</span>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field__label">{{ 'i18n.Setup.lineHeight' | translate }}</label>
-              <div class="seg">
-                @for (lh of lineHeightOptions; track lh.value) {
-                  <button type="button" class="seg__btn" [class.is-active]="typo().lineHeight === lh.value"
-                    (click)="patchTypo({ lineHeight: lh.value })">
-                    {{ lh.labelKey | translate }}
+            <div class="setup-preset">
+              <label class="field__label">{{ 'i18n.Setup.suggestedLength' | translate }}</label>
+              <div class="seg seg--wrap">
+                @for (preset of lengthPresets; track preset.id) {
+                  <button type="button" class="seg__btn" [class.is-active]="lengthPreset() === preset.id"
+                    (click)="applyPreset(preset.id)">
+                    {{ 'i18n.Setup.Length.' + preset.id | translate }}
                   </button>
                 }
               </div>
             </div>
-          </div>
+          </section>
 
-          <div class="field">
-            <label class="field__label">{{ 'i18n.Setup.alignment' | translate }}</label>
-            <div class="seg">
-              <button type="button" class="seg__btn" [class.is-active]="typo().alignment === 'left'"
-                (click)="patchTypo({ alignment: 'left' })">
-                <mat-icon fontSet="material-symbols-outlined">format_align_left</mat-icon>
-                {{ 'i18n.Setup.alignLeft' | translate }}
-              </button>
-              <button type="button" class="seg__btn" [class.is-active]="typo().alignment === 'justify'"
-                (click)="patchTypo({ alignment: 'justify' })">
-                <mat-icon fontSet="material-symbols-outlined">format_align_justify</mat-icon>
-                {{ 'i18n.Setup.alignJustify' | translate }}
-              </button>
-            </div>
-          </div>
+          <section class="setup-card">
+            <header class="setup-card__head">
+              <h2 class="setup-card__title">{{ 'i18n.Setup.settings.title' | translate }}</h2>
+              <p class="setup-card__sub">{{ 'i18n.Setup.settings.subtitle' | translate }}</p>
+            </header>
 
-          <div class="field">
-            <label class="field__label">{{ 'i18n.Setup.outputFormat' | translate }}</label>
-            <div class="seg">
-              @for (fmt of outputFormats; track fmt) {
-                <button type="button" class="seg__btn" [class.is-active]="isFormat(fmt)"
-                  (click)="toggleFormat(fmt)">{{ fmt | uppercase }}</button>
-              }
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Colonna 3: Anteprima -->
-      <aside class="setup-col setup-col--preview" aria-labelledby="preview-title">
-        <div class="setup-card preview">
-          <header class="setup-card__head">
-            <h2 id="preview-title" class="setup-card__title">{{ 'i18n.Setup.preview.title' | translate }}</h2>
-            <p class="setup-card__sub">{{ 'i18n.Setup.preview.subtitle' | translate }}</p>
-          </header>
-
-          <div class="preview-cover cover-art cover-art--{{ template()?.coverTheme ?? 'ocean' }}">
-            <span class="preview-cover__title">{{ title().trim() || ('i18n.Setup.untitled' | translate) }}</span>
-          </div>
-
-          <dl class="preview-stats">
-            <div class="preview-stat">
-              <dt>{{ 'i18n.Setup.stat.type' | translate }}</dt>
-              <dd>{{ (template()?.nameKey ?? 'i18n.Models.custom.name') | translate }}</dd>
-            </div>
-            <div class="preview-stat">
-              <dt>{{ 'i18n.Setup.stat.parts' | translate }}</dt>
-              <dd>{{ includedCount() }}</dd>
-            </div>
-            @if (repeatablePart()) {
-              <div class="preview-stat">
-                <dt>{{ repeatablePart()!.labelKey | translate }}</dt>
-                <dd>{{ unitCount() }}</dd>
+            <div class="setup-fields">
+              <div class="setup-fields__row">
+                <app-select-field
+                  [label]="'i18n.Setup.font' | translate"
+                  [options]="fontOptions"
+                  [value]="typo().fontFamily"
+                  (valueChange)="patchTypo({ fontFamily: $event })" />
+                <app-select-field
+                  [label]="'i18n.Setup.fontSize' | translate"
+                  [options]="sizeOptions"
+                  [value]="typo().fontSizePt + ''"
+                  (valueChange)="patchTypo({ fontSizePt: num($event) })" />
               </div>
-            }
-            <div class="preview-stat">
-              <dt>{{ 'i18n.Setup.stat.words' | translate }}</dt>
-              <dd>≈ {{ formatNumber(totalWords()) }}</dd>
-            </div>
-            <div class="preview-stat">
-              <dt>{{ 'i18n.Setup.stat.format' | translate }}</dt>
-              <dd>{{ formats().length ? (formatsLabel()) : '—' }}</dd>
-            </div>
-          </dl>
 
-          <div class="preview-hint">
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">lightbulb</mat-icon>
-            <span>{{ 'i18n.Setup.hint' | translate }}</span>
-          </div>
+              <div class="setup-fields__row">
+                <div class="field">
+                  <label class="field__label" for="text-color">{{ 'i18n.Setup.textColor' | translate }}</label>
+                  <div class="color-field">
+                    <input id="text-color" type="color" class="color-field__input"
+                      [value]="typo().textColor"
+                      (input)="patchTypo({ textColor: $any($event.target).value })" />
+                    <span class="color-field__value">{{ typo().textColor }}</span>
+                  </div>
+                </div>
 
-          <button class="preview-cta" type="button" (click)="createProject()">
+                <div class="field">
+                  <label class="field__label">{{ 'i18n.Setup.lineHeight' | translate }}</label>
+                  <div class="seg">
+                    @for (lh of lineHeightOptions; track lh.value) {
+                      <button type="button" class="seg__btn" [class.is-active]="typo().lineHeight === lh.value"
+                        (click)="patchTypo({ lineHeight: lh.value })">
+                        {{ lh.labelKey | translate }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field__label">{{ 'i18n.Setup.alignment' | translate }}</label>
+                <div class="seg">
+                  <button type="button" class="seg__btn" [class.is-active]="typo().alignment === 'left'"
+                    (click)="patchTypo({ alignment: 'left' })">
+                    <mat-icon fontSet="material-symbols-outlined">format_align_left</mat-icon>
+                    {{ 'i18n.Setup.alignLeft' | translate }}
+                  </button>
+                  <button type="button" class="seg__btn" [class.is-active]="typo().alignment === 'justify'"
+                    (click)="patchTypo({ alignment: 'justify' })">
+                    <mat-icon fontSet="material-symbols-outlined">format_align_justify</mat-icon>
+                    {{ 'i18n.Setup.alignJustify' | translate }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field__label">{{ 'i18n.Setup.outputFormat' | translate }}</label>
+                <div class="seg">
+                  @for (fmt of outputFormats; track fmt) {
+                    <button type="button" class="seg__btn" [class.is-active]="isFormat(fmt)"
+                      (click)="toggleFormat(fmt)">{{ fmt | uppercase }}</button>
+                  }
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      }
+
+      @case ('sources') {
+        <div class="setup-card setup-empty">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">folder_open</mat-icon>
+          <p>{{ 'i18n.Setup.sources.placeholder' | translate }}</p>
+        </div>
+      }
+
+      @case ('review') {
+        <div class="setup-review">
+          <app-project-summary
+            [title]="'i18n.Setup.summary.title' | translate"
+            [rows]="summaryRows()"
+            [changesTitle]="'i18n.Setup.summary.changesTitle' | translate"
+            [changes]="changes()"
+            [changesMoreLabel]="changesMore()"
+            [excludedTitle]="'i18n.Setup.summary.excludedTitle' | translate"
+            [excluded]="excluded()"
+            [confirmTitle]="'i18n.Setup.summary.confirmTitle' | translate"
+            [confirmText]="'i18n.Setup.summary.confirmText' | translate" />
+
+          <button class="setup-review__cta" type="button" (click)="createProject()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
             {{ 'i18n.Setup.createProject' | translate }}
           </button>
         </div>
-      </aside>
-    </div>
+      }
+    }
   </div>
 </app-auth-shell>

@@ -1,0 +1,229 @@
+// ProjectSummary — look self-contained sui token globali del design system.
+:host {
+  display: block;
+  padding: var(--card-padding, 20px);
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
+}
+
+.project-summary__title {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--site-title-medium, 1.125rem);
+  color: var(--mat-sys-on-surface);
+}
+
+// === Statistiche (definition list) ===
+.project-summary__stats {
+  margin: var(--space-2, 16px) 0 0;
+}
+
+.project-summary__stat {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2, 16px);
+  padding: 10px 0;
+  border-top: 1px solid var(--card-border-color);
+
+  &:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
+.project-summary__stat-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 8px);
+  margin: 0;
+  flex: 0 0 auto;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.project-summary__stat-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 18px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.project-summary__stat-value {
+  margin: 0;
+  min-width: 0;
+  text-align: right;
+  font-weight: 600;
+  word-break: break-word;
+  color: var(--mat-sys-on-surface);
+}
+
+// === Sezioni separate da hairline ===
+.project-summary__section {
+  margin-top: var(--space-3, 24px);
+  padding-top: var(--space-3, 24px);
+  border-top: 1px solid var(--card-border-color);
+}
+
+.project-summary__heading {
+  margin: 0 0 var(--space-2, 16px);
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// === Modifiche ===
+.project-summary__changes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 16px);
+}
+
+.project-summary__change {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1, 8px);
+}
+
+.project-summary__dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: var(--change-tone-fg);
+}
+
+.project-summary__change-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  min-width: 0;
+  font-size: var(--site-body-small, 0.875rem);
+  line-height: 1.4;
+}
+
+.project-summary__change-label {
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.project-summary__change-detail {
+  color: var(--mat-sys-on-surface-variant);
+  word-break: break-word;
+}
+
+.project-summary__more {
+  margin-top: var(--space-2, 16px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--accent-500);
+  cursor: pointer;
+  outline: none;
+  border-radius: 4px;
+  transition: color 0.12s ease;
+
+  &:hover {
+    color: var(--accent-700);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px var(--accent-100);
+  }
+}
+
+// === Esclusi (chip mute) ===
+.project-summary__chips {
+  display: block;
+}
+
+.project-summary__chip {
+  --mdc-chip-container-height: 28px;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border-color);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--mat-sys-on-surface-variant) 45%,
+    transparent
+  );
+  opacity: 0.85;
+}
+
+// === Box di conferma (tinta accento) ===
+.project-summary__confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 16px);
+  margin-top: var(--space-3, 24px);
+  padding: var(--space-2, 16px);
+  border-radius: 12px;
+  background: var(--accent-100);
+}
+
+.project-summary__confirm-icon {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  line-height: 24px;
+  color: var(--accent-500);
+}
+
+.project-summary__confirm-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.project-summary__confirm-title {
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+.project-summary__confirm-text {
+  font-size: var(--site-body-small, 0.875rem);
+  line-height: 1.4;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Self-responsive (convenzione marioscadasite): compatta su small.
+:host(.isSmall) {
+  padding: var(--space-2, 16px);
+
+  .project-summary__stat {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+
+  .project-summary__stat-value {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  :host * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

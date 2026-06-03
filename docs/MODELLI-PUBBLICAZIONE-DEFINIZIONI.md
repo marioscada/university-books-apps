@@ -226,6 +226,12 @@ modificabile; suggerimenti contestuali ma non preselezionati.
   info** (default rimasti + personalizzazioni). Il progetto è una **derivazione del
   modello**: tutte le differenze rispetto al modello sono riflesse sul nuovo progetto.
 
+> **Implementazione UI**: la pagina di destinazione è specificata in
+> [`UI-SPEC-MODEL-SETUP.md`](UI-SPEC-MODEL-SETUP.md) — toolbar con tab
+> (Anteprima · Impostazioni · Fonti · Verifica e crea) e vista **Anteprima** a 3
+> colonne (Struttura del documento · Anteprima del risultato · Riepilogo del
+> progetto), dinamica in funzione del modello scelto.
+
 ### Modello dati da introdurre (bozza, da formalizzare in architettura)
 - `ProjectTemplate { id, kind, parts: StructurePart[], defaults (mode/chapters/flags/
   outputFormats/typography), source }` — i template di questo documento.
