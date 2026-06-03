@@ -40,6 +40,15 @@
 - Bande **bianco/slate** (`.band`/`.band--alt`) per il ritmo; canvas bianco puro.
 - **Niente** scroll interni se non richiesti; **niente** colori "a caso": palette categoria = `icon-tile--*` / `cover-art--*` / `status--*` già definite.
 
+### 1.3bis Componenti dumb **library-grade** (vincolante)
+Ogni componente presentational deve essere riusabile in qualunque progetto:
+- **Puro**: niente DI di servizi/store/router/HTTP, nessuna business logic; solo `input()`/`output()` (signals), `OnPush`, standalone. Il container *smart* fa stato/orchestrazione.
+- **Reattività massima e robusta**: input = signal `input()`; ogni derivato = `computed()` dagli input (mai snapshot/copie locali, no `@Input set`/`ngOnChanges`/`markForCheck`). Input oggetto/array immutabili (il padre passa riferimenti nuovi). Side-effect solo via `effect()`.
+- **i18n-agnostico**: le label arrivano **via input già tradotte**; il dumb NON usa `TranslateModule`/chiavi i18n dell'app.
+- **API tipizzata**: interfacce/type esportati; `input.required` dove serve; transform (`booleanAttribute`/`numberAttribute`); **output mai con nomi DOM nativi**.
+- **Naming funzionale, domain-agnostico, inequivocabile**: nomi (componenti/variabili/funzioni/input/output) per **funzione**, non per dominio. ✅ `SelectionCard`, `value`/`selected`/`items`/`selectionChange`. ❌ `BookKindCard`, `aiMode`. (Il container può usare nomi di dominio.)
+- **Stile themeable** via token/CSS custom properties (no colori hardcoded), `prefers-reduced-motion`; **a11y** integrata; **self-responsive** (host-class/`ScreenTypeDirective`); **content projection** dove utile; **JSDoc + esempio**; testabile.
+
 ### 1.4 i18n (default EN)
 - **Ogni testo visibile → chiave i18n** flat dot-path (es. `i18n.Project.Status.processing`). Aggiungere la chiave in **tutti e tre** `public/i18n/{en,it,de}.json`, **ordine alfabetico**, **un termine per lingua** (no inglese nei file it/de).
 - Nei template: `{{ 'i18n.X' | translate }}` / `| translate: { param }`. `TranslateModule` negli `imports` del componente.
