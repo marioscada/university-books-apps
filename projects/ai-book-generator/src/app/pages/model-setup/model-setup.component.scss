@@ -1,124 +1,23 @@
-// Model setup — toolbar con tab + viste. Token globali, niente literal di colore.
+// Model setup — pagina a sezioni con bande alternate. Token globali, niente
+// literal di colore: ritematizzabile dal solo tema globale.
 :host {
   display: block;
 }
 
-.setup {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3, 24px);
-  padding-block: var(--space-3, 24px) var(--space-4, 32px);
-}
-
-// --- Toolbar ----------------------------------------------------------------
-.setup-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2, 16px);
-  flex-wrap: wrap;
-}
-
-.setup-bar__back {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid var(--card-border-color);
-  background: var(--card-bg);
-  color: var(--mat-sys-on-surface);
-  cursor: pointer;
-  flex: 0 0 auto;
-}
-.setup-bar__back:hover {
-  border-color: var(--accent-400);
-}
-
-.setup-bar__id {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-.setup-bar__eyebrow {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent-700);
-}
-.setup-bar__titlerow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-.setup-bar__title {
-  margin: 0;
-  font-size: clamp(1.375rem, 2.2vw, 1.75rem);
-  font-weight: 800;
-  color: var(--mat-sys-on-surface);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.setup-bar__titlefield {
-  min-width: 260px;
-}
-.setup-bar__pencil {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  border: none;
-  background: none;
-  color: var(--mat-sys-on-surface-variant);
-  cursor: pointer;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-}
-.setup-bar__pencil:hover {
-  background: var(--accent-100);
-  color: var(--accent-700);
-}
-.setup-bar__source {
-  font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant);
-  white-space: nowrap;
-}
-
-// Tab a pillole centrate
-.setup-tabs {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-inline: auto;
-  padding: 4px;
-  border-radius: 999px;
-  background: var(--field-bg);
-  border: 1px solid var(--card-border-color);
-}
-.setup-tab {
+// Back link
+.ms-back {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
-  border-radius: 999px;
+  align-self: flex-start;
   border: none;
   background: none;
-  color: var(--mat-sys-on-surface-variant);
+  padding: 0;
   font: inherit;
   font-weight: 600;
   font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
   cursor: pointer;
-  white-space: nowrap;
 
   mat-icon {
     font-size: 18px;
@@ -126,211 +25,197 @@
     height: 18px;
   }
 }
-.setup-tab.is-active {
-  background: var(--card-bg);
+.ms-back:hover {
   color: var(--accent-700);
-  box-shadow: var(--card-shadow);
 }
 
-.setup-bar__actions {
+// --- Header sezione ---------------------------------------------------------
+.s1-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 8px);
+}
+.s1-step {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  flex: 0 0 auto;
+}
+.s1-step__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--accent-500);
+  color: var(--on-accent, #fff);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.s1-step__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-700);
+}
+.s1-title {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.s1-subtitle {
+  margin: 0;
+  font-size: var(--site-body-large, 1.0625rem);
+  color: var(--mat-sys-on-surface-variant);
+  max-width: 60ch;
 }
 
-// --- Tab Impostazioni: 2 colonne -------------------------------------------
-.setup-settings {
+// --- Griglia form + card ----------------------------------------------------
+.s1-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: var(--space-2, 16px);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: var(--space-3, 24px);
   align-items: start;
 }
 
-.setup-card {
+// --- Form -------------------------------------------------------------------
+.s1-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 16px);
+}
+.s1-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.s1-field__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2, 16px);
+}
+.s1-field__label {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+.s1-field__req {
+  color: var(--tone-danger-fg, #d33);
+}
+.s1-field__optional {
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+.s1-field__counter {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+.s1-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--field-radius, 10px);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.s1-input::placeholder {
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.7;
+}
+.s1-input:focus-visible {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+.s1-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.5;
+}
+
+// --- Card "Cos'è un …" ------------------------------------------------------
+.s1-about {
   display: flex;
   flex-direction: column;
   gap: var(--space-2, 16px);
   padding: var(--card-padding, 20px);
   border-radius: var(--card-radius, 16px);
-  background: var(--card-bg);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent-100) 65%, var(--card-bg)),
+    var(--card-bg)
+  );
   border: 1px solid var(--card-border-color);
-  box-shadow: var(--card-shadow);
 }
-.setup-card__head {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.setup-card__title {
+.s1-about__title {
   margin: 0;
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--mat-sys-on-surface);
 }
-.setup-card__sub {
+.s1-about__text {
   margin: 0;
   font-size: var(--site-body-small, 0.875rem);
   color: var(--mat-sys-on-surface-variant);
+  line-height: 1.5;
 }
-
-.setup-preset {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-top: var(--space-1, 8px);
-  border-top: 1px solid var(--card-border-color);
+.s1-about__divider {
+  height: 1px;
+  background: var(--card-border-color);
 }
-
-// --- Campi (label sopra) ----------------------------------------------------
-.setup-fields {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2, 16px);
-}
-.setup-fields__row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-2, 16px);
-}
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.field__label {
+.s1-about__includes {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: var(--site-body-small, 0.875rem);
   font-weight: 600;
   color: var(--mat-sys-on-surface);
-}
 
-// Segmented control
-.seg {
-  display: inline-flex;
-  gap: 6px;
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--accent-600, var(--accent-700));
+  }
 }
-.seg--wrap {
+.s1-chips {
+  display: flex;
   flex-wrap: wrap;
+  gap: 8px;
 }
-.seg__btn {
+.s1-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--field-border-color, var(--card-border-color));
-  background: var(--field-bg);
-  color: var(--mat-sys-on-surface-variant);
-  font: inherit;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
   font-size: var(--site-body-small, 0.875rem);
   font-weight: 600;
-  cursor: pointer;
+  color: var(--mat-sys-on-surface);
 
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
+    color: var(--chip-fg, var(--accent-700));
   }
 }
-.seg__btn:hover {
-  border-color: var(--accent-400);
-}
-.seg__btn.is-active {
-  border-color: var(--accent-500);
-  color: var(--accent-700);
-  background: var(--accent-100);
-}
-
-.color-field {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 10px;
-  border-radius: var(--field-radius, 10px);
-  background: var(--field-bg);
-  border: 1px solid var(--field-border-color, var(--card-border-color));
-}
-.color-field__input {
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-}
-.color-field__value {
-  font-size: var(--site-body-small, 0.875rem);
+.s1-chip--more {
   color: var(--mat-sys-on-surface-variant);
-  text-transform: uppercase;
-}
-
-// --- Tab Fonti (placeholder) ------------------------------------------------
-.setup-empty {
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1, 8px);
-  min-height: 240px;
-  text-align: center;
-  color: var(--mat-sys-on-surface-variant);
-
-  mat-icon {
-    font-size: 40px;
-    width: 40px;
-    height: 40px;
-    opacity: 0.6;
-  }
-  p {
-    margin: 0;
-  }
-}
-
-// --- Tab Verifica -----------------------------------------------------------
-.setup-review {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2, 16px);
-  max-width: 720px;
-  margin-inline: auto;
-  width: 100%;
-}
-.setup-review__cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  align-self: center;
-  padding: 14px 28px;
-  border: none;
-  border-radius: 12px;
-  background: var(--accent-500);
-  color: var(--on-accent, #fff);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-.setup-review__cta:hover {
-  background: var(--accent-600, var(--accent-700));
+  font-weight: 500;
 }
 
 // --- Responsive -------------------------------------------------------------
-@media (max-width: 1100px) {
-  .setup-tabs {
-    order: 3;
-    width: 100%;
-    margin-inline: 0;
-    justify-content: center;
-  }
-  .setup-bar__actions {
-    margin-left: auto;
-  }
-}
 @media (max-width: 860px) {
-  .setup-settings {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 600px) {
-  .setup-fields__row {
+  .s1-grid {
     grid-template-columns: 1fr;
   }
 }

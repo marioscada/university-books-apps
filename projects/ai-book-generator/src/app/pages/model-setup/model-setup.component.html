@@ -1,220 +1,85 @@
 <app-auth-shell>
-  <div class="setup site-container">
-    <!-- Toolbar -->
-    <header class="setup-bar">
-      <button class="setup-bar__back" type="button" (click)="back()" [attr.aria-label]="'i18n.Setup.back' | translate">
-        <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
+  <!-- Sezione 1 — Definisci (banda bianca) -->
+  <section class="band">
+    <div class="site-container band__inner">
+      <button class="ms-back" type="button" (click)="back()">
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_back</mat-icon>
+        {{ 'i18n.Setup.back' | translate }}
       </button>
 
-      <div class="setup-bar__id">
-        <span class="setup-bar__eyebrow">{{ 'i18n.Setup.eyebrow' | translate }}</span>
-        <div class="setup-bar__titlerow">
-          @if (editingTitle()) {
-            <app-text-field
-              class="setup-bar__titlefield"
-              [placeholder]="'i18n.Setup.bookTitlePlaceholder' | translate"
+      <header class="s1-head">
+        <span class="s1-step">
+          <span class="s1-step__num">1</span>
+          <span class="s1-step__eyebrow">{{ 'i18n.Setup.S1.eyebrow' | translate }}</span>
+        </span>
+        <h1 class="s1-title">{{ s1Title() }}</h1>
+        <p class="s1-subtitle">{{ s1Subtitle() }}</p>
+      </header>
+
+      <div class="s1-grid">
+        <!-- Form -->
+        <div class="s1-form">
+          <div class="s1-field">
+            <div class="s1-field__top">
+              <label class="s1-field__label" for="ms-title">
+                {{ s1TitleLabel() }} <span class="s1-field__req">*</span>
+              </label>
+              <span class="s1-field__counter">{{ title().length }}/{{ titleMax }}</span>
+            </div>
+            <input
+              id="ms-title"
+              class="s1-input"
+              type="text"
+              [attr.maxlength]="titleMax"
               [value]="title()"
-              (valueChange)="title.set($event)" />
-            <button class="setup-bar__pencil" type="button" (click)="editingTitle.set(false)" aria-label="ok">
-              <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
-            </button>
-          } @else {
-            <h1 class="setup-bar__title">{{ displayTitle() }}</h1>
-            <button class="setup-bar__pencil" type="button" (click)="editingTitle.set(true)" [attr.aria-label]="'i18n.Setup.edit' | translate">
-              <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
-            </button>
-          }
-          @if (template()) {
-            <span class="setup-bar__source">{{ template()!.sourceKey | translate }}</span>
-          }
-        </div>
-      </div>
+              (input)="title.set($any($event.target).value)"
+              [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate" />
+          </div>
 
-      <nav class="setup-tabs" [attr.aria-label]="'i18n.Setup.eyebrow' | translate">
-        @for (tab of tabs; track tab.id) {
-          <button
-            class="setup-tab"
-            type="button"
-            [class.is-active]="activeTab() === tab.id"
-            [attr.aria-pressed]="activeTab() === tab.id"
-            (click)="activeTab.set(tab.id)">
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ tab.icon }}</mat-icon>
-            {{ tab.labelKey | translate }}
-          </button>
-        }
-      </nav>
-
-      <div class="setup-bar__actions">
-        <button mat-stroked-button type="button" (click)="saveDraft()">{{ 'i18n.Setup.saveDraft' | translate }}</button>
-        <button mat-flat-button color="primary" type="button" (click)="createProject()">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
-          {{ 'i18n.Setup.createProject' | translate }}
-        </button>
-      </div>
-    </header>
-
-    <!-- Contenuto per tab -->
-    @switch (activeTab()) {
-      @case ('preview') {
-        <app-result-preview
-          [title]="'i18n.Setup.preview.title' | translate"
-          [subtitle]="'i18n.Setup.preview.subtitle' | translate"
-          [refreshLabel]="'i18n.Setup.refresh' | translate"
-          [fitLabel]="'i18n.Setup.fit' | translate"
-          [coverKicker]="modelName()"
-          [coverTitle]="displayTitle()"
-          coverBrand="SCADÁ"
-          [coverTheme]="template()?.coverTheme ?? 'ocean'"
-          [summaryTitle]="'i18n.Setup.preview.summaryTitle' | translate"
-          [summaryText]="'i18n.Setup.preview.summaryText' | translate"
-          [tocLabel]="'i18n.Setup.indice' | translate"
-          [tocEntries]="tocEntries()"
-          [pages]="pagePreviews()"
-          [excludedLabel]="'i18n.Setup.excluded' | translate"
-          [device]="device()"
-          [stats]="previewStats()"
-          (deviceChange)="setDevice($event)"
-          (refresh)="refreshPreview()"
-          (fit)="setDevice('desktop')" />
-      }
-
-      @case ('settings') {
-        <div class="setup-settings">
-          <section class="setup-card">
-            <header class="setup-card__head">
-              <h2 class="setup-card__title">{{ 'i18n.Setup.structure.title' | translate }}</h2>
-              <p class="setup-card__sub">{{ 'i18n.Setup.structure.subtitle' | translate }}</p>
-            </header>
-
-            <app-doc-structure-list
-              [parts]="docParts()"
-              [addSectionLabel]="'i18n.Setup.structure.add' | translate"
-              [editLabel]="'i18n.Setup.edit' | translate"
-              [countLabel]="'i18n.Setup.count' | translate"
-              [wordsLabel]="'i18n.Setup.wordsPerUnit' | translate"
-              [activeLabel]="'i18n.Setup.legend.active' | translate"
-              [disabledLabel]="'i18n.Setup.legend.disabled' | translate"
-              [reorderHint]="'i18n.Setup.legend.reorder' | translate"
-              [requiredLabel]="'i18n.Setup.required' | translate"
-              (toggle)="togglePart($event)"
-              (countChange)="changeCount($event)"
-              (wordChange)="changeWord($event)"
-              (reorder)="reorderParts($event)"
-              (addSection)="addSection()" />
-
-            <div class="setup-preset">
-              <label class="field__label">{{ 'i18n.Setup.suggestedLength' | translate }}</label>
-              <div class="seg seg--wrap">
-                @for (preset of lengthPresets; track preset.id) {
-                  <button type="button" class="seg__btn" [class.is-active]="lengthPreset() === preset.id"
-                    (click)="applyPreset(preset.id)">
-                    {{ 'i18n.Setup.Length.' + preset.id | translate }}
-                  </button>
-                }
-              </div>
+          <div class="s1-field">
+            <div class="s1-field__top">
+              <label class="s1-field__label" for="ms-desc">
+                {{ s1DescLabel() }}
+                <span class="s1-field__optional">{{ 'i18n.Setup.S1.optional' | translate }}</span>
+              </label>
+              <span class="s1-field__counter">{{ description().length }}/{{ descMax }}</span>
             </div>
-          </section>
+            <textarea
+              id="ms-desc"
+              class="s1-input s1-textarea"
+              rows="5"
+              [attr.maxlength]="descMax"
+              [value]="description()"
+              (input)="description.set($any($event.target).value)"
+              [placeholder]="s1DescPlaceholder()"></textarea>
+          </div>
+        </div>
 
-          <section class="setup-card">
-            <header class="setup-card__head">
-              <h2 class="setup-card__title">{{ 'i18n.Setup.settings.title' | translate }}</h2>
-              <p class="setup-card__sub">{{ 'i18n.Setup.settings.subtitle' | translate }}</p>
-            </header>
+        <!-- Card informativa -->
+        <aside class="s1-about">
+          <h2 class="s1-about__title">{{ s1AboutTitle() }}</h2>
+          <p class="s1-about__text">{{ aboutText() }}</p>
 
-            <div class="setup-fields">
-              <div class="setup-fields__row">
-                <app-select-field
-                  [label]="'i18n.Setup.font' | translate"
-                  [options]="fontOptions"
-                  [value]="typo().fontFamily"
-                  (valueChange)="patchTypo({ fontFamily: $event })" />
-                <app-select-field
-                  [label]="'i18n.Setup.fontSize' | translate"
-                  [options]="sizeOptions"
-                  [value]="typo().fontSizePt + ''"
-                  (valueChange)="patchTypo({ fontSizePt: num($event) })" />
-              </div>
-
-              <div class="setup-fields__row">
-                <div class="field">
-                  <label class="field__label" for="text-color">{{ 'i18n.Setup.textColor' | translate }}</label>
-                  <div class="color-field">
-                    <input id="text-color" type="color" class="color-field__input"
-                      [value]="typo().textColor"
-                      (input)="patchTypo({ textColor: $any($event.target).value })" />
-                    <span class="color-field__value">{{ typo().textColor }}</span>
-                  </div>
-                </div>
-
-                <div class="field">
-                  <label class="field__label">{{ 'i18n.Setup.lineHeight' | translate }}</label>
-                  <div class="seg">
-                    @for (lh of lineHeightOptions; track lh.value) {
-                      <button type="button" class="seg__btn" [class.is-active]="typo().lineHeight === lh.value"
-                        (click)="patchTypo({ lineHeight: lh.value })">
-                        {{ lh.labelKey | translate }}
-                      </button>
-                    }
-                  </div>
-                </div>
-              </div>
-
-              <div class="field">
-                <label class="field__label">{{ 'i18n.Setup.alignment' | translate }}</label>
-                <div class="seg">
-                  <button type="button" class="seg__btn" [class.is-active]="typo().alignment === 'left'"
-                    (click)="patchTypo({ alignment: 'left' })">
-                    <mat-icon fontSet="material-symbols-outlined">format_align_left</mat-icon>
-                    {{ 'i18n.Setup.alignLeft' | translate }}
-                  </button>
-                  <button type="button" class="seg__btn" [class.is-active]="typo().alignment === 'justify'"
-                    (click)="patchTypo({ alignment: 'justify' })">
-                    <mat-icon fontSet="material-symbols-outlined">format_align_justify</mat-icon>
-                    {{ 'i18n.Setup.alignJustify' | translate }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="field">
-                <label class="field__label">{{ 'i18n.Setup.outputFormat' | translate }}</label>
-                <div class="seg">
-                  @for (fmt of outputFormats; track fmt) {
-                    <button type="button" class="seg__btn" [class.is-active]="isFormat(fmt)"
-                      (click)="toggleFormat(fmt)">{{ fmt | uppercase }}</button>
-                  }
-                </div>
-              </div>
+          @if (includes().length) {
+            <div class="s1-about__divider"></div>
+            <span class="s1-about__includes">
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check_circle</mat-icon>
+              {{ s1IncludesTitle() }}
+            </span>
+            <div class="s1-chips">
+              @for (c of includes(); track c.label) {
+                <span class="s1-chip"
+                  [style.--chip-bg]="'var(--tone-' + c.tone + '-bg)'"
+                  [style.--chip-fg]="'var(--tone-' + c.tone + '-fg)'">
+                  <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ c.icon }}</mat-icon>
+                  {{ c.label }}
+                </span>
+              }
+              <span class="s1-chip s1-chip--more">⋯ {{ 'i18n.Setup.S1.more' | translate }}</span>
             </div>
-          </section>
-        </div>
-      }
-
-      @case ('sources') {
-        <div class="setup-card setup-empty">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">folder_open</mat-icon>
-          <p>{{ 'i18n.Setup.sources.placeholder' | translate }}</p>
-        </div>
-      }
-
-      @case ('review') {
-        <div class="setup-review">
-          <app-project-summary
-            [title]="'i18n.Setup.summary.title' | translate"
-            [rows]="summaryRows()"
-            [changesTitle]="'i18n.Setup.summary.changesTitle' | translate"
-            [changes]="changes()"
-            [changesMoreLabel]="changesMore()"
-            [excludedTitle]="'i18n.Setup.summary.excludedTitle' | translate"
-            [excluded]="excluded()"
-            [confirmTitle]="'i18n.Setup.summary.confirmTitle' | translate"
-            [confirmText]="'i18n.Setup.summary.confirmText' | translate" />
-
-          <button class="setup-review__cta" type="button" (click)="createProject()">
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
-            {{ 'i18n.Setup.createProject' | translate }}
-          </button>
-        </div>
-      }
-    }
-  </div>
+          }
+        </aside>
+      </div>
+    </div>
+  </section>
 </app-auth-shell>
