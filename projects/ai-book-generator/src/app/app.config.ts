@@ -9,7 +9,7 @@
  */
 
 import { ApplicationConfig, provideZoneChangeDetection, provideAppInitializer, inject } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
@@ -62,8 +62,9 @@ export const appConfig: ApplicationConfig = {
     // Zone.js change detection optimization
     provideZoneChangeDetection({ eventCoalescing: true }),
 
-    // Router configuration
-    provideRouter(routes),
+    // Router configuration — withComponentInputBinding() per bindare i param di
+    // route (es. `:id`) direttamente su `input()` dei componenti (Angular 19).
+    provideRouter(routes, withComponentInputBinding()),
 
     // HTTP Client with auth interceptor
     provideHttpClient(withInterceptors([authInterceptor])),

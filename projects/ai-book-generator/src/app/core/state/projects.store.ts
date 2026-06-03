@@ -160,6 +160,12 @@ export const ProjectsStore = signalStore(
         patchState(store, updateEntity({ id, changes: project }));
       },
 
+      /** Riapre un progetto archiviato → review|draft (vedi mock). */
+      async reopen(id: string): Promise<void> {
+        const project = await api.reopen(id);
+        patchState(store, updateEntity({ id, changes: project }));
+      },
+
       /** Crea un progetto derivato collegato. */
       async derive(id: string, derivedKind: DerivedKind): Promise<Project> {
         const child = await api.derive(id, derivedKind);

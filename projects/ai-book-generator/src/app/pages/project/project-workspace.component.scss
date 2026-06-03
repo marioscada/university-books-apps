@@ -1,0 +1,66 @@
+// Project Workspace — layout glue specifico (card/cover/status/progress sono
+// globali in theme/_components; qui solo spaziatura/composizione della shell).
+:host {
+  display: block;
+}
+
+// Pannello di stato: card a piena larghezza con contenuto in colonna.
+.workspace-panel.mat-mdc-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 24px;
+  border-radius: var(--card-radius, 16px);
+  box-shadow: var(--card-shadow);
+}
+
+// Variante a tile (griglia review): si adatta alla cards-grid globale.
+.workspace-panel--tile.mat-mdc-card {
+  min-height: 160px;
+}
+
+.workspace-panel__title {
+  margin: 0;
+  font-size: var(--site-title-large, 1.5rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.workspace-panel--tile .workspace-panel__title {
+  font-size: var(--site-title-medium, 1.125rem);
+}
+
+.workspace-panel__body {
+  margin: 0;
+  font-size: var(--site-body-large, 1.0625rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.workspace-panel__placeholder {
+  margin: 0;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.workspace-panel__bar {
+  width: 100%;
+}
+
+.workspace-panel__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  font-size: var(--site-body-small, 0.8125rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+// Riga delle azioni avanzate (disabilitate, F4+/F8).
+.workspace-advanced {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}

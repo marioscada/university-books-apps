@@ -38,6 +38,24 @@ export const routes: Routes = [
     title: 'Create - AI Book Generator',
   },
   {
+    // New Project — stub funzionale (il wizard a 7 step arriverà in F4).
+    path: 'create/new',
+    loadComponent: () =>
+      import('./pages/project-new/new-project.component').then((m) => m.NewProjectComponent),
+    // canActivate: [authGuard], // TODO ripristinare
+    title: 'New project - AI Book Generator',
+  },
+  {
+    // Project Workspace — shell dinamica per stato (state machine §2).
+    path: 'project/:id',
+    loadComponent: () =>
+      import('./pages/project/project-workspace.component').then(
+        (m) => m.ProjectWorkspaceComponent,
+      ),
+    // canActivate: [authGuard], // TODO ripristinare
+    title: 'Project - AI Book Generator',
+  },
+  {
     // Collezione: archivio storico (solo completati) per categoria.
     path: 'collection',
     loadComponent: () => import('./pages/collection/collection.component').then((m) => m.CollectionComponent),

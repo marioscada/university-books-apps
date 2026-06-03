@@ -1,0 +1,48 @@
+<app-auth-shell>
+  <!-- Banda 1 (bianco): intestazione -->
+  <section class="band">
+    <div class="site-container band__inner">
+      <app-page-header
+        [eyebrow]="'i18n.Create.eyebrow' | translate"
+        [title]="'i18n.NewProject.title' | translate">
+      </app-page-header>
+    </div>
+  </section>
+
+  <!-- Banda 2 (slate): form di creazione -->
+  <section class="band band--alt">
+    <div class="site-container band__inner">
+      <form class="new-project__form" (ngSubmit)="onCreate()">
+        <mat-form-field appearance="outline" class="new-project__field">
+          <mat-label>{{ 'i18n.NewProject.titleField' | translate }}</mat-label>
+          <input
+            matInput
+            name="title"
+            [ngModel]="title()"
+            (ngModelChange)="title.set($event)"
+            required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="new-project__field">
+          <mat-label>{{ 'i18n.NewProject.kind' | translate }}</mat-label>
+          <mat-select
+            name="kind"
+            [ngModel]="kind()"
+            (ngModelChange)="kind.set($event)">
+            @for (k of kinds; track k) {
+              <mat-option [value]="k">{{ 'i18n.Project.Kind.' + k | translate }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button
+          type="submit"
+          class="site-cta-pill new-project__submit"
+          [disabled]="!title().trim() || creating()">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+          <span>{{ 'i18n.NewProject.create' | translate }}</span>
+        </button>
+      </form>
+    </div>
+  </section>
+</app-auth-shell>

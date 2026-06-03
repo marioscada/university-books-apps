@@ -6,7 +6,7 @@
         <div class="dash-hero__text">
           <h1 class="dash-hero__title">Continue creating</h1>
           <p class="dash-hero__subtitle">Riprendi un lavoro in corso o avviane uno nuovo.</p>
-          <a class="site-cta-pill dash-hero__cta" routerLink="/create">
+          <a class="site-cta-pill dash-hero__cta" routerLink="/create/new">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
             <span>New project</span>
           </a>
@@ -25,7 +25,7 @@
         <div class="cards-grid">
           @for (work of inProgress(); track work.id) {
             <mat-card appearance="outlined" class="project-card">
-              <a class="project-card__link" routerLink="/create" [attr.aria-label]="'Apri ' + work.title"></a>
+              <a class="project-card__link" [routerLink]="['/project', work.id]" [attr.aria-label]="'Apri ' + work.title"></a>
               <span class="cover-art cover-art--{{ work.coverTheme }}" aria-hidden="true"></span>
 
               <div class="project-card__body">
@@ -71,7 +71,7 @@
           }
 
           <!-- Card "nuovo progetto" -->
-          <a class="project-card project-card--add" routerLink="/create">
+          <a class="project-card project-card--add" routerLink="/create/new">
             <span class="project-card__add-icon" aria-hidden="true">
               <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
             </span>
