@@ -1,0 +1,144 @@
+// StepIndicator — numbered dots + connectors, accent for reached/active steps.
+// Token-driven only: no hardcoded colors (fallbacks are last-resort defaults).
+:host {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.step-indicator__step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 4px 0;
+  background: none;
+  border: none;
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  font: inherit;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.step-indicator__step:disabled {
+  cursor: default;
+}
+
+.step-indicator__step:focus-visible {
+  outline: 2px solid var(--accent-500, #039fce);
+  outline-offset: 2px;
+  border-radius: var(--card-radius, 8px);
+}
+
+.step-indicator__step.is-reached {
+  color: var(--accent-700, #0289b2);
+}
+
+.step-indicator__step.is-active {
+  color: var(--accent-700, #0289b2);
+}
+
+// --- Dot (number or check) ---
+.step-indicator__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background: var(--card-bg, #fff);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.step-indicator__dot mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.step-indicator__step.is-active .step-indicator__dot {
+  background: var(--accent-100, #dcf7ff);
+  border-color: var(--accent-500, #039fce);
+}
+
+.step-indicator__step.is-done:not(.is-active) .step-indicator__dot {
+  background: var(--accent-500, #039fce);
+  border-color: var(--accent-500, #039fce);
+  color: #fff;
+}
+
+// --- Connectors (lines between dots, drawn from the dot row center) ---
+.step-indicator__connector {
+  position: absolute;
+  top: calc(4px + 15px); // padding-top + half dot height
+  height: 2px;
+  background: var(--card-border-color, #eceff3);
+  transition: background-color 0.15s ease;
+}
+
+.step-indicator__connector--before {
+  left: 0;
+  right: 50%;
+  margin-right: 17px; // half dot + small gap
+}
+
+.step-indicator__connector--after {
+  left: 50%;
+  right: 0;
+  margin-left: 17px;
+}
+
+// First step has no incoming connector; last step has no outgoing one.
+.step-indicator__step:first-child .step-indicator__connector--before,
+.step-indicator__step:last-child .step-indicator__connector--after {
+  display: none;
+}
+
+// Accent the connector entering a reached step (segment before it is complete).
+.step-indicator__step.is-reached .step-indicator__connector--before {
+  background: var(--accent-500, #039fce);
+}
+
+// Accent the outgoing connector of a step that is reached but not the boundary
+// (i.e. a fully passed segment). Active-but-not-done keeps the forward line
+// neutral so the "progress front" reads correctly.
+.step-indicator__step.is-reached:not(.is-active) .step-indicator__connector--after {
+  background: var(--accent-500, #039fce);
+}
+
+.step-indicator__step.is-active.is-done .step-indicator__connector--after {
+  background: var(--accent-500, #039fce);
+}
+
+// --- Label ---
+.step-indicator__label {
+  max-width: 100%;
+  font-weight: 600;
+  font-size: var(--site-body-small, 0.875rem);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// --- Self-responsive: hide labels on small, keep numbered dots ---
+:host(.isSmall) .step-indicator__label {
+  display: none;
+}
+
+// --- Reduced motion ---
+@media (prefers-reduced-motion: reduce) {
+  .step-indicator__step,
+  .step-indicator__dot,
+  .step-indicator__connector {
+    transition: none;
+  }
+}
