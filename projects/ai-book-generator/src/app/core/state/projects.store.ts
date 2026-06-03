@@ -27,7 +27,7 @@ import {
   timer,
 } from 'rxjs';
 
-import type { DerivedKind, Job, Project } from '../domain';
+import type { DerivedKind, Job, Plan, Project, ProjectSettings } from '../domain';
 import { API_PORT } from '../data/api-port';
 import { RUNTIME_CONFIG } from '../config/runtime.config';
 import { ACTIVE_STATUSES } from '../data/mock-api.service';
@@ -42,9 +42,14 @@ import { ACTIVE_STATUSES } from '../data/mock-api.service';
  */
 export const ProjectsStore = signalStore(
   { providedIn: 'root' },
-  withState<{ loading: boolean; jobsByProject: Record<string, Job | null> }>({
+  withState<{
+    loading: boolean;
+    jobsByProject: Record<string, Job | null>;
+    plan: Plan;
+  }>({
     loading: false,
     jobsByProject: {},
+    plan: 'free',
   }),
   withEntities<Project>(),
   withComputed((store) => ({
@@ -121,9 +126,34 @@ export const ProjectsStore = signalStore(
       }
     };
 
+    /** Carica il piano del workspace (gating soft del wizard). */
+    const loadPlan = async (): Promise<void> => {
+      const plan = await api.getPlan();
+      patchState(store, { plan });
+    };
+
     return {
       loadAll,
+      loadPlan,
       pollJob,
+
+      /** Aggiorna i settings di un progetto (autosave del wizard). */
+      async updateSettings(id: string, settings: ProjectSettings): Promise<void> {
+        const project = await api.patchProject(id, { settings });
+        patchState(store, updateEntity({ id, changes: project }));
+      },
+
+      /**
+       * Aggiorna i metadati di una draft (titolo + fonti scelte nel wizard).
+       * Separato da `updateSettings` per non gonfiarne la firma di dominio.
+       */
+      async updateDraftMeta(
+        id: string,
+        patch: { title?: string; sourceIds?: string[] },
+      ): Promise<void> {
+        const project = await api.patchProject(id, patch);
+        patchState(store, updateEntity({ id, changes: project }));
+      },
 
       /** Crea un nuovo progetto (draft) e lo aggiunge allo store. */
       async create(title: string, kind: Project['kind']): Promise<Project> {
@@ -180,6 +210,7 @@ export const ProjectsStore = signalStore(
   withHooks({
     onInit(store) {
       void store.loadAll();
+      void store.loadPlan();
     },
   }),
 );

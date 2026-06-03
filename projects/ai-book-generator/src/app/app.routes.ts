@@ -38,10 +38,12 @@ export const routes: Routes = [
     title: 'Create - AI Book Generator',
   },
   {
-    // New Project — stub funzionale (il wizard a 7 step arriverà in F4).
+    // New Project — wizard a 7 step (F4), resumable come Draft (?draft=:id).
     path: 'create/new',
     loadComponent: () =>
-      import('./pages/project-new/new-project.component').then((m) => m.NewProjectComponent),
+      import('./pages/project-new/new-project.component').then(
+        (m) => m.NewProjectWizardComponent,
+      ),
     // canActivate: [authGuard], // TODO ripristinare
     title: 'New project - AI Book Generator',
   },

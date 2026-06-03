@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
-import { withEntities, setAllEntities } from '@ngrx/signals/entities';
+import { withEntities, setAllEntities, addEntity } from '@ngrx/signals/entities';
 
 import type { Source } from '../domain';
 import { API_PORT } from '../data/api-port';
@@ -23,6 +23,13 @@ export const SourcesStore = signalStore(
         patchState(store, { loading: true });
         const sources = await api.listSources();
         patchState(store, setAllEntities(sources), { loading: false });
+      },
+
+      /** Crea una nota inline (Step 2 wizard) e la aggiunge allo store. */
+      async createNote(name: string): Promise<Source> {
+        const note = await api.createNote(name);
+        patchState(store, addEntity(note));
+        return note;
       },
     };
   }),

@@ -7,6 +7,7 @@ import type {
   Job,
   JobStep,
   Source,
+  Plan,
 } from '../domain';
 import type {
   ApiPort,
@@ -137,6 +138,9 @@ export class MockApiService implements ApiPort {
     }
     if (patch.settings !== undefined) {
       project.settings = structuredClone(patch.settings);
+    }
+    if (patch.sourceIds !== undefined) {
+      project.sourceIds = [...patch.sourceIds];
     }
     project.updatedAt = new Date().toISOString();
     return structuredClone(project);
@@ -281,6 +285,28 @@ export class MockApiService implements ApiPort {
     return structuredClone(this.requireSource(id));
   }
 
+  async createNote(name: string): Promise<Source> {
+    await this.delay();
+    const now = new Date().toISOString();
+    const note: Source = {
+      id: this.newId('src'),
+      workspaceId: 'ws-personal',
+      ownerId: 'user-1',
+      name,
+      type: 'note',
+      mime: 'text/plain',
+      sizeBytes: name.length,
+      uploadedAt: now,
+      ingestStatus: 'ready',
+      lastAnalyzedAt: now,
+      tags: [],
+      usedInProjectIds: [],
+      permission: 'owner',
+    };
+    this.sources.set(note.id, note);
+    return structuredClone(note);
+  }
+
   async patchSource(id: string, patch: PatchSourceInput): Promise<Source> {
     await this.delay();
     const source = this.requireSource(id);
@@ -326,6 +352,16 @@ export class MockApiService implements ApiPort {
       startedAt: source.uploadedAt,
       finishedAt: done ? now : undefined,
     };
+  }
+
+  // ===========================================================================
+  // Workspace / plan
+  // ===========================================================================
+
+  async getPlan(): Promise<Plan> {
+    await this.delay();
+    // v1 mock: workspace personale su piano `free` → gating soft del wizard.
+    return 'free';
   }
 
   // ===========================================================================

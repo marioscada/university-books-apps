@@ -1,20 +1,219 @@
-// New Project — layout glue specifico della pagina (il resto è globale/token).
+// New Project Wizard — layout glue specifico della pagina.
+// Card/status/step-indicator (.wizard-steps) sono globali in theme/_components;
+// qui solo composizione e spaziatura degli step.
 :host {
   display: block;
 }
 
-.new-project__form {
+.band__inner {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-  max-width: 560px;
+  gap: 20px;
 }
 
-.new-project__field {
+.wizard-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 760px;
+}
+
+.wizard-body__head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wizard-body__title {
+  margin: 0;
+  font-size: var(--site-title-large, 1.5rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface, #1a1d21);
+}
+
+.wizard-body__subtitle {
+  margin: 0;
+  font-size: var(--site-body-large, 1.0625rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.wizard-hint {
+  margin: 0;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.wizard-hint--upgrade {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-500, #039fce);
+}
+
+// Griglia di scelte (kind / sources): bottoni-card selezionabili.
+.wizard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.wizard-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--card-border-color, #eceff3);
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg, #fff);
+  color: var(--mat-sys-on-surface, #1a1d21);
+  font-size: var(--site-body-small, 0.9375rem);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+
+  mat-icon {
+    color: var(--mat-sys-on-surface-variant, #5b6068);
+  }
+
+  &:hover {
+    border-color: var(--accent-500, #039fce);
+    box-shadow: var(--card-shadow);
+    transform: translateY(-1px);
+  }
+}
+
+.wizard-choice--active {
+  border-color: var(--accent-500, #039fce);
+  background: var(--accent-100, #dcf7ff);
+
+  mat-icon {
+    color: var(--accent-500, #039fce);
+  }
+}
+
+.wizard-field {
   width: 100%;
 }
 
-.new-project__submit {
-  margin-top: 4px;
+.wizard-field--inline {
+  flex: 1 1 160px;
+}
+
+.wizard-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.wizard-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+// Step 4 — modalità.
+.wizard-modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.wizard-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--card-border-color, #eceff3);
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg, #fff);
+}
+
+.wizard-mode--active {
+  border-color: var(--accent-500, #039fce);
+}
+
+.wizard-mode--locked {
+  opacity: 0.7;
+}
+
+.wizard-mode__label {
+  font-weight: 600;
+}
+
+.wizard-mode__badge {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent-100, #dcf7ff);
+  color: var(--accent-500, #039fce);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.wizard-mode__desc {
+  font-size: var(--site-body-small, 0.8125rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.wizard-toggles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.wizard-formats {
+  display: block;
+}
+
+// Step 7 — recap.
+.wizard-recap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+}
+
+.wizard-recap__row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--card-border-color, #eceff3);
+
+  dt {
+    flex: 0 0 200px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant, #5b6068);
+  }
+
+  dd {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    color: var(--mat-sys-on-surface, #1a1d21);
+  }
+}
+
+.wizard-recap__chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--section-band-alt, #f1f5f9);
+  font-size: 0.8125rem;
+}
+
+// Navigazione.
+.wizard-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.wizard-nav__finish {
+  display: flex;
+  gap: 12px;
 }

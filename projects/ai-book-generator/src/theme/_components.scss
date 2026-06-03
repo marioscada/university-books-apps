@@ -361,3 +361,66 @@
     color: var(--mat-sys-error, #b3261e);
   }
 }
+
+// =============================================================================
+// Wizard steps — indicatore di avanzamento (1..N) del New Project Wizard.
+// Pattern riusabile GLOBALE (single source). Accent = --accent-500. Mai colore
+// da solo: ogni step mostra numero + label → accessibile.
+// =============================================================================
+.wizard-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 1.5vw, 20px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  font-size: var(--site-body-small, 0.875rem);
+}
+
+.wizard-step__index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--card-border-color, #eceff3);
+  background: var(--card-bg, #fff);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.wizard-step__label {
+  font-weight: 600;
+}
+
+// Step completato: pallino accent pieno (segno di spunta opzionale via icona).
+.wizard-step--done {
+  color: var(--accent-500, #039fce);
+
+  .wizard-step__index {
+    border-color: var(--accent-500, #039fce);
+    background: var(--accent-500, #039fce);
+    color: #fff;
+  }
+}
+
+// Step attivo: contorno accent, testo accent (evidenza corrente).
+.wizard-step--active {
+  color: var(--accent-500, #039fce);
+
+  .wizard-step__index {
+    border-color: var(--accent-500, #039fce);
+    background: var(--accent-100, #dcf7ff);
+    color: var(--accent-500, #039fce);
+  }
+}

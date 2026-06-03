@@ -7,6 +7,7 @@ import type {
   DerivedKind,
   Job,
   Source,
+  Plan,
 } from '../domain';
 
 /**
@@ -51,12 +52,18 @@ export interface ApiPort {
   listSources(filter?: ListSourcesFilter): Promise<Source[]>;
   /** GET /sources/:id */
   getSource(id: string): Promise<Source>;
+  /** POST /sources — crea una nota inline (mock, ingest immediato `ready`). */
+  createNote(name: string): Promise<Source>;
   /** PATCH /sources/:id (tags/folder/category) */
   patchSource(id: string, patch: PatchSourceInput): Promise<Source>;
   /** DELETE /sources/:id */
   deleteSource(id: string): Promise<void>;
   /** GET /sources/:id/ingest (stato estrazione) */
   getIngestJob(sourceId: string): Promise<Job>;
+
+  // --- Workspace / plan (gating) -------------------------------------------
+  /** Piano del workspace corrente (v1 mock: `free`) — usato per il gating soft. */
+  getPlan(): Promise<Plan>;
 }
 
 export interface ListProjectsFilter {
@@ -73,6 +80,7 @@ export interface CreateProjectInput {
 export interface PatchProjectInput {
   title?: string;
   settings?: Project['settings'];
+  sourceIds?: string[];
 }
 
 export interface ListSourcesFilter {

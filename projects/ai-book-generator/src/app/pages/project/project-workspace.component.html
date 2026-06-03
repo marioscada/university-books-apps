@@ -8,6 +8,13 @@
           [title]="project.title">
           @switch (project.status) {
             @case ('draft') {
+              <a
+                mat-stroked-button
+                routerLink="/create/new"
+                [queryParams]="{ draft: project.id }">
+                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">edit_note</mat-icon>
+                {{ 'i18n.Workspace.Action.resume' | translate }}
+              </a>
               <button type="button" class="site-cta-pill" (click)="generate()">
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
                 <span>{{ 'i18n.Workspace.Action.generate' | translate }}</span>

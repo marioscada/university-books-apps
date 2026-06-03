@@ -6,6 +6,7 @@ import {
   input,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -39,6 +40,7 @@ import type { JobStep } from '../../core/domain';
     AuthShellComponent,
     PageHeaderComponent,
     NgTemplateOutlet,
+    RouterLink,
     MatButtonModule,
     MatIconModule,
     MatCardModule,

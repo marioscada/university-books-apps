@@ -1,48 +1,331 @@
 <app-auth-shell>
-  <!-- Banda 1 (bianco): intestazione -->
+  <!-- Banda 1 (bianco): intestazione + step indicator + Salva ed esci -->
   <section class="band">
     <div class="site-container band__inner">
       <app-page-header
         [eyebrow]="'i18n.Create.eyebrow' | translate"
         [title]="'i18n.NewProject.title' | translate">
+        @if (hasDraft()) {
+          <button
+            type="button"
+            mat-stroked-button
+            [disabled]="busy()"
+            (click)="onSaveExit()">
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">save</mat-icon>
+            {{ 'i18n.Wizard.Action.saveExit' | translate }}
+          </button>
+        }
       </app-page-header>
+
+      <ol class="wizard-steps" [attr.aria-label]="'i18n.Wizard.stepsAria' | translate">
+        @for (n of steps; track n) {
+          <li
+            class="wizard-step"
+            [class.wizard-step--active]="n === currentStep()"
+            [class.wizard-step--done]="n < currentStep()"
+            [attr.aria-current]="n === currentStep() ? 'step' : null">
+            <span class="wizard-step__index" aria-hidden="true">{{ n }}</span>
+            <span class="wizard-step__label">{{ stepKey(n) + '.title' | translate }}</span>
+          </li>
+        }
+      </ol>
     </div>
   </section>
 
-  <!-- Banda 2 (slate): form di creazione -->
+  <!-- Banda 2 (slate): contenuto dello step corrente -->
   <section class="band band--alt">
     <div class="site-container band__inner">
-      <form class="new-project__form" (ngSubmit)="onCreate()">
-        <mat-form-field appearance="outline" class="new-project__field">
-          <mat-label>{{ 'i18n.NewProject.titleField' | translate }}</mat-label>
-          <input
-            matInput
-            name="title"
-            [ngModel]="title()"
-            (ngModelChange)="title.set($event)"
-            required />
-        </mat-form-field>
+      <div class="wizard-body">
+        <header class="wizard-body__head">
+          <h2 class="wizard-body__title">{{ stepKey(currentStep()) + '.title' | translate }}</h2>
+          <p class="wizard-body__subtitle">{{ stepKey(currentStep()) + '.subtitle' | translate }}</p>
+        </header>
 
-        <mat-form-field appearance="outline" class="new-project__field">
-          <mat-label>{{ 'i18n.NewProject.kind' | translate }}</mat-label>
-          <mat-select
-            name="kind"
-            [ngModel]="kind()"
-            (ngModelChange)="kind.set($event)">
-            @for (k of kinds; track k) {
-              <mat-option [value]="k">{{ 'i18n.Project.Kind.' + k | translate }}</mat-option>
+        @switch (currentStep()) {
+          <!-- STEP 1 — Goal: kind + title -->
+          @case (1) {
+            <div class="wizard-grid" role="radiogroup" [attr.aria-label]="'i18n.NewProject.kind' | translate">
+              @for (k of kinds; track k) {
+                <button
+                  type="button"
+                  role="radio"
+                  class="wizard-choice"
+                  [class.wizard-choice--active]="kind() === k"
+                  [attr.aria-checked]="kind() === k"
+                  (click)="selectKind(k)">
+                  <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">menu_book</mat-icon>
+                  <span>{{ 'i18n.Project.Kind.' + k | translate }}</span>
+                </button>
+              }
+            </div>
+
+            <mat-form-field appearance="outline" class="wizard-field">
+              <mat-label>{{ 'i18n.NewProject.titleField' | translate }}</mat-label>
+              <input
+                matInput
+                name="title"
+                [ngModel]="title()"
+                (ngModelChange)="title.set($event)"
+                required />
+            </mat-form-field>
+          }
+
+          <!-- STEP 2 — Sources: multi-select + nota inline -->
+          @case (2) {
+            <p class="wizard-hint">{{ 'i18n.Wizard.sources.hint' | translate }}</p>
+            @if (availableSources().length) {
+              <div class="wizard-grid">
+                @for (source of availableSources(); track source.id) {
+                  <button
+                    type="button"
+                    class="wizard-choice"
+                    [class.wizard-choice--active]="isSourceSelected(source.id)"
+                    [attr.aria-pressed]="isSourceSelected(source.id)"
+                    (click)="toggleSource(source.id)">
+                    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">
+                      {{ isSourceSelected(source.id) ? 'check_circle' : 'description' }}
+                    </mat-icon>
+                    <span>{{ source.name }}</span>
+                  </button>
+                }
+              </div>
+            } @else {
+              <p class="empty">{{ 'i18n.Library.empty' | translate }}</p>
             }
-          </mat-select>
-        </mat-form-field>
 
-        <button
-          type="submit"
-          class="site-cta-pill new-project__submit"
-          [disabled]="!title().trim() || creating()">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
-          <span>{{ 'i18n.NewProject.create' | translate }}</span>
-        </button>
-      </form>
+            <div class="wizard-note">
+              <mat-form-field appearance="outline" class="wizard-field">
+                <mat-label>{{ 'i18n.Wizard.sources.noteLabel' | translate }}</mat-label>
+                <input
+                  matInput
+                  name="note"
+                  [ngModel]="noteName()"
+                  (ngModelChange)="noteName.set($event)" />
+              </mat-form-field>
+              <button
+                type="button"
+                mat-stroked-button
+                [disabled]="!noteName().trim() || busy()"
+                (click)="onAddNote()">
+                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">note_add</mat-icon>
+                {{ 'i18n.Wizard.Action.addNote' | translate }}
+              </button>
+            </div>
+          }
+
+          <!-- STEP 3 — Instructions -->
+          @case (3) {
+            <mat-form-field appearance="outline" class="wizard-field">
+              <mat-label>{{ 'i18n.Wizard.instructions.label' | translate }}</mat-label>
+              <textarea
+                matInput
+                name="instructions"
+                rows="6"
+                [ngModel]="settings().instructions"
+                (ngModelChange)="setInstructions($event)"></textarea>
+            </mat-form-field>
+          }
+
+          <!-- STEP 4 — Processing mode (gating soft) -->
+          @case (4) {
+            <mat-radio-group
+              class="wizard-modes"
+              [attr.aria-label]="stepKey(4) + '.title' | translate"
+              [ngModel]="settings().processingMode"
+              (ngModelChange)="selectMode($event)">
+              @for (mode of modes; track mode) {
+                <div
+                  class="wizard-mode"
+                  [class.wizard-mode--active]="settings().processingMode === mode"
+                  [class.wizard-mode--locked]="isModeLocked(mode)">
+                  <mat-radio-button [value]="mode" [disabled]="isModeLocked(mode)">
+                    <span class="wizard-mode__label">{{ 'i18n.Wizard.Mode.' + mode + '.label' | translate }}</span>
+                    @if (isModeLocked(mode)) {
+                      <span class="wizard-mode__badge">{{ 'i18n.Wizard.gating.proOnly' | translate }}</span>
+                    }
+                  </mat-radio-button>
+                  <span class="wizard-mode__desc">{{ 'i18n.Wizard.Mode.' + mode + '.desc' | translate }}</span>
+                </div>
+              }
+            </mat-radio-group>
+            @if (plan() === 'free') {
+              <p class="wizard-hint wizard-hint--upgrade">
+                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">lock</mat-icon>
+                {{ 'i18n.Wizard.gating.hint' | translate }}
+              </p>
+            }
+          }
+
+          <!-- STEP 5 — Structure -->
+          @case (5) {
+            <div class="wizard-row">
+              <mat-form-field appearance="outline" class="wizard-field wizard-field--inline">
+                <mat-label>{{ 'i18n.Wizard.Structure.chapters' | translate }}</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="1"
+                  name="chapters"
+                  [ngModel]="settings().structure.chapters ?? null"
+                  (ngModelChange)="setChapters($event)" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="wizard-field wizard-field--inline">
+                <mat-label>{{ 'i18n.Wizard.Structure.length' | translate }}</mat-label>
+                <mat-select
+                  name="length"
+                  [ngModel]="settings().structure.length"
+                  (ngModelChange)="patchStructure({ length: $event })">
+                  @for (l of lengths; track l) {
+                    <mat-option [value]="l">{{ 'i18n.Wizard.Structure.Length.' + l | translate }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="wizard-field wizard-field--inline">
+                <mat-label>{{ 'i18n.Wizard.Structure.tone' | translate }}</mat-label>
+                <mat-select
+                  name="tone"
+                  [ngModel]="settings().structure.tone"
+                  (ngModelChange)="patchStructure({ tone: $event })">
+                  @for (t of tones; track t) {
+                    <mat-option [value]="t">{{ 'i18n.Wizard.Structure.Tone.' + t | translate }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="wizard-field wizard-field--inline">
+                <mat-label>{{ 'i18n.Wizard.Structure.depth' | translate }}</mat-label>
+                <mat-select
+                  name="depth"
+                  [ngModel]="settings().structure.depth"
+                  (ngModelChange)="patchStructure({ depth: $event })">
+                  @for (d of depths; track d) {
+                    <mat-option [value]="d">{{ 'i18n.Wizard.Structure.Depth.' + d | translate }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="wizard-toggles">
+              @for (flag of structureToggles; track flag) {
+                <mat-slide-toggle
+                  [ngModel]="isStructureFlag(flag)"
+                  (ngModelChange)="toggleStructureFlag(flag, $event)">
+                  {{ 'i18n.Wizard.Structure.' + flag | translate }}
+                </mat-slide-toggle>
+              }
+            </div>
+          }
+
+          <!-- STEP 6 — Output & language -->
+          @case (6) {
+            <mat-chip-listbox
+              class="wizard-formats"
+              multiple
+              [attr.aria-label]="'i18n.Wizard.output.formats' | translate"
+              [ngModel]="settings().outputFormats"
+              (ngModelChange)="setFormats($event)"
+              name="formats">
+              @for (format of outputFormats; track format) {
+                <mat-chip-option [value]="format">
+                  {{ 'i18n.Wizard.Output.Format.' + format | translate }}
+                </mat-chip-option>
+              }
+            </mat-chip-listbox>
+
+            <mat-form-field appearance="outline" class="wizard-field">
+              <mat-label>{{ 'i18n.Wizard.output.language' | translate }}</mat-label>
+              <mat-select
+                name="language"
+                [ngModel]="settings().language"
+                (ngModelChange)="setLanguage($event)">
+                @for (lang of languages; track lang) {
+                  <mat-option [value]="lang">
+                    {{ 'i18n.Common.LanguageSwitcher.Language.' + lang | translate }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+
+          <!-- STEP 7 — Review -->
+          @case (7) {
+            <dl class="wizard-recap">
+              <div class="wizard-recap__row">
+                <dt>{{ 'i18n.NewProject.kind' | translate }}</dt>
+                <dd>{{ 'i18n.Project.Kind.' + kind() | translate }}</dd>
+              </div>
+              <div class="wizard-recap__row">
+                <dt>{{ 'i18n.NewProject.titleField' | translate }}</dt>
+                <dd>{{ title() }}</dd>
+              </div>
+              <div class="wizard-recap__row">
+                <dt>{{ stepKey(2) + '.title' | translate }}</dt>
+                <dd>{{ sourceIds().length }}</dd>
+              </div>
+              <div class="wizard-recap__row">
+                <dt>{{ stepKey(4) + '.title' | translate }}</dt>
+                <dd>{{ 'i18n.Wizard.Mode.' + settings().processingMode + '.label' | translate }}</dd>
+              </div>
+              <div class="wizard-recap__row">
+                <dt>{{ 'i18n.Wizard.output.formats' | translate }}</dt>
+                <dd>
+                  @for (format of settings().outputFormats; track format) {
+                    <span class="wizard-recap__chip">{{ 'i18n.Wizard.Output.Format.' + format | translate }}</span>
+                  }
+                </dd>
+              </div>
+              <div class="wizard-recap__row">
+                <dt>{{ 'i18n.Wizard.output.language' | translate }}</dt>
+                <dd>{{ 'i18n.Common.LanguageSwitcher.Language.' + settings().language | translate }}</dd>
+              </div>
+            </dl>
+          }
+        }
+
+        <!-- Navigazione: Indietro / Avanti — oppure azioni finali allo Step 7 -->
+        <nav class="wizard-nav" [attr.aria-label]="'i18n.Wizard.stepsAria' | translate">
+          <button
+            type="button"
+            mat-stroked-button
+            [disabled]="currentStep() === 1 || busy()"
+            (click)="onBack()">
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_back</mat-icon>
+            {{ 'i18n.Wizard.Action.back' | translate }}
+          </button>
+
+          @if (currentStep() < totalSteps) {
+            <button
+              type="button"
+              class="site-cta-pill"
+              [disabled]="!canAdvance() || busy()"
+              (click)="onNext()">
+              <span>{{ 'i18n.Wizard.Action.next' | translate }}</span>
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+            </button>
+          } @else {
+            <div class="wizard-nav__finish">
+              <button
+                type="button"
+                mat-stroked-button
+                [disabled]="busy()"
+                (click)="onSaveDraft()">
+                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">save</mat-icon>
+                {{ 'i18n.Wizard.Action.saveDraft' | translate }}
+              </button>
+              <button
+                type="button"
+                class="site-cta-pill"
+                [disabled]="busy()"
+                (click)="onGenerate()">
+                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
+                <span>{{ 'i18n.Wizard.Action.generate' | translate }}</span>
+              </button>
+            </div>
+          }
+        </nav>
+      </div>
     </div>
   </section>
 </app-auth-shell>
