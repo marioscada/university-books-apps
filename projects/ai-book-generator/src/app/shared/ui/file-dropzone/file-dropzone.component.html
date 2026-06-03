@@ -1,0 +1,47 @@
+<div
+  class="dropzone"
+  [class.is-dragging]="isDragging()"
+  role="button"
+  tabindex="0"
+  [attr.aria-label]="dropzoneLabel()"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+  (click)="fileInput.click()"
+  (keydown.enter)="fileInput.click()"
+  (keydown.space)="$event.preventDefault(); fileInput.click()">
+  <mat-icon class="dropzone__icon" fontSet="material-symbols-outlined" aria-hidden="true">cloud_upload</mat-icon>
+  <p class="dropzone__title">{{ title() }}</p>
+  @if (hint()) {
+    <p class="dropzone__hint">{{ hint() }}</p>
+  }
+  <input
+    #fileInput
+    type="file"
+    multiple
+    hidden
+    [attr.accept]="accept() || null"
+    (change)="onFileInput($event)" />
+</div>
+
+@if (items().length) {
+  <ul class="files">
+    @for (item of items(); track item.id) {
+      <li class="files__row">
+        <mat-icon class="files__type" fontSet="material-symbols-outlined" aria-hidden="true">{{ item.typeIcon }}</mat-icon>
+        <span class="files__name">{{ item.name }}</span>
+        @if (item.statusLabel) {
+          <span class="files__status">{{ item.statusLabel }}</span>
+        }
+        <span class="files__size">{{ item.sizeLabel }}</span>
+        <button
+          mat-icon-button
+          type="button"
+          [attr.aria-label]="removeLabel()"
+          (click)="itemRemove.emit(item.id)">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+        </button>
+      </li>
+    }
+  </ul>
+}
