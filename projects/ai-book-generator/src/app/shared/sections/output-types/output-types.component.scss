@@ -4,7 +4,7 @@
 }
 
 :host(:nth-of-type(even)) {
-  background: var(--section-band-alt, #f1f5f9);
+  background: var(--section-band-alt);
 }
 
 .output-types {
