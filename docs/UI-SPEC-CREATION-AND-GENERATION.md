@@ -35,6 +35,38 @@
 
 ---
 
+## A0. Pagina «Crea» — entry/launcher di creazione (`/create`)
+
+> ✅ **Decisione**: `/create` = **launcher in alto** (questa UI) **+ sezione
+> "Continua a creare"** (i progetti vivi della dashboard attuale) **sotto**, nella
+> stessa pagina. I **modelli** sono resi con **dati mock** (cover + meta) che
+> precompilano il wizard; il tipo dominio `ProjectTemplate` si formalizza dopo.
+
+- Header: **"Crea"** + *"Trasforma le tue idee e le tue fonti in libri completi con
+  l'aiuto dell'intelligenza artificiale."*
+- **Inizia da zero**: card larga **"Nuovo progetto da zero"** + *"Crea un progetto
+  partendo da una pagina vuota."* (icona + chevron) → apre il wizard (`/create/new`).
+- **Scegli un tipo di progetto**: riga orizzontale di card-tipo (Libro · Manuale ·
+  Guida · Report · Tesi/Accademico), ognuna: **icona + titolo + descrizione + hint**
+  (es. "6–12 capitoli", "5–10 sezioni", "Struttura accademica") + freccia → wizard
+  con `kind` **preselezionato** (+ smart defaults).
+- **Ispirati a un modello**: riga di card-modello con **cover immagine** (es. "Guida
+  introduttiva all'Intelligenza Artificiale — Libro · 12 capitoli"; "Manuale di
+  Fotografia Digitale — Manuale · 7 sezioni"; "Marketing Digitale — Guida · 12
+  sezioni"; "Analisi di Mercato 2024 — Report · 14 sezioni"; "Tesi: IA e
+  Apprendimento Automatico — Accademico") + bottone **"Usa modello"** → wizard
+  precompilato dal template.
+- **Banner "Non sai da dove iniziare?"**: *"Raccontaci la tua idea in poche parole e
+  ti suggeriremo il tipo di progetto più adatto."* + **"Ottieni suggerimenti"**
+  (flusso AI di suggerimento tipo).
+
+Mapping dominio: "tipo" e "modello" **preselezionano** `ProjectKind` + `ProjectSettings`
+nel wizard. I **modelli/template** sono un concetto **nuovo** (non ancora nel dominio):
+da modellare (`ProjectTemplate`) in fase dedicata. La AI-suggestion è un'operazione
+tipizzata futura.
+
+---
+
 ## A. Wizard "Nuovo progetto" — 4 step + Opzioni avanzate
 
 Header: **"Nuovo progetto"** + sottotitolo *"Configura cosa vuoi generare, le fonti
