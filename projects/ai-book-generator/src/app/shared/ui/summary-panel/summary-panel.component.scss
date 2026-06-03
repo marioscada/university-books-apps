@@ -1,7 +1,7 @@
 // SummaryPanel — look self-contained sui token globali del design system.
 :host {
   display: block;
-  padding: 20px;
+  padding: var(--card-padding);
   border-radius: var(--card-radius, 16px);
   background: var(--card-bg);
   border: 1px solid var(--card-border-color);
@@ -44,11 +44,11 @@
 
 // Cover slot: only takes space when the parent projects something into it.
 .summary-panel__cover:not(:empty) {
-  margin-top: 16px;
+  margin-top: var(--space-2);
 }
 
 .summary-panel__rows {
-  margin: 16px 0 0;
+  margin: var(--space-2) 0 0;
 }
 
 .summary-panel__row {
@@ -81,19 +81,17 @@
   color: var(--mat-sys-on-surface);
 }
 
-// Footer slot: only takes space when the parent projects something into it.
-// Picks up the alternating band tone when that token is defined.
+// Footer slot: box-nota arrotondato con padding UNIFORME (solo se proiettato).
 .summary-panel__footer:not(:empty) {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--card-border-color);
-  border-radius: 0 0 var(--card-radius, 16px) var(--card-radius, 16px);
-  background: var(--section-band-alt, transparent);
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+  border-radius: 10px;
+  background: var(--section-band-alt);
 }
 
 // Self-responsive (convenzione marioscadasite): compatta su small.
 :host(.isSmall) {
-  padding: 14px;
+  padding: var(--space-2);
 
   .summary-panel__row {
     flex-direction: column;

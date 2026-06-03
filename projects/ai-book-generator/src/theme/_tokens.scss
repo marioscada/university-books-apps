@@ -29,6 +29,20 @@
   --card-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 2px 6px rgb(15 23 42 / 5%);
   --card-shadow-hover: 0 10px 30px rgb(15 23 42 / 10%);
 
+  // Campi form (input/textarea custom) — SINGLE SOURCE. bg interno = gradiente
+  // tenue grigio→bianco (look customer-portal). Cambiando qui → tutti i campi.
+  --field-bg: linear-gradient(359deg, var(--section-band-alt), var(--card-bg));
+  --field-border-color: var(--card-border-color);
+  --field-radius: 10px;
+
+  // Spaziature standard (griglia 8pt) — SINGLE SOURCE per padding/gap/margini dei
+  // componenti. `--card-padding` = padding interno standard di card/pannelli.
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --card-padding: 20px;
+
   // --- Sezioni --------------------------------------------------------------
   --section-padding-block: clamp(40px, 6vw, 80px);
   --section-min-height: clamp(360px, 32vw, 440px);

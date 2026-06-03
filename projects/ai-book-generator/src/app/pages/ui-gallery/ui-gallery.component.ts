@@ -1,8 +1,18 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatChipsModule } from '@angular/material/chips';
 
+import { TextFieldComponent } from '../../shared/ui/text-field/text-field.component';
+import { SelectFieldComponent } from '../../shared/ui/select-field/select-field.component';
 import { SelectionCardComponent } from '../../shared/ui/selection-card/selection-card.component';
 import { StepIndicatorComponent, type StepItem } from '../../shared/ui/step-indicator/step-indicator.component';
 import { FileDropzoneComponent, type FileListItem } from '../../shared/ui/file-dropzone/file-dropzone.component';
@@ -22,9 +32,19 @@ import { EntityCardComponent } from '../../shared/ui/entity-card/entity-card.com
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    FormsModule,
+    TextFieldModule,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    MatChipsModule,
+    TextFieldComponent,
+    SelectFieldComponent,
     SelectionCardComponent,
     StepIndicatorComponent,
     FileDropzoneComponent,
@@ -109,6 +129,25 @@ export class UiGalleryComponent {
     { title: 'Manuale di Machine Learning', cover: 'ocean', status: 'In corso', statusTone: 'accent' as const, type: 'Manuale', meta: 'Aggiornato oggi', footer: '8 sezioni', progress: 65 as number | null, published: false },
     { title: 'Cybersecurity per aziende', cover: 'ember', status: 'Bozza', statusTone: 'warning' as const, type: 'Guida', meta: 'Aggiornato ieri', footer: '5 capitoli', progress: null as number | null, published: false },
   ];
+
+  // --- Form controls ---
+  readonly textValue = signal('');
+  readonly nameValue = signal('');
+  readonly areaValue = signal('');
+  readonly selectValue = signal('balanced');
+  readonly toggleRefs = signal(true);
+  readonly toggleLang = signal(false);
+  readonly checkBiblio = signal(true);
+  readonly checkGlossary = signal(false);
+  readonly radioMode = signal('balanced');
+  readonly chipFormats = signal<string[]>(['pdf']);
+  readonly modeOptions = [
+    { value: 'fast_draft', label: 'Fast Draft' },
+    { value: 'balanced', label: 'Balanced' },
+    { value: 'deep_research', label: 'Deep Research' },
+    { value: 'academic', label: 'Academic' },
+  ];
+  readonly formatOptions = ['pdf', 'docx', 'epub', 'markdown', 'html'];
 
   log(event: string): void {
     // eslint-disable-next-line no-console

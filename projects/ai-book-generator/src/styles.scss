@@ -42,6 +42,16 @@ html {
   );
 }
 
+// Allinea il `primary` di Material all'accent del progetto (#039FCE): così
+// toggle/checkbox/radio/select/bottoni "primary" usano l'accent, non l'azure
+// di base. Deve venire DOPO mat.theme() per vincere sui token emessi.
+html {
+  --mat-sys-primary: var(--accent-500);
+  --mat-sys-on-primary: var(--on-accent);
+  --mat-sys-primary-container: var(--accent-100);
+  --mat-sys-on-primary-container: var(--accent-700);
+}
+
 body {
   background: var(--mat-sys-surface-container-lowest, #ffffff);
   color: var(--mat-sys-on-surface, #1a1d21);

@@ -370,3 +370,33 @@
 .np-stepper .mat-horizontal-content-container {
   padding: 0;
 }
+
+// =============================================================================
+// Dropdown / overlay panels (menu · select · autocomplete) — stile GLOBALE UNICO
+// (single source): stessa superficie/bordo/raggio/ombra ovunque, voce attiva in
+// accent. Cambiando qui → tutti i dropdown del sito.
+// =============================================================================
+.mat-mdc-menu-panel,
+.mat-mdc-select-panel,
+.mat-mdc-autocomplete-panel {
+  --mat-menu-container-color: var(--card-bg);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: 12px !important;
+  box-shadow: var(--card-shadow-hover);
+  overflow: hidden;
+}
+
+// Voci: hover/active/selezionata → tinta accento.
+.mat-mdc-menu-item:hover:not([disabled]),
+.mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.mat-mdc-option.mat-mdc-option-active {
+  background: var(--accent-100);
+}
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: var(--accent-100);
+
+  .mdc-list-item__primary-text {
+    color: var(--accent-700);
+  }
+}

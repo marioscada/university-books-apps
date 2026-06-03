@@ -5,6 +5,47 @@
   </header>
 
   <section class="g-sec">
+    <h2>Form controls (Material) <small>input · textarea · select · toggle · checkbox · radio · chips</small></h2>
+    <div class="g-form">
+      <app-text-field class="g-field" label="Titolo del progetto"
+        placeholder="Inserisci un titolo" hint="Potrai modificarlo successivamente."
+        [value]="textValue()" (valueChange)="textValue.set($event)" />
+
+      <app-text-field class="g-field" label="Nome" placeholder="Mario"
+        [value]="nameValue()" (valueChange)="nameValue.set($event)"
+        [error]="nameValue().trim() ? '' : 'Campo obbligatorio'" />
+
+      <app-text-field class="g-field g-field--full" label="Istruzioni per l'AI" multiline [rows]="3"
+        placeholder="Descrivi cosa deve generare l'AI, il tono, il pubblico…"
+        [value]="areaValue()" (valueChange)="areaValue.set($event)" />
+
+      <app-select-field class="g-field" label="Modalità" placeholder="Seleziona…"
+        [options]="modeOptions" [value]="selectValue()" (valueChange)="selectValue.set($event)" />
+    </div>
+
+    <div class="g-controls">
+      <div class="g-stack">
+        <mat-slide-toggle [ngModel]="toggleRefs()" (ngModelChange)="toggleRefs.set($event)">Includi riferimenti e citazioni</mat-slide-toggle>
+        <mat-slide-toggle [ngModel]="toggleLang()" (ngModelChange)="toggleLang.set($event)">Mantieni la lingua originale</mat-slide-toggle>
+      </div>
+      <div class="g-stack">
+        <mat-checkbox [ngModel]="checkBiblio()" (ngModelChange)="checkBiblio.set($event)">Bibliografia</mat-checkbox>
+        <mat-checkbox [ngModel]="checkGlossary()" (ngModelChange)="checkGlossary.set($event)">Glossario</mat-checkbox>
+      </div>
+      <mat-radio-group class="g-stack" [ngModel]="radioMode()" (ngModelChange)="radioMode.set($event)">
+        @for (m of modeOptions; track m.value) {
+          <mat-radio-button [value]="m.value">{{ m.label }}</mat-radio-button>
+        }
+      </mat-radio-group>
+      <mat-chip-listbox class="g-chips" multiple [ngModel]="chipFormats()" (ngModelChange)="chipFormats.set($event)" aria-label="Formati">
+        @for (f of formatOptions; track f) {
+          <mat-chip-option [value]="f">{{ f }}</mat-chip-option>
+        }
+      </mat-chip-listbox>
+    </div>
+  </section>
+
+  <section class="g-sec">
     <h2>SelectionCard <small>scelta singola · icona + titolo + descrizione + check</small></h2>
     <div class="g-grid">
       @for (k of kinds; track k.id) {
