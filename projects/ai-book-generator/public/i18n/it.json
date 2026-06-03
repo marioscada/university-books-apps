@@ -358,6 +358,7 @@
   "i18n.Setup.S1.optional": "(facoltativa)",
   "i18n.Setup.S1.possF": "la tua",
   "i18n.Setup.S1.possM": "il tuo",
+  "i18n.Setup.S1.previewHint": "L’anteprima si aggiorna mentre scrivi.",
   "i18n.Setup.S1.subtitle": "Scegli un nome per {{poss}} {{nameLower}} e descrivi brevemente cosa conterrà.",
   "i18n.Setup.S1.title": "Definisci {{poss}} {{name}}",
   "i18n.Setup.S1.titleLabel": "Titolo {{gen}} {{nameLower}}",

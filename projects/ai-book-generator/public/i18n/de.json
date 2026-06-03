@@ -358,6 +358,7 @@
   "i18n.Setup.S1.optional": "(optional)",
   "i18n.Setup.S1.possF": "dein",
   "i18n.Setup.S1.possM": "dein",
+  "i18n.Setup.S1.previewHint": "Die Vorschau aktualisiert sich beim Tippen.",
   "i18n.Setup.S1.subtitle": "Gib {{poss}} {{nameLower}} einen Namen und beschreibe kurz den Inhalt.",
   "i18n.Setup.S1.title": "Definiere {{poss}} {{name}}",
   "i18n.Setup.S1.titleLabel": "Titel ({{nameLower}})",

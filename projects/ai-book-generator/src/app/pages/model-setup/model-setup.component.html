@@ -55,29 +55,16 @@
           </div>
         </div>
 
-        <!-- Card informativa -->
-        <aside class="s1-about">
-          <h2 class="s1-about__title">{{ s1AboutTitle() }}</h2>
-          <p class="s1-about__text">{{ aboutText() }}</p>
-
-          @if (includes().length) {
-            <div class="s1-about__divider"></div>
-            <span class="s1-about__includes">
-              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check_circle</mat-icon>
-              {{ s1IncludesTitle() }}
+        <!-- Anteprima dal vivo: il libro riflette il titolo -->
+        <aside class="s1-preview">
+          <div class="s1-book cover-art cover-art--{{ template()?.coverTheme ?? 'ocean' }}">
+            <span class="s1-book__kicker">{{ modelName() }}</span>
+            <span class="s1-book__title" [class.is-placeholder]="!title().trim()">
+              {{ title().trim() || ('i18n.Setup.untitled' | translate) }}
             </span>
-            <div class="s1-chips">
-              @for (c of includes(); track c.label) {
-                <span class="s1-chip"
-                  [style.--chip-bg]="'var(--tone-' + c.tone + '-bg)'"
-                  [style.--chip-fg]="'var(--tone-' + c.tone + '-fg)'">
-                  <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ c.icon }}</mat-icon>
-                  {{ c.label }}
-                </span>
-              }
-              <span class="s1-chip s1-chip--more">⋯ {{ 'i18n.Setup.S1.more' | translate }}</span>
-            </div>
-          }
+            <span class="s1-book__brand">SCADÁ</span>
+          </div>
+          <span class="s1-preview__hint">{{ 'i18n.Setup.S1.previewHint' | translate }}</span>
         </aside>
       </div>
     </div>

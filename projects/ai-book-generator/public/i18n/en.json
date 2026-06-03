@@ -358,6 +358,7 @@
   "i18n.Setup.S1.optional": "(optional)",
   "i18n.Setup.S1.possF": "your",
   "i18n.Setup.S1.possM": "your",
+  "i18n.Setup.S1.previewHint": "The preview updates as you type.",
   "i18n.Setup.S1.subtitle": "Give {{poss}} {{nameLower}} a name and briefly describe what it will contain.",
   "i18n.Setup.S1.title": "Define {{poss}} {{name}}",
   "i18n.Setup.S1.titleLabel": "{{name}} title",
