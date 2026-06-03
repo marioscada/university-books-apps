@@ -1,98 +1,41 @@
-// New Project Wizard — layout glue specifico della pagina.
-// Card/status/step-indicator (.wizard-steps) sono globali in theme/_components;
-// qui solo composizione e spaziatura degli step.
+// New Project Wizard — SOLO layout glue. I componenti Material (mat-stepper,
+// mat-button-toggle, mat-selection-list, mat-radio, mat-list, mat-chip, mat-button)
+// ereditano lo stile dal tema globale M3 (mat.theme() in styles.scss). Niente
+// stile bespoke qui.
 :host {
   display: block;
 }
 
-.band__inner {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.wizard-stepper {
+  background: transparent;
 }
 
-.wizard-body {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  max-width: 760px;
-}
-
-.wizard-body__head {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.wizard-body__title {
-  margin: 0;
-  font-size: var(--site-title-large, 1.5rem);
-  font-weight: 600;
-  color: var(--mat-sys-on-surface, #1a1d21);
-}
-
-.wizard-body__subtitle {
-  margin: 0;
-  font-size: var(--site-body-large, 1.0625rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+.wizard-subtitle {
+  margin: 0 0 8px;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .wizard-hint {
-  margin: 0;
-  font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  margin: 8px 0 0;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .wizard-hint--upgrade {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--accent-500, #039fce);
+  color: var(--accent-500);
 }
 
-// Griglia di scelte (kind / sources): bottoni-card selezionabili.
-.wizard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
-}
-
-.wizard-choice {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  border: 1px solid var(--card-border-color, #eceff3);
-  border-radius: var(--card-radius, 16px);
-  background: var(--card-bg, #fff);
-  color: var(--mat-sys-on-surface, #1a1d21);
-  font-size: var(--site-body-small, 0.9375rem);
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
-
-  mat-icon {
-    color: var(--mat-sys-on-surface-variant, #5b6068);
-  }
-
-  &:hover {
-    border-color: var(--accent-500, #039fce);
-    box-shadow: var(--card-shadow);
-    transform: translateY(-1px);
-  }
-}
-
-.wizard-choice--active {
-  border-color: var(--accent-500, #039fce);
-  background: var(--accent-100, #dcf7ff);
-
-  mat-icon {
-    color: var(--accent-500, #039fce);
-  }
+// Selettore kind: lascia andare a capo i toggle Material.
+.wizard-kinds {
+  flex-wrap: wrap;
+  margin-bottom: 16px;
 }
 
 .wizard-field {
   width: 100%;
+  max-width: 640px;
 }
 
 .wizard-field--inline {
@@ -111,29 +54,15 @@
   gap: 12px;
 }
 
-// Step 4 — modalità.
-.wizard-modes {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
+.wizard-sources {
+  max-width: 640px;
 }
 
-.wizard-mode {
+// Step 4 — modalità (mat-radio-group in colonna; label + desc impilati).
+.wizard-modes {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 14px 16px;
-  border: 1px solid var(--card-border-color, #eceff3);
-  border-radius: var(--card-radius, 16px);
-  background: var(--card-bg, #fff);
-}
-
-.wizard-mode--active {
-  border-color: var(--accent-500, #039fce);
-}
-
-.wizard-mode--locked {
-  opacity: 0.7;
+  gap: 8px;
 }
 
 .wizard-mode__label {
@@ -142,19 +71,17 @@
 
 .wizard-mode__badge {
   margin-left: 8px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--accent-100, #dcf7ff);
-  color: var(--accent-500, #039fce);
-  font-size: 0.7rem;
+  color: var(--accent-500);
   font-weight: 700;
   text-transform: uppercase;
+  font-size: 0.7rem;
   letter-spacing: 0.04em;
 }
 
 .wizard-mode__desc {
-  font-size: var(--site-body-small, 0.8125rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  display: block;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: var(--site-body-small);
 }
 
 .wizard-toggles {
@@ -163,57 +90,13 @@
   gap: 12px;
 }
 
-.wizard-formats {
-  display: block;
-}
-
-// Step 7 — recap.
-.wizard-recap {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin: 0;
-}
-
-.wizard-recap__row {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--card-border-color, #eceff3);
-
-  dt {
-    flex: 0 0 200px;
-    font-weight: 600;
-    color: var(--mat-sys-on-surface-variant, #5b6068);
-  }
-
-  dd {
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    color: var(--mat-sys-on-surface, #1a1d21);
-  }
-}
-
 .wizard-recap__chip {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--section-band-alt, #f1f5f9);
-  font-size: 0.8125rem;
+  margin-right: 6px;
 }
 
-// Navigazione.
-.wizard-nav {
+.wizard-actions {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
-  margin-top: 8px;
-}
-
-.wizard-nav__finish {
-  display: flex;
-  gap: 12px;
+  margin-top: 24px;
 }

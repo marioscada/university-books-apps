@@ -15,43 +15,43 @@
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">edit_note</mat-icon>
                 {{ 'i18n.Workspace.Action.resume' | translate }}
               </a>
-              <button type="button" class="site-cta-pill" (click)="generate()">
+              <button mat-flat-button color="primary" type="button" (click)="generate()">
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
                 <span>{{ 'i18n.Workspace.Action.generate' | translate }}</span>
               </button>
             }
             @case ('queued') {
-              <button type="button" class="site-cta-pill" (click)="cancel()">
+              <button mat-flat-button color="primary" type="button" (click)="cancel()">
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
                 <span>{{ 'i18n.Workspace.Action.cancel' | translate }}</span>
               </button>
             }
             @case ('processing') {
-              <button type="button" class="site-cta-pill" (click)="cancel()">
+              <button mat-flat-button color="primary" type="button" (click)="cancel()">
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
                 <span>{{ 'i18n.Workspace.Action.cancel' | translate }}</span>
               </button>
             }
             @case ('review') {
-              <button type="button" class="site-cta-pill" (click)="publish()">
+              <button mat-flat-button color="primary" type="button" (click)="publish()">
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">publish</mat-icon>
                 <span>{{ 'i18n.Workspace.Action.publish' | translate }}</span>
               </button>
             }
             @case ('failed') {
-              <button type="button" class="site-cta-pill" (click)="generate()">
+              <button mat-flat-button color="primary" type="button" (click)="generate()">
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">refresh</mat-icon>
                 <span>{{ 'i18n.Workspace.Action.retry' | translate }}</span>
               </button>
             }
             @case ('published') {
-              <button type="button" class="site-cta-pill" (click)="archive()">
+              <button mat-flat-button color="primary" type="button" (click)="archive()">
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">archive</mat-icon>
                 <span>{{ 'i18n.Workspace.Action.archive' | translate }}</span>
               </button>
             }
             @case ('archived') {
-              <button type="button" class="site-cta-pill" (click)="reopen()">
+              <button mat-flat-button color="primary" type="button" (click)="reopen()">
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">unarchive</mat-icon>
                 <span>{{ 'i18n.Workspace.Action.reopen' | translate }}</span>
               </button>

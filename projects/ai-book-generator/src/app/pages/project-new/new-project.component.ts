@@ -9,12 +9,16 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import type { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
@@ -83,9 +87,6 @@ const OUTPUT_FORMATS: readonly OutputFormat[] = [
 /** Lingue ISO disponibili (Step 6). */
 const LANGUAGES: readonly string[] = ['en', 'it', 'de'];
 
-/** Numero totale di step del wizard. */
-const TOTAL_STEPS = 7;
-
 /** Settings di partenza (mirror di `ProjectSettings`) per un nuovo wizard. */
 function defaultSettings(): ProjectSettings {
   return {
@@ -108,19 +109,18 @@ function defaultSettings(): ProjectSettings {
 }
 
 /**
- * NewProjectWizard — wizard a 7 step (F4), **resumable come Draft**.
+ * NewProjectWizard — wizard a 7 step (F4), **resumable come Draft**, UI **Material**.
  *
- * Resumability = il draft È la persistenza: dopo lo Step 1 (kind+title) si crea
- * la draft via `store.create`; ogni "Avanti" successivo fa autosave dei settings
- * via `store.updateSettings` (PATCH). "Salva ed esci" lascia la draft nella Create
- * hub; con `?draft=:id` il wizard riapre quella draft prefillando lo stato.
+ * Stepper = **`mat-stepper`** (Material) lineare; i controlli sono componenti
+ * Material (button-toggle, selection-list, radio, slide-toggle, chip, select, list).
  *
- * Stepper custom signal-driven (`currentStep` + `@switch`), non `mat-stepper`. I
- * controlli di input sono Material. Gating soft su piano `free` (deep_research/
- * academic disabilitati). Le fonti si SELEZIONANO dalla Library + nota mock inline.
+ * Resumability = il draft È la persistenza: dopo lo Step 1 (kind+title) si crea la
+ * draft via `store.create`; ogni passaggio in avanti fa autosave dei settings via
+ * `store.updateSettings`/`updateDraftMeta` (PATCH). "Salva ed esci" lascia la draft
+ * nella Create hub; con `?draft=:id` il wizard riapre quella draft prefillando lo stato.
  *
  * Business logic NELLO store: il componente legge signal e chiama metodi (mai il
- * mock direttamente).
+ * mock direttamente). OnPush, signals-first, nessuna sottoscrizione RxJS.
  */
 @Component({
   selector: 'app-new-project-wizard',
@@ -130,12 +130,15 @@ function defaultSettings(): ProjectSettings {
     AuthShellComponent,
     PageHeaderComponent,
     FormsModule,
+    MatStepperModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatRadioModule,
     MatSlideToggleModule,
     MatChipsModule,
+    MatButtonToggleModule,
+    MatListModule,
     MatButtonModule,
     MatIconModule,
     TranslateModule,
@@ -157,25 +160,9 @@ export class NewProjectWizardComponent {
   readonly structureToggles = STRUCTURE_TOGGLES;
   readonly outputFormats = OUTPUT_FORMATS;
   readonly languages = LANGUAGES;
-  readonly totalSteps = TOTAL_STEPS;
-  readonly steps = Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1);
   readonly lengths = ['short', 'medium', 'long'] as const;
   readonly tones = ['neutral', 'formal', 'friendly', 'technical', 'academic'] as const;
   readonly depths = ['overview', 'standard', 'deep'] as const;
-
-  /** Prefisso i18n dello step (1..7) → `i18n.Wizard.Step.<name>`. */
-  readonly stepKey = (step: number): string => {
-    const names = [
-      'goal',
-      'sources',
-      'instructions',
-      'mode',
-      'structure',
-      'output',
-      'review',
-    ];
-    return `i18n.Wizard.Step.${names[step - 1] ?? 'goal'}`;
-  };
 
   /** Fonti disponibili dalla Library (Step 2). */
   readonly availableSources = this.sourcesStore.entities;
@@ -184,8 +171,8 @@ export class NewProjectWizardComponent {
   readonly plan = this.store.plan;
 
   // --- Stato wizard (signal-driven) ----------------------------------------
-  /** Step corrente (1..7). */
-  readonly currentStep = signal(1);
+  /** Indice dello step Material selezionato (0..6). */
+  readonly selectedIndex = signal(0);
   /** Id della draft creata/ripresa (la persistenza). */
   readonly projectId = signal<string | null>(null);
 
@@ -200,8 +187,11 @@ export class NewProjectWizardComponent {
   /** Vero durante operazioni async (crea/patch/genera) → disabilita i CTA. */
   readonly busy = signal(false);
 
-  /** Esiste una draft persistita → "Salva ed esci" disponibile (step ≥ 1 dopo create). */
+  /** Esiste una draft persistita → "Salva ed esci" disponibile. */
   readonly hasDraft = computed(() => this.projectId() !== null);
+
+  /** Step 1 completo = titolo non vuoto (gating lineare dello stepper). */
+  readonly step1Complete = computed(() => this.title().trim().length > 0);
 
   /** Una modalità è bloccata dal piano corrente. */
   readonly isModeLocked = (mode: ProcessingMode): boolean =>
@@ -225,60 +215,27 @@ export class NewProjectWizardComponent {
       this.sourceIds.set([...project.sourceIds]);
       this.settings.set(structuredClone(project.settings));
       // Riapre direttamente sul primo step di configurazione.
-      this.currentStep.set(2);
+      this.selectedIndex.set(1);
     });
   }
 
-  // --- Navigazione ----------------------------------------------------------
+  // --- Navigazione mat-stepper ---------------------------------------------
 
-  /** Step 1 valido = titolo non vuoto. */
-  readonly canAdvance = computed(() => {
-    if (this.currentStep() === 1) {
-      return this.title().trim().length > 0;
-    }
-    return true;
-  });
-
-  /** Avanti: autosave (crea la draft allo Step 1, poi PATCH dei settings). */
-  async onNext(): Promise<void> {
-    if (this.busy() || !this.canAdvance()) {
-      return;
-    }
-    this.busy.set(true);
-    try {
-      if (this.currentStep() === 1) {
-        await this.ensureDraft();
-      } else {
-        await this.persist();
-      }
-      this.currentStep.update((s) => Math.min(TOTAL_STEPS, s + 1));
-    } finally {
-      this.busy.set(false);
+  /** Cambio step: autosave del passo precedente quando si va avanti. */
+  onStepChange(event: StepperSelectionEvent): void {
+    this.selectedIndex.set(event.selectedIndex);
+    if (event.selectedIndex > event.previouslySelectedIndex) {
+      void this.autosave(event.previouslySelectedIndex);
     }
   }
 
-  /** Indietro: nessuna scrittura (lo stato in-progress resta in memoria). */
-  onBack(): void {
-    this.currentStep.update((s) => Math.max(1, s - 1));
-  }
-
-  // --- Step 1: kind grid ----------------------------------------------------
+  // --- Step 1: kind ---------------------------------------------------------
 
   selectKind(kind: ProjectKind): void {
     this.kind.set(kind);
   }
 
   // --- Step 2: sources ------------------------------------------------------
-
-  isSourceSelected(id: string): boolean {
-    return this.sourceIds().includes(id);
-  }
-
-  toggleSource(id: string): void {
-    this.sourceIds.update((ids) =>
-      ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id],
-    );
-  }
 
   /** Crea una nota inline e la seleziona subito. */
   async onAddNote(): Promise<void> {
@@ -392,15 +349,27 @@ export class NewProjectWizardComponent {
 
   // --- Persistenza ----------------------------------------------------------
 
+  /** Autosave del passo: crea la draft uscendo dallo Step 1, poi PATCH. */
+  private async autosave(previousIndex: number): Promise<void> {
+    if (previousIndex === 0) {
+      await this.ensureDraft();
+    } else {
+      await this.persist();
+    }
+  }
+
   /** Crea la draft (una sola volta) con title+kind dello Step 1. */
   private async ensureDraft(): Promise<void> {
     if (this.projectId()) {
       await this.persist();
       return;
     }
-    const project = await this.store.create(this.title().trim(), this.kind());
+    const title = this.title().trim();
+    if (!title) {
+      return;
+    }
+    const project = await this.store.create(title, this.kind());
     this.projectId.set(project.id);
-    // Allinea anche title/kind/sources già scelti (PATCH iniziale).
     await this.persist();
   }
 
