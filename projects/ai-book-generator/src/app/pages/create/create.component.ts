@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,21 +11,8 @@ import {
   type StatusTone,
 } from '../../shared/ui/entity-card/entity-card.component';
 import { SelectionCardComponent } from '../../shared/ui/selection-card/selection-card.component';
-import {
-  StatCardComponent,
-  type StatTone,
-} from '../../shared/ui/stat-card/stat-card.component';
 import { ProjectsStore } from '../../core/state/projects.store';
-import { SourcesStore } from '../../core/state/sources.store';
 import type { Project, ProjectKind, ProjectStatus } from '../../core/domain';
-
-/** Stat in cima alla pagina. */
-interface CreateStat {
-  labelKey: string;
-  value: string;
-  icon: string;
-  tone: StatTone;
-}
 
 /** Scelta rapida di tipo nel launcher (label/desc/hint via i18n `Create.Type.<id>`). */
 interface TypeChoice {
@@ -73,31 +60,16 @@ const STATUS_TONE: Record<ProjectStatus, StatusTone> = {
     TranslateModule,
     EntityCardComponent,
     SelectionCardComponent,
-    StatCardComponent,
   ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
 })
 export class CreateComponent {
   private readonly store = inject(ProjectsStore);
-  private readonly sourcesStore = inject(SourcesStore);
   private readonly router = inject(Router);
 
   /** Progetti "vivi" da continuare. */
   readonly activeProjects = this.store.activeProjects;
-
-  /** Stat in cima (progetti attivi · fonti · generazioni in corso). */
-  readonly stats = computed<CreateStat[]>(() => {
-    const all = this.store.entities();
-    const active = this.activeProjects().length;
-    const generating = all.filter((p) => p.status === 'processing' || p.status === 'queued').length;
-    const sources = this.sourcesStore.entities().length;
-    return [
-      { labelKey: 'i18n.Create.Stat.active', value: String(active), icon: 'layers', tone: 'accent' },
-      { labelKey: 'i18n.Create.Stat.sources', value: String(sources), icon: 'folder_open', tone: 'success' },
-      { labelKey: 'i18n.Create.Stat.generating', value: String(generating), icon: 'auto_awesome', tone: 'info' },
-    ];
-  });
 
   /** 7 tipi del mock (Libro · Manuale · Guida · Report · Tesi · Corso · Personalizzato). */
   readonly types: readonly TypeChoice[] = [

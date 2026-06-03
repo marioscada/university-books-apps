@@ -1,47 +1,30 @@
 <app-auth-shell>
-  <!-- Banda 1 (bianco): header + statistiche -->
+  <!-- Banda 1 (bianco): Crea un nuovo progetto + tipi -->
   <section class="band">
     <div class="site-container band__inner">
       <header class="create__head">
-        <h1 class="page-title">{{ 'i18n.Create.title' | translate }}</h1>
+        <h1 class="page-title">{{ 'i18n.Create.newProject.section' | translate }}</h1>
         <p class="page-subtitle">{{ 'i18n.Create.subtitle' | translate }}</p>
       </header>
 
-      <div class="create-stats">
-        @for (s of stats(); track s.labelKey) {
-          <app-stat-card [label]="s.labelKey | translate" [value]="s.value" [icon]="s.icon" [tone]="s.tone" />
+      <div class="create-row create-row--types">
+        @for (t of types; track t.id) {
+          <app-selection-card
+            [icon]="t.icon"
+            [title]="'i18n.Create.Type.' + t.id + '.title' | translate"
+            [description]="'i18n.Create.Type.' + t.id + '.desc' | translate"
+            [badge]="'i18n.Create.Type.' + t.id + '.hint' | translate"
+            (selectCard)="startKind(t.kind)" />
         }
       </div>
     </div>
   </section>
 
-  <!-- Banda 2 (slate): Crea un nuovo progetto -->
+  <!-- Banda 2 (slate): Ispirati a un modello -->
   <section class="band band--alt">
     <div class="site-container band__inner">
       <div class="create-sec">
-        <header class="create-sec__head">
-          <h2 class="create-sec__title">{{ 'i18n.Create.newProject.section' | translate }}</h2>
-          <p class="create-sec__desc">{{ 'i18n.Create.newProject.desc' | translate }}</p>
-        </header>
-        <div class="create-row create-row--types">
-          @for (t of types; track t.id) {
-            <app-selection-card
-              [icon]="t.icon"
-              [title]="'i18n.Create.Type.' + t.id + '.title' | translate"
-              [description]="'i18n.Create.Type.' + t.id + '.desc' | translate"
-              [badge]="'i18n.Create.Type.' + t.id + '.hint' | translate"
-              (selectCard)="startKind(t.kind)" />
-          }
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Banda 3 (bianco): Ispirati a un modello -->
-  <section class="band">
-    <div class="site-container band__inner">
-      <div class="create-sec">
-        <h2 class="create-sec__title">{{ 'i18n.Create.templates.section' | translate }}</h2>
+        <h2 class="section-title">{{ 'i18n.Create.templates.section' | translate }}</h2>
         <div class="create-row create-row--templates">
           @for (tpl of templates; track tpl.id) {
             <app-entity-card
@@ -57,15 +40,15 @@
     </div>
   </section>
 
-  <!-- Banda 4 (slate): continua a creare -->
+  <!-- Banda 3 (bianco): continua a creare -->
   @if (activeProjects().length) {
-    <section class="band band--alt">
+    <section class="band">
       <div class="site-container band__inner">
         <div class="create-sec">
           <header class="create-sec__head create-sec__head--row">
             <div>
-              <h2 class="create-sec__title">{{ 'i18n.Create.continue' | translate }}</h2>
-              <p class="create-sec__desc">{{ 'i18n.Create.continueDesc' | translate }}</p>
+              <h2 class="section-title">{{ 'i18n.Create.continue' | translate }}</h2>
+              <p class="section-subtitle">{{ 'i18n.Create.continueDesc' | translate }}</p>
             </div>
             <a class="create-sec__link" routerLink="/collection">
               {{ 'i18n.Create.viewAll' | translate }}
@@ -110,8 +93,8 @@
     </section>
   }
 
-  <!-- Banda 5 (bianco): non sai da dove iniziare -->
-  <section class="band">
+  <!-- Banda 4 (slate): non sai da dove iniziare -->
+  <section class="band band--alt">
     <div class="site-container">
       <div class="suggest-banner">
         <mat-icon class="suggest-banner__spark" fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
