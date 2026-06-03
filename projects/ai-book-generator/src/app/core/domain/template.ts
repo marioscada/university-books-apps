@@ -9,6 +9,7 @@
  */
 
 import type {
+  CoverTheme,
   OutputFormat,
   ProcessingMode,
   ProjectKind,
@@ -68,7 +69,7 @@ export interface ProjectTemplate {
   defaults: TemplateDefaults;
   typography: TypographySettings;
   /** Tema cover di default per l'anteprima. */
-  coverTheme?: string;
+  coverTheme?: CoverTheme;
   /** Stima pagine (per la card galleria nella pagina Create). */
   estimatedPages?: number;
 }
