@@ -17,7 +17,7 @@
   padding: 4px 0;
   background: none;
   border: none;
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
   font: inherit;
   cursor: pointer;
   transition: color 0.15s ease;
@@ -28,17 +28,17 @@
 }
 
 .step-indicator__step:focus-visible {
-  outline: 2px solid var(--accent-500, #039fce);
+  outline: 2px solid var(--accent-500);
   outline-offset: 2px;
   border-radius: var(--card-radius, 8px);
 }
 
 .step-indicator__step.is-reached {
-  color: var(--accent-700, #0289b2);
+  color: var(--accent-700);
 }
 
 .step-indicator__step.is-active {
-  color: var(--accent-700, #0289b2);
+  color: var(--accent-700);
 }
 
 // --- Dot (number or check) ---
@@ -51,7 +51,7 @@
   height: 30px;
   border-radius: 50%;
   border: 2px solid currentColor;
-  background: var(--card-bg, #fff);
+  background: var(--card-bg);
   font-size: 0.8125rem;
   font-weight: 700;
   line-height: 1;
@@ -65,14 +65,14 @@
 }
 
 .step-indicator__step.is-active .step-indicator__dot {
-  background: var(--accent-100, #dcf7ff);
-  border-color: var(--accent-500, #039fce);
+  background: var(--accent-100);
+  border-color: var(--accent-500);
 }
 
 .step-indicator__step.is-done:not(.is-active) .step-indicator__dot {
-  background: var(--accent-500, #039fce);
-  border-color: var(--accent-500, #039fce);
-  color: #fff;
+  background: var(--accent-500);
+  border-color: var(--accent-500);
+  color: var(--on-accent);
 }
 
 // --- Connectors (lines between dots, drawn from the dot row center) ---
@@ -80,7 +80,7 @@
   position: absolute;
   top: calc(4px + 15px); // padding-top + half dot height
   height: 2px;
-  background: var(--card-border-color, #eceff3);
+  background: var(--card-border-color);
   transition: background-color 0.15s ease;
 }
 
@@ -104,18 +104,18 @@
 
 // Accent the connector entering a reached step (segment before it is complete).
 .step-indicator__step.is-reached .step-indicator__connector--before {
-  background: var(--accent-500, #039fce);
+  background: var(--accent-500);
 }
 
 // Accent the outgoing connector of a step that is reached but not the boundary
 // (i.e. a fully passed segment). Active-but-not-done keeps the forward line
 // neutral so the "progress front" reads correctly.
 .step-indicator__step.is-reached:not(.is-active) .step-indicator__connector--after {
-  background: var(--accent-500, #039fce);
+  background: var(--accent-500);
 }
 
 .step-indicator__step.is-active.is-done .step-indicator__connector--after {
-  background: var(--accent-500, #039fce);
+  background: var(--accent-500);
 }
 
 // --- Label ---

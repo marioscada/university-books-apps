@@ -6,8 +6,8 @@
   gap: 14px;
   padding: 16px;
   border-radius: var(--card-radius, 16px);
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--card-border-color, #eceff3);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
   box-shadow: var(--card-shadow);
   cursor: pointer;
   outline: none;
@@ -15,45 +15,45 @@
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
 
   // Tint di default (neutral): grigio "on-surface-variant".
-  --fc-fg: var(--mat-sys-on-surface-variant, #5b6068);
-  --fc-bg: color-mix(in srgb, var(--mat-sys-on-surface-variant, #5b6068) 14%, #fff);
+  --fc-fg: var(--mat-sys-on-surface-variant);
+  --fc-bg: color-mix(in srgb, var(--mat-sys-on-surface-variant) 14%, var(--card-bg));
 }
 
 // === Mappatura toni → tint (preferisce i token dove esistono) ===
 :host([data-tone='accent']) {
-  --fc-fg: var(--accent-700, #0289b2);
-  --fc-bg: var(--accent-100, #dcf7ff);
+  --fc-fg: var(--accent-700);
+  --fc-bg: var(--accent-100);
 }
 
 :host([data-tone='success']) {
-  --fc-fg: var(--tone-success-fg, #1f8a4c);
-  --fc-bg: var(--tone-success-bg, #e3f6ea);
+  --fc-fg: var(--tone-success-fg);
+  --fc-bg: var(--tone-success-bg);
 }
 
 :host([data-tone='violet']) {
-  --fc-fg: var(--tone-violet-fg, #6d4ad1);
-  --fc-bg: var(--tone-violet-bg, #ece6fb);
+  --fc-fg: var(--tone-violet-fg);
+  --fc-bg: var(--tone-violet-bg);
 }
 
 :host([data-tone='amber']) {
-  --fc-fg: var(--tone-amber-fg, #b6791f);
-  --fc-bg: var(--tone-amber-bg, #fbf0d8);
+  --fc-fg: var(--tone-amber-fg);
+  --fc-bg: var(--tone-amber-bg);
 }
 
 :host([data-tone='rose']) {
-  --fc-fg: var(--tone-rose-fg, #c2456b);
-  --fc-bg: var(--tone-rose-bg, #fbe3eb);
+  --fc-fg: var(--tone-rose-fg);
+  --fc-bg: var(--tone-rose-bg);
 }
 
 :host(:hover) {
-  border-color: var(--accent-400, #47c2e8);
+  border-color: var(--accent-400);
   box-shadow: var(--card-shadow-hover);
   transform: translateY(-1px);
 }
 
 :host(:focus-visible) {
-  border-color: var(--accent-500, #039fce);
-  box-shadow: 0 0 0 3px var(--accent-100, #dcf7ff);
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
 }
 
 .folder-card__icon-wrap {
@@ -81,7 +81,7 @@
 
 .folder-card__name {
   font-weight: 600;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -89,12 +89,12 @@
 
 .folder-card__count {
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .folder-card__meta {
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
   opacity: 0.85;
 }
 

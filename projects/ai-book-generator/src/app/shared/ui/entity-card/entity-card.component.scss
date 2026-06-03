@@ -3,8 +3,8 @@
   display: flex;
   flex-direction: column;
   border-radius: var(--card-radius, 16px);
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--card-border-color, #eceff3);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
   box-shadow: var(--card-shadow);
   overflow: hidden;
   transition: border-color 0.15s ease, box-shadow 0.15s ease,
@@ -12,7 +12,7 @@
 }
 
 :host(:hover) {
-  border-color: var(--accent-400, #47c2e8);
+  border-color: var(--accent-400);
   box-shadow: var(--card-shadow-hover);
   transform: translateY(-2px);
 }
@@ -22,7 +22,7 @@
   position: relative;
   display: block;
   min-height: 132px;
-  background: var(--section-band-alt, #f5f7fa);
+  background: var(--section-band-alt);
   cursor: pointer;
   outline: none;
 
@@ -36,8 +36,8 @@
 }
 
 .entity-card__cover:focus-visible {
-  box-shadow: inset 0 0 0 3px var(--accent-100, #dcf7ff),
-    inset 0 0 0 1px var(--accent-500, #039fce);
+  box-shadow: inset 0 0 0 3px var(--accent-100),
+    inset 0 0 0 1px var(--accent-500);
 }
 
 // === Status pill ===
@@ -54,33 +54,33 @@
   backdrop-filter: blur(2px);
 
   // neutral (default)
-  background: color-mix(in srgb, var(--mat-sys-on-surface, #1a1d21) 8%, #fff);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  background: color-mix(in srgb, var(--mat-sys-on-surface) 8%, var(--card-bg));
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .entity-card__status--accent {
-  background: var(--accent-100, #dcf7ff);
-  color: var(--accent-700, #0289b2);
+  background: var(--accent-100);
+  color: var(--accent-700);
 }
 
 .entity-card__status--success {
-  background: color-mix(in srgb, var(--site-success, #2e9e6b) 16%, #fff);
-  color: var(--site-success, #2e9e6b);
+  background: color-mix(in srgb, var(--site-success) 16%, var(--card-bg));
+  color: var(--site-success);
 }
 
 .entity-card__status--warning {
-  background: var(--tone-warning-bg, #fff3e0);
-  color: var(--tone-warning-fg, #b26a00);
+  background: var(--tone-warning-bg);
+  color: var(--tone-warning-fg);
 }
 
 .entity-card__status--danger {
-  background: var(--tone-danger-bg, #fdecec);
-  color: var(--tone-danger-fg, #c0362c);
+  background: var(--tone-danger-bg);
+  color: var(--tone-danger-fg);
 }
 
 .entity-card__status--violet {
-  background: var(--tone-violet-bg, #efe7fb);
-  color: var(--tone-violet-fg, #6b3fb5);
+  background: var(--tone-violet-bg);
+  color: var(--tone-violet-fg);
 }
 
 // === Menu azioni (slot proiettato, isolato da `open`) ===
@@ -103,7 +103,7 @@
 }
 
 .entity-card__body:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--accent-500, #039fce);
+  box-shadow: inset 0 0 0 2px var(--accent-500);
   border-radius: var(--card-radius, 16px);
 }
 
@@ -112,7 +112,7 @@
   font-size: var(--site-title-medium, 1rem);
   font-weight: 600;
   line-height: 1.3;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -126,7 +126,7 @@
   align-items: center;
   gap: 6px;
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .entity-card__type {
@@ -134,7 +134,7 @@
 }
 
 .entity-card__sep {
-  color: var(--card-border-color, #cfd5dd);
+  color: var(--card-border-color);
 }
 
 // === Progress ===
@@ -144,8 +144,8 @@
   gap: 4px;
   margin-top: 2px;
 
-  --mat-progress-bar-active-indicator-color: var(--accent-500, #039fce);
-  --mat-progress-bar-track-color: var(--section-band-alt, #eef1f5);
+  --mat-progress-bar-active-indicator-color: var(--accent-500);
+  --mat-progress-bar-track-color: var(--section-band-alt);
 }
 
 .entity-card__progress mat-progress-bar {
@@ -154,7 +154,7 @@
 
 .entity-card__progress-label {
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 // === Published badge ===
@@ -165,7 +165,7 @@
   gap: 5px;
   font-size: var(--site-body-small, 0.875rem);
   font-weight: 600;
-  color: var(--site-success, #2e9e6b);
+  color: var(--site-success);
 }
 
 .entity-card__published-icon {
@@ -177,10 +177,10 @@
 // === Footer ===
 .entity-card__footer {
   padding: 10px 16px;
-  border-top: 1px solid var(--card-border-color, #eceff3);
-  background: var(--section-band-alt, #f8fafc);
+  border-top: 1px solid var(--card-border-color);
+  background: var(--section-band-alt);
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 // === Self-responsive (convenzione marioscadasite): compatta su small. ===

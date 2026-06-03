@@ -5,8 +5,8 @@
   gap: 20px;
   padding: 28px 24px;
   border-radius: var(--card-radius, 16px);
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--card-border-color, #eceff3);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
   box-shadow: var(--card-shadow);
   position: relative;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
@@ -19,8 +19,8 @@
 
 // Variante evidenziata: ring accento + leggera elevazione.
 :host(.is-highlighted) {
-  border-color: var(--accent-500, #039fce);
-  box-shadow: inset 0 0 0 1px var(--accent-500, #039fce), var(--card-shadow-hover);
+  border-color: var(--accent-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500), var(--card-shadow-hover);
 }
 
 // === Badge "più popolare" ===
@@ -34,8 +34,8 @@
   gap: 4px;
   padding: 4px 12px;
   border-radius: 999px;
-  background: var(--accent-500, #039fce);
-  color: #fff;
+  background: var(--accent-500);
+  color: var(--on-accent);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -61,20 +61,20 @@
   font-size: 32px;
   width: 32px;
   height: 32px;
-  color: var(--accent-700, #0289b2);
+  color: var(--accent-700);
 }
 
 .plan-card__name {
   margin: 0;
   font: var(--site-title-medium);
   font-weight: 700;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 .plan-card__tagline {
   margin: 0;
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 // === Pricing ===
@@ -83,7 +83,7 @@
   flex-direction: column;
   gap: 4px;
   padding-bottom: 20px;
-  border-bottom: 1px solid var(--card-border-color, #eceff3);
+  border-bottom: 1px solid var(--card-border-color);
 }
 
 .plan-card__price-row {
@@ -97,7 +97,7 @@
 .plan-card__price-original {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
   text-decoration: line-through;
 }
 
@@ -105,18 +105,18 @@
   font-size: 2.5rem;
   font-weight: 800;
   line-height: 1;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 .plan-card__period {
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .plan-card__secondary-note {
   margin: 0;
   font-size: var(--site-body-small, 0.8125rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 // === Feature checklist ===
@@ -141,12 +141,12 @@
   font-size: 20px;
   width: 20px;
   height: 20px;
-  color: var(--site-success, #18a957);
+  color: var(--site-success);
 }
 
 .plan-card__feature-label {
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
   line-height: 1.4;
 }
 
@@ -158,14 +158,14 @@
 
 // CTA "success": override verde su mat-flat-button.
 .plan-card__cta--success {
-  --mdc-filled-button-container-color: var(--site-success, #18a957);
-  --mdc-filled-button-label-text-color: #fff;
+  --mdc-filled-button-container-color: var(--site-success);
+  --mdc-filled-button-label-text-color: var(--on-accent);
 }
 
 // Striscia di sezione alternata opzionale dietro la variante evidenziata,
 // utile quando la card è dentro una band: usa il token dedicato.
 :host(.is-highlighted) .plan-card__pricing {
-  border-bottom-color: color-mix(in srgb, var(--accent-100, #dcf7ff) 70%, var(--section-band-alt, #f4f7fb));
+  border-bottom-color: color-mix(in srgb, var(--accent-100) 70%, var(--section-band-alt));
 }
 
 // === Self-responsive (convenzione marioscadasite): compatta su small ===

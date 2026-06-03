@@ -3,8 +3,8 @@
   display: block;
   padding: 20px;
   border-radius: var(--card-radius, 16px);
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--card-border-color, #eceff3);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
   box-shadow: var(--card-shadow);
 }
 
@@ -21,7 +21,7 @@
   min-width: 0;
   font-size: var(--site-title-medium, 1.125rem);
   font-weight: 600;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 .summary-panel__badge {
@@ -34,10 +34,10 @@
   text-transform: uppercase;
   white-space: nowrap;
   // Greenish success pill if the token exists, else fall back to the accent ramp.
-  color: var(--site-success, var(--accent-700, #0289b2));
+  color: var(--site-success, var(--accent-700));
   background: color-mix(
     in srgb,
-    var(--site-success, var(--accent-500, #039fce)) 14%,
+    var(--site-success, var(--accent-500)) 14%,
     transparent
   );
 }
@@ -57,7 +57,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 10px 0;
-  border-bottom: 1px solid var(--card-border-color, #eceff3);
+  border-bottom: 1px solid var(--card-border-color);
 
   &:last-child {
     border-bottom: 0;
@@ -69,7 +69,7 @@
   margin: 0;
   flex: 0 0 auto;
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .summary-panel__value {
@@ -78,7 +78,7 @@
   text-align: right;
   font-weight: 600;
   word-break: break-word;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 // Footer slot: only takes space when the parent projects something into it.
@@ -86,7 +86,7 @@
 .summary-panel__footer:not(:empty) {
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid var(--card-border-color, #eceff3);
+  border-top: 1px solid var(--card-border-color);
   border-radius: 0 0 var(--card-radius, 16px) var(--card-radius, 16px);
   background: var(--section-band-alt, transparent);
 }

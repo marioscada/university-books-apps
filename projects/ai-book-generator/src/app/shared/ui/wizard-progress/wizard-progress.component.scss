@@ -15,8 +15,8 @@
   padding: 8px 4px;
   background: none;
   border: none;
-  border-top: 2px solid var(--card-border-color, #eceff3);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  border-top: 2px solid var(--card-border-color);
+  color: var(--mat-sys-on-surface-variant);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -29,8 +29,8 @@
 
 .wp__step.is-active,
 .wp__step.is-done {
-  border-top-color: var(--accent-500, #039fce);
-  color: var(--accent-700, #0289b2);
+  border-top-color: var(--accent-500);
+  color: var(--accent-700);
 }
 
 .wp__dot {
@@ -42,19 +42,19 @@
   height: 26px;
   border-radius: 50%;
   border: 2px solid currentColor;
-  background: var(--card-bg, #fff);
+  background: var(--card-bg);
   font-size: 0.8125rem;
   font-weight: 700;
 }
 
 .wp__step.is-active .wp__dot {
-  background: var(--accent-100, #dcf7ff);
+  background: var(--accent-100);
 }
 
 .wp__step.is-done:not(.is-active) .wp__dot {
-  background: var(--accent-500, #039fce);
-  color: #fff;
-  border-color: var(--accent-500, #039fce);
+  background: var(--accent-500);
+  color: var(--on-accent);
+  border-color: var(--accent-500);
 }
 
 .wp__label {
