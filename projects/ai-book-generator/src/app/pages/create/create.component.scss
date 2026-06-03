@@ -1,64 +1,63 @@
-// Create launcher — SOLO layout. La separazione delle aree è data dalle BANDE
-// alternate globali (.band / .band--alt, come landing). Token globali ovunque.
+// Create — galleria modelli + "Riprendi" + suggerimenti. Token globali, niente
+// literal di colore: ritematizzabile dal solo tema globale.
 :host {
   display: block;
 }
 
-// Titolo/sottotitolo usano le classi GLOBALI .page-title / .page-subtitle.
-.create__head {
+.create {
   display: flex;
   flex-direction: column;
+  gap: var(--space-4, 32px);
+  padding-block: var(--space-4, 32px);
 }
 
-// Statistiche — gruppo centrato sull'asse X (non stirate a tutta larghezza).
-.create-stats {
+// --- Area 1: Riprendi -------------------------------------------------------
+.resume-panel {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-3, 24px);
+  padding: var(--card-padding, 20px);
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
+}
+
+.resume-panel__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 16px);
+}
+
+.resume-panel__icon {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-}
-.create-stats > app-stat-card {
-  flex: 1 1 220px;
-  max-width: 300px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--accent-100);
+  color: var(--accent-700);
+  flex: 0 0 auto;
 }
 
-// Sezione (titolo + contenuto)
-.create-sec {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-.create-sec__head {
+.resume-panel__heading {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
-.create-sec__head--row {
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-.create-sec__title {
-  margin: 0;
-  font-size: var(--site-title-medium);
-  font-weight: 700;
-  color: var(--mat-sys-on-surface);
-}
-.create-sec__desc {
-  margin: 0;
-  font-size: var(--site-body-small);
-  color: var(--mat-sys-on-surface-variant);
-}
-.create-sec__link {
+
+.resume-panel__link {
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  flex: 0 0 auto;
-  color: var(--accent-700);
   font-weight: 600;
-  font-size: var(--site-body-small);
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--accent-700);
   text-decoration: none;
+  white-space: nowrap;
 
   mat-icon {
     font-size: 18px;
@@ -67,22 +66,130 @@
   }
 }
 
-// Griglie wrappanti (tante file quante servono, NO scroll)
-.create-row {
+.resume-panel__link:hover {
+  text-decoration: underline;
+}
+
+// Card centrate (l'ultima riga incompleta resta centrata sull'asse X).
+.resume-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2, 16px);
+}
+
+.resume-grid > app-entity-card {
+  flex: 1 1 240px;
+  max-width: 300px;
+}
+
+// --- Area 2: Galleria modelli ----------------------------------------------
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 24px);
+}
+
+.gallery__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3, 24px);
+  flex-wrap: wrap;
+}
+
+.gallery__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 8px);
+  min-width: 0;
+}
+
+.gallery__info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 380px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--accent-100);
+  border: 1px solid var(--card-border-color);
+}
+
+.gallery__info-icon {
+  color: var(--accent-700);
+  flex: 0 0 auto;
+}
+
+.gallery__info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gallery__info-title {
+  font-weight: 700;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface);
+}
+
+.gallery__info-desc {
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.4;
+}
+
+// Griglia dinamica: tante file quante servono, niente scroll laterale.
+.gallery__grid {
   display: grid;
-  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-2, 16px);
+  align-items: stretch;
 }
-.create-row--types {
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+
+// --- Area 3: Suggerimenti ---------------------------------------------------
+.suggest-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 16px);
+  padding: var(--space-3, 24px);
+  border-radius: var(--card-radius, 16px);
+  border: 1px solid var(--card-border-color);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent-100) 80%, var(--card-bg)),
+    color-mix(in srgb, var(--tone-rose-bg) 70%, var(--card-bg))
+  );
 }
-.create-row--templates {
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+
+.suggest-banner__spark {
+  color: var(--accent-700);
+  flex: 0 0 auto;
 }
-.create-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-2);
+
+.suggest-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
+
+.suggest-banner__title {
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+.suggest-banner__desc {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.suggest-banner__cta {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
 .create-cover {
   display: block;
   width: 100%;
@@ -90,80 +197,18 @@
   min-height: 140px;
 }
 
-// Card "nuovo progetto da zero"
-.add-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 220px;
-  padding: var(--space-2);
-  text-align: center;
-  font: inherit;
-  cursor: pointer;
-  border: 1px dashed var(--card-border-color);
-  background: var(--card-bg);
-  border-radius: var(--card-radius);
-  color: var(--mat-sys-on-surface-variant);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.add-card:hover {
-  border-color: var(--accent-400);
-  box-shadow: var(--card-shadow-hover);
-}
-.add-card__icon {
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
-  color: var(--accent-500);
-}
-.add-card__title {
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
-}
-.add-card__sub {
-  font-size: var(--site-body-small);
-}
-
-// Banner suggerimenti — fondo tinto (gradiente accent→rosa) per staccare.
-.suggest-banner {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--card-radius);
-  border: 1px solid var(--card-border-color);
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--accent-100) 70%, var(--card-bg)),
-    color-mix(in srgb, var(--tone-rose-bg) 55%, var(--card-bg))
-  );
-}
-.suggest-banner__spark {
-  flex: 0 0 auto;
-  color: var(--accent-500);
-}
-.suggest-banner__text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1 1 auto;
-}
-.suggest-banner__title {
-  font-weight: 700;
-  color: var(--mat-sys-on-surface);
-}
-.suggest-banner__desc {
-  font-size: var(--site-body-small);
-  color: var(--mat-sys-on-surface-variant);
-}
-.suggest-banner__cta {
-  flex: 0 0 auto;
-}
-
-@media (max-width: 600px) {
-  .create-sec__head--row {
+@media (max-width: 720px) {
+  .gallery__head {
     flex-direction: column;
+  }
+  .gallery__info {
+    max-width: none;
+  }
+  .suggest-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .suggest-banner__cta {
+    margin-left: 0;
   }
 }

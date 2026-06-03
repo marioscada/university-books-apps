@@ -162,6 +162,22 @@ export const ProjectsStore = signalStore(
         return project;
       },
 
+      /**
+       * Crea un progetto draft dal flusso "Personalizza il modello": titolo +
+       * settings completi (default del modello + scostamenti) + tema cover.
+       * Il modello resta immutabile; il progetto porta solo gli override.
+       */
+      async createFromTemplate(input: {
+        title: string;
+        kind: Project['kind'];
+        settings: ProjectSettings;
+        coverTheme: Project['coverTheme'];
+      }): Promise<Project> {
+        const project = await api.createProject(input);
+        patchState(store, addEntity(project));
+        return project;
+      },
+
       /** Lancia la generazione: draft→queued e avvia il polling del job. */
       async generate(id: string): Promise<void> {
         await api.generate(id);

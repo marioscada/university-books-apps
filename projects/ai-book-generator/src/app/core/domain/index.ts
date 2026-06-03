@@ -6,6 +6,7 @@
 export * from './ids';
 export * from './workspace';
 export * from './project';
+export * from './template';
 export * from './version';
 export * from './job';
 export * from './source';

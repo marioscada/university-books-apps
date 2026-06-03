@@ -83,6 +83,7 @@ const KIND_ICON: Record<ProjectKind, string> = {
   study_guide: 'school',
   research_report: 'science',
   training_course: 'cast_for_education',
+  presentation: 'slideshow',
   documentation: 'description',
   custom: 'tune',
 };
@@ -109,7 +110,8 @@ const FORMAT_ICON: Record<OutputFormat, string> = {
 /** Tema cover per tipo (anteprima). */
 const KIND_COVER: Record<ProjectKind, CoverTheme> = {
   book: 'aurora', summary: 'mint', manual: 'ocean', study_guide: 'gold',
-  research_report: 'ember', training_course: 'rose', documentation: 'ocean', custom: 'aurora',
+  research_report: 'ember', training_course: 'rose', presentation: 'ember',
+  documentation: 'ocean', custom: 'aurora',
 };
 
 /** Smart defaults per tipo (modalità, capitoli, bibliografia, formati). */
@@ -126,6 +128,7 @@ const KIND_DEFAULTS: Record<ProjectKind, KindDefaults> = {
   study_guide: { mode: 'balanced', chapters: 6, bibliography: false, formats: ['pdf'] },
   research_report: { mode: 'academic', chapters: 6, bibliography: true, formats: ['pdf', 'docx'] },
   training_course: { mode: 'balanced', chapters: 8, bibliography: false, formats: ['pdf'] },
+  presentation: { mode: 'balanced', chapters: 20, bibliography: false, formats: ['pdf'] },
   documentation: { mode: 'technical', chapters: 6, bibliography: false, formats: ['pdf', 'html'] },
   custom: { mode: 'balanced', chapters: 0, bibliography: false, formats: ['pdf'] },
 };

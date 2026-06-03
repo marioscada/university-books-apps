@@ -1,0 +1,122 @@
+// ModelCard — look self-contained sui token globali (accent #039FCE).
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 8px);
+  padding: var(--card-padding, 20px);
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  outline: none;
+  height: 100%;
+  position: relative;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+:host(:hover) {
+  border-color: var(--accent-400);
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+:host(:focus-visible) {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+:host(.is-selected) {
+  border-color: var(--accent-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500), var(--card-shadow);
+}
+
+// Riquadro icona a tono (bg/fg da token globali, iniettati via host style).
+.model-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--model-tone-bg);
+  color: var(--model-tone-fg);
+  margin-bottom: var(--space-1, 8px);
+}
+
+.model-card__title {
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--mat-sys-on-surface);
+}
+
+.model-card__desc {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.4;
+}
+
+.model-card__highlights {
+  list-style: none;
+  margin: var(--space-1, 8px) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.model-card__highlight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.model-card__check {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: var(--accent-500);
+}
+
+// Footer ancorato in basso (le card della stessa riga restano allineate).
+.model-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--space-2, 16px);
+}
+
+.model-card__estimate {
+  font-weight: 600;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--accent-600, var(--accent-700));
+}
+
+.model-card__arrow {
+  color: var(--mat-sys-on-surface-variant);
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+
+:host(:hover) .model-card__arrow {
+  color: var(--accent-500);
+  transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  .model-card__arrow {
+    transition: none;
+  }
+  :host(:hover) {
+    transform: none;
+  }
+}
+
+// Self-responsive (convenzione marioscadasite): compatta su small.
+:host(.isSmall) {
+  padding: 16px;
+}

@@ -1,112 +1,95 @@
 <app-auth-shell>
-  <!-- Banda 1 (bianco): Crea un nuovo progetto + tipi -->
-  <section class="band">
-    <div class="site-container band__inner">
-      <header class="create__head">
-        <h1 class="page-title">{{ 'i18n.Create.newProject.section' | translate }}</h1>
-        <p class="page-subtitle">{{ 'i18n.Create.subtitle' | translate }}</p>
-      </header>
+  <div class="create site-container">
+    <!-- Area 1: Riprendi da dove hai interrotto -->
+    @if (activeProjects().length) {
+      <section class="resume-panel" aria-labelledby="resume-title">
+        <header class="resume-panel__head">
+          <span class="resume-panel__icon" aria-hidden="true">
+            <mat-icon fontSet="material-symbols-outlined">history</mat-icon>
+          </span>
+          <div class="resume-panel__heading">
+            <h2 id="resume-title" class="section-title">{{ 'i18n.Create.resume.title' | translate }}</h2>
+            <p class="section-subtitle">{{ 'i18n.Create.resume.subtitle' | translate }}</p>
+          </div>
+          <a class="resume-panel__link" routerLink="/collection">
+            {{ 'i18n.Create.viewAll' | translate }}
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
+          </a>
+        </header>
 
-      <div class="create-row create-row--types">
-        @for (t of types; track t.id) {
-          <app-selection-card
-            [icon]="t.icon"
-            [title]="'i18n.Create.Type.' + t.id + '.title' | translate"
-            [description]="'i18n.Create.Type.' + t.id + '.desc' | translate"
-            [badge]="'i18n.Create.Type.' + t.id + '.hint' | translate"
-            (selectCard)="startKind(t.kind)" />
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- Banda 2 (slate): Ispirati a un modello -->
-  <section class="band band--alt">
-    <div class="site-container band__inner">
-      <div class="create-sec">
-        <h2 class="section-title">{{ 'i18n.Create.templates.section' | translate }}</h2>
-        <div class="create-row create-row--templates">
-          @for (tpl of templates; track tpl.id) {
+        <div class="resume-grid">
+          @for (p of activeProjects(); track p.id) {
             <app-entity-card
-              [title]="tpl.title"
-              [typeLabel]="tpl.meta"
-              [footerLabel]="'i18n.Create.useTemplate' | translate"
-              (open)="useTemplate(tpl)">
-              <span cover class="cover-art cover-art--{{ tpl.coverTheme }} create-cover" aria-hidden="true"></span>
+              [title]="p.title"
+              [statusLabel]="'i18n.Project.Status.' + p.status | translate"
+              [statusTone]="statusTone(p.status)"
+              [typeLabel]="'i18n.Project.Kind.' + p.kind | translate"
+              [metaLabel]="metaLabel(p)"
+              [progress]="progressOf(p)"
+              [progressLabel]="(progressOf(p) ?? 0) + '%'"
+              [published]="p.status === 'published'"
+              [publishedLabel]="'i18n.Project.Status.published' | translate"
+              (open)="openProject(p.id)">
+              <span cover class="cover-art cover-art--{{ p.coverTheme }} create-cover" aria-hidden="true"></span>
+              <button menu mat-icon-button [matMenuTriggerFor]="pm" [attr.aria-label]="'i18n.Create.cardActions' | translate">
+                <mat-icon fontSet="material-symbols-outlined">more_vert</mat-icon>
+              </button>
+              <mat-menu #pm="matMenu">
+                <button mat-menu-item (click)="openProject(p.id)">
+                  <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
+                  <span>{{ 'i18n.Wizard.Action.edit' | translate }}</span>
+                </button>
+              </mat-menu>
             </app-entity-card>
           }
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
+    }
 
-  <!-- Banda 3 (bianco): continua a creare -->
-  @if (activeProjects().length) {
-    <section class="band">
-      <div class="site-container band__inner">
-        <div class="create-sec">
-          <header class="create-sec__head create-sec__head--row">
-            <div>
-              <h2 class="section-title">{{ 'i18n.Create.continue' | translate }}</h2>
-              <p class="section-subtitle">{{ 'i18n.Create.continueDesc' | translate }}</p>
-            </div>
-            <a class="create-sec__link" routerLink="/collection">
-              {{ 'i18n.Create.viewAll' | translate }}
-              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
-            </a>
-          </header>
-
-          <div class="create-grid">
-            @for (p of activeProjects(); track p.id) {
-              <app-entity-card
-                [title]="p.title"
-                [statusLabel]="'i18n.Project.Status.' + p.status | translate"
-                [statusTone]="statusTone(p.status)"
-                [typeLabel]="'i18n.Project.Kind.' + p.kind | translate"
-                [metaLabel]="metaLabel(p)"
-                [progress]="progressOf(p)"
-                [progressLabel]="(progressOf(p) ?? 0) + '%'"
-                [published]="p.status === 'published'"
-                [publishedLabel]="'i18n.Project.Status.published' | translate"
-                (open)="openProject(p.id)">
-                <span cover class="cover-art cover-art--{{ p.coverTheme }} create-cover" aria-hidden="true"></span>
-                <button menu mat-icon-button [matMenuTriggerFor]="pm" [attr.aria-label]="'i18n.Create.cardActions' | translate">
-                  <mat-icon fontSet="material-symbols-outlined">more_vert</mat-icon>
-                </button>
-                <mat-menu #pm="matMenu">
-                  <button mat-menu-item (click)="openProject(p.id)">
-                    <mat-icon fontSet="material-symbols-outlined">open_in_new</mat-icon>
-                    <span>{{ 'i18n.Wizard.Action.edit' | translate }}</span>
-                  </button>
-                </mat-menu>
-              </app-entity-card>
-            }
-
-            <button class="add-card" type="button" (click)="startBlank()">
-              <mat-icon class="add-card__icon" fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
-              <span class="add-card__title">{{ 'i18n.Create.blank.title' | translate }}</span>
-              <span class="add-card__sub">{{ 'i18n.Create.blank.desc' | translate }}</span>
-            </button>
+    <!-- Area 2: Crea un nuovo progetto (galleria modelli) -->
+    <section class="gallery" aria-labelledby="gallery-title">
+      <header class="gallery__head">
+        <div class="gallery__heading">
+          <h1 id="gallery-title" class="page-title">{{ 'i18n.Create.gallery.title' | translate }}</h1>
+          <p class="page-subtitle">{{ 'i18n.Create.gallery.subtitle' | translate }}</p>
+        </div>
+        <div class="gallery__info">
+          <mat-icon class="gallery__info-icon" fontSet="material-symbols-outlined" aria-hidden="true">info</mat-icon>
+          <div class="gallery__info-text">
+            <span class="gallery__info-title">{{ 'i18n.Create.gallery.infoTitle' | translate }}</span>
+            <span class="gallery__info-desc">{{ 'i18n.Create.gallery.infoDesc' | translate }}</span>
           </div>
         </div>
+      </header>
+
+      <div class="gallery__grid">
+        @for (t of templates(); track t.id) {
+          <app-model-card
+            [icon]="visual(t).icon"
+            [iconTone]="visual(t).tone"
+            [title]="t.nameKey | translate"
+            [description]="t.descKey | translate"
+            [highlights]="[
+              ('i18n.Models.' + t.id + '.h1' | translate),
+              ('i18n.Models.' + t.id + '.h2' | translate)
+            ]"
+            [estimateLabel]="'i18n.Models.' + t.id + '.estimate' | translate"
+            (selectModel)="chooseModel(t)" />
+        }
       </div>
     </section>
-  }
 
-  <!-- Banda 4 (slate): non sai da dove iniziare -->
-  <section class="band band--alt">
-    <div class="site-container">
-      <div class="suggest-banner">
-        <mat-icon class="suggest-banner__spark" fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
-        <div class="suggest-banner__text">
-          <span class="suggest-banner__title">{{ 'i18n.Create.suggest.title' | translate }}</span>
-          <span class="suggest-banner__desc">{{ 'i18n.Create.suggest.desc' | translate }}</span>
-        </div>
-        <button mat-flat-button color="primary" class="suggest-banner__cta" type="button" (click)="startBlank()">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
-          {{ 'i18n.Create.suggest.cta' | translate }}
-        </button>
+    <!-- Area 3: Non sai da dove iniziare? -->
+    <section class="suggest-banner">
+      <mat-icon class="suggest-banner__spark" fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
+      <div class="suggest-banner__text">
+        <span class="suggest-banner__title">{{ 'i18n.Create.suggest.title' | translate }}</span>
+        <span class="suggest-banner__desc">{{ 'i18n.Create.suggest.desc' | translate }}</span>
       </div>
-    </div>
-  </section>
+      <button mat-flat-button color="primary" class="suggest-banner__cta" type="button" (click)="suggest()">
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">auto_awesome</mat-icon>
+        {{ 'i18n.Create.suggest.cta' | translate }}
+      </button>
+    </section>
+  </div>
 </app-auth-shell>

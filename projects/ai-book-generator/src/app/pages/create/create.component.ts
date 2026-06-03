@@ -10,25 +10,33 @@ import {
   EntityCardComponent,
   type StatusTone,
 } from '../../shared/ui/entity-card/entity-card.component';
-import { SelectionCardComponent } from '../../shared/ui/selection-card/selection-card.component';
+import {
+  ModelCardComponent,
+  type ModelTone,
+} from '../../shared/ui/model-card/model-card.component';
 import { ProjectsStore } from '../../core/state/projects.store';
-import type { Project, ProjectKind, ProjectStatus } from '../../core/domain';
+import { TemplatesStore } from '../../core/state/templates.store';
+import type { Project, ProjectStatus, ProjectTemplate } from '../../core/domain';
 
-/** Scelta rapida di tipo nel launcher (label/desc/hint via i18n `Create.Type.<id>`). */
-interface TypeChoice {
-  id: string;
-  kind: ProjectKind;
+/** Presentazione (icona + tono) per modello, indicizzata per `template.id`. */
+interface ModelVisual {
   icon: string;
+  tone: ModelTone;
 }
 
-/** Modello (mock) della sezione "Ispirati a un modello". */
-interface TemplateItem {
-  id: string;
-  title: string;
-  coverTheme: Project['coverTheme'];
-  kind: ProjectKind;
-  meta: string;
-}
+const MODEL_VISUAL: Record<string, ModelVisual> = {
+  book: { icon: 'menu_book', tone: 'info' },
+  summary: { icon: 'short_text', tone: 'success' },
+  study_guide: { icon: 'school', tone: 'amber' },
+  manual: { icon: 'build', tone: 'violet' },
+  report: { icon: 'analytics', tone: 'info' },
+  presentation: { icon: 'slideshow', tone: 'warning' },
+  course: { icon: 'cast_for_education', tone: 'rose' },
+  thesis: { icon: 'history_edu', tone: 'success' },
+  custom: { icon: 'tune', tone: 'neutral' },
+};
+
+const FALLBACK_VISUAL: ModelVisual = { icon: 'description', tone: 'neutral' };
 
 /** ProjectStatus → tono `entity-card`. */
 const STATUS_TONE: Record<ProjectStatus, StatusTone> = {
@@ -42,10 +50,10 @@ const STATUS_TONE: Record<ProjectStatus, StatusTone> = {
 };
 
 /**
- * Create — pagina "Crea": **launcher** di creazione (inizia da zero · scegli un
- * tipo · ispirati a un modello · suggerimenti AI) + sezione **"Continua a creare"**
- * (progetti vivi dallo store). Tipi/modelli preselezionano il `kind` nel wizard
- * (`/create/new?kind=`). Vedi docs/UI-SPEC-CREATION-AND-GENERATION.md §A0.
+ * Create — pagina "Crea": (1) **"Riprendi da dove hai interrotto"** (progetti
+ * vivi dallo store), (2) **galleria modelli** (dal `TemplatesStore`) — scegliere
+ * un modello apre la pagina di personalizzazione (`/create/new?template=<id>`),
+ * (3) banner suggerimenti AI. Vedi docs/UI-SPEC-CREATION-AND-GENERATION.md.
  */
 @Component({
   selector: 'app-create',
@@ -59,37 +67,24 @@ const STATUS_TONE: Record<ProjectStatus, StatusTone> = {
     MatMenuModule,
     TranslateModule,
     EntityCardComponent,
-    SelectionCardComponent,
+    ModelCardComponent,
   ],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
 })
 export class CreateComponent {
   private readonly store = inject(ProjectsStore);
+  private readonly templatesStore = inject(TemplatesStore);
   private readonly router = inject(Router);
 
-  /** Progetti "vivi" da continuare. */
+  /** Progetti "vivi" da riprendere. */
   readonly activeProjects = this.store.activeProjects;
+  /** Modelli di pubblicazione (galleria). */
+  readonly templates = this.templatesStore.templates;
 
-  /** 7 tipi del mock (Libro · Manuale · Guida · Report · Tesi · Corso · Personalizzato). */
-  readonly types: readonly TypeChoice[] = [
-    { id: 'book', kind: 'book', icon: 'menu_book' },
-    { id: 'manual', kind: 'manual', icon: 'build' },
-    { id: 'guide', kind: 'study_guide', icon: 'school' },
-    { id: 'report', kind: 'research_report', icon: 'analytics' },
-    { id: 'thesis', kind: 'research_report', icon: 'history_edu' },
-    { id: 'course', kind: 'training_course', icon: 'cast_for_education' },
-    { id: 'custom', kind: 'custom', icon: 'tune' },
-  ];
-
-  /** Modelli mock (preselezionano un tipo nel wizard). */
-  readonly templates: readonly TemplateItem[] = [
-    { id: 't1', title: 'Guida introduttiva all’Intelligenza Artificiale', coverTheme: 'aurora', kind: 'book', meta: 'Libro · 12 capitoli' },
-    { id: 't2', title: 'Manuale di Fotografia Digitale', coverTheme: 'ember', kind: 'manual', meta: 'Manuale · 7 sezioni' },
-    { id: 't3', title: 'Marketing Digitale: strategie e strumenti', coverTheme: 'mint', kind: 'study_guide', meta: 'Guida · 12 sezioni' },
-    { id: 't4', title: 'Analisi di Mercato 2024', coverTheme: 'ocean', kind: 'research_report', meta: 'Report · 14 sezioni' },
-    { id: 't5', title: 'Tesi: IA e Apprendimento Automatico', coverTheme: 'gold', kind: 'research_report', meta: 'Accademico' },
-  ];
+  visual(template: ProjectTemplate): ModelVisual {
+    return MODEL_VISUAL[template.id] ?? FALLBACK_VISUAL;
+  }
 
   statusTone(status: ProjectStatus): StatusTone {
     return STATUS_TONE[status];
@@ -106,17 +101,22 @@ export class CreateComponent {
     return project.lastActivityLabel ?? relativeTime(project.updatedAt);
   }
 
-  startBlank(): void {
-    void this.router.navigate(['/create/new']);
+  /** Scelto un modello → pagina di personalizzazione. */
+  chooseModel(template: ProjectTemplate): void {
+    void this.router.navigate(['/create/new'], {
+      queryParams: { template: template.id },
+    });
   }
-  startKind(kind: ProjectKind): void {
-    void this.router.navigate(['/create/new'], { queryParams: { kind } });
-  }
-  useTemplate(template: TemplateItem): void {
-    void this.router.navigate(['/create/new'], { queryParams: { kind: template.kind } });
-  }
+
   openProject(id: string): void {
     void this.router.navigate(['/project', id]);
+  }
+
+  /** CTA suggerimenti AI (placeholder: apre Personalizzato). */
+  suggest(): void {
+    void this.router.navigate(['/create/new'], {
+      queryParams: { template: 'custom' },
+    });
   }
 }
 

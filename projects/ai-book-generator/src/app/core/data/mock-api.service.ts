@@ -3,6 +3,7 @@ import { DestroyRef, Injectable, inject } from '@angular/core';
 import type {
   Project,
   ProjectStatus,
+  ProjectTemplate,
   DerivedKind,
   Job,
   JobStep,
@@ -19,6 +20,7 @@ import type {
   PatchSourceInput,
 } from './api-port';
 import { SEED_PROJECTS, SEED_SOURCES } from './mock-seed';
+import { SEED_TEMPLATES } from './templates-seed';
 
 /** Latenza simulata di rete (ms). */
 const NETWORK_DELAY_MS = 120;
@@ -84,6 +86,24 @@ export class MockApiService implements ApiPort {
   }
 
   // ===========================================================================
+  // Templates (modelli di pubblicazione — immutabili)
+  // ===========================================================================
+
+  async listTemplates(): Promise<ProjectTemplate[]> {
+    await this.delay();
+    return SEED_TEMPLATES.map((t) => structuredClone(t));
+  }
+
+  async getTemplate(id: string): Promise<ProjectTemplate> {
+    await this.delay();
+    const template = SEED_TEMPLATES.find((t) => t.id === id);
+    if (!template) {
+      throw new Error(`Template not found: ${id}`);
+    }
+    return structuredClone(template);
+  }
+
+  // ===========================================================================
   // Projects
   // ===========================================================================
 
@@ -118,22 +138,24 @@ export class MockApiService implements ApiPort {
       title: input.title,
       kind: input.kind,
       status: 'draft',
-      coverTheme: 'ocean',
-      settings: {
-        instructions: '',
-        processingMode: 'balanced',
-        structure: {
-          bibliography: false,
-          glossary: false,
-          quiz: false,
-          exercises: false,
-          appendices: false,
-          tables: false,
-          images: false,
-        },
-        outputFormats: ['pdf'],
-        language: 'en',
-      },
+      coverTheme: input.coverTheme ?? 'ocean',
+      settings: input.settings
+        ? structuredClone(input.settings)
+        : {
+            instructions: '',
+            processingMode: 'balanced',
+            structure: {
+              bibliography: false,
+              glossary: false,
+              quiz: false,
+              exercises: false,
+              appendices: false,
+              tables: false,
+              images: false,
+            },
+            outputFormats: ['pdf'],
+            language: 'en',
+          },
       versionIds: [],
       derivedProjectIds: [],
       sourceIds: [],

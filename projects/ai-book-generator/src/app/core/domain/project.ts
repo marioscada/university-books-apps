@@ -8,7 +8,8 @@
 
 export type ProjectKind =
   | 'book' | 'summary' | 'manual' | 'study_guide'
-  | 'research_report' | 'training_course' | 'documentation' | 'custom';
+  | 'research_report' | 'training_course' | 'presentation'
+  | 'documentation' | 'custom';
 
 export type ProjectStatus =
   | 'draft'        // creato, non ancora lanciato
@@ -45,12 +46,36 @@ export interface StructureConfig {
   images: boolean;
 }
 
+/** Impostazioni tipografiche/impaginazione (default per modello, override sul progetto). */
+export interface TypographySettings {
+  fontFamily: string;              // famiglia font del corpo testo
+  fontSizePt: number;              // dimensione corpo testo in punti
+  textColor: string;               // colore del testo (hex)
+  lineHeight: number;              // interlinea (moltiplicatore, es. 1.5)
+  marginMm: number;                // margine pagina in mm
+  alignment?: 'left' | 'justify';  // allineamento corpo testo
+}
+
+/** Override di una parte della struttura rispetto al modello (memorizzato nel progetto). */
+export interface PartOverride {
+  key: string;
+  included: boolean;               // inclusa/esclusa
+  count?: number;                  // conteggio (parti ripetibili: capitoli/moduli)
+  wordCount?: number;              // parole target per la parte
+}
+
 export interface ProjectSettings {
   instructions: string;            // prompt libero (Step 3 wizard)
   processingMode: ProcessingMode;  // Step 4 — incide su costo/tempo/qualità
   structure: StructureConfig;      // Step 5
   outputFormats: OutputFormat[];   // Step 6
   language: string;                // ISO (es. 'en')
+
+  // Flusso "scegli modello → personalizza struttura → genera" (modello immutabile)
+  templateId?: string;             // modello di partenza
+  parts?: PartOverride[];          // scostamenti per-parte rispetto al modello
+  typography?: TypographySettings; // override tipografia rispetto al modello
+  totalWords?: number;             // parole totali del manoscritto
 }
 
 export interface Project {

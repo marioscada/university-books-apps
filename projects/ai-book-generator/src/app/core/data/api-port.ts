@@ -4,6 +4,9 @@ import type {
   Project,
   ProjectStatus,
   ProjectKind,
+  ProjectSettings,
+  CoverTheme,
+  ProjectTemplate,
   DerivedKind,
   Job,
   Source,
@@ -19,6 +22,12 @@ import type {
  * senza toccare store né UI.
  */
 export interface ApiPort {
+  // --- Templates (modelli di pubblicazione) ---------------------------------
+  /** GET /templates — i modelli di partenza (immutabili). */
+  listTemplates(): Promise<ProjectTemplate[]>;
+  /** GET /templates/:id */
+  getTemplate(id: string): Promise<ProjectTemplate>;
+
   // --- Projects -------------------------------------------------------------
   /** GET /projects?status=&kind=&q= */
   listProjects(filter?: ListProjectsFilter): Promise<Project[]>;
@@ -81,6 +90,10 @@ export interface ListProjectsFilter {
 export interface CreateProjectInput {
   title: string;
   kind: ProjectKind;
+  /** Settings completi (dalla pagina "Personalizza il modello"). Se assenti → default. */
+  settings?: ProjectSettings;
+  /** Tema cover (dall'anteprima del modello). Default `ocean`. */
+  coverTheme?: CoverTheme;
 }
 
 export interface CreateUploadInput {
