@@ -19,40 +19,23 @@
       <div class="s1-grid">
         <!-- Form -->
         <div class="s1-form">
-          <div class="s1-field">
-            <div class="s1-field__top">
-              <label class="s1-field__label" for="ms-title">
-                {{ s1TitleLabel() }} <span class="s1-field__req">*</span>
-              </label>
-              <span class="s1-field__counter">{{ title().length }}/{{ titleMax }}</span>
-            </div>
-            <input
-              id="ms-title"
-              class="s1-input"
-              type="text"
-              [attr.maxlength]="titleMax"
-              [value]="title()"
-              (input)="title.set($any($event.target).value)"
-              [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate" />
-          </div>
+          <app-counter-field
+            [label]="s1TitleLabel()"
+            required
+            [maxLength]="titleMax"
+            [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate"
+            [value]="title()"
+            (valueChange)="title.set($event)" />
 
-          <div class="s1-field">
-            <div class="s1-field__top">
-              <label class="s1-field__label" for="ms-desc">
-                {{ s1DescLabel() }}
-                <span class="s1-field__optional">{{ 'i18n.Setup.S1.optional' | translate }}</span>
-              </label>
-              <span class="s1-field__counter">{{ description().length }}/{{ descMax }}</span>
-            </div>
-            <textarea
-              id="ms-desc"
-              class="s1-input s1-textarea"
-              rows="5"
-              [attr.maxlength]="descMax"
-              [value]="description()"
-              (input)="description.set($any($event.target).value)"
-              [placeholder]="s1DescPlaceholder()"></textarea>
-          </div>
+          <app-counter-field
+            [label]="s1DescLabel()"
+            [optionalLabel]="'i18n.Setup.S1.optional' | translate"
+            [maxLength]="descMax"
+            multiline
+            [rows]="6"
+            [placeholder]="s1DescPlaceholder()"
+            [value]="description()"
+            (valueChange)="description.set($event)" />
         </div>
 
         <!-- Anteprima dal vivo: il libro riflette il titolo -->

@@ -49,6 +49,24 @@
   </section>
 
   <section class="g-sec">
+    <h2>CounterField <small>label + obbligatorio/facoltativo + contatore caratteri · input/textarea</small></h2>
+    <div class="g-form">
+      <app-counter-field class="g-field" label="Titolo della presentazione" required
+        [maxLength]="80" placeholder="Es. Analisi del mercato italiano 2024"
+        [value]="cfTitle()" (valueChange)="cfTitle.set($event)" />
+
+      <app-counter-field class="g-field" label="Codice progetto" [maxLength]="12"
+        hint="Identificativo breve, senza spazi." placeholder="ABC-123"
+        [value]="textValue()" (valueChange)="textValue.set($event)" />
+
+      <app-counter-field class="g-field g-field--full" label="Descrizione della presentazione"
+        optionalLabel="(facoltativa)" multiline [rows]="5" [maxLength]="500"
+        placeholder="Descrivi l'obiettivo della presentazione e i principali argomenti che vuoi includere…"
+        [value]="cfDesc()" (valueChange)="cfDesc.set($event)" />
+    </div>
+  </section>
+
+  <section class="g-sec">
     <h2>SelectionCard <small>scelta singola · icona + titolo + descrizione + check</small></h2>
     <div class="g-grid">
       @for (k of kinds; track k.id) {

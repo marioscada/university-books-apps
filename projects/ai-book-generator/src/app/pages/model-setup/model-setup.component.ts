@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
+import { CounterFieldComponent } from '../../shared/ui/counter-field/counter-field.component';
 import type { ModelTone } from '../../shared/ui/model-card/model-card.component';
 import { TemplatesStore } from '../../core/state/templates.store';
 import type { ProjectTemplate, StructureGroup } from '../../core/domain';
@@ -69,7 +70,7 @@ const MAX_CHIPS = 4;
   selector: 'app-model-setup',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AuthShellComponent, MatIconModule, TranslateModule],
+  imports: [AuthShellComponent, CounterFieldComponent, MatIconModule, TranslateModule],
   templateUrl: './model-setup.component.html',
   styleUrl: './model-setup.component.scss',
 })

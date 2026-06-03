@@ -12,6 +12,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatChipsModule } from '@angular/material/chips';
 
 import { TextFieldComponent } from '../../shared/ui/text-field/text-field.component';
+import { CounterFieldComponent } from '../../shared/ui/counter-field/counter-field.component';
 import { SelectFieldComponent } from '../../shared/ui/select-field/select-field.component';
 import { SelectionCardComponent } from '../../shared/ui/selection-card/selection-card.component';
 import { StepIndicatorComponent, type StepItem } from '../../shared/ui/step-indicator/step-indicator.component';
@@ -44,6 +45,7 @@ import { EntityCardComponent } from '../../shared/ui/entity-card/entity-card.com
     MatRadioModule,
     MatChipsModule,
     TextFieldComponent,
+    CounterFieldComponent,
     SelectFieldComponent,
     SelectionCardComponent,
     StepIndicatorComponent,
@@ -135,6 +137,8 @@ export class UiGalleryComponent {
 
   // --- Form controls ---
   readonly textValue = signal('');
+  readonly cfTitle = signal('Analisi del mercato 2024');
+  readonly cfDesc = signal('');
   readonly nameValue = signal('');
   readonly areaValue = signal('');
   readonly selectValue = signal('balanced');
