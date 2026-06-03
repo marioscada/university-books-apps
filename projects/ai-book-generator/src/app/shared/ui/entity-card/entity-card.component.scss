@@ -1,0 +1,208 @@
+// EntityCard — look self-contained sui soli token globali.
+:host {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--card-border-color, #eceff3);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    transform 0.12s ease;
+}
+
+:host(:hover) {
+  border-color: var(--accent-400, #47c2e8);
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+// === Cover (slot proiettato) ===
+.entity-card__cover {
+  position: relative;
+  display: block;
+  min-height: 132px;
+  background: var(--section-band-alt, #f5f7fa);
+  cursor: pointer;
+  outline: none;
+
+  // Lo slot cover riempie l'area.
+  ::ng-deep > [cover] {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+  }
+}
+
+.entity-card__cover:focus-visible {
+  box-shadow: inset 0 0 0 3px var(--accent-100, #dcf7ff),
+    inset 0 0 0 1px var(--accent-500, #039fce);
+}
+
+// === Status pill ===
+.entity-card__status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  backdrop-filter: blur(2px);
+
+  // neutral (default)
+  background: color-mix(in srgb, var(--mat-sys-on-surface, #1a1d21) 8%, #fff);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.entity-card__status--accent {
+  background: var(--accent-100, #dcf7ff);
+  color: var(--accent-700, #0289b2);
+}
+
+.entity-card__status--success {
+  background: color-mix(in srgb, var(--site-success, #2e9e6b) 16%, #fff);
+  color: var(--site-success, #2e9e6b);
+}
+
+.entity-card__status--warning {
+  background: var(--tone-warning-bg, #fff3e0);
+  color: var(--tone-warning-fg, #b26a00);
+}
+
+.entity-card__status--danger {
+  background: var(--tone-danger-bg, #fdecec);
+  color: var(--tone-danger-fg, #c0362c);
+}
+
+.entity-card__status--violet {
+  background: var(--tone-violet-bg, #efe7fb);
+  color: var(--tone-violet-fg, #6b3fb5);
+}
+
+// === Menu azioni (slot proiettato, isolato da `open`) ===
+.entity-card__menu {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+}
+
+// === Body ===
+.entity-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  flex: 1 1 auto;
+  cursor: pointer;
+  outline: none;
+}
+
+.entity-card__body:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--accent-500, #039fce);
+  border-radius: var(--card-radius, 16px);
+}
+
+.entity-card__title {
+  margin: 0;
+  font-size: var(--site-title-medium, 1rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--mat-sys-on-surface, #1a1d21);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.entity-card__meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+.entity-card__type {
+  font-weight: 600;
+}
+
+.entity-card__sep {
+  color: var(--card-border-color, #cfd5dd);
+}
+
+// === Progress ===
+.entity-card__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+
+  --mat-progress-bar-active-indicator-color: var(--accent-500, #039fce);
+  --mat-progress-bar-track-color: var(--section-band-alt, #eef1f5);
+}
+
+.entity-card__progress mat-progress-bar {
+  border-radius: 999px;
+}
+
+.entity-card__progress-label {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+// === Published badge ===
+.entity-card__published {
+  margin: 2px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--site-success, #2e9e6b);
+}
+
+.entity-card__published-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+// === Footer ===
+.entity-card__footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--card-border-color, #eceff3);
+  background: var(--section-band-alt, #f8fafc);
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant, #5b6068);
+}
+
+// === Self-responsive (convenzione marioscadasite): compatta su small. ===
+:host(.isSmall) .entity-card__cover {
+  min-height: 108px;
+}
+
+:host(.isSmall) .entity-card__body {
+  padding: 12px;
+}
+
+:host(.isSmall) .entity-card__footer {
+  padding: 9px 12px;
+}
+
+// === Rispetto delle preferenze di movimento. ===
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+  }
+
+  :host(:hover) {
+    transform: none;
+  }
+}
