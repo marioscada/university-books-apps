@@ -72,6 +72,24 @@
   --accent-500: #039fce; // accent principale
   --accent-700: #0289b2;
   --site-success: #16a34a;
+
+  // --- Toni (foreground + bg tenue) — SINGLE SOURCE per i componenti riusabili.
+  // Cambiando questi valori si ri-tematizzano stat-card/entity-card/folder-card…
+  // SENZA toccare i componenti (il look dei toni arriva dinamicamente dal globale).
+  --tone-success-fg: #1a8754;
+  --tone-success-bg: #e3f6ea;
+  --tone-warning-fg: #b26a00;
+  --tone-warning-bg: #fff3e0;
+  --tone-danger-fg: #c0362c;
+  --tone-danger-bg: #fdecec;
+  --tone-info-fg: var(--accent-700);
+  --tone-info-bg: var(--accent-100);
+  --tone-violet-fg: #6b3fb5;
+  --tone-violet-bg: #efe7fb;
+  --tone-amber-fg: #b6791f;
+  --tone-amber-bg: #fbf0d8;
+  --tone-rose-fg: #c2456b;
+  --tone-rose-bg: #fbe3eb;
   --site-accent-blue: var(--accent-500); // retro-compat: punta all'accent
   --site-nav-item-active-color: var(--site-accent-blue);
   --site-nav-item-indicator-height: 0;
