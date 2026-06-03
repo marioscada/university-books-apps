@@ -149,7 +149,13 @@ npx ng build ai-book-generator --configuration development
 
 ---
 
-## 4. BLOCCO CORRENTE — **F2: Routing + Project Workspace shell**
+## 4. BLOCCO **F2 — Routing + Project Workspace shell** ✅ COMPLETATO
+
+> Esito (commit `95e7417`): routing `withComponentInputBinding` + `project/:id`
+> (Workspace `@switch` per stato, transizioni cablate, auto-switch `processing→review`)
+> + `create/new` stub funzionale; `ProjectsStore.reopen` aggiunto; i18n
+> `Workspace.*`/`Job.Step.*`/`Project.Kind.*`/`NewProject.*` (en/it/de, ETA con `{{ }}`).
+> Tutte le verifiche verdi.
 
 > Obiettivo: da `/create`, click su una card → `/project/:id`, pagina **Workspace**
 > il cui layout cambia in base allo `status` live (dal `ProjectsStore`, mock). È la
@@ -226,8 +232,85 @@ npx ng build ai-book-generator --configuration development
 
 ---
 
-## 5. Prossimi blocchi (anteprima)
-- **F4** New Project Wizard (7 step, resumable, gating piani) → sostituisce lo stub `/create/new`.
+## 5. BLOCCO CORRENTE — **F4: New Project Wizard**
+
+> Obiettivo: sostituire lo **stub** `/create/new` con un **wizard a 7 step**,
+> **resumable come Draft**, con **gating piani soft**, che compila `ProjectSettings`
+> + `sourceIds` di un Project e termina con **Genera** (`draft→queued`) o **Salva
+> come bozza**. Domini di riferimento: `PRODUCT-ARCHITECTURE.md §1.2` (ProjectSettings,
+> StructureConfig, ProcessingMode, OutputFormat), `§1.5` (Source), `§8` (gating).
+
+### 5.0 Decisioni architetturali (vincolanti)
+- **Resumability = il draft È la persistenza.** Dopo lo **Step 1** (kind+title) si crea
+  il draft con `store.create(title, kind)`; ogni step successivo fa **PATCH** dei settings
+  via store (`updateSettings`). "Salva ed esci" lascia un draft nella Create hub; "Riprendi"
+  da un Workspace `draft` riapre il wizard su quel progetto. → niente stato volatile perso.
+- **Stepper custom signal-driven** (`currentStep = signal<number>()` + `@switch`), **non**
+  `mat-stepper` (controllo totale del look globale + signals-first). I **controlli di input
+  sono Material** (`mat-form-field`, `mat-select`, `mat-radio`, `mat-checkbox`,
+  `mat-slide-toggle`, `mat-chip-listbox`).
+- **Gating soft** su piano mock (`free`): modalità `deep_research`/`academic` **disabilitate**
+  con hint upgrade; nessun blocco hard (enforcement reale = backend, fuori v1).
+- **Niente upload reale**: le fonti si **selezionano dalla Library** (`SourcesStore`) + una
+  "nota" mock creabile inline. L'ingest reale è F7.
+
+### 5.1 Store / ApiPort (aggiunte minime, pattern F1)
+- `ApiPort`: aggiungere `getPlan(): Promise<Plan>` (mock → piano `free`); confermare
+  `patchProject(id, { settings, title })` già presente (contratto §7). 
+- `ProjectsStore`: aggiungere metodo `updateSettings(id, settings: ProjectSettings)` (e/o
+  `update(id, patch)`) che chiama `api.patchProject` e fa `patchState(updateEntity)`.
+  Eventuale `WorkspaceStore`/computed `currentPlan` o semplice signal caricato da `getPlan`.
+- Business logic NELLO store; il wizard legge signal e chiama metodi (mai il mock diretto).
+
+### 5.2 Routing
+- `create/new` resta → ora carica `NewProjectWizardComponent` (rinominare/rimpiazzare lo stub `NewProjectComponent`).
+- Resume: la route accetta il draft via **query param** `?draft=:id` (es. `/create/new?draft=proj-…`). Il wizard, se presente, carica quel draft e riprende.
+- Nel **Workspace `draft`** aggiungere azione **"Riprendi"** → `routerLink="/create/new"` con `[queryParams]="{ draft: project.id }"` (accanto o al posto di "Genera").
+
+### 5.3 I 7 step (campi ↔ dominio)
+1. **Goal** — `kind` (`ProjectKind`, griglia di scelte con icona) + `title` (input). *(crea il draft al "Avanti")*
+2. **Sources** — multi-select dalle `SourcesStore.entities()` (chip/checkbox) → `sourceIds`; "+ nota" crea una Source `type:'note'` mock. Min 0 (consentito), con hint.
+3. **Instructions** — `textarea` → `settings.instructions` (prompt libero).
+4. **Mode** — `processingMode` via `mat-radio`/card-list (7 valori); `deep_research`/`academic` **disabilitati** se piano `free` (+ badge "Pro"). Mostra stima tempo/qualità statica per modalità.
+5. **Structure** — `StructureConfig`: `chapters` (number/'auto'), `length`, `tone`, `depth` (select) + toggle `bibliography|glossary|quiz|exercises|tables|images` (`mat-slide-toggle`).
+6. **Output & language** — `outputFormats` (`mat-chip-listbox` multi: pdf/docx/epub/markdown/html) + `language` (`mat-select` ISO).
+7. **Review** — recap di tutti i settings + fonti; **gate piano**; bottoni **Genera ora** → `store.generate(id)` → naviga a `/project/:id` (processing) · **Salva come bozza** → naviga a `/project/:id` (draft) o `/create`.
+
+- Navigazione: **Avanti/Indietro** + indicatore step (1..7). PATCH dei settings ad ogni "Avanti" (autosave). **"Salva ed esci"** sempre disponibile da step ≥1.
+
+### 5.4 Stili
+- **Globali**: riusa `band`, `site-container`, `project-card`/`app-card`, `status--*`, `accent-progress`, `site-cta-pill`, form Material globali. 
+- L'**indicatore step** è un pattern riusabile nuovo → se serve, va SOLO in `theme/_components.scss` (es. `.wizard-steps`/`.wizard-step--active` con `--accent-500`), single source. Nessuno stile ad-hoc nel componente oltre layout-glue.
+
+### 5.5 i18n (en/it/de, alfabetico, una lingua per file)
+- `i18n.Wizard.Step.{goal|sources|instructions|mode|structure|output|review}.{title,subtitle}`
+- `i18n.Wizard.Action.{next,back,saveExit,generate,saveDraft,addNote}`
+- `i18n.Wizard.Mode.{fast_draft|balanced|deep_research|academic|business|educational|technical}.{label,desc}`
+- `i18n.Wizard.Structure.{chapters,length,tone,depth,bibliography,glossary,quiz,exercises,tables,images}` (+ valori enum dove servono label)
+- `i18n.Wizard.gating.proOnly`, `i18n.Wizard.review.title`, ecc. (riusa `i18n.Project.Kind.*` e `i18n.Project.Status.*` esistenti).
+
+### 5.6 Criteri di accettazione
+1. `/create/new` mostra il wizard a 7 step navigabile (Avanti/Indietro), controlli Material, stile globale.
+2. Dopo lo Step 1 esiste un **draft** nello store; "Salva ed esci" → il draft compare nella Create hub; "Riprendi" dal Workspace draft riapre il wizard popolato (`?draft=:id`).
+3. Step 4: con piano `free`, `deep_research`/`academic` sono **disabilitati** con hint upgrade.
+4. Step 7 **Genera** → `store.generate` → `/project/:id` in processing (progress che avanza); **Salva bozza** → draft.
+5. I settings scelti finiscono in `project.settings` (verificabile riaprendo il draft).
+6. Stili **solo globali** (eventuale `.wizard-steps` in `theme/`); i18n per ogni testo (en/it/de); **tsc + check:subscriptions + lint + ng build verdi**.
+
+### 5.7 Cosa NON fare in F4
+- Niente upload/ingest reale (F7), niente generazione contenuti reali (F5), niente chat (F6), versioning (F8).
+- Niente enforcement hard del piano (solo gate soft UI). Non toccare `theme/` se non per l'indicatore step. Nessuna nuova dipendenza. authGuard resta staccato (TEMP). Non committare/pushare.
+
+### 5.8 Comandi di verifica
+```
+npx tsc -p projects/ai-book-generator/tsconfig.app.json --noEmit
+npm run check
+npx ng build ai-book-generator --configuration development
+```
+
+---
+
+## 6. Prossimi blocchi (anteprima)
 - **F5** Workspace dettagli per stato (live step/log/ETA, review outline/capitoli/preview/export, published versioni).
 - **F6** Project AI Chat + operazioni tipizzate (rigenerazione parziale).
 - **F7** Library (metadati, ingest, relazione many-to-many, stato uso).
@@ -236,7 +319,7 @@ npx ng build ai-book-generator --configuration development
 
 ---
 
-## 6. Riferimenti ufficiali consultati
+## 7. Riferimenti ufficiali consultati
 - Angular coding style guide — https://angular.dev/style-guide
 - Angular signals (state) — https://angular.dev/guide/signals
 - NgRx SignalStore — https://ngrx.io/guide/signals/signal-store
