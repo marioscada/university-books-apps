@@ -1,7 +1,10 @@
-<div class="g-page">
+<div class="g-page" [class.theme-dark]="darkTheme()">
   <header class="g-head">
     <h1>UI Gallery</h1>
     <p>Componenti dumb library-grade — provali qui prima di usarli nelle pagine.</p>
+    <mat-slide-toggle [ngModel]="darkTheme()" (ngModelChange)="darkTheme.set($event)">
+      Tema scuro (Grafana) — cambia SOLO i token globali, i componenti non si toccano
+    </mat-slide-toggle>
   </header>
 
   <section class="g-sec">

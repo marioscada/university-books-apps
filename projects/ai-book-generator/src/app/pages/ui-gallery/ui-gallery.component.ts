@@ -130,6 +130,9 @@ export class UiGalleryComponent {
     { title: 'Cybersecurity per aziende', cover: 'ember', status: 'Bozza', statusTone: 'warning' as const, type: 'Guida', meta: 'Aggiornato ieri', footer: '5 capitoli', progress: null as number | null, published: false },
   ];
 
+  /** Test re-theming: flippa SOLO i token globali (i componenti non si toccano). */
+  readonly darkTheme = signal(false);
+
   // --- Form controls ---
   readonly textValue = signal('');
   readonly nameValue = signal('');

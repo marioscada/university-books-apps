@@ -11,6 +11,33 @@
   gap: 40px;
 }
 
+// =============================================================================
+// TEST re-theming "Grafana": ridefinisce SOLO i token globali. I componenti li
+// ereditano (cascade delle CSS custom properties) e cambiano senza essere toccati.
+// =============================================================================
+.theme-dark {
+  --card-bg: #1b1e24;
+  --card-border-color: #2b2f37;
+  --section-band-alt: #23272f;
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 35%);
+  --card-shadow-hover: 0 12px 32px rgb(0 0 0 / 50%);
+  --mat-sys-on-surface: #e7e9ee;
+  --mat-sys-on-surface-variant: #9aa1ac;
+  --mat-sys-error: #f87171;
+  --field-bg: linear-gradient(359deg, #23272f, #1b1e24);
+  --field-border-color: #2b2f37;
+  --accent-100: #10333d;
+  --accent-400: #2bb6df;
+  --accent-500: #38c3ef;
+  --accent-700: #7bd6f3;
+  --on-accent: #06141a;
+
+  background: #14161a;
+  min-height: 100vh;
+  border-radius: 16px;
+  padding-inline: 20px;
+}
+
 .g-head h1 {
   margin: 0;
   font-size: clamp(1.75rem, 3vw, 2.25rem);
