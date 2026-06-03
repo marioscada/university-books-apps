@@ -1,0 +1,99 @@
+<div class="g-page">
+  <header class="g-head">
+    <h1>UI Gallery</h1>
+    <p>Componenti dumb library-grade — provali qui prima di usarli nelle pagine.</p>
+  </header>
+
+  <section class="g-sec">
+    <h2>SelectionCard <small>scelta singola · icona + titolo + descrizione + check</small></h2>
+    <div class="g-grid">
+      @for (k of kinds; track k.id) {
+        <app-selection-card
+          [icon]="k.icon" [title]="k.title" [description]="k.desc"
+          [selected]="selectedKind() === k.id" (selectCard)="selectedKind.set(k.id)" />
+      }
+    </div>
+  </section>
+
+  <section class="g-sec">
+    <h2>StepIndicator <small>progress non-lineare, step completati cliccabili</small></h2>
+    <app-step-indicator [steps]="steps" [activeIndex]="stepIdx()" [completed]="stepCompleted()"
+      (stepSelect)="stepIdx.set($event)" />
+    <p class="g-hint">Step attivo: {{ stepIdx() + 1 }} — clicca uno step raggiunto per tornarci.</p>
+  </section>
+
+  <section class="g-sec">
+    <h2>FileDropzone <small>drag&drop nativo + lista file (rilascia o sfoglia)</small></h2>
+    <app-file-dropzone
+      [items]="uploads()"
+      title="Trascina i file qui oppure clicca per sfogliare"
+      hint="PDF, DOCX, PPTX, immagini, audio, CSV — max 200MB"
+      removeLabel="Rimuovi" dropzoneLabel="Carica file"
+      (filesSelected)="onFiles($event)" (itemRemove)="removeUpload($event)" />
+  </section>
+
+  <section class="g-sec">
+    <h2>SummaryPanel <small>riepilogo con badge + cover/footer proiettati</small></h2>
+    <div class="g-narrow">
+      <app-summary-panel panelTitle="Anteprima progetto" badge="In tempo reale" [rows]="summaryRows">
+        <div cover class="cover-art cover-art--aurora g-cover"></div>
+        <p footer class="g-note">Ti avviseremo non appena la generazione sarà completata.</p>
+      </app-summary-panel>
+    </div>
+  </section>
+
+  <section class="g-sec">
+    <h2>StatCard <small>metrica/filtro · toni dai token globali · selezionabile</small></h2>
+    <div class="g-grid">
+      @for (s of stats; track s.label) {
+        <app-stat-card [label]="s.label" [value]="s.value" [icon]="s.icon" [tone]="s.tone"
+          interactive [selected]="selectedStat() === s.label" (activate)="selectedStat.set(s.label)" />
+      }
+    </div>
+  </section>
+
+  <section class="g-sec">
+    <h2>FolderCard <small>cartella/raccolta · tono per icona</small></h2>
+    <div class="g-grid">
+      @for (f of folders; track f.name) {
+        <app-folder-card [name]="f.name" [countLabel]="f.count" [metaLabel]="f.meta" [tone]="f.tone"
+          (open)="log('folder:' + f.name)" />
+      }
+    </div>
+  </section>
+
+  <section class="g-sec">
+    <h2>EntityCard <small>catalogo · cover + status + progress + menu</small></h2>
+    <div class="g-grid g-grid--cards">
+      @for (e of entities; track e.title) {
+        <app-entity-card
+          [title]="e.title" [statusLabel]="e.status" [statusTone]="e.statusTone"
+          [typeLabel]="e.type" [metaLabel]="e.meta" [footerLabel]="e.footer"
+          [progress]="e.progress" [progressLabel]="(e.progress ?? 0) + '% completato'"
+          [published]="e.published" publishedLabel="Pubblicato"
+          (open)="log('entity:' + e.title)">
+          <div cover class="cover-art cover-art--{{ e.cover }} g-cover-fill"></div>
+          <button menu mat-icon-button [matMenuTriggerFor]="em" aria-label="Azioni">
+            <mat-icon fontSet="material-symbols-outlined">more_vert</mat-icon>
+          </button>
+          <mat-menu #em="matMenu">
+            <button mat-menu-item>Apri</button>
+            <button mat-menu-item>Duplica</button>
+          </mat-menu>
+        </app-entity-card>
+      }
+    </div>
+  </section>
+
+  <section class="g-sec">
+    <h2>PlanCard <small>piano prezzi · evidenziato + CTA tonale</small></h2>
+    <div class="g-plans">
+      @for (p of plans; track p.name) {
+        <app-plan-card [name]="p.name" [tagline]="p.tagline" [icon]="p.icon" [price]="p.price"
+          [period]="p.period" [features]="p.features" [highlighted]="p.highlighted"
+          [badgeLabel]="p.badge" [ctaLabel]="p.cta" [ctaTone]="p.ctaTone"
+          (ctaClick)="log('plan:' + p.name)" />
+      }
+    </div>
+  </section>
+</div>

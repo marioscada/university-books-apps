@@ -1,0 +1,80 @@
+:host {
+  display: block;
+}
+
+.g-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 48px) 20px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.g-head h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.g-head p {
+  margin: 6px 0 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.g-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--card-border-color);
+}
+.g-sec h2 {
+  margin: 0;
+  font-size: var(--site-title-medium);
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.g-sec h2 small {
+  margin-left: 10px;
+  font-weight: 500;
+  font-size: var(--site-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.g-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.g-grid--cards {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.g-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.g-narrow {
+  max-width: 380px;
+}
+
+.g-cover {
+  aspect-ratio: 3 / 2;
+  border-radius: 12px;
+}
+.g-cover-fill {
+  width: 100%;
+  height: 100%;
+  min-height: 140px;
+}
+
+.g-hint,
+.g-note {
+  margin: 0;
+  font-size: var(--site-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
