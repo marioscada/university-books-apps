@@ -1,0 +1,78 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-select__head {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.field-select__label {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+.field-select__hint {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.field-select__wrap {
+  position: relative;
+  display: block;
+}
+
+.field-select__control {
+  appearance: none;
+  width: 100%;
+  padding: 11px 38px 11px 14px;
+  border-radius: var(--field-radius, 10px);
+  font: inherit;
+  font-size: var(--site-body-medium, 1rem);
+  cursor: pointer;
+  outline: none;
+  // Neutro di default: fill = sfondo area, valore in nero sbiadito.
+  background: var(--surface-soft, #f8fafc);
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  color: var(--mat-sys-on-surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.field-select__control:focus-visible {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+.field-select__control:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+// Variante accent: chiuso = pillola accent (valore "scelto").
+:host(.is-accent) .field-select__control {
+  background: var(--accent-100);
+  border-color: var(--accent-400);
+  color: var(--accent-700);
+  font-weight: 600;
+}
+
+.field-select__chevron {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--mat-sys-on-surface-variant);
+}
+:host(.is-accent) .field-select__chevron {
+  color: var(--accent-700);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field-select__control {
+    transition: none;
+  }
+}

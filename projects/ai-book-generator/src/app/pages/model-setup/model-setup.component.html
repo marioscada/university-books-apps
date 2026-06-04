@@ -1,55 +1,260 @@
 <app-auth-shell>
-  <!-- Sezione 1 — Definisci (banda bianca) -->
-  <section class="band">
-    <div class="site-container band__inner">
-      <button class="ms-back" type="button" (click)="back()">
-        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_back</mat-icon>
-        {{ 'i18n.Setup.back' | translate }}
-      </button>
+  <div class="setup">
+    <!-- Top bar -->
+    <header class="setup-bar site-container">
+      <app-back-link [label]="'i18n.Setup.backToModels' | translate" (navigate)="back()" />
+      <app-tag-readout
+        [label]="'i18n.Setup.modelChosen' | translate"
+        [value]="modelName()"
+        [tone]="modelTone()"
+        [icon]="template()?.coverTheme ? 'category' : ''" />
+    </header>
 
-      <header class="s1-head">
-        <span class="s1-step">
-          <span class="s1-step__num">1</span>
-          <span class="s1-step__eyebrow">{{ 'i18n.Setup.S1.eyebrow' | translate }}</span>
-        </span>
-        <h1 class="s1-title">{{ s1Title() }}</h1>
-        <p class="s1-subtitle">{{ s1Subtitle() }}</p>
-      </header>
+    <!-- Sezione 1: Definisci (banda bianca) -->
+    <section class="band">
+      <div class="site-container band__inner">
+        <header class="setup-head">
+          <span class="setup-step">
+            <span class="setup-step__num">1</span>
+            <span class="setup-step__eyebrow">{{ 'i18n.Setup.S1.eyebrow' | translate }}</span>
+          </span>
+          <h1 class="setup-title">{{ defTitle() }}</h1>
+          <p class="setup-lead">{{ defSubtitle() }}</p>
+        </header>
 
-      <div class="s1-grid">
-        <!-- Form -->
-        <div class="s1-form">
-          <app-counter-field
-            [label]="s1TitleLabel()"
-            required
-            [maxLength]="titleMax"
-            [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate"
-            [value]="title()"
-            (valueChange)="title.set($event)" />
-
-          <app-counter-field
-            [label]="s1DescLabel()"
-            [optionalLabel]="'i18n.Setup.S1.optional' | translate"
-            [maxLength]="descMax"
-            multiline
-            [rows]="6"
-            [placeholder]="s1DescPlaceholder()"
-            [value]="description()"
-            (valueChange)="description.set($event)" />
-        </div>
-
-        <!-- Anteprima dal vivo: il libro riflette il titolo -->
-        <aside class="s1-preview">
-          <div class="s1-book cover-art cover-art--{{ template()?.coverTheme ?? 'ocean' }}">
-            <span class="s1-book__kicker">{{ modelName() }}</span>
-            <span class="s1-book__title" [class.is-placeholder]="!title().trim()">
-              {{ title().trim() || ('i18n.Setup.untitled' | translate) }}
-            </span>
-            <span class="s1-book__brand">SCADÁ</span>
+        <div class="setup-brief">
+          <div class="setup-brief__form">
+            <app-counter-field
+              [label]="titleLabel()" required [maxLength]="titleMax"
+              [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate"
+              [value]="title()" (valueChange)="title.set($event)" />
+            <app-counter-field
+              [label]="descLabel()" [optionalLabel]="'i18n.Setup.S1.optional' | translate"
+              [maxLength]="descMax" multiline [rows]="4"
+              [placeholder]="descPlaceholder()"
+              [value]="description()" (valueChange)="description.set($event)" />
           </div>
-          <span class="s1-preview__hint">{{ 'i18n.Setup.S1.previewHint' | translate }}</span>
-        </aside>
+
+          <aside class="setup-cover">
+            <div class="setup-cover__book" [style.--book-bg]="bookBg()">
+              <span class="setup-cover__kicker">{{ modelName() }}</span>
+              <span class="setup-cover__title" [class.is-placeholder]="!title().trim()">{{ coverTitle() }}</span>
+              <span class="setup-cover__brand">SCADÁ</span>
+            </div>
+            <button class="setup-cover__action" type="button">
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+              {{ 'i18n.Setup.coverUpdate' | translate }}
+            </button>
+          </aside>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- Sezione 2: Ritocca il modello (banda slate) -->
+    <section class="band band--alt">
+      <div class="site-container band__inner">
+        <app-form-section
+          [heading]="'i18n.Setup.tweak.title' | translate"
+          optional [optionalLabel]="'i18n.Setup.optionalTag' | translate"
+          [subtitle]="'i18n.Setup.tweak.subtitle' | translate"
+          [actionLabel]="'i18n.Setup.tweak.reset' | translate" actionIcon="↩"
+          (action)="resetTemplate()">
+          <div class="setup-options">
+            <app-option-card glyph="↔"
+              [title]="'i18n.Setup.tweak.length.title' | translate"
+              [description]="'i18n.Setup.tweak.length.desc' | translate"
+              [openLabel]="'i18n.Setup.open' | translate"
+              [modified]="lengthModified()" [detail]="lengthDetail()"
+              [modifiedLabel]="'i18n.Setup.Modified' | translate" [resetLabel]="'i18n.Setup.resetDefault' | translate"
+              (open)="openLength()" (reset)="resetArea('length')" />
+            <app-option-card glyph="☰"
+              [title]="'i18n.Setup.tweak.structure.title' | translate"
+              [description]="'i18n.Setup.tweak.structure.desc' | translate"
+              [openLabel]="'i18n.Setup.open' | translate"
+              [modified]="structureModified()"
+              [modifiedLabel]="'i18n.Setup.Modified' | translate" [resetLabel]="'i18n.Setup.resetDefault' | translate"
+              (open)="openStructure()" (reset)="resetArea('structure')" />
+            <app-option-card glyph="Aa"
+              [title]="'i18n.Setup.tweak.style.title' | translate"
+              [description]="'i18n.Setup.tweak.style.desc' | translate"
+              [openLabel]="'i18n.Setup.open' | translate"
+              [modified]="styleModified()"
+              [modifiedLabel]="'i18n.Setup.Modified' | translate" [resetLabel]="'i18n.Setup.resetDefault' | translate"
+              (open)="openStyle()" (reset)="resetArea('style')" />
+          </div>
+        </app-form-section>
+      </div>
+    </section>
+
+    <!-- Sezione 3: Briefing per l'AI (banda bianca) -->
+    <section class="band">
+      <div class="site-container band__inner">
+        <app-form-section
+          [heading]="'i18n.Setup.briefing.title' | translate"
+          optional [optionalLabel]="'i18n.Setup.optionalTag' | translate"
+          [subtitle]="'i18n.Setup.briefing.subtitle' | translate">
+          <div class="setup-grid2">
+            <app-field-select
+              [label]="'i18n.Setup.briefing.goal' | translate" [hint]="'i18n.Setup.briefing.goalHint' | translate"
+              [options]="goalOptions()" [(value)]="goal" />
+            <app-field-select
+              [label]="'i18n.Setup.briefing.audience' | translate" [hint]="'i18n.Setup.briefing.audienceHint' | translate"
+              [options]="audienceOptions()" [(value)]="audience" />
+            <app-field-select
+              [label]="'i18n.Setup.briefing.tone' | translate" [hint]="'i18n.Setup.briefing.toneHint' | translate"
+              [options]="toneOptions()" [(value)]="tone" />
+            <app-field-select
+              [label]="'i18n.Setup.briefing.language' | translate"
+              [options]="languageOptions" [(value)]="language" />
+          </div>
+
+          <div class="setup-format">
+            <span class="setup-format__head">
+              {{ 'i18n.Setup.briefing.format' | translate }}
+              <span class="setup-format__hint">{{ 'i18n.Setup.briefing.formatHint' | translate }}</span>
+            </span>
+            <div class="setup-format__chips">
+              @for (fmt of outputFormats; track fmt) {
+                <button type="button" class="setup-chip" [class.is-on]="isFormat(fmt)" (click)="toggleFormat(fmt)">
+                  @if (isFormat(fmt)) { <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon> }
+                  {{ fmt | uppercase }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <app-counter-field
+            [label]="'i18n.Setup.briefing.notes' | translate" [optionalLabel]="'i18n.Setup.S1.optional' | translate"
+            [maxLength]="notesMax" multiline [rows]="3"
+            [placeholder]="'i18n.Setup.briefing.notesPlaceholder' | translate"
+            [value]="notes()" (valueChange)="notes.set($event)" />
+        </app-form-section>
+      </div>
+    </section>
+
+    <!-- Sezione 4: Carica le tue fonti (banda slate) -->
+    <section class="band band--alt">
+      <div class="site-container band__inner">
+        <app-form-section
+          [heading]="'i18n.Setup.sources.title' | translate"
+          [subtitle]="'i18n.Setup.sources.subtitle' | translate">
+          <app-source-dropzone
+            [promptLabel]="'i18n.Setup.sources.prompt' | translate"
+            [hintLabel]="'i18n.Setup.sources.hint' | translate"
+            [items]="sources()"
+            (filesAdded)="addSources($event)"
+            (itemRemove)="removeSource($event)" />
+        </app-form-section>
+      </div>
+    </section>
+
+    <!-- Action bar -->
+    <app-action-bar sticky>
+      <app-back-link start [label]="'i18n.Setup.back' | translate" (navigate)="back()" />
+      <button end mat-flat-button color="primary" (click)="generate()">
+        {{ 'i18n.Setup.generateIndex' | translate }}
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+      </button>
+    </app-action-bar>
+
+    <!-- Editor (dialog): contenuto dinamico per area -->
+    <app-modal-shell
+      [open]="activeEditor() !== null"
+      [title]="editorTitle()"
+      [subtitle]="editorSubtitle()"
+      [closeLabel]="'i18n.Setup.editClose' | translate"
+      (close)="closeEditor()">
+      @switch (activeEditor()) {
+        @case ('length') {
+          <div class="ed-group">
+            <span class="ed-label">{{ 'i18n.Setup.lengthLevel' | translate }}</span>
+            <div class="ed-seg ed-seg--wrap">
+              @for (p of lengthPresets; track p) {
+                <button type="button" class="ed-chip" [class.is-on]="lengthPreset() === p" (click)="lengthPreset.set(p)">
+                  {{ 'i18n.Setup.Length.' + p | translate }}
+                </button>
+              }
+            </div>
+          </div>
+          <div class="ed-group">
+            <span class="ed-label">{{ 'i18n.Setup.exactNumber' | translate }}</span>
+            <div class="ed-exact">
+              <div class="ed-seg">
+                <button type="button" class="ed-chip" [class.is-on]="lengthUnit() === 'pages'" (click)="lengthUnit.set('pages')">{{ 'i18n.Setup.unitPages' | translate }}</button>
+                <button type="button" class="ed-chip" [class.is-on]="lengthUnit() === 'words'" (click)="lengthUnit.set('words')">{{ 'i18n.Setup.unitWords' | translate }}</button>
+              </div>
+              <div class="ed-stepper">
+                <button type="button" (click)="bumpLength(-1)" aria-label="-"><mat-icon fontSet="material-symbols-outlined">remove</mat-icon></button>
+                <input class="ed-num" type="text" [value]="lengthValue()" (input)="setLengthNum($any($event.target).value)" />
+                <button type="button" (click)="bumpLength(1)" aria-label="+"><mat-icon fontSet="material-symbols-outlined">add</mat-icon></button>
+              </div>
+            </div>
+          </div>
+        }
+
+        @case ('structure') {
+          <ul class="ed-parts">
+            @for (part of parts(); track part.key) {
+              <li class="ed-part" [class.is-off]="!part.included">
+                <span class="ed-part__label">{{ part.label }}</span>
+                @if (part.optional) {
+                  <button type="button" class="ed-toggle" [class.is-on]="part.included" (click)="togglePart(part.key)" [attr.aria-pressed]="part.included">
+                    <span class="ed-toggle__knob"></span>
+                  </button>
+                } @else {
+                  <mat-icon class="ed-lock" fontSet="material-symbols-outlined" aria-hidden="true">lock</mat-icon>
+                }
+              </li>
+            }
+          </ul>
+        }
+
+        @case ('style') {
+          <div class="ed-grid2">
+            <app-field-select [label]="'i18n.Setup.font' | translate" [accent]="false" [options]="fontOptions" [(value)]="font" />
+            <app-field-select [label]="'i18n.Setup.fontSize' | translate" [accent]="false" [options]="sizeOptions" [(value)]="fontSize" />
+          </div>
+          <div class="ed-group">
+            <span class="ed-label">{{ 'i18n.Setup.textColor' | translate }}</span>
+            <div class="ed-color">
+              <input type="color" [value]="textColor()" (input)="textColor.set($any($event.target).value)" />
+              <span class="ed-color__value">{{ textColor() }}</span>
+            </div>
+          </div>
+          <div class="ed-group">
+            <span class="ed-label">{{ 'i18n.Setup.lineHeight' | translate }}</span>
+            <div class="ed-seg ed-seg--wrap">
+              @for (lh of lineHeightOptions; track lh.value) {
+                <button type="button" class="ed-chip" [class.is-on]="lineHeight() === lh.value" (click)="lineHeight.set(lh.value)">{{ lh.key | translate }}</button>
+              }
+            </div>
+          </div>
+          <div class="ed-group">
+            <span class="ed-label">{{ 'i18n.Setup.alignment' | translate }}</span>
+            <div class="ed-seg ed-seg--wrap">
+              <button type="button" class="ed-chip" [class.is-on]="alignment() === 'left'" (click)="alignment.set('left')">{{ 'i18n.Setup.alignLeft' | translate }}</button>
+              <button type="button" class="ed-chip" [class.is-on]="alignment() === 'center'" (click)="alignment.set('center')">{{ 'i18n.Setup.alignCenter' | translate }}</button>
+              <button type="button" class="ed-chip" [class.is-on]="alignment() === 'right'" (click)="alignment.set('right')">{{ 'i18n.Setup.alignRight' | translate }}</button>
+              <button type="button" class="ed-chip" [class.is-on]="alignment() === 'justify'" (click)="alignment.set('justify')">{{ 'i18n.Setup.alignJustify' | translate }}</button>
+            </div>
+          </div>
+          <div class="ed-preview" [style.font-family]="font()" [style.color]="textColor()" [style.text-align]="alignment()">
+            <span class="ed-preview__label">{{ 'i18n.Setup.preview' | translate }}</span>
+            <p class="ed-preview__text" [style.line-height]="lineHeight()">{{ 'i18n.Setup.previewText' | translate }}</p>
+          </div>
+        }
+      }
+
+      <div footer class="ed-footer">
+        <button class="ed-reset" type="button" (click)="resetEditor()">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">undo</mat-icon>
+          {{ 'i18n.Setup.resetDefault' | translate }}
+        </button>
+        <div class="ed-footer__actions">
+          <button mat-stroked-button type="button" (click)="closeEditor()">{{ 'i18n.Setup.cancel' | translate }}</button>
+          <button mat-flat-button color="primary" type="button" (click)="applyEditor()">{{ 'i18n.Setup.apply' | translate }}</button>
+        </div>
+      </div>
+    </app-modal-shell>
+  </div>
 </app-auth-shell>

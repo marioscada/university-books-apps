@@ -1,46 +1,36 @@
-// Model setup — pagina a sezioni con bande alternate. Token globali, niente
-// literal di colore: ritematizzabile dal solo tema globale.
+// Model setup — pagina a sezioni (bande alternate) composta con components-v2.
 :host {
   display: block;
 }
 
-// Back link
-.ms-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  align-self: flex-start;
-  border: none;
-  background: none;
-  padding: 0;
-  font: inherit;
-  font-weight: 600;
-  font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant);
-  cursor: pointer;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-}
-.ms-back:hover {
-  color: var(--accent-700);
-}
-
-// --- Header sezione ---------------------------------------------------------
-.s1-head {
+.setup {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 8px);
 }
-.s1-step {
+
+// Top bar
+.setup-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2, 16px);
+  padding-top: 20px;
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+// Header sezione Definisci
+.setup-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.setup-step {
   display: inline-flex;
   align-items: center;
   gap: 10px;
 }
-.s1-step__num {
+.setup-step__num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -52,237 +42,225 @@
   font-weight: 700;
   font-size: 0.875rem;
 }
-.s1-step__eyebrow {
+.setup-step__eyebrow {
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent-700);
 }
-.s1-title {
+.setup-title {
   margin: 0;
   font-size: clamp(1.75rem, 3vw, 2.25rem);
   font-weight: 800;
   color: var(--mat-sys-on-surface);
 }
-.s1-subtitle {
+.setup-lead {
   margin: 0;
   font-size: var(--site-body-large, 1.0625rem);
   color: var(--mat-sys-on-surface-variant);
   max-width: 60ch;
 }
 
-// --- Griglia form + card ----------------------------------------------------
-.s1-grid {
+// Brief: il form prende tutta l'aria, la copertina è fissa a destra.
+.setup-brief {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  gap: var(--space-4, 32px);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) clamp(200px, 22vw, 248px);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
 }
-
-// --- Anteprima libro (riflette il titolo dal vivo) -------------------------
-.s1-preview {
+.setup-brief__form {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: var(--space-2, 16px);
 }
-.s1-book {
-  width: 100%;
-  max-width: 280px;
-  aspect-ratio: 3 / 4;
-  border-radius: 6px 12px 12px 6px;
+.setup-cover {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 28px 24px;
-  position: relative;
-  overflow: hidden;
-  // Look "libro": dorso a sinistra + ombra di rilievo.
-  border-left: 6px solid rgba(0, 0, 0, 0.18);
-  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.5), var(--card-shadow);
+  align-items: center;
+  gap: 12px;
 }
-.s1-book::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.14), transparent 45%),
-    linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, 0.4));
+.setup-cover__book {
+  width: 100%;
+  // Cap: su layout stretto (1 colonna) il libro non diventa enorme.
+  max-width: 240px;
+  aspect-ratio: 3 / 4;
+  border-radius: 6px 10px 10px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 8px);
+  padding: var(--space-3, 24px);
+  // Libro pieno, colore dinamico per modello (testo bianco), dorso + ombra.
+  background: var(--book-bg, var(--accent-500));
+  border-left: 6px solid var(--book-spine-color);
+  box-shadow: var(--shadow-lift), var(--card-shadow);
 }
-.s1-book__kicker,
-.s1-book__title,
-.s1-book__brand {
-  position: relative;
-  z-index: 1;
-  color: var(--on-accent, #fff);
-}
-.s1-book__kicker {
+.setup-cover__kicker {
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--on-accent, #fff);
   opacity: 0.9;
 }
-.s1-book__title {
-  font-size: clamp(1.5rem, 2.6vw, 2rem);
+.setup-cover__title {
+  font-size: clamp(1.375rem, 2.4vw, 1.625rem);
   font-weight: 800;
   line-height: 1.12;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.4);
+  color: var(--on-accent, #fff);
+  text-shadow: var(--cover-text-scrim);
   word-break: break-word;
 }
-.s1-book__title.is-placeholder {
+.setup-cover__title.is-placeholder {
   opacity: 0.55;
   font-weight: 700;
 }
-.s1-book__brand {
+.setup-cover__brand {
   margin-top: auto;
   font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
+  color: var(--on-accent, #fff);
   opacity: 0.9;
 }
-.s1-preview__hint {
-  font-size: 0.8125rem;
-  color: var(--mat-sys-on-surface-variant);
-  text-align: center;
-}
-
-// --- Form -------------------------------------------------------------------
-.s1-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2, 16px);
-}
-.s1-field {
-  display: flex;
-  flex-direction: column;
+.setup-cover__action {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-}
-.s1-field__top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2, 16px);
-}
-.s1-field__label {
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
-}
-.s1-field__req {
-  color: var(--tone-danger-fg, #d33);
-}
-.s1-field__optional {
-  font-weight: 500;
-  color: var(--mat-sys-on-surface-variant);
-}
-.s1-field__counter {
-  font-size: 0.75rem;
-  color: var(--mat-sys-on-surface-variant);
-  font-variant-numeric: tabular-nums;
-}
-.s1-input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: var(--field-radius, 10px);
-  background: var(--field-bg);
-  border: 1px solid var(--field-border-color, var(--card-border-color));
-  color: var(--mat-sys-on-surface);
+  border: none;
+  background: none;
   font: inherit;
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.s1-input::placeholder {
-  color: var(--mat-sys-on-surface-variant);
-  opacity: 0.7;
-}
-.s1-input:focus-visible {
-  border-color: var(--accent-500);
-  box-shadow: 0 0 0 3px var(--accent-100);
-}
-.s1-textarea {
-  resize: vertical;
-  min-height: 120px;
-  line-height: 1.5;
-}
-
-// --- Card "Cos'è un …" ------------------------------------------------------
-.s1-about {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2, 16px);
-  padding: var(--card-padding, 20px);
-  border-radius: var(--card-radius, 16px);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--accent-100) 65%, var(--card-bg)),
-    var(--card-bg)
-  );
-  border: 1px solid var(--card-border-color);
-}
-.s1-about__title {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--mat-sys-on-surface);
-}
-.s1-about__text {
-  margin: 0;
-  font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant);
-  line-height: 1.5;
-}
-.s1-about__divider {
-  height: 1px;
-  background: var(--card-border-color);
-}
-.s1-about__includes {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
   font-size: var(--site-body-small, 0.875rem);
   font-weight: 600;
-  color: var(--mat-sys-on-surface);
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    color: var(--accent-600, var(--accent-700));
-  }
-}
-.s1-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.s1-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
+  color: var(--accent-700);
+  cursor: pointer;
 
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
-    color: var(--chip-fg, var(--accent-700));
   }
 }
-.s1-chip--more {
-  color: var(--mat-sys-on-surface-variant);
-  font-weight: 500;
+
+// Griglie sezioni — 3 card a tutta larghezza (niente colonne fantasma).
+.setup-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2, 16px);
+  align-items: stretch;
+}
+.setup-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2, 16px);
 }
 
-// --- Responsive -------------------------------------------------------------
+// Formato output (chip multi-select)
+.setup-format {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.setup-format__head {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+.setup-format__hint {
+  margin-left: 6px;
+  font-weight: 400;
+  color: var(--mat-sys-on-surface-variant);
+}
+.setup-format__chips {
+  display: flex;
+  gap: 8px;
+}
+.setup-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  background: var(--card-bg);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--site-body-small, 0.875rem);
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+.setup-chip.is-on {
+  background: var(--accent-500);
+  border-color: var(--accent-500);
+  color: var(--on-accent, #fff);
+}
+
 @media (max-width: 860px) {
-  .s1-grid {
+  .setup-brief {
+    grid-template-columns: 1fr;
+  }
+  .setup-grid2,
+  .setup-options {
     grid-template-columns: 1fr;
   }
 }
+
+// --- Editor (dialog) body ---------------------------------------------------
+.ed-group { display: flex; flex-direction: column; gap: var(--space-1, 8px); }
+.ed-label { font-size: var(--site-body-small, 0.875rem); font-weight: 600; color: var(--mat-sys-on-surface); }
+.ed-seg { display: inline-flex; gap: 8px; }
+.ed-seg--wrap { flex-wrap: wrap; }
+.ed-chip {
+  padding: 8px 14px; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600;
+  font-size: var(--site-body-small, 0.875rem);
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  background: var(--surface-soft, #f8fafc); color: var(--mat-sys-on-surface-variant);
+}
+.ed-chip.is-on { background: var(--accent-100); border-color: var(--accent-500); color: var(--accent-700); }
+.ed-exact { display: flex; align-items: center; gap: var(--space-2, 16px); flex-wrap: wrap; }
+.ed-stepper { display: inline-flex; align-items: center; gap: 4px; }
+.ed-stepper button {
+  display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+  border-radius: 10px; border: 1px solid var(--field-border-color, var(--card-border-color));
+  background: var(--card-bg); color: var(--mat-sys-on-surface); cursor: pointer;
+}
+.ed-stepper button mat-icon { font-size: 20px; width: 20px; height: 20px; }
+.ed-num {
+  width: 64px; text-align: center; padding: 9px 8px; font: inherit; font-weight: 700;
+  border-radius: 10px; border: 1px solid var(--field-border-color, var(--card-border-color));
+  background: var(--surface-soft, #f8fafc); color: var(--mat-sys-on-surface); outline: none;
+}
+.ed-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2, 16px); }
+.ed-color { display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 10px;
+  background: var(--surface-soft, #f8fafc); border: 1px solid var(--field-border-color, var(--card-border-color)); }
+.ed-color input { width: 28px; height: 28px; border: none; background: none; padding: 0; cursor: pointer; }
+.ed-color__value { font-size: var(--site-body-small, 0.875rem); color: var(--mat-sys-on-surface-variant); text-transform: uppercase; }
+.ed-parts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ed-part { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2, 16px);
+  padding: 12px 0; border-top: 1px solid var(--card-border-color); }
+.ed-part:first-child { border-top: none; }
+.ed-part.is-off { opacity: 0.5; }
+.ed-part__label { font-weight: 500; color: var(--mat-sys-on-surface); }
+.ed-lock { color: var(--mat-sys-on-surface-variant); font-size: 18px; width: 18px; height: 18px; }
+.ed-toggle { width: 40px; height: 24px; border-radius: 999px; border: none; cursor: pointer;
+  background: var(--field-border-color, var(--card-border-color)); position: relative; transition: background 0.12s ease; }
+.ed-toggle.is-on { background: var(--accent-500); }
+.ed-toggle__knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 999px;
+  background: var(--card-bg); transition: transform 0.12s ease; }
+.ed-toggle.is-on .ed-toggle__knob { transform: translateX(16px); }
+.ed-preview { padding: 14px 16px; border-radius: 12px; background: var(--surface-soft, #f8fafc); display: flex; flex-direction: column; gap: 6px; }
+.ed-preview__label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mat-sys-on-surface-variant); }
+.ed-preview__text { margin: 0; font-size: 1rem; color: var(--mat-sys-on-surface); }
+.ed-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2, 16px); width: 100%; }
+.ed-reset { display: inline-flex; align-items: center; gap: 6px; border: none; background: none; font: inherit;
+  font-weight: 600; font-size: var(--site-body-small, 0.875rem); color: var(--accent-700); cursor: pointer; }
+.ed-reset mat-icon { font-size: 16px; width: 16px; height: 16px; }
+.ed-footer__actions { display: inline-flex; gap: 10px; }
+
+@media (prefers-reduced-motion: reduce) { .ed-toggle, .ed-toggle__knob { transition: none; } }

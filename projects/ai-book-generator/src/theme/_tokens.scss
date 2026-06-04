@@ -24,14 +24,23 @@
   --page-padding-block: clamp(40px, 6vw, 72px); // spazio header↔contenuto generoso
   // Card / blocchi su canvas
   --card-bg: #ffffff;
+  // Superficie "tenue": card leggermente staccate dal bianco pagina (low-noise).
+  --surface-soft: #f8fafc;
   --card-radius: 16px;
   --card-border-color: #eceff3;
   --card-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 2px 6px rgb(15 23 42 / 5%);
   --card-shadow-hover: 0 10px 30px rgb(15 23 42 / 10%);
+  // Ombra "di rilievo" per elementi sollevati (es. copertina libro).
+  --shadow-lift: 0 18px 40px -16px rgb(15 23 42 / 50%);
+  // Copertina-libro: colore del dorso + scrim del testo su superficie colorata.
+  --book-spine-color: rgb(15 23 42 / 18%);
+  --cover-text-scrim: 0 2px 14px rgb(0 0 0 / 40%);
+  // Scrim modale (backdrop dei dialog).
+  --scrim: rgb(15 23 42 / 45%);
 
-  // Campi form (input/textarea custom) — SINGLE SOURCE. bg interno = gradiente
-  // tenue grigio→bianco (look customer-portal). Cambiando qui → tutti i campi.
-  --field-bg: linear-gradient(359deg, var(--section-band-alt), var(--card-bg));
+  // Campi form (input/textarea custom) — SINGLE SOURCE. bg interno = slate piatto
+  // (look Figma). Cambiando qui → tutti i campi.
+  --field-bg: var(--surface-soft, #f8fafc);
   --field-border-color: var(--card-border-color);
   --field-radius: 10px;
 

@@ -1,0 +1,45 @@
+<div
+  class="source-dropzone__area"
+  [class.is-dragging]="dragging()"
+  role="button"
+  tabindex="0"
+  (click)="browse()"
+  (keydown.enter)="onKey($event)"
+  (keydown.space)="onKey($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave()"
+  (drop)="onDrop($event)">
+  <span class="source-dropzone__icon" aria-hidden="true">
+    <mat-icon fontSet="material-symbols-outlined">cloud_upload</mat-icon>
+  </span>
+  <span class="source-dropzone__prompt">{{ promptLabel() }}</span>
+  @if (hintLabel()) {
+    <span class="source-dropzone__hint">{{ hintLabel() }}</span>
+  }
+  <input
+    #fileInput
+    class="source-dropzone__input"
+    type="file"
+    multiple
+    [attr.accept]="accept() || null"
+    (change)="onSelected($event)" />
+</div>
+
+@if (items().length) {
+  <ul class="source-dropzone__chips">
+    @for (item of items(); track item.id) {
+      <li class="source-dropzone__chip">
+        <span class="source-dropzone__chip-name">{{ item.name }}</span>
+        @if (removable()) {
+          <button
+            class="source-dropzone__chip-remove"
+            type="button"
+            [attr.aria-label]="item.name"
+            (click)="itemRemove.emit(item.id)">
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+          </button>
+        }
+      </li>
+    }
+  </ul>
+}

@@ -1,5 +1,5 @@
-// Create — galleria modelli + "Riprendi" + suggerimenti. Token globali, niente
-// literal di colore: ritematizzabile dal solo tema globale.
+// Create — header editoriale (eyebrow + titolo + lead + hint) con respiro verso
+// la galleria. Solo token globali.
 :host {
   display: block;
 }
@@ -7,208 +7,69 @@
 .create {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4, 32px);
   padding-block: var(--space-4, 32px);
 }
 
-// --- Area 1: Riprendi -------------------------------------------------------
-.resume-panel {
+// --- Header -----------------------------------------------------------------
+.create__head {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3, 24px);
-  padding: var(--card-padding, 20px);
-  border-radius: var(--card-radius, 16px);
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
-  box-shadow: var(--card-shadow);
-}
-
-.resume-panel__head {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2, 16px);
-}
-
-.resume-panel__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: var(--accent-100);
-  color: var(--accent-700);
-  flex: 0 0 auto;
-}
-
-.resume-panel__heading {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.resume-panel__link {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-weight: 600;
-  font-size: var(--site-body-small, 0.875rem);
-  color: var(--accent-700);
-  text-decoration: none;
-  white-space: nowrap;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
-}
-
-.resume-panel__link:hover {
-  text-decoration: underline;
-}
-
-// Card centrate (l'ultima riga incompleta resta centrata sull'asse X).
-.resume-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-2, 16px);
-}
-
-.resume-grid > app-entity-card {
-  flex: 1 1 240px;
-  max-width: 300px;
-}
-
-// --- Area 2: Galleria modelli ----------------------------------------------
-.gallery {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3, 24px);
-}
-
-.gallery__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-3, 24px);
-  flex-wrap: wrap;
-}
-
-.gallery__heading {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1, 8px);
-  min-width: 0;
-}
-
-.gallery__info {
-  display: flex;
   align-items: flex-start;
   gap: 10px;
-  max-width: 380px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: var(--accent-100);
-  border: 1px solid var(--card-border-color);
+  // Respiro generoso tra header e griglia (nessuna linea separatrice).
+  margin-bottom: clamp(32px, 5vw, 56px);
 }
 
-.gallery__info-icon {
-  color: var(--accent-700);
-  flex: 0 0 auto;
-}
-
-.gallery__info-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.gallery__info-title {
+// Eyebrow / kicker accento con pallino.
+.create__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
   font-weight: 700;
-  font-size: var(--site-body-small, 0.875rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-700);
+}
+.create__kicker-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--accent-500);
+  box-shadow: 0 0 0 4px var(--accent-100);
+}
+
+// Lead (sottotitolo forte).
+.create__lead {
+  margin: 2px 0 0;
+  font-size: var(--site-body-large, 1.0625rem);
+  font-weight: 500;
   color: var(--mat-sys-on-surface);
+  max-width: 60ch;
 }
 
-.gallery__info-desc {
-  font-size: 0.8125rem;
+// Hint snello con icona accento (al posto del banner pieno).
+.create__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--site-body-small, 0.875rem);
   color: var(--mat-sys-on-surface-variant);
-  line-height: 1.4;
+  max-width: 70ch;
+}
+.create__hint-icon {
+  flex: 0 0 auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--accent-600, var(--accent-700));
 }
 
-// Griglia dinamica: tante file quante servono, niente scroll laterale.
-.gallery__grid {
+// --- Galleria ---------------------------------------------------------------
+.create__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: var(--space-2, 16px);
   align-items: stretch;
-}
-
-// --- Area 3: Suggerimenti ---------------------------------------------------
-.suggest-banner {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2, 16px);
-  padding: var(--space-3, 24px);
-  border-radius: var(--card-radius, 16px);
-  border: 1px solid var(--card-border-color);
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--accent-100) 80%, var(--card-bg)),
-    color-mix(in srgb, var(--tone-rose-bg) 70%, var(--card-bg))
-  );
-}
-
-.suggest-banner__spark {
-  color: var(--accent-700);
-  flex: 0 0 auto;
-}
-
-.suggest-banner__text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.suggest-banner__title {
-  font-weight: 700;
-  color: var(--mat-sys-on-surface);
-}
-
-.suggest-banner__desc {
-  font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.suggest-banner__cta {
-  margin-left: auto;
-  flex: 0 0 auto;
-}
-
-.create-cover {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: 140px;
-}
-
-@media (max-width: 720px) {
-  .gallery__head {
-    flex-direction: column;
-  }
-  .gallery__info {
-    max-width: none;
-  }
-  .suggest-banner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .suggest-banner__cta {
-    margin-left: 0;
-  }
 }

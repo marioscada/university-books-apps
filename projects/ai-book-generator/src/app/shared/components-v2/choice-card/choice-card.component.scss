@@ -1,0 +1,174 @@
+// ChoiceCard — card di scelta, self-contained sui SOLI token globali.
+// Nessun literal di colore/spaziatura → ritematizzabile dal tema globale.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 8px);
+  padding: var(--card-padding, 20px);
+  border-radius: var(--card-radius, 16px);
+  // Opzione B: superficie tenue, staccata dal bianco pagina.
+  background: var(--surface-soft, #f8fafc);
+  border: 1px solid var(--card-border-color);
+  cursor: pointer;
+  outline: none;
+  height: 100%;
+  position: relative;   // ancoraggio per il ripple Material
+  overflow: hidden;     // clip del ripple
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+:host(:hover) {
+  background: var(--card-bg);   // su hover la card "si solleva" verso il bianco
+  border-color: var(--accent-400);
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+:host(:focus-visible) {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+:host(.is-selected) {
+  border-color: var(--accent-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500), var(--card-shadow);
+}
+
+// Riquadro icona a tono (bg/fg iniettati via host style dal tono).
+.cc__tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--choice-tone-bg);
+  color: var(--choice-tone-fg);
+  margin-bottom: 4px;
+}
+
+.cc__heading {
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--mat-sys-on-surface);
+}
+
+.cc__desc {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.4;
+}
+
+.cc__eyebrow {
+  margin-top: var(--space-1, 8px);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cc__features {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cc__feature {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cc__check {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  color: var(--accent-500);
+}
+
+// Divisore sottile: apre il blocco inferiore, ancorato in fondo alla card
+// (così le card della stessa riga restano allineate anche con testo di lunghezza
+// diversa).
+.cc__divider {
+  height: 1px;
+  background: var(--card-border-color);
+  margin-top: auto;
+}
+
+// Meter orizzontale (es. Breve → Lungo).
+.cc__meter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.cc__meter-label {
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cc__ticks {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.cc__tick {
+  width: 16px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--card-border-color);
+}
+
+.cc__tick.is-on {
+  background: var(--accent-500);
+}
+
+// Footer (nota + freccia), parte del blocco inferiore.
+.cc__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1, 8px);
+  padding-top: var(--space-1, 8px);
+}
+
+.cc__note {
+  font-size: 0.6875rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cc__arrow {
+  margin-left: auto;
+  color: var(--mat-sys-on-surface-variant);
+  transition: transform 0.12s ease, color 0.12s ease;
+}
+
+:host(:hover) .cc__arrow {
+  color: var(--accent-500);
+  transform: translateX(2px);
+}
+
+// Self-responsive (convenzione del progetto): compatta su small.
+:host(.isSmall) {
+  padding: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  .cc__arrow {
+    transition: none;
+  }
+  :host(:hover) {
+    transform: none;
+  }
+}

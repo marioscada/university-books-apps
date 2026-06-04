@@ -1,0 +1,102 @@
+:host {
+  display: contents;
+}
+
+.modal-shell__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--scrim);
+  animation: modal-fade 0.12s ease;
+}
+
+.modal-shell__panel {
+  position: fixed;
+  z-index: 41;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(540px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border-radius: 18px;
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--shadow-lift), var(--card-shadow-hover);
+  overflow: hidden;
+  animation: modal-pop 0.14s ease;
+}
+
+.modal-shell__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2, 16px);
+  padding: 22px var(--space-3, 24px) 18px;
+  border-bottom: 1px solid var(--card-border-color);
+}
+.modal-shell__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.modal-shell__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.modal-shell__subtitle {
+  margin: 0;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+.modal-shell__close {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+}
+.modal-shell__close:hover {
+  background: var(--surface-soft, #f8fafc);
+}
+
+.modal-shell__body {
+  padding: var(--space-3, 24px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 24px);
+}
+
+.modal-shell__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2, 16px);
+  padding: 16px var(--space-3, 24px);
+  border-top: 1px solid var(--card-border-color);
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+}
+@keyframes modal-pop {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.98); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-shell__backdrop,
+  .modal-shell__panel {
+    animation: none;
+  }
+}

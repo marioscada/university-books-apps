@@ -1,0 +1,105 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 16px);
+}
+
+.source-dropzone__area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 36px var(--space-3, 24px);
+  border-radius: 14px;
+  background: var(--card-bg);
+  border: 2px dashed var(--field-border-color, var(--card-border-color));
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.source-dropzone__area:hover,
+.source-dropzone__area:focus-visible,
+.source-dropzone__area.is-dragging {
+  border-color: var(--accent-500);
+  background: var(--accent-100);
+}
+
+.source-dropzone__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--accent-100);
+  color: var(--accent-700);
+}
+
+.source-dropzone__prompt {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.source-dropzone__hint {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.source-dropzone__input {
+  display: none;
+}
+
+.source-dropzone__chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.source-dropzone__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px 7px 12px;
+  border-radius: 999px;
+  background: var(--surface-soft, #f8fafc);
+  border: 1px solid var(--card-border-color);
+}
+
+.source-dropzone__chip-name {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.source-dropzone__chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+.source-dropzone__chip-remove:hover {
+  background: var(--card-border-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .source-dropzone__area {
+    transition: none;
+  }
+}

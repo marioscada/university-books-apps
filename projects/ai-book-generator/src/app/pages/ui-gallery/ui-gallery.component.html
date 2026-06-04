@@ -8,6 +8,79 @@
   </header>
 
   <section class="g-sec">
+    <h2>ChoiceCard <small>components-v2 · dumb · iterata dinamicamente · meter · ripple Material</small></h2>
+    <div class="g-choice-grid">
+      @for (item of choices; track item.id) {
+        <app-choice-card
+          [icon]="item.icon"
+          [tone]="item.tone"
+          [heading]="item.heading"
+          [description]="item.description"
+          featuresLabel="Di solito include"
+          [features]="item.features"
+          [meterValue]="item.meterValue"
+          [meterMax]="3"
+          meterStartLabel="Breve"
+          meterEndLabel="Lungo"
+          [note]="item.note"
+          [selected]="item.id === selectedChoice()"
+          (activate)="selectedChoice.set(item.id)" />
+      }
+    </div>
+  </section>
+
+  <section class="g-sec">
+    <h2>components-v2 · create/new <small>back-link · tag-readout · option-card · field-select · source-dropzone · form-section · action-bar</small></h2>
+
+    <div class="g-v2-bar">
+      <app-back-link label="Torna ai modelli" />
+      <app-tag-readout label="Modello scelto:" value="Report" tone="violet" icon="analytics" />
+    </div>
+
+    <app-form-section
+      heading="Vuoi ritoccare il modello?"
+      optional optionalLabel="Facoltativo"
+      subtitle="I default del modello vanno già bene. Apri solo ciò che vuoi cambiare."
+      actionLabel="Ripristina il modello" actionIcon="↩">
+      <div class="g-v2-options">
+        <app-option-card glyph="↔" title="Lunghezza"
+          detail="≈ 30 pagine — più lungo del default (~20)."
+          openLabel="Apri" modified modifiedLabel="Modificato" resetLabel="Ripristina default" />
+        <app-option-card glyph="☰" title="Struttura"
+          description="Aggiungi o togli parti: prefazione, capitoli, appendici…"
+          openLabel="Apri" />
+        <app-option-card glyph="Aa" title="Font e stile"
+          description="Carattere, dimensione, colore e interlinea."
+          openLabel="Apri" />
+      </div>
+    </app-form-section>
+
+    <app-form-section heading="Briefing per l'AI" optional optionalLabel="Facoltativo"
+      subtitle="Già impostato secondo lo standard del modello. Cambia solo ciò che vuoi.">
+      <div class="g-v2-fields">
+        <app-field-select label="Obiettivo" hint="scopo del documento"
+          [options]="goalOptions" [(value)]="briefGoal" />
+        <app-field-select label="Tono" hint="registro"
+          [options]="goalOptions" [(value)]="briefGoal" />
+      </div>
+    </app-form-section>
+
+    <app-form-section heading="Carica le tue fonti"
+      subtitle="Carica ciò che vuoi — l'AI le userà come base. Puoi anche partire senza fonti.">
+      <app-source-dropzone
+        promptLabel="Trascina i file qui, o sfoglia"
+        hintLabel="PDF · DOCX · PPTX · TXT · immagini — facoltativo"
+        [items]="sourceItems()"
+        (itemRemove)="removeSource($event)" />
+    </app-form-section>
+
+    <app-action-bar>
+      <app-back-link start label="Indietro" />
+      <button end mat-flat-button color="primary">Genera indice</button>
+    </app-action-bar>
+  </section>
+
+  <section class="g-sec">
     <h2>Form controls (Material) <small>input · textarea · select · toggle · checkbox · radio · chips</small></h2>
     <div class="g-form">
       <app-text-field class="g-field" label="Titolo del progetto"

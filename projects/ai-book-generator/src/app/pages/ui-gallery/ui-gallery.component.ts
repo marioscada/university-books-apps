@@ -22,6 +22,23 @@ import { StatCardComponent } from '../../shared/ui/stat-card/stat-card.component
 import { PlanCardComponent } from '../../shared/ui/plan-card/plan-card.component';
 import { FolderCardComponent } from '../../shared/ui/folder-card/folder-card.component';
 import { EntityCardComponent } from '../../shared/ui/entity-card/entity-card.component';
+import {
+  ChoiceCardComponent,
+  type ChoiceTone,
+} from '../../shared/components-v2/choice-card/choice-card.component';
+import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
+import { TagReadoutComponent } from '../../shared/components-v2/tag-readout/tag-readout.component';
+import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
+import { FormSectionComponent } from '../../shared/components-v2/form-section/form-section.component';
+import { OptionCardComponent } from '../../shared/components-v2/option-card/option-card.component';
+import {
+  FieldSelectComponent,
+  type FieldOption,
+} from '../../shared/components-v2/field-select/field-select.component';
+import {
+  SourceDropzoneComponent,
+  type SourceItem,
+} from '../../shared/components-v2/source-dropzone/source-dropzone.component';
 
 /**
  * UiGallery — pagina dimostrativa (dev) per VEDERE e PROVARE i componenti dumb
@@ -55,11 +72,47 @@ import { EntityCardComponent } from '../../shared/ui/entity-card/entity-card.com
     PlanCardComponent,
     FolderCardComponent,
     EntityCardComponent,
+    ChoiceCardComponent,
+    BackLinkComponent,
+    TagReadoutComponent,
+    ActionBarComponent,
+    FormSectionComponent,
+    OptionCardComponent,
+    FieldSelectComponent,
+    SourceDropzoneComponent,
   ],
   templateUrl: './ui-gallery.component.html',
   styleUrl: './ui-gallery.component.scss',
 })
 export class UiGalleryComponent {
+  // --- choice-card (components-v2) — iterata dinamicamente da un array ---
+  readonly choices: ReadonlyArray<{
+    id: string; icon: string; tone: ChoiceTone; heading: string; description: string;
+    features: string[]; meterValue: number; note: string;
+  }> = [
+    { id: 'book', icon: 'menu_book', tone: 'info', heading: 'Libro', description: 'Una pubblicazione completa, dall’inizio alla fine.', features: ['Prefazione, indice, capitoli', 'Conclusione e bibliografia'], meterValue: 3, note: 'tipicamente ~250 pagine' },
+    { id: 'summary', icon: 'short_text', tone: 'success', heading: 'Riassunto', description: 'L’essenziale del materiale, facile da consultare.', features: ['Sintesi e punti chiave', 'Mappa concettuale'], meterValue: 1, note: 'tipicamente ~8 pagine' },
+    { id: 'guide', icon: 'school', tone: 'amber', heading: 'Guida allo studio', description: 'Per imparare e ripassare velocemente.', features: ['Schemi e spiegazioni', 'Domande e quiz'], meterValue: 2, note: 'tipicamente ~40 pagine' },
+    { id: 'report', icon: 'analytics', tone: 'violet', heading: 'Report', description: 'Analisi professionale orientata alla decisione.', features: ['Analisi e conclusioni', 'Raccomandazioni'], meterValue: 2, note: 'tipicamente ~20 pagine' },
+  ];
+  readonly selectedChoice = signal('report');
+
+  // --- components-v2 (create/new) demo ---
+  readonly briefGoal = signal('analyze');
+  readonly goalOptions: FieldOption[] = [
+    { value: 'analyze', label: 'Analizzare' },
+    { value: 'inform', label: 'Informare' },
+    { value: 'persuade', label: 'Persuadere' },
+  ];
+  readonly sourceItems = signal<SourceItem[]>([
+    { id: 's1', name: 'report-2023.pdf' },
+    { id: 's2', name: 'dati.xlsx' },
+    { id: 's3', name: 'note.txt' },
+  ]);
+  removeSource(id: string): void {
+    this.sourceItems.update((list) => list.filter((s) => s.id !== id));
+  }
+
   // --- selection-card ---
   readonly kinds = [
     { id: 'book', icon: 'menu_book', title: 'Libro', desc: 'Crea un libro strutturato a capitoli.' },
