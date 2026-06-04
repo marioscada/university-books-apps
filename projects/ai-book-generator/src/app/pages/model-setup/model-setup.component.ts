@@ -4,6 +4,7 @@ import {
   computed,
   inject,
   signal,
+  type WritableSignal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { merge, map } from 'rxjs';
@@ -11,6 +12,7 @@ import { UpperCasePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
@@ -105,6 +107,7 @@ export class ModelSetupComponent {
   private readonly templatesStore = inject(TemplatesStore);
   private readonly projectsStore = inject(ProjectsStore);
   private readonly translate = inject(TranslateService);
+  private readonly snackBar = inject(MatSnackBar);
 
   /** Tick i18n: ricomputa i view-model al cambio lingua / caricamento traduzioni. */
   private readonly i18nTick = toSignal(
@@ -143,6 +146,7 @@ export class ModelSetupComponent {
   readonly formats = signal<OutputFormat[]>(['pdf', 'docx']);
   readonly outputFormats = OUTPUT_FORMATS;
   readonly sources = signal<SourceItem[]>([]);
+  readonly noteFiles = signal<SourceItem[]>([]);
 
   // --- Nome modello + grammatica ---------------------------------------------
   readonly modelName = computed(() =>
@@ -200,15 +204,74 @@ export class ModelSetupComponent {
     this.formats.update((list) => (list.includes(fmt) ? list.filter((f) => f !== fmt) : [...list, fmt]));
   }
 
-  // --- Fonti ------------------------------------------------------------------
+  // --- Fonti & allegati alle note --------------------------------------------
+  // In v1 NON c'è ancora il server: il padre SIMULA l'upload (uploading→ready)
+  // così i componenti dumb mostrano lo stato in azione. In produzione qui andrà
+  // la presigned PUT su S3 (vedi docs/ARCHITECTURE-CREATE-NEW.md §2).
+  private uploadSeq = 0;
+
   addSources(files: File[]): void {
-    this.sources.update((list) => [
-      ...list,
-      ...files.map((f, i) => ({ id: `${Date.now()}-${i}-${f.name}`, name: f.name })),
-    ]);
+    this.simulateUpload(this.sources, files);
   }
   removeSource(id: string): void {
     this.sources.update((list) => list.filter((s) => s.id !== id));
+  }
+
+  /** Dialog "Allega un file" alle note: chiuso finché non lo si apre dal link. */
+  readonly attachOpen = signal(false);
+  openAttach(): void {
+    this.attachOpen.set(true);
+  }
+  closeAttach(): void {
+    this.attachOpen.set(false);
+  }
+
+  addNoteFiles(files: File[]): void {
+    this.simulateUpload(this.noteFiles, files);
+  }
+  removeNoteFile(id: string): void {
+    this.noteFiles.update((list) => list.filter((s) => s.id !== id));
+  }
+
+  /**
+   * Simula l'upload su staging. Il componente dump emette TUTTI i file scelti; è
+   * il **padre** che confronta col già presente, **scarta i duplicati** (stesso
+   * nome) e **avvisa l'utente** (snackbar). Solo i nuovi avanzano in upload.
+   */
+  private simulateUpload(target: WritableSignal<SourceItem[]>, files: File[]): void {
+    const existing = new Set(target().map((s) => s.name));
+    const fresh: File[] = [];
+    const duplicates: string[] = [];
+    for (const file of files) {
+      if (existing.has(file.name)) {
+        duplicates.push(file.name);
+      } else {
+        existing.add(file.name);
+        fresh.push(file);
+      }
+    }
+    if (duplicates.length) {
+      const message =
+        duplicates.length === 1
+          ? this.t('i18n.Setup.sources.duplicate', { name: duplicates[0] })
+          : this.t('i18n.Setup.sources.duplicateMany', { count: duplicates.length });
+      this.snackBar.open(message, this.t('i18n.Setup.sources.duplicateOk'), { duration: 4000 });
+    }
+    for (const file of fresh) {
+      const id = `${++this.uploadSeq}-${file.name}`;
+      target.update((list) => [...list, { id, name: file.name, status: 'uploading' as const, progress: 0 }]);
+      const patch = (changes: Partial<SourceItem>) =>
+        target.update((list) => list.map((s) => (s.id === id ? { ...s, ...changes } : s)));
+      let pct = 0;
+      const timer = setInterval(() => {
+        pct = Math.min(100, pct + 20);
+        patch({ progress: pct });
+        if (pct >= 100) {
+          clearInterval(timer);
+          patch({ status: 'ready' });
+        }
+      }, 180);
+    }
   }
 
   // --- Editor (dialog) --------------------------------------------------------

@@ -123,11 +123,45 @@
             </div>
           </div>
 
-          <app-counter-field
-            [label]="'i18n.Setup.briefing.notes' | translate" [optionalLabel]="'i18n.Setup.S1.optional' | translate"
-            [maxLength]="notesMax" multiline [rows]="3"
-            [placeholder]="'i18n.Setup.briefing.notesPlaceholder' | translate"
-            [value]="notes()" (valueChange)="notes.set($event)" />
+          <div class="note-composer">
+            <app-counter-field
+              [label]="'i18n.Setup.briefing.notes' | translate" [optionalLabel]="'i18n.Setup.S1.optional' | translate"
+              [maxLength]="notesMax" multiline [rows]="3"
+              [placeholder]="'i18n.Setup.briefing.notesPlaceholder' | translate"
+              [value]="notes()" (valueChange)="notes.set($event)" />
+
+            <div class="note-attach">
+              @if (noteFiles().length) {
+                <ul class="note-attach__chips">
+                  @for (f of noteFiles(); track f.id) {
+                    <li class="note-attach__chip" [attr.data-status]="f.status || 'ready'">
+                      @switch (f.status) {
+                        @case ('uploading') {
+                          <mat-icon class="note-attach__spin" fontSet="material-symbols-outlined" aria-hidden="true">progress_activity</mat-icon>
+                        }
+                        @case ('error') {
+                          <mat-icon class="note-attach__ico note-attach__ico--error" fontSet="material-symbols-outlined" aria-hidden="true">error</mat-icon>
+                        }
+                        @default {
+                          <mat-icon class="note-attach__ico note-attach__ico--ready" fontSet="material-symbols-outlined" aria-hidden="true">check_circle</mat-icon>
+                        }
+                      }
+                      <span class="note-attach__name">{{ f.name }}</span>
+                      @if (f.status === 'uploading') { <span class="note-attach__pct">{{ f.progress ?? 0 }}%</span> }
+                      <button class="note-attach__remove" type="button" [attr.aria-label]="f.name" (click)="removeNoteFile(f.id)">
+                        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+              <button class="note-attach__add" type="button" (click)="openAttach()">
+                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+                <span class="note-attach__add-label">{{ 'i18n.Setup.briefing.attach' | translate }}</span>
+                <span class="note-attach__add-hint">{{ 'i18n.Setup.sources.hint' | translate }}</span>
+              </button>
+            </div>
+          </div>
         </app-form-section>
       </div>
     </section>
@@ -142,7 +176,7 @@
             [promptLabel]="'i18n.Setup.sources.prompt' | translate"
             [hintLabel]="'i18n.Setup.sources.hint' | translate"
             [items]="sources()"
-            (filesAdded)="addSources($event)"
+            (filesSelected)="addSources($event)"
             (itemRemove)="removeSource($event)" />
         </app-form-section>
       </div>
@@ -253,6 +287,27 @@
         <div class="ed-footer__actions">
           <button mat-stroked-button type="button" (click)="closeEditor()">{{ 'i18n.Setup.cancel' | translate }}</button>
           <button mat-flat-button color="primary" type="button" (click)="applyEditor()">{{ 'i18n.Setup.apply' | translate }}</button>
+        </div>
+      </div>
+    </app-modal-shell>
+
+    <!-- Dialog: allega file alle note (il dropzone vive qui, non nel composer) -->
+    <app-modal-shell
+      [open]="attachOpen()"
+      [title]="'i18n.Setup.briefing.attachTitle' | translate"
+      [subtitle]="'i18n.Setup.sources.subtitle' | translate"
+      [closeLabel]="'i18n.Setup.editClose' | translate"
+      (close)="closeAttach()">
+      <app-source-dropzone
+        [promptLabel]="'i18n.Setup.sources.prompt' | translate"
+        [hintLabel]="'i18n.Setup.sources.hint' | translate"
+        [items]="noteFiles()"
+        (filesSelected)="addNoteFiles($event)"
+        (itemRemove)="removeNoteFile($event)" />
+      <div footer class="ed-footer">
+        <span></span>
+        <div class="ed-footer__actions">
+          <button mat-flat-button color="primary" type="button" (click)="closeAttach()">{{ 'i18n.Setup.briefing.attachDone' | translate }}</button>
         </div>
       </div>
     </app-modal-shell>

@@ -10,29 +10,35 @@ import {
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
-/** Elemento (file/nota) già allegato, mostrato come chip. */
+/** Stato di un allegato (deciso dal padre dopo l'upload, non dal componente). */
+export type SourceStatus = 'uploading' | 'ready' | 'error';
+
+/** Allegato mostrato come chip. `status`/`progress` arrivano dal padre. */
 export interface SourceItem {
   id: string;
   name: string;
+  status?: SourceStatus;
+  /** Avanzamento 0–100 (solo se `status === 'uploading'`). */
+  progress?: number;
 }
 
 /**
- * SourceDropzoneComponent — area dumb/presentational per caricare file via
- * **drag&drop** o sfoglia, con sotto la lista dei file allegati come chip
- * rimovibili.
+ * SourceDropzoneComponent — area dumb/presentational per **selezionare** file via
+ * drag&drop o sfoglia, con sotto la lista degli allegati come chip che ne
+ * **mostrano lo stato** (in caricamento → pronto → errore) e si possono rimuovere.
  *
- * Nessuna logica di rete/dominio: emette i `File` selezionati (`filesAdded`) e le
- * richieste di rimozione (`itemRemove`); il padre gestisce upload e stato.
- * Etichette via input (i18n-agnostico). `OnPush` + signals; stile dai soli token
- * globali; a11y (area attivabile da tastiera).
+ * **100% dumb**: conosce solo la selezione locale. **Emette** `filesSelected`
+ * (i `File` grezzi) e `itemRemove(id)`; **riceve** `items` (con stato e progress)
+ * e li **renderizza**. Non carica nulla, non decide lo stato: lo upload e lo stato
+ * sono responsabilità del padre. i18n-agnostico, token-only, a11y, `OnPush`.
  *
  * @example
  * ```html
  * <app-source-dropzone
  *   [promptLabel]="'Trascina i file qui, o sfoglia'"
- *   [hintLabel]="'PDF · DOCX · immagini — facoltativo'"
- *   [items]="files()"
- *   (filesAdded)="upload($event)" (itemRemove)="remove($event)" />
+ *   [hintLabel]="'PDF · DOCX · immagini · max 50 MB — facoltativo'"
+ *   [items]="stagedSources()"
+ *   (filesSelected)="upload($event)" (itemRemove)="remove($event)" />
  * ```
  */
 @Component({
@@ -47,21 +53,21 @@ export interface SourceItem {
 export class SourceDropzoneComponent {
   /** Testo principale dell'area (già tradotto). */
   readonly promptLabel = input<string>('');
-  /** Riga di aiuto (formati ammessi, già tradotta). */
+  /** Riga di aiuto (formati ammessi + dimensione max, già tradotta). */
   readonly hintLabel = input<string>('');
-  /** Allegati correnti (chip). */
+  /** Allegati correnti (chip con stato). */
   readonly items = input<readonly SourceItem[]>([]);
   /** Permetti la rimozione delle chip. */
   readonly removable = input(true, { transform: booleanAttribute });
-  /** `accept` dell'input file (es. ".pdf,.docx"). */
+  /** `accept` dell'input file (hint UX; l'autorità resta lato server). */
   readonly accept = input<string>('');
 
-  /** Emesso con i file aggiunti (drop o sfoglia). */
-  readonly filesAdded = output<File[]>();
+  /** Emesso con i file **selezionati** localmente (drop o sfoglia). */
+  readonly filesSelected = output<File[]>();
   /** Emesso con l'id dell'allegato da rimuovere. */
   readonly itemRemove = output<string>();
 
-  /** Stato "drag sopra l'area" (feedback visivo). */
+  /** Stato "drag sopra l'area" (feedback visivo locale). */
   protected readonly dragging = signal(false);
 
   private readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
@@ -77,7 +83,7 @@ export class SourceDropzoneComponent {
 
   protected onSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.emit(input.files);
+    this.select(input.files);
     input.value = '';
   }
 
@@ -93,12 +99,12 @@ export class SourceDropzoneComponent {
   protected onDrop(event: DragEvent): void {
     event.preventDefault();
     this.dragging.set(false);
-    this.emit(event.dataTransfer?.files ?? null);
+    this.select(event.dataTransfer?.files ?? null);
   }
 
-  private emit(list: FileList | null): void {
+  private select(list: FileList | null): void {
     if (list && list.length) {
-      this.filesAdded.emit(Array.from(list));
+      this.filesSelected.emit(Array.from(list));
     }
   }
 }

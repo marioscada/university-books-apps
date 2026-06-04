@@ -60,20 +60,85 @@
   gap: 10px;
 }
 
+// Chip "pronto"/"errore" (riga compatta); "in caricamento" (pillola accent + barra).
 .source-dropzone__chip {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 8px 7px 12px;
+  padding: 7px 8px 7px 10px;
   border-radius: 999px;
-  background: var(--surface-soft, #f8fafc);
+  background: var(--card-bg);
   border: 1px solid var(--card-border-color);
+}
+.source-dropzone__chip[data-status='uploading'] {
+  border-radius: 12px;
+  padding: 8px 8px 8px 12px;
+  background: var(--accent-100);
+  border-color: var(--accent-400);
+  min-width: 220px;
+}
+
+.source-dropzone__state {
+  flex: 0 0 auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+.source-dropzone__state--ready {
+  color: var(--tone-success-fg, #1a8754);
+}
+.source-dropzone__state--error {
+  color: var(--tone-danger-fg, #c0362c);
 }
 
 .source-dropzone__chip-name {
   font-size: var(--site-body-small, 0.875rem);
   font-weight: 500;
   color: var(--mat-sys-on-surface);
+}
+
+// Variante "in caricamento": corpo a colonna (riga + barra).
+.source-dropzone__chip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+.source-dropzone__chip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.source-dropzone__chip-row .source-dropzone__chip-name {
+  flex: 1 1 auto;
+  color: var(--accent-700);
+}
+.source-dropzone__chip-pct {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-700);
+}
+.source-dropzone__spinner {
+  flex: 0 0 auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--accent-700);
+  animation: sd-spin 0.9s linear infinite;
+}
+.source-dropzone__bar {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--card-bg);
+  overflow: hidden;
+}
+.source-dropzone__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent-500);
+  transition: width 0.2s ease;
 }
 
 .source-dropzone__chip-remove {
@@ -98,8 +163,16 @@
   background: var(--card-border-color);
 }
 
+@keyframes sd-spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .source-dropzone__area {
+  .source-dropzone__area,
+  .source-dropzone__bar-fill {
     transition: none;
+  }
+  .source-dropzone__spinner {
+    animation: none;
   }
 }

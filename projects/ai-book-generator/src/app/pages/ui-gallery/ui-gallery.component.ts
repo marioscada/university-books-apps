@@ -105,9 +105,9 @@ export class UiGalleryComponent {
     { value: 'persuade', label: 'Persuadere' },
   ];
   readonly sourceItems = signal<SourceItem[]>([
-    { id: 's1', name: 'report-2023.pdf' },
-    { id: 's2', name: 'dati.xlsx' },
-    { id: 's3', name: 'note.txt' },
+    { id: 's1', name: 'report-2023.pdf', status: 'ready' },
+    { id: 's2', name: 'ricerca-settore.pdf', status: 'uploading', progress: 62 },
+    { id: 's3', name: 'note.txt', status: 'error' },
   ]);
   removeSource(id: string): void {
     this.sourceItems.update((list) => list.filter((s) => s.id !== id));

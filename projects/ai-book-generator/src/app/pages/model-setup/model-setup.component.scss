@@ -264,3 +264,38 @@
 .ed-footer__actions { display: inline-flex; gap: 10px; }
 
 @media (prefers-reduced-motion: reduce) { .ed-toggle, .ed-toggle__knob { transition: none; } }
+
+// --- Composer note: textarea + chip allegate + link "Allega un file" ---------
+.note-composer { display: flex; flex-direction: column; gap: 10px; }
+.note-attach { display: flex; flex-direction: column; gap: 10px; }
+
+.note-attach__chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.note-attach__chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 10px;
+  border-radius: 999px; background: var(--card-bg); border: 1px solid var(--card-border-color);
+}
+.note-attach__chip[data-status='uploading'] { background: var(--accent-100); border-color: var(--accent-400); }
+.note-attach__ico { font-size: 18px; width: 18px; height: 18px; }
+.note-attach__ico--ready { color: var(--tone-success-fg, #1a8754); }
+.note-attach__ico--error { color: var(--tone-danger-fg, #c0362c); }
+.note-attach__spin { font-size: 18px; width: 18px; height: 18px; color: var(--accent-700); animation: na-spin 0.9s linear infinite; }
+.note-attach__name { font-size: var(--site-body-small, 0.875rem); font-weight: 500; color: var(--mat-sys-on-surface); }
+.note-attach__chip[data-status='uploading'] .note-attach__name { color: var(--accent-700); }
+.note-attach__pct { font-size: 0.75rem; font-weight: 700; color: var(--accent-700); }
+.note-attach__remove {
+  display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
+  border: none; border-radius: 999px; background: none; color: var(--mat-sys-on-surface-variant); cursor: pointer;
+}
+.note-attach__remove:hover { background: var(--card-border-color); }
+.note-attach__remove mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+.note-attach__add {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;
+  border: none; background: none; padding: 2px 0; font: inherit; cursor: pointer;
+}
+.note-attach__add mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--accent-700); }
+.note-attach__add-label { font-weight: 600; font-size: var(--site-body-small, 0.875rem); color: var(--accent-700); }
+.note-attach__add-hint { font-size: var(--site-body-small, 0.875rem); color: var(--mat-sys-on-surface-variant); }
+
+@keyframes na-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .note-attach__spin { animation: none; } }
