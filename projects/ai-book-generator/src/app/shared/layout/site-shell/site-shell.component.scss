@@ -25,6 +25,10 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  // Canvas GLOBALE tinto per tutte le pagine app (stile create/new): le card
+  // bianche "staccano" con l'ombra. Sezioni full-bleed con bg proprio (hero,
+  // footer) lo coprono comunque. Single source = --section-band-alt.
+  background: var(--section-band-alt, #f1f5f9);
   // Sicurezza: il bg di hero/sezioni è full-bleed; clip impedisce lo scroll
   // orizzontale accidentale (mirror mat-sidenav-content di mariosite).
   overflow-x: clip;

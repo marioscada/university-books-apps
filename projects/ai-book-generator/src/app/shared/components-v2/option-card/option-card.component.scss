@@ -5,7 +5,8 @@
   height: 100%;
   padding: var(--card-padding, 20px);
   border-radius: var(--card-radius, 16px);
-  background: var(--card-bg);
+  // Stesso fill dei campi (input/textarea/select): gradiente tenue bianco→grey-100.
+  background: var(--field-bg);
   border: 1px solid var(--card-border-color);
   box-shadow: var(--card-shadow);
 }

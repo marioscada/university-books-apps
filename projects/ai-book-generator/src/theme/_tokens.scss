@@ -38,10 +38,21 @@
   // Scrim modale (backdrop dei dialog).
   --scrim: rgb(15 23 42 / 45%);
 
-  // Campi form (input/textarea custom) — SINGLE SOURCE. bg interno = slate piatto
-  // (look Figma). Cambiando qui → tutti i campi.
-  --field-bg: var(--surface-soft, #f8fafc);
-  --field-border-color: var(--card-border-color);
+  // --- Palette GREY — SINGLE SOURCE (mirror operators/azzurro generic-styles
+  // `_colors.scss`, shade 100→500). Base per testi, bordi e fill tenui di TUTTO
+  // il sito e i componenti. Cambiando qui → cambia ovunque.
+  --grey-100: #f2f2f2;
+  --grey-200: #c2c2c2;
+  --grey-300: #9c9c9c;
+  --grey-400: #576065; // colore testo standard del sito
+  --grey-500: #586166;
+
+  // Campi form (input/textarea/select custom) — SINGLE SOURCE per TUTTO il sito.
+  // Stile globale mirror di operators (`generic-styles` .custom-mat-form-field):
+  // fill = gradiente tenue bianco→grey-100, bordo grey-300, raggio compatto. Il
+  // focus accende l'accent (vedi i singoli campi). Cambiando qui → tutti i campi.
+  --field-bg: linear-gradient(359deg, var(--grey-100), #ffffff);
+  --field-border-color: var(--grey-300);
   --field-radius: 10px;
 
   // Spaziature standard (griglia 8pt) — SINGLE SOURCE per padding/gap/margini dei
@@ -87,6 +98,14 @@
   --session-media-frame-width: clamp(280px, 32vw, 400px);
   --session-media-frame-aspect-ratio: 3 / 2;
   --session-media-frame-height: clamp(187px, 21.3vw, 267px);
+
+  // --- Colore testo GLOBALE — SINGLE SOURCE ---------------------------------
+  // Tutte le "scritte" del sito derivano da qui (ponte su --mat-sys-on-surface*
+  // in styles.scss → cambi in un punto solo). Niente più near-black: il testo
+  // forte usa il grey-400 della palette operators/generic-styles; il testo muted
+  // (hint, counter, tag "facoltativo") usa lo slate-500 del Figma.
+  --text-strong: var(--grey-400); // colore testo standard (titoli, label, valori)
+  --text-muted: #64748b; // slate-500 (Figma) — hint, caption, facoltativo, counter
 
   // --- Brand / accent -------------------------------------------------------
   // Accent del progetto = accent di customer-portal ($accent-palette).

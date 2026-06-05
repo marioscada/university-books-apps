@@ -33,8 +33,8 @@
   font-size: var(--site-body-medium, 1rem);
   cursor: pointer;
   outline: none;
-  // Neutro di default: fill = sfondo area, valore in nero sbiadito.
-  background: var(--surface-soft, #f8fafc);
+  // Neutro di default: stile campo GLOBALE (gradiente + bordo grey-300), accent al focus.
+  background: var(--field-bg);
   border: 1px solid var(--field-border-color, var(--card-border-color));
   color: var(--mat-sys-on-surface);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;

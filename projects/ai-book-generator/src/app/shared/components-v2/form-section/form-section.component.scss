@@ -27,8 +27,8 @@
 .form-section__tag {
   padding: 4px 10px;
   border-radius: 999px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
+  // Chip slate borderless (Figma); il testo arriva dal token globale muted.
+  background: #eef2f7;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--mat-sys-on-surface-variant);

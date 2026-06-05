@@ -18,7 +18,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { CounterFieldComponent } from '../../shared/ui/counter-field/counter-field.component';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
-import { TagReadoutComponent } from '../../shared/components-v2/tag-readout/tag-readout.component';
 import { FormSectionComponent } from '../../shared/components-v2/form-section/form-section.component';
 import { OptionCardComponent } from '../../shared/components-v2/option-card/option-card.component';
 import {
@@ -87,7 +86,6 @@ const OUTPUT_FORMATS: readonly OutputFormat[] = ['pdf', 'docx', 'epub'];
     UpperCasePipe,
     CounterFieldComponent,
     BackLinkComponent,
-    TagReadoutComponent,
     FormSectionComponent,
     OptionCardComponent,
     FieldSelectComponent,
@@ -170,9 +168,6 @@ export class ModelSetupComponent {
   readonly titleLabel = computed(() => this.t('i18n.Setup.S1.titleLabel', this.params()));
   readonly descLabel = computed(() => this.t('i18n.Setup.S1.descLabel', this.params()));
   readonly descPlaceholder = computed(() => this.t('i18n.Setup.S1.descPlaceholder', this.params()));
-
-  /** Tono del modello (chip "modello scelto"). */
-  readonly modelTone = computed<Tone>(() => MODEL_TONE[this.templateId] ?? 'accent');
 
   /** Colore solido del libro, dinamico per modello (token globale del tono). */
   readonly bookBg = computed<string>(() => {

@@ -7,7 +7,8 @@
 .create {
   display: flex;
   flex-direction: column;
-  padding-block: var(--space-4, 32px);
+  // Margine di pagina standard (uguale a collezione) — token globale unico.
+  padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px));
 }
 
 // --- Header -----------------------------------------------------------------
@@ -18,25 +19,6 @@
   gap: 10px;
   // Respiro generoso tra header e griglia (nessuna linea separatrice).
   margin-bottom: clamp(32px, 5vw, 56px);
-}
-
-// Eyebrow / kicker accento con pallino.
-.create__kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--accent-700);
-}
-.create__kicker-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: var(--accent-500);
-  box-shadow: 0 0 0 4px var(--accent-100);
 }
 
 // Lead (sottotitolo forte).

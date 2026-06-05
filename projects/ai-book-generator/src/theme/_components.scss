@@ -6,6 +6,27 @@
 // identica ovunque. Componenti Material tematizzati senza ::ng-deep (qui è
 // stylesheet globale).
 
+// =============================================================================
+// Macro-card di superficie — blocco bianco "sollevato" su canvas tinto. GLOBALE
+// (single source): le pagine compongono le proprie sezioni dentro `.surface-card`
+// per dare profondità con ombra (non bordi pesanti) — Refactoring UI / M3 tonal.
+// =============================================================================
+.surface-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius, 16px);
+  box-shadow: var(--card-shadow);
+  padding: clamp(20px, 3vw, 32px);
+}
+
+// Filetto orizzontale per separare gruppi dentro una card (stacco visivo).
+.surface-rule {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: var(--card-border-color);
+}
+
 // Griglia a card responsive (auto-fill).
 .cards-grid {
   display: grid;

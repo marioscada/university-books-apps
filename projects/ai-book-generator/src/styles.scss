@@ -50,6 +50,12 @@ html {
   --mat-sys-on-primary: var(--on-accent);
   --mat-sys-primary-container: var(--accent-100);
   --mat-sys-on-primary-container: var(--accent-700);
+
+  // Colore testo GLOBALE: ponte dei token semantici (--text-*) sui token
+  // Material usati ovunque. Cambiando --text-* in _tokens.scss si ri-colora
+  // TUTTO il testo del sito in un punto solo (niente più near-black).
+  --mat-sys-on-surface: var(--text-strong);
+  --mat-sys-on-surface-variant: var(--text-muted);
 }
 
 body {

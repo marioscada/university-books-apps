@@ -39,14 +39,16 @@
   gap: clamp(28px, 4vw, 44px);
 }
 
-// Bande full-bleed ALTERNATE (come la landing): bianco di default,
-// `.band--alt` usa lo slate `--section-band-alt`. Il contenuto sta in
-// `.site-container`; `.band__inner` dà il flusso verticale interno.
+// Bande full-bleed delle pagine app: trasparenti → lasciano vedere il canvas
+// tinto GLOBALE dello shell (stile create/new), così le card "galleggiano". Il
+// padding-block (= margine standard di pagina) resta sul token globale unico.
+// Il contenuto sta in `.site-container`; `.band__inner` dà il flusso verticale.
 .band {
   padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px));
-  background: #ffffff;
+  background: transparent;
 }
 
+// `.band--alt` coincide col canvas tinto: tenuta per retro-compatibilità.
 .band--alt {
   background: var(--section-band-alt, #f1f5f9);
 }

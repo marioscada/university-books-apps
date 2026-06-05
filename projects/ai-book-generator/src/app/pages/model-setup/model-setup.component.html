@@ -3,21 +3,12 @@
     <!-- Top bar -->
     <header class="setup-bar site-container">
       <app-back-link [label]="'i18n.Setup.backToModels' | translate" (navigate)="back()" />
-      <app-tag-readout
-        [label]="'i18n.Setup.modelChosen' | translate"
-        [value]="modelName()"
-        [tone]="modelTone()"
-        [icon]="template()?.coverTheme ? 'category' : ''" />
     </header>
 
-    <!-- Sezione 1: Definisci (banda bianca) -->
-    <section class="band">
-      <div class="site-container band__inner">
+    <div class="setup-stack site-container">
+      <!-- 1 · Definisci il progetto -->
+      <section class="surface-card">
         <header class="setup-head">
-          <span class="setup-step">
-            <span class="setup-step__num">1</span>
-            <span class="setup-step__eyebrow">{{ 'i18n.Setup.S1.eyebrow' | translate }}</span>
-          </span>
           <h1 class="setup-title">{{ defTitle() }}</h1>
           <p class="setup-lead">{{ defSubtitle() }}</p>
         </header>
@@ -47,12 +38,10 @@
             </button>
           </aside>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Sezione 2: Ritocca il modello (banda slate) -->
-    <section class="band band--alt">
-      <div class="site-container band__inner">
+      <!-- 2 · Ritocca il modello -->
+      <section class="surface-card">
         <app-form-section
           [heading]="'i18n.Setup.tweak.title' | translate"
           optional [optionalLabel]="'i18n.Setup.optionalTag' | translate"
@@ -83,30 +72,30 @@
               (open)="openStyle()" (reset)="resetArea('style')" />
           </div>
         </app-form-section>
-      </div>
-    </section>
+      </section>
 
-    <!-- Sezione 3: Briefing per l'AI (banda bianca) -->
-    <section class="band">
-      <div class="site-container band__inner">
+      <!-- 3 · Briefing per l'AI -->
+      <section class="surface-card">
         <app-form-section
           [heading]="'i18n.Setup.briefing.title' | translate"
           optional [optionalLabel]="'i18n.Setup.optionalTag' | translate"
           [subtitle]="'i18n.Setup.briefing.subtitle' | translate">
-          <div class="setup-grid2">
-            <app-field-select
+          <div class="setup-props">
+            <app-field-select [accent]="false"
               [label]="'i18n.Setup.briefing.goal' | translate" [hint]="'i18n.Setup.briefing.goalHint' | translate"
               [options]="goalOptions()" [(value)]="goal" />
-            <app-field-select
+            <app-field-select [accent]="false"
               [label]="'i18n.Setup.briefing.audience' | translate" [hint]="'i18n.Setup.briefing.audienceHint' | translate"
               [options]="audienceOptions()" [(value)]="audience" />
-            <app-field-select
+            <app-field-select [accent]="false"
               [label]="'i18n.Setup.briefing.tone' | translate" [hint]="'i18n.Setup.briefing.toneHint' | translate"
               [options]="toneOptions()" [(value)]="tone" />
-            <app-field-select
+            <app-field-select [accent]="false"
               [label]="'i18n.Setup.briefing.language' | translate"
               [options]="languageOptions" [(value)]="language" />
           </div>
+
+          <hr class="surface-rule" />
 
           <div class="setup-format">
             <span class="setup-format__head">
@@ -122,6 +111,8 @@
               }
             </div>
           </div>
+
+          <hr class="surface-rule" />
 
           <div class="note-composer">
             <app-counter-field
@@ -163,12 +154,10 @@
             </div>
           </div>
         </app-form-section>
-      </div>
-    </section>
+      </section>
 
-    <!-- Sezione 4: Carica le tue fonti (banda slate) -->
-    <section class="band band--alt">
-      <div class="site-container band__inner">
+      <!-- 4 · Carica le tue fonti -->
+      <section class="surface-card">
         <app-form-section
           [heading]="'i18n.Setup.sources.title' | translate"
           [subtitle]="'i18n.Setup.sources.subtitle' | translate">
@@ -179,8 +168,8 @@
             (filesSelected)="addSources($event)"
             (itemRemove)="removeSource($event)" />
         </app-form-section>
-      </div>
-    </section>
+      </section>
+    </div>
 
     <!-- Action bar -->
     <app-action-bar sticky>

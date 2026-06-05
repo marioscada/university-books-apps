@@ -19,7 +19,8 @@
 }
 .cf__req {
   margin-left: 2px;
-  color: var(--tone-danger-fg, #d33);
+  // Asterisco obbligatorio in accent (come Figma), non in rosso.
+  color: var(--accent-500);
 }
 .cf__opt {
   margin-left: 6px;

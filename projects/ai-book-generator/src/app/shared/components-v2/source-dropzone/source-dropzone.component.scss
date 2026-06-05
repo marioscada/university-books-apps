@@ -11,7 +11,8 @@
   gap: 8px;
   padding: 36px var(--space-3, 24px);
   border-radius: 14px;
-  background: var(--card-bg);
+  // Stesso fill dei campi (input/textarea): gradiente tenue bianco→grey-100.
+  background: var(--field-bg);
   border: 2px dashed var(--field-border-color, var(--card-border-color));
   text-align: center;
   cursor: pointer;
@@ -67,8 +68,13 @@
   gap: 8px;
   padding: 7px 8px 7px 10px;
   border-radius: 999px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
+  // File caricato = pillola accent (mai bianca), coerente con lo stato "uploading".
+  background: var(--accent-100);
+  border: 1px solid var(--accent-400);
+}
+.source-dropzone__chip[data-status='error'] {
+  background: var(--tone-danger-bg);
+  border-color: var(--tone-danger-fg);
 }
 .source-dropzone__chip[data-status='uploading'] {
   border-radius: 12px;
@@ -85,7 +91,7 @@
   height: 18px;
 }
 .source-dropzone__state--ready {
-  color: var(--tone-success-fg, #1a8754);
+  color: var(--accent-700);
 }
 .source-dropzone__state--error {
   color: var(--tone-danger-fg, #c0362c);
@@ -94,7 +100,10 @@
 .source-dropzone__chip-name {
   font-size: var(--site-body-small, 0.875rem);
   font-weight: 500;
-  color: var(--mat-sys-on-surface);
+  color: var(--accent-700);
+}
+.source-dropzone__chip[data-status='error'] .source-dropzone__chip-name {
+  color: var(--tone-danger-fg);
 }
 
 // Variante "in caricamento": corpo a colonna (riga + barra).

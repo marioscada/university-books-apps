@@ -6,6 +6,17 @@
 .setup {
   display: flex;
   flex-direction: column;
+  // Canvas tinto fornito globalmente dallo shell (.site-shell__main): qui basta
+  // riempire l'altezza. Le macro-card bianche "staccano" con l'ombra.
+  min-height: 100%;
+}
+
+// Stack verticale delle macro-card di sezione (gap generoso tra blocchi).
+.setup-stack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vw, 32px);
+  padding-bottom: clamp(40px, 6vw, 72px);
 }
 
 // Top bar
@@ -14,7 +25,8 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2, 16px);
-  padding-top: 20px;
+  // Margine di pagina standard (uguale a collezione) — token globale unico.
+  padding-top: var(--page-padding-block, clamp(40px, 6vw, 72px));
   padding-bottom: 8px;
   flex-wrap: wrap;
 }
@@ -24,30 +36,6 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-.setup-step {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.setup-step__num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  background: var(--accent-500);
-  color: var(--on-accent, #fff);
-  font-weight: 700;
-  font-size: 0.875rem;
-}
-.setup-step__eyebrow {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent-700);
 }
 .setup-title {
   margin: 0;
@@ -149,9 +137,10 @@
   gap: var(--space-2, 16px);
   align-items: stretch;
 }
-.setup-grid2 {
+// Briefing: pill compatte affiancate (Linear/Notion) — 4-up, self-responsive.
+.setup-props {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: var(--space-2, 16px);
 }
 
@@ -173,6 +162,8 @@
 }
 .setup-format__chips {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
 }
 .setup-chip {
@@ -205,7 +196,6 @@
   .setup-brief {
     grid-template-columns: 1fr;
   }
-  .setup-grid2,
   .setup-options {
     grid-template-columns: 1fr;
   }
@@ -272,15 +262,15 @@
 .note-attach__chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .note-attach__chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 10px;
-  border-radius: 999px; background: var(--card-bg); border: 1px solid var(--card-border-color);
+  border-radius: 999px; background: var(--accent-100); border: 1px solid var(--accent-400);
 }
-.note-attach__chip[data-status='uploading'] { background: var(--accent-100); border-color: var(--accent-400); }
+.note-attach__chip[data-status='error'] { background: var(--tone-danger-bg); border-color: var(--tone-danger-fg); }
 .note-attach__ico { font-size: 18px; width: 18px; height: 18px; }
-.note-attach__ico--ready { color: var(--tone-success-fg, #1a8754); }
+.note-attach__ico--ready { color: var(--accent-700); }
 .note-attach__ico--error { color: var(--tone-danger-fg, #c0362c); }
 .note-attach__spin { font-size: 18px; width: 18px; height: 18px; color: var(--accent-700); animation: na-spin 0.9s linear infinite; }
-.note-attach__name { font-size: var(--site-body-small, 0.875rem); font-weight: 500; color: var(--mat-sys-on-surface); }
-.note-attach__chip[data-status='uploading'] .note-attach__name { color: var(--accent-700); }
+.note-attach__name { font-size: var(--site-body-small, 0.875rem); font-weight: 500; color: var(--accent-700); }
+.note-attach__chip[data-status='error'] .note-attach__name { color: var(--tone-danger-fg); }
 .note-attach__pct { font-size: 0.75rem; font-weight: 700; color: var(--accent-700); }
 .note-attach__remove {
   display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
