@@ -1,4 +1,4 @@
-// Model setup — pagina a sezioni (bande alternate) composta con components-v2.
+// Model setup (create/new) — riquadro centrato composto con components-v2.
 :host {
   display: block;
 }
@@ -6,39 +6,68 @@
 .setup {
   display: flex;
   flex-direction: column;
-  // Canvas tinto fornito globalmente dallo shell (.site-shell__main): qui basta
-  // riempire l'altezza. Le macro-card bianche "staccano" con l'ombra.
+  // Canvas tinto fornito globalmente dallo shell (.site-shell__main).
   min-height: 100%;
 }
 
-// Stack verticale: riga [Definisci | sidebar] poi Ritocca a tutta larghezza.
+// Stack verticale: titolo + riquadro centrato (margine di pagina globale).
 .setup-stack {
   display: flex;
   flex-direction: column;
   gap: clamp(20px, 3vw, 32px);
   padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px)) clamp(40px, 6vw, 72px);
 }
-// Riga superiore: main (Definisci) + sidebar (Istruzioni/File).
-.setup-body {
-  display: flex;
-  align-items: flex-start;
-  gap: clamp(20px, 3vw, 32px);
-}
-.setup-main {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(20px, 3vw, 32px);
-}
-.setup-side {
-  flex: 0 0 340px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+
+// Titolone di pagina, allineato col riquadro.
+.setup-pagetitle {
+  margin: 0;
+  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--mat-sys-on-surface);
 }
 
-// Card della sidebar (Istruzioni / File) — sezioni "raccolte" alla Claude.
+// Riquadro Definisci a tutta larghezza entro l'area consentita (site-container).
+.setup-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vw, 28px);
+}
+.setup-brief__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 16px);
+}
+
+// Riga Istruzioni + File estesa sotto agli input (pari larghezza/altezza).
+.setup-aside-row {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+.setup-aside-row > .setup-aside--inner {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.setup-aside--inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--card-bg, #fff);
+  // Contorni marcati (stesso bordo degli input) + lieve ombra di stacco.
+  border: 1px solid var(--field-border-color, #9c9c9c);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+@media (max-width: 700px) {
+  .setup-aside-row {
+    flex-direction: column;
+  }
+}
+
+// --- Card sidebar (Istruzioni / File) ---------------------------------------
 .setup-aside {
   gap: 12px;
 }
@@ -93,21 +122,6 @@
     font-weight: 700;
   }
 }
-
-// Nota informativa dentro il dialog Istruzioni (cosa si può istruire).
-.setup-instr-help {
-  margin: 0;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: var(--accent-100);
-  color: var(--accent-700);
-  font-size: var(--site-body-small, 0.875rem);
-  line-height: 1.55;
-
-  strong {
-    font-weight: 700;
-  }
-}
 .setup-aside__actions {
   display: flex;
   align-items: center;
@@ -138,7 +152,22 @@
   }
 }
 
-// Capacità progetto (barra).
+// Nota informativa dentro il dialog Istruzioni.
+.setup-instr-help {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--accent-100);
+  color: var(--accent-700);
+  font-size: var(--site-body-small, 0.875rem);
+  line-height: 1.55;
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+// --- Capacità progetto ------------------------------------------------------
 .setup-cap {
   display: flex;
   flex-direction: column;
@@ -163,8 +192,7 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
-// Lista file catalogati.
-// Griglia di tile file (icona-tipo sopra, nome sotto) — affiancate, stile Claude.
+// --- File: griglia di tile (icona-tipo + nome) ------------------------------
 .setup-files {
   list-style: none;
   margin: 0;
@@ -185,7 +213,6 @@
   border: 1px solid var(--card-border-color);
   text-align: center;
 }
-// Icona-tipo riconoscibile, colorata per categoria.
 .setup-file__thumb {
   display: inline-flex;
   align-items: center;
@@ -276,314 +303,15 @@
   background: rgba(15, 23, 42, 0.12);
 }
 
-@media (max-width: 960px) {
-  .setup-body {
-    flex-direction: column;
-  }
-  .setup-side {
-    flex: 1 1 auto;
-    width: 100%;
-  }
-}
-
-// Header sezione Definisci
-.setup-head {
+// --- Footer dei dialog (Istruzioni / Carica / Testo) ------------------------
+.ed-footer {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.setup-title {
-  margin: 0;
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
-  font-weight: 800;
-  color: var(--mat-sys-on-surface);
-}
-.setup-lead {
-  margin: 0;
-  font-size: var(--site-body-large, 1.0625rem);
-  color: var(--mat-sys-on-surface-variant);
-  max-width: 60ch;
-}
-
-// Brief: il form prende tutta l'aria, la copertina è fissa a destra.
-.setup-brief {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(300px, 30vw, 360px);
-  gap: clamp(20px, 3vw, 32px);
-  // Colonne pari altezza: la parte input cresce quanto Istruzioni + File.
-  align-items: stretch;
-}
-.setup-brief__form {
-  display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
   gap: var(--space-2, 16px);
-}
-// Titolone di pagina, allineato col riquadro centrato.
-.setup-pagetitle {
-  margin: 0;
-  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--mat-sys-on-surface);
-}
-
-// Riquadro Definisci a tutta larghezza entro l'area consentita (site-container).
-.setup-card {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(20px, 3vw, 28px);
 }
-// Riga Istruzioni + File estesa sotto agli input (pari larghezza/altezza).
-.setup-aside-row {
-  display: flex;
-  gap: 16px;
-  align-items: stretch;
-}
-.setup-aside-row > .setup-aside--inner {
-  flex: 1 1 0;
-  min-width: 0;
-}
-@media (max-width: 700px) {
-  .setup-aside-row {
-    flex-direction: column;
-  }
-}
-.setup-aside--inner {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  border-radius: 12px;
-  background: var(--card-bg, #fff);
-  // Contorni più marcati (stesso bordo degli input) + lieve ombra di stacco.
-  border: 1px solid var(--field-border-color, #9c9c9c);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
-}
-.setup-cover {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-.setup-cover__book {
-  width: 100%;
-  // Cap: su layout stretto (1 colonna) il libro non diventa enorme.
-  max-width: 240px;
-  aspect-ratio: 3 / 4;
-  border-radius: 6px 10px 10px 6px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1, 8px);
-  padding: var(--space-3, 24px);
-  // Libro pieno, colore dinamico per modello (testo bianco), dorso + ombra.
-  background: var(--book-bg, var(--accent-500));
-  border-left: 6px solid var(--book-spine-color);
-  box-shadow: var(--shadow-lift), var(--card-shadow);
-}
-.setup-cover__kicker {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--on-accent, #fff);
-  opacity: 0.9;
-}
-.setup-cover__title {
-  font-size: clamp(1.375rem, 2.4vw, 1.625rem);
-  font-weight: 800;
-  line-height: 1.12;
-  color: var(--on-accent, #fff);
-  text-shadow: var(--cover-text-scrim);
-  word-break: break-word;
-}
-.setup-cover__title.is-placeholder {
-  opacity: 0.55;
-  font-weight: 700;
-}
-.setup-cover__brand {
-  margin-top: auto;
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  color: var(--on-accent, #fff);
-  opacity: 0.9;
-}
-.setup-cover__action {
+.ed-footer__actions {
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: none;
-  background: none;
-  font: inherit;
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  color: var(--accent-700);
-  cursor: pointer;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
+  gap: 10px;
 }
-
-// Griglie sezioni — 3 card a tutta larghezza (niente colonne fantasma).
-.setup-options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-2, 16px);
-  align-items: stretch;
-}
-// Briefing: pill compatte affiancate (Linear/Notion) — 4-up, self-responsive.
-.setup-props {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-2, 16px);
-}
-
-// Formato output (chip multi-select)
-.setup-format {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.setup-format__head {
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
-}
-.setup-format__hint {
-  margin-left: 6px;
-  font-weight: 400;
-  color: var(--mat-sys-on-surface-variant);
-}
-.setup-format__chips {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-.setup-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--field-border-color, var(--card-border-color));
-  background: var(--card-bg);
-  color: var(--mat-sys-on-surface);
-  font: inherit;
-  font-weight: 600;
-  font-size: var(--site-body-small, 0.875rem);
-  cursor: pointer;
-
-  mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-  }
-}
-.setup-chip.is-on {
-  background: var(--accent-500);
-  border-color: var(--accent-500);
-  color: var(--on-accent, #fff);
-}
-
-@media (max-width: 860px) {
-  .setup-brief {
-    grid-template-columns: 1fr;
-  }
-  .setup-options {
-    grid-template-columns: 1fr;
-  }
-}
-
-// --- Editor (dialog) body ---------------------------------------------------
-.ed-group { display: flex; flex-direction: column; gap: var(--space-1, 8px); }
-.ed-label { font-size: var(--site-body-small, 0.875rem); font-weight: 600; color: var(--mat-sys-on-surface); }
-.ed-seg { display: inline-flex; gap: 8px; }
-.ed-seg--wrap { flex-wrap: wrap; }
-.ed-chip {
-  padding: 8px 14px; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600;
-  font-size: var(--site-body-small, 0.875rem);
-  border: 1px solid var(--field-border-color, var(--card-border-color));
-  background: var(--surface-soft, #f8fafc); color: var(--mat-sys-on-surface-variant);
-}
-.ed-chip.is-on { background: var(--accent-100); border-color: var(--accent-500); color: var(--accent-700); }
-.ed-exact { display: flex; align-items: center; gap: var(--space-2, 16px); flex-wrap: wrap; }
-.ed-stepper { display: inline-flex; align-items: center; gap: 4px; }
-.ed-stepper button {
-  display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px;
-  border-radius: 10px; border: 1px solid var(--field-border-color, var(--card-border-color));
-  background: var(--card-bg); color: var(--mat-sys-on-surface); cursor: pointer;
-}
-.ed-stepper button mat-icon { font-size: 20px; width: 20px; height: 20px; }
-.ed-num {
-  width: 64px; text-align: center; padding: 9px 8px; font: inherit; font-weight: 700;
-  border-radius: 10px; border: 1px solid var(--field-border-color, var(--card-border-color));
-  background: var(--surface-soft, #f8fafc); color: var(--mat-sys-on-surface); outline: none;
-}
-.ed-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2, 16px); }
-.ed-color { display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 10px;
-  background: var(--surface-soft, #f8fafc); border: 1px solid var(--field-border-color, var(--card-border-color)); }
-.ed-color input { width: 28px; height: 28px; border: none; background: none; padding: 0; cursor: pointer; }
-.ed-color__value { font-size: var(--site-body-small, 0.875rem); color: var(--mat-sys-on-surface-variant); text-transform: uppercase; }
-.ed-parts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.ed-part { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2, 16px);
-  padding: 12px 0; border-top: 1px solid var(--card-border-color); }
-.ed-part:first-child { border-top: none; }
-.ed-part.is-off { opacity: 0.5; }
-.ed-part__label { font-weight: 500; color: var(--mat-sys-on-surface); }
-.ed-lock { color: var(--mat-sys-on-surface-variant); font-size: 18px; width: 18px; height: 18px; }
-.ed-toggle { width: 40px; height: 24px; border-radius: 999px; border: none; cursor: pointer;
-  background: var(--field-border-color, var(--card-border-color)); position: relative; transition: background 0.12s ease; }
-.ed-toggle.is-on { background: var(--accent-500); }
-.ed-toggle__knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 999px;
-  background: var(--card-bg); transition: transform 0.12s ease; }
-.ed-toggle.is-on .ed-toggle__knob { transform: translateX(16px); }
-.ed-preview { padding: 14px 16px; border-radius: 12px; background: var(--surface-soft, #f8fafc); display: flex; flex-direction: column; gap: 6px; }
-.ed-preview__label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mat-sys-on-surface-variant); }
-.ed-preview__text { margin: 0; font-size: 1rem; color: var(--mat-sys-on-surface); }
-.ed-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2, 16px); width: 100%; }
-.ed-reset { display: inline-flex; align-items: center; gap: 6px; border: none; background: none; font: inherit;
-  font-weight: 600; font-size: var(--site-body-small, 0.875rem); color: var(--accent-700); cursor: pointer; }
-.ed-reset mat-icon { font-size: 16px; width: 16px; height: 16px; }
-.ed-footer__actions { display: inline-flex; gap: 10px; }
-
-@media (prefers-reduced-motion: reduce) { .ed-toggle, .ed-toggle__knob { transition: none; } }
-
-// --- Composer note: textarea + chip allegate + link "Allega un file" ---------
-.note-composer { display: flex; flex-direction: column; gap: 10px; }
-.note-attach { display: flex; flex-direction: column; gap: 10px; }
-
-.note-attach__chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-.note-attach__chip {
-  display: inline-flex; align-items: center; gap: 6px; padding: 6px 6px 6px 10px;
-  border-radius: 999px; background: var(--accent-100); border: 1px solid var(--accent-400);
-}
-.note-attach__chip[data-status='error'] { background: var(--tone-danger-bg); border-color: var(--tone-danger-fg); }
-.note-attach__ico { font-size: 18px; width: 18px; height: 18px; }
-.note-attach__ico--ready { color: var(--accent-700); }
-.note-attach__ico--error { color: var(--tone-danger-fg, #c0362c); }
-.note-attach__spin { font-size: 18px; width: 18px; height: 18px; color: var(--accent-700); animation: na-spin 0.9s linear infinite; }
-.note-attach__name { font-size: var(--site-body-small, 0.875rem); font-weight: 500; color: var(--accent-700); }
-.note-attach__chip[data-status='error'] .note-attach__name { color: var(--tone-danger-fg); }
-.note-attach__pct { font-size: 0.75rem; font-weight: 700; color: var(--accent-700); }
-.note-attach__remove {
-  display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px;
-  border: none; border-radius: 999px; background: none; color: var(--mat-sys-on-surface-variant); cursor: pointer;
-}
-.note-attach__remove:hover { background: var(--card-border-color); }
-.note-attach__remove mat-icon { font-size: 16px; width: 16px; height: 16px; }
-
-.note-attach__add {
-  align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;
-  border: none; background: none; padding: 2px 0; font: inherit; cursor: pointer;
-}
-.note-attach__add mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--accent-700); }
-.note-attach__add-label { font-weight: 600; font-size: var(--site-body-small, 0.875rem); color: var(--accent-700); }
-.note-attach__add-hint { font-size: var(--site-body-small, 0.875rem); color: var(--mat-sys-on-surface-variant); }
-
-@keyframes na-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .note-attach__spin { animation: none; } }

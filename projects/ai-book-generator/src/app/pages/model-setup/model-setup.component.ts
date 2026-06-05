@@ -18,10 +18,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { CounterFieldComponent } from '../../shared/ui/counter-field/counter-field.component';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
-import {
-  FieldSelectComponent,
-  type FieldOption,
-} from '../../shared/components-v2/field-select/field-select.component';
+import { type FieldOption } from '../../shared/components-v2/field-select/field-select.component';
 import {
   SourceDropzoneComponent,
   type SourceItem,
@@ -83,7 +80,6 @@ const OUTPUT_FORMATS: readonly OutputFormat[] = ['pdf', 'docx', 'epub'];
     AuthShellComponent,
     CounterFieldComponent,
     BackLinkComponent,
-    FieldSelectComponent,
     SourceDropzoneComponent,
     ActionBarComponent,
     ModalShellComponent,
