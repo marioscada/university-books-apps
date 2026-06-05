@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { PageHeaderComponent } from '../../shared/layout/page-header/page-header.component';
-import { CoverTheme } from '../../shared/layout/icon-tile/icon-tile.component';
+import { CoverTheme } from '../../core/domain';
 
 /** Cartella di organizzazione delle fonti ('all' = tutte). */
 type Folder = 'all' | 'university' | 'research' | 'business' | 'personal';
