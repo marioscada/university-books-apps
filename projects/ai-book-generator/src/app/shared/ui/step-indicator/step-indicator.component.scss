@@ -33,10 +33,12 @@
   border-radius: var(--card-radius, 8px);
 }
 
+// Step già completato con successo → verde successo (vedi dot/connettori sotto).
 .step-indicator__step.is-reached {
-  color: var(--accent-700);
+  color: var(--tone-success-fg);
 }
 
+// Step in corso → accent forte (vince su .is-reached, ordine sorgente).
 .step-indicator__step.is-active {
   color: var(--accent-700);
 }
@@ -64,15 +66,19 @@
   height: 18px;
 }
 
+// Step in corso → accent pieno forte, numero bianco, alone d'enfasi.
 .step-indicator__step.is-active .step-indicator__dot {
-  background: var(--accent-100);
-  border-color: var(--accent-500);
-}
-
-.step-indicator__step.is-done:not(.is-active) .step-indicator__dot {
   background: var(--accent-500);
   border-color: var(--accent-500);
   color: var(--on-accent);
+  box-shadow: 0 0 0 4px var(--accent-100);
+}
+
+// Step completato con successo → verde pieno, check bianco.
+.step-indicator__step.is-done:not(.is-active) .step-indicator__dot {
+  background: var(--tone-success-fg);
+  border-color: var(--tone-success-fg);
+  color: #fff;
 }
 
 // --- Connectors (lines between dots, drawn from the dot row center) ---
@@ -102,20 +108,20 @@
   display: none;
 }
 
-// Accent the connector entering a reached step (segment before it is complete).
+// Percorso già completato con successo → connettori verdi.
+// Segmento che entra in uno step raggiunto (precedente completato).
 .step-indicator__step.is-reached .step-indicator__connector--before {
-  background: var(--accent-500);
+  background: var(--tone-success-fg);
 }
 
-// Accent the outgoing connector of a step that is reached but not the boundary
-// (i.e. a fully passed segment). Active-but-not-done keeps the forward line
-// neutral so the "progress front" reads correctly.
+// Segmento uscente di uno step passato (raggiunto ma non quello in corso).
+// Lo step in corso lascia la linea in avanti neutra → "fronte di avanzamento".
 .step-indicator__step.is-reached:not(.is-active) .step-indicator__connector--after {
-  background: var(--accent-500);
+  background: var(--tone-success-fg);
 }
 
 .step-indicator__step.is-active.is-done .step-indicator__connector--after {
-  background: var(--accent-500);
+  background: var(--tone-success-fg);
 }
 
 // --- Label ---

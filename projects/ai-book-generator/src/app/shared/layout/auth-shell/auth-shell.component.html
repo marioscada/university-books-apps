@@ -27,10 +27,12 @@
   </ng-template>
 
   <ng-template #footer>
-    <app-site-footer-block
-      [brand]="brand"
-      [columns]="footerColumns"
-      [showAuthOnly]="true" />
+    @if (showFooter()) {
+      <app-site-footer-block
+        [brand]="brand"
+        [columns]="footerColumns"
+        [showAuthOnly]="true" />
+    }
   </ng-template>
 </app-site-shell>
 

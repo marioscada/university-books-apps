@@ -8,18 +8,16 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { merge, map } from 'rxjs';
-import { UpperCasePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { CounterFieldComponent } from '../../shared/ui/counter-field/counter-field.component';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
-import { FormSectionComponent } from '../../shared/components-v2/form-section/form-section.component';
-import { OptionCardComponent } from '../../shared/components-v2/option-card/option-card.component';
 import {
   FieldSelectComponent,
   type FieldOption,
@@ -83,17 +81,15 @@ const OUTPUT_FORMATS: readonly OutputFormat[] = ['pdf', 'docx', 'epub'];
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AuthShellComponent,
-    UpperCasePipe,
     CounterFieldComponent,
     BackLinkComponent,
-    FormSectionComponent,
-    OptionCardComponent,
     FieldSelectComponent,
     SourceDropzoneComponent,
     ActionBarComponent,
     ModalShellComponent,
     MatIconModule,
     MatButtonModule,
+    MatMenuModule,
     TranslateModule,
   ],
   templateUrl: './model-setup.component.html',
@@ -137,6 +133,14 @@ export class ModelSetupComponent {
   readonly descMax = DESC_MAX;
   readonly notesMax = NOTES_MAX;
 
+  /** Validazione titolo (obbligatorio): errore solo dopo il primo blur. */
+  readonly titleTouched = signal(false);
+  readonly titleError = computed(() =>
+    this.titleTouched() && !this.title().trim() ? 'Il titolo è obbligatorio' : '',
+  );
+  /** Si può generare solo con un titolo valido. */
+  readonly canGenerate = computed(() => !!this.title().trim());
+
   readonly goal = signal('analyze');
   readonly audience = signal('professionals');
   readonly tone = signal('professional');
@@ -168,6 +172,9 @@ export class ModelSetupComponent {
   readonly titleLabel = computed(() => this.t('i18n.Setup.S1.titleLabel', this.params()));
   readonly descLabel = computed(() => this.t('i18n.Setup.S1.descLabel', this.params()));
   readonly descPlaceholder = computed(() => this.t('i18n.Setup.S1.descPlaceholder', this.params()));
+  /** Label brevi dei campi (richiesta UX). */
+  readonly titleFieldLabel = computed(() => `Scegli un nome per ${this.possessive()} ${this.nameLower()}`);
+  readonly descFieldLabel = 'Descrivi brevemente cosa conterrà.';
 
   /** Colore solido del libro, dinamico per modello (token globale del tono). */
   readonly bookBg = computed<string>(() => {
@@ -212,20 +219,94 @@ export class ModelSetupComponent {
     this.sources.update((list) => list.filter((s) => s.id !== id));
   }
 
-  /** Dialog "Allega un file" alle note: chiuso finché non lo si apre dal link. */
+  // --- Sidebar: File (upload da dispositivo / contenuto testuale, catalogati) --
+  /** Dialog "Carica dal dispositivo" (dropzone). */
   readonly attachOpen = signal(false);
-  openAttach(): void {
+  /** Bersaglio dell'upload: fonti (File) o istruzioni (Istruzioni). */
+  readonly attachTarget = signal<'files' | 'instr'>('files');
+  openAttach(target: 'files' | 'instr' = 'files'): void {
+    this.attachTarget.set(target);
     this.attachOpen.set(true);
   }
   closeAttach(): void {
     this.attachOpen.set(false);
   }
-
-  addNoteFiles(files: File[]): void {
-    this.simulateUpload(this.noteFiles, files);
+  /** Lista mostrata nel dialog di upload, in base al bersaglio. */
+  readonly attachItems = computed(() =>
+    this.attachTarget() === 'instr' ? this.instrFiles() : this.sources(),
+  );
+  addAttach(files: File[]): void {
+    this.simulateUpload(this.attachTarget() === 'instr' ? this.instrFiles : this.sources, files);
   }
-  removeNoteFile(id: string): void {
-    this.noteFiles.update((list) => list.filter((s) => s.id !== id));
+  removeAttach(id: string): void {
+    const list = this.attachTarget() === 'instr' ? this.instrFiles : this.sources;
+    list.update((l) => l.filter((s) => s.id !== id));
+  }
+
+  /** Dialog "Aggiungi contenuto testuale". */
+  readonly textOpen = signal(false);
+  readonly textContent = signal('');
+  openText(): void {
+    this.textContent.set('');
+    this.textOpen.set(true);
+  }
+  closeText(): void {
+    this.textOpen.set(false);
+  }
+  addTextSource(): void {
+    const text = this.textContent().trim();
+    if (!text) {
+      return;
+    }
+    const name = `${text.split(/\s+/).slice(0, 5).join(' ').slice(0, 40)}.txt`;
+    this.sources.update((l) => [...l, { id: `${++this.uploadSeq}-${name}`, name, status: 'ready' as const }]);
+    this.textOpen.set(false);
+  }
+
+  /** Capacità progetto usata (mock): cresce coi file caricati. */
+  readonly capacityUsed = computed(() => Math.min(100, this.sources().length * 12));
+  /** Estensione (maiuscola) per la tile file. */
+  fileExt(name: string): string {
+    return (name.split('.').pop() ?? 'file').toUpperCase().slice(0, 4);
+  }
+  /** Categoria del file per icona/colore riconoscibili (PDF, Word, immagine…). */
+  fileKind(name: string): 'pdf' | 'doc' | 'img' | 'sheet' | 'text' | 'file' {
+    const ext = (name.split('.').pop() ?? '').toLowerCase();
+    if (ext === 'pdf') return 'pdf';
+    if (['doc', 'docx', 'rtf', 'odt'].includes(ext)) return 'doc';
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'heic'].includes(ext)) return 'img';
+    if (['xls', 'xlsx', 'csv', 'ods'].includes(ext)) return 'sheet';
+    if (['txt', 'md', 'markdown'].includes(ext)) return 'text';
+    return 'file';
+  }
+  /** Icona Material per la categoria del file. */
+  fileIcon(name: string): string {
+    return {
+      pdf: 'picture_as_pdf',
+      doc: 'description',
+      img: 'image',
+      sheet: 'table_chart',
+      text: 'article',
+      file: 'draft',
+    }[this.fileKind(name)];
+  }
+
+  // --- Istruzioni: a mano (note) oppure da file (PC) --------------------------
+  readonly instrOpen = signal(false);
+  /** File di istruzioni caricati dal dispositivo (catalogati "Istruzione"). */
+  readonly instrFiles = signal<SourceItem[]>([]);
+  openInstr(): void {
+    this.instrOpen.set(true);
+  }
+  closeInstr(): void {
+    this.instrOpen.set(false);
+  }
+  /** Elimina le istruzioni scritte a mano. */
+  clearInstr(): void {
+    this.notes.set('');
+  }
+  removeInstrFile(id: string): void {
+    this.instrFiles.update((l) => l.filter((s) => s.id !== id));
   }
 
   /**
@@ -489,6 +570,10 @@ export class ModelSetupComponent {
    */
   async generate(): Promise<void> {
     const tpl = this.template();
+    if (!this.canGenerate()) {
+      this.titleTouched.set(true);
+      return;
+    }
     if (!tpl || this.submitting()) {
       return;
     }
@@ -519,7 +604,9 @@ export class ModelSetupComponent {
         settings,
         coverTheme: tpl.coverTheme ?? 'ocean',
       });
-      // Confermato: si prosegue allo studio del progetto.
+      // Avvia SUBITO la generazione dell'indice (niente schermata "bozza"
+      // intermedia): l'utente ha già confermato qui → si va dritto all'Analisi.
+      await this.projectsStore.generate(project.id);
       void this.router.navigate(['/project', project.id]);
     } finally {
       this.submitting.set(false);

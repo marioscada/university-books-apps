@@ -71,6 +71,16 @@
   line-height: 1.5;
 }
 
+// Modalità "fill": il campo (e la textarea) cresce a riempire l'altezza.
+:host(.cf--fill) {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+:host(.cf--fill) .cf__control--area {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 .cf__msg {
   font-size: 0.75rem;
   color: var(--mat-sys-on-surface-variant);

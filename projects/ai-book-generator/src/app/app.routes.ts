@@ -77,12 +77,6 @@ export const routes: Routes = [
     title: 'Pricing - AI Book Generator',
   },
   {
-    // Showcase dev dei componenti dumb library-grade (provarli prima dell'uso).
-    path: 'ui-gallery',
-    loadComponent: () => import('./pages/ui-gallery/ui-gallery.component').then((m) => m.UiGalleryComponent),
-    title: 'UI Gallery',
-  },
-  {
     // Catch-all: ogni path sconosciuto torna alla landing.
     path: '**',
     redirectTo: '/landing',

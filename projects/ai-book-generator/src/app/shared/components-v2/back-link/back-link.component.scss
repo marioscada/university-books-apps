@@ -4,9 +4,9 @@
   gap: 8px;
   padding: 9px 16px 9px 14px;
   border-radius: 10px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
-  color: var(--mat-sys-on-surface);
+  background: transparent;
+  border: 1px solid var(--accent-500);
+  color: var(--accent-700);
   cursor: pointer;
   outline: none;
   position: relative;   // ancoraggio ripple
@@ -15,10 +15,9 @@
 }
 
 :host(:hover) {
-  border-color: var(--accent-400);
+  background: var(--accent-100);
 }
 :host(:focus-visible) {
-  border-color: var(--accent-500);
   box-shadow: 0 0 0 3px var(--accent-100);
 }
 

@@ -80,4 +80,15 @@ section[id] {
   z-index: 19;
 }
 
+// Bottoni primari (mat-flat) disabilitati: stesso accent ma attenuato (non il
+// grigio di default). Abilitato = accent forte; disabilitato = accent opaco.
+.mat-mdc-unelevated-button {
+  --mdc-filled-button-disabled-container-color: var(--accent-500);
+  --mdc-filled-button-disabled-label-text-color: var(--on-accent, #fff);
+}
+.mat-mdc-unelevated-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 @tailwind utilities;

@@ -67,7 +67,7 @@
             class="doc-structure-list__toggle"
             [checked]="part.included"
             [attr.aria-label]="part.label"
-            (change)="toggle.emit(part.key)"
+            (change)="toggleSection.emit(part.key)"
           />
         } @else {
           <mat-icon

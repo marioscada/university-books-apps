@@ -6,6 +6,7 @@ import {
   input,
   model,
   numberAttribute,
+  output,
 } from '@angular/core';
 
 import { ScreenTypeDirective } from '../../directives/screen-type.directive';
@@ -42,7 +43,7 @@ import { ScreenTypeDirective } from '../../directives/screen-type.directive';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   hostDirectives: [ScreenTypeDirective],
-  host: { class: 'counter-field' },
+  host: { class: 'counter-field', '[class.cf--fill]': 'fill()' },
   template: `
     @if (label() || maxLength() > 0) {
       <div class="cf__top">
@@ -76,7 +77,8 @@ import { ScreenTypeDirective } from '../../directives/screen-type.directive';
         [attr.aria-required]="required() ? 'true' : null"
         [value]="value()"
         [placeholder]="placeholder()"
-        (input)="onInput($event)"></textarea>
+        (input)="onInput($event)"
+        (blur)="blurred.emit()"></textarea>
     } @else {
       <input
         class="cf__control"
@@ -88,7 +90,8 @@ import { ScreenTypeDirective } from '../../directives/screen-type.directive';
         [attr.aria-required]="required() ? 'true' : null"
         [value]="value()"
         [placeholder]="placeholder()"
-        (input)="onInput($event)" />
+        (input)="onInput($event)"
+        (blur)="blurred.emit()" />
     }
 
     @if (error()) {
@@ -114,6 +117,8 @@ export class CounterFieldComponent {
   /** Textarea invece di input. */
   readonly multiline = input(false, { transform: booleanAttribute });
   readonly rows = input(5, { transform: numberAttribute });
+  /** In multiline, fa crescere la textarea per riempire l'altezza disponibile. */
+  readonly fill = input(false, { transform: booleanAttribute });
   /** Lunghezza massima: >0 attiva il contatore caratteri. */
   readonly maxLength = input(0, { transform: numberAttribute });
   /** Mostra l'asterisco obbligatorio. */
@@ -123,6 +128,9 @@ export class CounterFieldComponent {
 
   /** Valore two-way: `[(value)]`. */
   readonly value = model('');
+
+  /** Emesso alla perdita di focus: il padre marca "touched" e valida. */
+  readonly blurred = output<void>();
 
   /** True quando si è raggiunto il limite di caratteri. */
   protected readonly isFull = computed(

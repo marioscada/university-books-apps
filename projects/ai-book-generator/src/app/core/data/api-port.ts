@@ -11,6 +11,9 @@ import type {
   Job,
   Source,
   Plan,
+  Version,
+  ChatMessage,
+  DerivedContent,
 } from '../domain';
 
 /**
@@ -49,12 +52,36 @@ export interface ApiPort {
   reopen(id: string): Promise<Project>;
   /** POST /projects/:id/duplicate */
   duplicate(id: string): Promise<Project>;
-  /** POST /projects/:id/derive ({ derivedKind }) figlio collegato */
-  derive(id: string, derivedKind: DerivedKind): Promise<Project>;
+  /** POST /projects/:id/derive ({ derivedKind, language? }) figlio collegato */
+  derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project>;
+
+  // --- Derivati (contenuto elaborato dal server) ----------------------------
+  /** POST /projects/:id/derived — elabora e restituisce il contenuto del derivato. */
+  generateDerived(projectId: string): Promise<DerivedContent>;
+  /** POST /projects/:id/derived/regenerate — rielabora dato il feedback dell'utente. */
+  regenerateDerived(projectId: string, feedback: string): Promise<DerivedContent>;
 
   // --- Jobs (polling live) --------------------------------------------------
   /** GET /projects/:id/job (polled ~2s) */
   getJob(projectId: string): Promise<Job | null>;
+
+  // --- Versions (output: indice + capitoli) ---------------------------------
+  /**
+   * GET /projects/:id/version — versione corrente. Dopo la sola analisi i capitoli
+   * sono in `pending` (solo indice/outline); dopo `generateChapters` sono `ready`.
+   */
+  getCurrentVersion(projectId: string): Promise<Version | null>;
+  /** POST /projects/:id/chapters — sviluppa i capitoli dall'indice approvato. */
+  generateChapters(projectId: string): Promise<Version>;
+
+  // --- Chat contestuale al progetto -----------------------------------------
+  /** GET /projects/:id/chat — il thread di messaggi del progetto. */
+  listChatMessages(projectId: string): Promise<ChatMessage[]>;
+  /**
+   * POST /projects/:id/chat — invia un messaggio utente; ritorna i NUOVI messaggi
+   * ([utente, risposta assistente]). In v1 la risposta è simulata.
+   */
+  sendChatMessage(projectId: string, text: string): Promise<ChatMessage[]>;
 
   // --- Library (Sources) ----------------------------------------------------
   /** GET /sources?folder=&tag=&q= */

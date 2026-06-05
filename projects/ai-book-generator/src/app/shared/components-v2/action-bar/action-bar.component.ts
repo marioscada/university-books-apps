@@ -29,18 +29,23 @@ import {
   host: {
     class: 'action-bar',
     '[class.is-sticky]': 'sticky()',
+    '[class.is-top]': "placement() === 'top'",
   },
   template: `
-    <div class="action-bar__start">
-      <ng-content select="[start]" />
-    </div>
-    <div class="action-bar__end">
-      <ng-content select="[end]" />
+    <div class="action-bar__inner">
+      <div class="action-bar__start">
+        <ng-content select="[start]" />
+      </div>
+      <div class="action-bar__end">
+        <ng-content select="[end]" />
+      </div>
     </div>
   `,
   styleUrl: './action-bar.component.scss',
 })
 export class ActionBarComponent {
-  /** Rende la barra appiccicata in basso allo scroll. */
+  /** Rende la barra appiccicata (in basso, o in alto se `placement="top"`). */
   readonly sticky = input(false, { transform: booleanAttribute });
+  /** Posizione della barra: in basso (default) o in alto sotto l'header. */
+  readonly placement = input<'top' | 'bottom'>('bottom');
 }

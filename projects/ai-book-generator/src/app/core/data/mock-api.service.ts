@@ -9,6 +9,10 @@ import type {
   JobStep,
   Source,
   Plan,
+  Version,
+  Chapter,
+  ChatMessage,
+  DerivedContent,
 } from '../domain';
 import type {
   ApiPort,
@@ -21,6 +25,15 @@ import type {
 } from './api-port';
 import { SEED_PROJECTS, SEED_SOURCES } from './mock-seed';
 import { SEED_TEMPLATES } from './templates-seed';
+import {
+  SEED_CHAPTER_TITLES,
+  SEED_CHAPTER_BODY,
+  SEED_CHAPTER_BODY_LONG,
+  SEED_CHAT_GREETING,
+  SEED_CHAT_REPLY_WITH_OP,
+  SEED_CHAT_REPLY_DEFAULT,
+} from './workspace-seed';
+import { buildDerivedContent } from './derived-seed';
 
 /** Latenza simulata di rete (ms). */
 const NETWORK_DELAY_MS = 120;
@@ -41,13 +54,30 @@ function inferSourceType(name: string, mime?: string): Source['type'] {
   return 'note';
 }
 
-/** Pipeline standard di un job `generate` (label come chiavi i18n). */
+/**
+ * Pipeline del job `generate` = **generazione dell'INDICE** (analisi + outline).
+ * I capitoli e il render sono una fase separata (`generateChapters`), così lo
+ * step "Analisi" non avanza fino a Capitoli/Render mentre si genera l'indice.
+ */
 const GENERATE_STEPS: readonly Omit<JobStep, 'status'>[] = [
   { key: 'analyze', labelKey: 'i18n.Job.Step.analyze' },
   { key: 'outline', labelKey: 'i18n.Job.Step.outline' },
-  { key: 'chapters', labelKey: 'i18n.Job.Step.chapters' },
-  { key: 'render', labelKey: 'i18n.Job.Step.render' },
 ];
+
+/** Stati con un output (versione + capitoli) disponibile. */
+const HAS_OUTPUT: readonly ProjectStatus[] = ['review', 'published', 'archived'];
+
+/** Deduce un'etichetta di operazione tipizzata dal testo (mock euristico). */
+function inferOperationLabel(text: string): string | undefined {
+  const t = text.toLowerCase();
+  if (/riduc|accorc|breve/.test(t)) return 'lunghezza −20%';
+  if (/espand|allung|approfond/.test(t)) return 'lunghezza +20%';
+  if (/tecnic/.test(t)) return 'tono tecnico';
+  if (/esempi/.test(t)) return 'aggiunti esempi';
+  if (/traduc|english|inglese/.test(t)) return 'traduzione';
+  if (/tono|formale|informale/.test(t)) return 'tono aggiornato';
+  return undefined;
+}
 
 /**
  * MockApiService — implementazione v1 di `ApiPort`.
@@ -66,6 +96,12 @@ export class MockApiService implements ApiPort {
   private readonly projects = new Map<string, Project>();
   private readonly sources = new Map<string, Source>();
   private readonly jobs = new Map<string, Job>();
+  /** Versione corrente (indice + capitoli) per progetto, materializzata on-demand. */
+  private readonly versions = new Map<string, Version>();
+  /** Thread di chat per progetto. */
+  private readonly chats = new Map<string, ChatMessage[]>();
+  /** Lingua di destinazione per i derivati di tipo traduzione (per progetto). */
+  private readonly derivedLang = new Map<string, string>();
   /** Timer attivi per job in corso, per id job. */
   private readonly jobTimers = new Map<string, ReturnType<typeof setInterval>>();
 
@@ -255,7 +291,7 @@ export class MockApiService implements ApiPort {
     return structuredClone(copy);
   }
 
-  async derive(id: string, derivedKind: DerivedKind): Promise<Project> {
+  async derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project> {
     await this.delay();
     const parent = this.requireProject(id);
     const now = new Date().toISOString();
@@ -265,7 +301,7 @@ export class MockApiService implements ApiPort {
       ownerId: parent.ownerId,
       title: `${parent.title} — ${derivedKind}`,
       kind: 'custom',
-      status: 'draft',
+      status: 'processing',
       coverTheme: parent.coverTheme,
       settings: structuredClone(parent.settings),
       versionIds: [],
@@ -277,9 +313,49 @@ export class MockApiService implements ApiPort {
       updatedAt: now,
     };
     this.projects.set(child.id, child);
+    if (language) {
+      this.derivedLang.set(child.id, language);
+    }
     parent.derivedProjectIds = [...parent.derivedProjectIds, child.id];
     parent.updatedAt = now;
     return structuredClone(child);
+  }
+
+  /** Titolo del progetto sorgente (genitore) per comporre il derivato. */
+  private derivedBaseTitle(child: Project): string {
+    const parent = child.parentProjectId ? this.projects.get(child.parentProjectId) : undefined;
+    return parent?.title ?? child.title;
+  }
+
+  async generateDerived(projectId: string): Promise<DerivedContent> {
+    await this.delay();
+    const project = this.requireProject(projectId);
+    if (!project.derivedKind) {
+      throw new Error(`Il progetto ${projectId} non è un derivato`);
+    }
+    const content = buildDerivedContent(
+      project.derivedKind,
+      this.derivedBaseTitle(project),
+      this.derivedLang.get(projectId),
+    );
+    project.status = 'review';
+    project.updatedAt = new Date().toISOString();
+    return structuredClone(content);
+  }
+
+  async regenerateDerived(projectId: string, _feedback: string): Promise<DerivedContent> {
+    await this.delay();
+    const project = this.requireProject(projectId);
+    if (!project.derivedKind) {
+      throw new Error(`Il progetto ${projectId} non è un derivato`);
+    }
+    // Mock: la rigenerazione restituisce lo stesso contenuto (con backend reale
+    // qui il feedback verrebbe applicato per correggere il derivato).
+    return buildDerivedContent(
+      project.derivedKind,
+      this.derivedBaseTitle(project),
+      this.derivedLang.get(projectId),
+    );
   }
 
   // ===========================================================================
@@ -539,6 +615,137 @@ export class MockApiService implements ApiPort {
       clearInterval(timer);
       this.jobTimers.delete(jobId);
     }
+  }
+
+  // ===========================================================================
+  // Versions (indice + capitoli)
+  // ===========================================================================
+
+  async getCurrentVersion(projectId: string): Promise<Version | null> {
+    await this.delay();
+    const project = this.requireProject(projectId);
+    // Materializza on-demand una versione coi capitoli per i progetti con output.
+    if (!HAS_OUTPUT.includes(project.status)) {
+      return null;
+    }
+    let version = this.versions.get(projectId);
+    if (!version) {
+      version = this.buildVersion(project);
+      this.versions.set(projectId, version);
+    }
+    // I progetti già pubblicati/archiviati hanno i capitoli sviluppati.
+    if (project.status !== 'review') {
+      this.developChapters(version);
+    }
+    return structuredClone(version);
+  }
+
+  async generateChapters(projectId: string): Promise<Version> {
+    await this.delay(260);
+    const project = this.requireProject(projectId);
+    let version = this.versions.get(projectId);
+    if (!version) {
+      version = this.buildVersion(project);
+      this.versions.set(projectId, version);
+    }
+    this.developChapters(version);
+    return structuredClone(version);
+  }
+
+  /** Sviluppa i corpi dei capitoli (pending → ready). */
+  private developChapters(version: Version): void {
+    for (const c of version.chapters) {
+      if (c.status !== 'ready') {
+        // Un capitolo "lungo" (cap. 2) per testare la paginazione del lettore.
+        c.body = c.index === 2 ? SEED_CHAPTER_BODY_LONG : SEED_CHAPTER_BODY;
+        c.status = 'ready';
+      }
+    }
+  }
+
+  // ===========================================================================
+  // Chat contestuale al progetto
+  // ===========================================================================
+
+  async listChatMessages(projectId: string): Promise<ChatMessage[]> {
+    await this.delay();
+    return this.ensureChat(projectId).map((m) => structuredClone(m));
+  }
+
+  async sendChatMessage(projectId: string, text: string): Promise<ChatMessage[]> {
+    await this.delay(220);
+    const thread = this.ensureChat(projectId);
+    const now = new Date().toISOString();
+    const userMsg: ChatMessage = {
+      id: this.newId('msg'),
+      threadId: `thread-${projectId}`,
+      role: 'user',
+      content: text,
+      createdAt: now,
+    };
+    const op = inferOperationLabel(text);
+    const assistantMsg: ChatMessage = {
+      id: this.newId('msg'),
+      threadId: `thread-${projectId}`,
+      role: 'assistant',
+      content: op ? SEED_CHAT_REPLY_WITH_OP : SEED_CHAT_REPLY_DEFAULT,
+      createdAt: now,
+      ...(op ? { operationId: this.newId('op') } : {}),
+    };
+    // memorizza l'etichetta operazione fuori dal tipo dominio (mock-only) via campo extra
+    if (op) {
+      (assistantMsg as ChatMessage & { operationLabel?: string }).operationLabel = op;
+    }
+    thread.push(userMsg, assistantMsg);
+    return [structuredClone(userMsg), structuredClone(assistantMsg)];
+  }
+
+  /** Crea (una volta) il thread con un saluto dell'assistente. */
+  private ensureChat(projectId: string): ChatMessage[] {
+    let thread = this.chats.get(projectId);
+    if (!thread) {
+      thread = [
+        {
+          id: this.newId('msg'),
+          threadId: `thread-${projectId}`,
+          role: 'assistant',
+          content: SEED_CHAT_GREETING,
+          createdAt: new Date().toISOString(),
+        },
+      ];
+      this.chats.set(projectId, thread);
+    }
+    return thread;
+  }
+
+  /** Costruisce una Version draft coi capitoli (mock) per un progetto con output. */
+  private buildVersion(project: Project): Version {
+    const now = new Date().toISOString();
+    const versionId = this.newId('ver');
+    // Dopo la sola analisi: solo l'indice. I capitoli sono `pending` (corpo da
+    // sviluppare), il `wordCount` è la stima mostrata in "Cosa otterrai".
+    const chapters: Chapter[] = SEED_CHAPTER_TITLES.map((title, i) => ({
+      id: `${versionId}-c${i + 1}`,
+      versionId,
+      index: i + 1,
+      title,
+      body: '',
+      status: 'pending',
+      wordCount: 900 + i * 120,
+    }));
+    return {
+      id: versionId,
+      projectId: project.id,
+      number: 1,
+      status: project.status === 'published' ? 'published' : 'draft',
+      createdAt: now,
+      createdBy: project.ownerId,
+      settingsSnapshot: structuredClone(project.settings),
+      sourcesUsedIds: [...project.sourceIds],
+      outline: chapters.map((c) => ({ id: c.id, title: c.title, level: 1, childrenIds: [] })),
+      chapters,
+      outputs: [],
+    };
   }
 
   // ===========================================================================

@@ -133,7 +133,7 @@ export class DocStructureListComponent {
   readonly requiredLabel = input('');
 
   /** Emesso al toggle di una parte opzionale: chiave della parte. */
-  readonly toggle = output<string>();
+  readonly toggleSection = output<string>();
   /** Emesso al variare del conteggio di una parte ripetibile. */
   readonly countChange = output<{ key: string; count: number }>();
   /** Emesso al variare delle parole per parte. */

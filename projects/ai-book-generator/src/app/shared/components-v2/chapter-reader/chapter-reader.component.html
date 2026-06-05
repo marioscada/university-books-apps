@@ -1,0 +1,46 @@
+<header class="chapter-reader__head">
+  <div class="chapter-reader__titlerow">
+    <h2 class="chapter-reader__title">{{ title() }}</h2>
+    @if (statusLabel()) {
+      <span class="chapter-reader__status" [attr.data-tone]="statusTone()">{{ statusLabel() }}</span>
+    }
+  </div>
+  @if (meta()) {
+    <p class="chapter-reader__meta">{{ meta() }}</p>
+  }
+</header>
+
+<div class="chapter-reader__divider" role="presentation"></div>
+
+<div class="chapter-reader__body">
+  @for (p of paragraphs(); track $index) {
+    <p class="chapter-reader__p">{{ p }}</p>
+  }
+  <ng-content />
+</div>
+
+@if ((!readOnly() && approveLabel()) || prevLabel() || nextLabel()) {
+  <div class="chapter-reader__divider" role="presentation"></div>
+  <footer class="chapter-reader__foot">
+    <nav class="chapter-reader__nav">
+      @if (prevLabel()) {
+        <button class="chapter-reader__navlink" type="button" (click)="prev.emit()">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_left</mat-icon>
+          <span class="chapter-reader__navlabel">{{ prevLabel() }}</span>
+        </button>
+      }
+      @if (nextLabel()) {
+        <button class="chapter-reader__navlink chapter-reader__navlink--next" type="button" (click)="next.emit()">
+          <span class="chapter-reader__navlabel">{{ nextLabel() }}</span>
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
+        </button>
+      }
+    </nav>
+    @if (!readOnly() && approveLabel()) {
+      <button class="chapter-reader__approve" type="button" (click)="approve.emit()">
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
+        {{ approveLabel() }}
+      </button>
+    }
+  </footer>
+}

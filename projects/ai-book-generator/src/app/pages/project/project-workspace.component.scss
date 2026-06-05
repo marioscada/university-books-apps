@@ -1,66 +1,484 @@
-// Project Workspace — layout glue specifico (card/cover/status/progress sono
-// globali in theme/_components; qui solo spaziatura/composizione della shell).
+// Project Workspace (Studio) — composizione della shell del flusso. Canvas tinto
+// dallo shell globale; le card/i componenti portano il proprio stile (token).
 :host {
   display: block;
 }
 
-// Pannello di stato: card a piena larghezza con contenuto in colonna.
-.workspace-panel.mat-mdc-card {
+.studio {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  min-height: 100%;
+}
+
+// Top bar
+.studio-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: var(--page-padding-block, clamp(40px, 6vw, 72px));
+  padding-bottom: 8px;
+}
+.studio-titlerow {
+  display: flex;
+  align-items: center;
   gap: 12px;
-  padding: 24px;
-  border-radius: var(--card-radius, 16px);
-  box-shadow: var(--card-shadow);
+  flex-wrap: wrap;
 }
-
-// Variante a tile (griglia review): si adatta alla cards-grid globale.
-.workspace-panel--tile.mat-mdc-card {
-  min-height: 160px;
-}
-
-.workspace-panel__title {
+.studio-title {
   margin: 0;
-  font-size: var(--site-title-large, 1.5rem);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+
+// Chip di stato — tinte dai token globali dei toni.
+.studio-status {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  background: var(--surface-soft, #f8fafc);
+  color: var(--mat-sys-on-surface-variant);
+}
+.studio-status[data-status='review'] {
+  background: var(--tone-warning-bg);
+  color: var(--tone-warning-fg);
+}
+.studio-status[data-status='queued'],
+.studio-status[data-status='processing'] {
+  background: var(--accent-100);
+  color: var(--accent-700);
+}
+.studio-status[data-status='published'] {
+  background: var(--tone-success-bg);
+  color: var(--tone-success-fg);
+}
+.studio-status[data-status='failed'] {
+  background: var(--tone-danger-bg);
+  color: var(--tone-danger-fg);
 }
 
-.workspace-panel--tile .workspace-panel__title {
-  font-size: var(--site-title-medium, 1.125rem);
+// Stack delle sezioni
+.studio-stack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vw, 32px);
+  padding-block: clamp(12px, 1.6vw, 20px) clamp(40px, 6vw, 72px);
 }
 
-.workspace-panel__body {
+// Stepper (dentro una surface-card, padding più compatto)
+.studio-stepper {
+  gap: 14px;
+  padding-block: 20px;
+}
+.studio-stepper__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Pannello generico (draft/failed)
+.studio-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.studio-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-700);
+}
+.studio-eyebrow--danger {
+  color: var(--tone-danger-fg);
+}
+.studio-panel__title {
   margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.studio-panel__body {
+  margin: 0;
+  max-width: 60ch;
   font-size: var(--site-body-large, 1.0625rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
+}
+.studio-panel__actions {
+  margin-top: 6px;
 }
 
-.workspace-panel__placeholder {
+// Generazione/attesa (indice · capitoli · pubblicazione) — SOLO il pannello,
+// a tutta pagina, centrato; nessuna chrome dello Studio.
+.studio-genpage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--header-height, 88px));
+  padding-block: clamp(32px, 6vw, 72px);
+  padding-inline: var(--page-padding-inline, 20px);
+}
+.studio-genpage > app-generation-panel {
+  // Tutta la larghezza consentita, entro il max del contenitore di pagina.
+  width: 100%;
+  max-width: var(--page-max-width, 1200px);
+}
+
+// Body a 3 pannelli (Capitoli): indice · lettura · chat, pari altezza.
+.studio-body {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+}
+.studio-index {
+  flex: 0 0 248px;
+}
+.studio-reader {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.studio-chat {
+  flex: 0 0 360px;
+}
+
+// Variante sola lettura (published/archived): indice + lettura.
+.studio-body--read .studio-reader {
+  flex: 1 1 auto;
+}
+
+// Revisione indice: indice largo + chat (niente lettura).
+.studio-index--wide {
+  flex: 1 1 auto;
+}
+
+// Cosa otterrai (data view, revisione indice)
+.studio-outcome {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.studio-outcome__title {
+  margin: 0;
+  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.studio-outcome__sub {
   margin: 0;
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
+}
+.studio-outcome__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
 }
 
-.workspace-panel__bar {
+// --- Pubblica (Render) ------------------------------------------------------
+.studio-publish {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.studio-publish__label {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.studio-formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+// Chip formato = TOGGLE (off: neutro · on: accent). Modificabile fino alla conferma.
+.studio-format-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  background: var(--card-bg);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+  &.is-on {
+    background: var(--accent-500);
+    border-color: var(--accent-500);
+    color: var(--on-accent, #fff);
+  }
+}
+
+// Descrizione del dialog di pubblicazione — più grande e chiara (standard).
+.studio-pub-desc {
+  margin: 0;
+  font-size: var(--site-body-large, 1.0625rem);
+  line-height: 1.55;
+  color: var(--mat-sys-on-surface-variant);
+
+  strong {
+    color: var(--mat-sys-on-surface);
+    font-weight: 700;
+  }
+}
+.studio-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: var(--site-body-small, 0.9375rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+.studio-toggle {
+  flex: 0 0 auto;
+  position: relative;
+  width: 40px;
+  height: 24px;
+  border: none;
+  border-radius: 999px;
+  background: var(--field-border-color, var(--card-border-color));
+  cursor: pointer;
+  transition: background 0.12s ease;
+
+  &.is-on {
+    background: var(--accent-500);
+  }
+}
+.studio-toggle__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #fff;
+  transition: transform 0.12s ease;
+}
+.studio-toggle.is-on .studio-toggle__knob {
+  transform: translateX(16px);
+}
+
+// --- Conferma (published) ---------------------------------------------------
+.studio-confirm {
+  // Ritmo verticale esplicito via margini (no gap uniforme) → spaziatura standard.
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  padding: clamp(40px, 5vw, 56px) clamp(24px, 5vw, 56px);
+}
+.studio-confirm__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 20px;
+  border-radius: 999px;
+  background: var(--tone-success-fg, #1a8754);
+  color: #fff;
+
+  mat-icon {
+    font-size: 38px;
+    width: 38px;
+    height: 38px;
+  }
+}
+.studio-confirm__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.4vw, 1.75rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.studio-confirm__sub {
+  margin: 10px 0 0;
+  max-width: 48ch;
+  line-height: 1.5;
+  color: var(--mat-sys-on-surface-variant);
+}
+.studio-confirm__downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+}
+.studio-confirm .surface-rule {
   width: 100%;
+  margin-top: 32px;
+}
+.studio-confirm__next {
+  margin: 28px 0 0;
+  align-self: flex-start;
+  font-size: var(--site-title-medium, 1rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.studio-confirm__tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  width: 100%;
+  margin-top: 16px;
+}
+.studio-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--surface-soft, #f8fafc);
+  border: 1px solid var(--card-border-color);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.12s ease, background 0.12s ease;
+
+  &:hover {
+    border-color: var(--accent-400);
+    background: var(--accent-100);
+  }
+}
+.studio-tile__title {
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.studio-tile__sub {
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
 }
 
-.workspace-panel__foot {
+// --- Dialog di pubblicazione ------------------------------------------------
+.studio-pub-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.studio-dialog-foot {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+// --- Dialog "Genera un derivato" --------------------------------------------
+.studio-derive-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.studio-derive-opt {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border-color);
+  background: var(--card-bg);
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+
+  &:hover {
+    border-color: var(--accent-400);
+  }
+  &.is-on {
+    border-color: var(--accent-500);
+    background: var(--accent-100);
+    box-shadow: inset 0 0 0 1px var(--accent-500);
+  }
+}
+.studio-derive-opt__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  width: 100%;
-  font-size: var(--site-body-small, 0.8125rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--accent-700);
+  }
+}
+.studio-derive-opt__title {
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.studio-derive-opt__desc {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--mat-sys-on-surface-variant);
+}
+@media (max-width: 640px) {
+  .studio-derive-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-// Riga delle azioni avanzate (disabilitate, F4+/F8).
-.workspace-advanced {
+// --- Lettore read-only (dialog) ---------------------------------------------
+.studio-read {
+  max-width: 68ch;
+  // Altezza stabile: le pagine non fanno "saltare" il dialog; niente scroll.
+  min-height: clamp(300px, 48vh, 460px);
+  margin: 0 auto;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 14px;
+}
+.studio-read__title {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.studio-read__meta {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+.studio-read__p {
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--mat-sys-on-surface);
+}
+.studio-read__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin-top: 24px;
+  width: 100%;
+}
+.studio-read__pos {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@media (max-width: 1100px) {
+  .studio-body {
+    flex-direction: column;
+  }
+  .studio-index,
+  .studio-reader,
+  .studio-chat {
+    flex: 1 1 auto;
+    width: 100%;
+  }
 }

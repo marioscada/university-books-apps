@@ -1,184 +1,140 @@
-<app-auth-shell>
+<app-auth-shell [showFooter]="false">
   <div class="setup">
-    <!-- Top bar -->
-    <header class="setup-bar site-container">
-      <app-back-link [label]="'i18n.Setup.backToModels' | translate" (navigate)="back()" />
-    </header>
-
-    <div class="setup-stack site-container">
-      <!-- 1 · Definisci il progetto -->
-      <section class="surface-card">
-        <header class="setup-head">
-          <h1 class="setup-title">{{ defTitle() }}</h1>
-          <p class="setup-lead">{{ defSubtitle() }}</p>
-        </header>
-
-        <div class="setup-brief">
-          <div class="setup-brief__form">
-            <app-counter-field
-              [label]="titleLabel()" required [maxLength]="titleMax"
-              [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate"
-              [value]="title()" (valueChange)="title.set($event)" />
-            <app-counter-field
-              [label]="descLabel()" [optionalLabel]="'i18n.Setup.S1.optional' | translate"
-              [maxLength]="descMax" multiline [rows]="4"
-              [placeholder]="descPlaceholder()"
-              [value]="description()" (valueChange)="description.set($event)" />
-          </div>
-
-          <aside class="setup-cover">
-            <div class="setup-cover__book" [style.--book-bg]="bookBg()">
-              <span class="setup-cover__kicker">{{ modelName() }}</span>
-              <span class="setup-cover__title" [class.is-placeholder]="!title().trim()">{{ coverTitle() }}</span>
-              <span class="setup-cover__brand">SCADÁ</span>
-            </div>
-            <button class="setup-cover__action" type="button">
-              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
-              {{ 'i18n.Setup.coverUpdate' | translate }}
-            </button>
-          </aside>
-        </div>
-      </section>
-
-      <!-- 2 · Ritocca il modello -->
-      <section class="surface-card">
-        <app-form-section
-          [heading]="'i18n.Setup.tweak.title' | translate"
-          optional [optionalLabel]="'i18n.Setup.optionalTag' | translate"
-          [subtitle]="'i18n.Setup.tweak.subtitle' | translate"
-          [actionLabel]="'i18n.Setup.tweak.reset' | translate" actionIcon="↩"
-          (action)="resetTemplate()">
-          <div class="setup-options">
-            <app-option-card glyph="↔"
-              [title]="'i18n.Setup.tweak.length.title' | translate"
-              [description]="'i18n.Setup.tweak.length.desc' | translate"
-              [openLabel]="'i18n.Setup.open' | translate"
-              [modified]="lengthModified()" [detail]="lengthDetail()"
-              [modifiedLabel]="'i18n.Setup.Modified' | translate" [resetLabel]="'i18n.Setup.resetDefault' | translate"
-              (open)="openLength()" (reset)="resetArea('length')" />
-            <app-option-card glyph="☰"
-              [title]="'i18n.Setup.tweak.structure.title' | translate"
-              [description]="'i18n.Setup.tweak.structure.desc' | translate"
-              [openLabel]="'i18n.Setup.open' | translate"
-              [modified]="structureModified()"
-              [modifiedLabel]="'i18n.Setup.Modified' | translate" [resetLabel]="'i18n.Setup.resetDefault' | translate"
-              (open)="openStructure()" (reset)="resetArea('structure')" />
-            <app-option-card glyph="Aa"
-              [title]="'i18n.Setup.tweak.style.title' | translate"
-              [description]="'i18n.Setup.tweak.style.desc' | translate"
-              [openLabel]="'i18n.Setup.open' | translate"
-              [modified]="styleModified()"
-              [modifiedLabel]="'i18n.Setup.Modified' | translate" [resetLabel]="'i18n.Setup.resetDefault' | translate"
-              (open)="openStyle()" (reset)="resetArea('style')" />
-          </div>
-        </app-form-section>
-      </section>
-
-      <!-- 3 · Briefing per l'AI -->
-      <section class="surface-card">
-        <app-form-section
-          [heading]="'i18n.Setup.briefing.title' | translate"
-          optional [optionalLabel]="'i18n.Setup.optionalTag' | translate"
-          [subtitle]="'i18n.Setup.briefing.subtitle' | translate">
-          <div class="setup-props">
-            <app-field-select [accent]="false"
-              [label]="'i18n.Setup.briefing.goal' | translate" [hint]="'i18n.Setup.briefing.goalHint' | translate"
-              [options]="goalOptions()" [(value)]="goal" />
-            <app-field-select [accent]="false"
-              [label]="'i18n.Setup.briefing.audience' | translate" [hint]="'i18n.Setup.briefing.audienceHint' | translate"
-              [options]="audienceOptions()" [(value)]="audience" />
-            <app-field-select [accent]="false"
-              [label]="'i18n.Setup.briefing.tone' | translate" [hint]="'i18n.Setup.briefing.toneHint' | translate"
-              [options]="toneOptions()" [(value)]="tone" />
-            <app-field-select [accent]="false"
-              [label]="'i18n.Setup.briefing.language' | translate"
-              [options]="languageOptions" [(value)]="language" />
-          </div>
-
-          <hr class="surface-rule" />
-
-          <div class="setup-format">
-            <span class="setup-format__head">
-              {{ 'i18n.Setup.briefing.format' | translate }}
-              <span class="setup-format__hint">{{ 'i18n.Setup.briefing.formatHint' | translate }}</span>
-            </span>
-            <div class="setup-format__chips">
-              @for (fmt of outputFormats; track fmt) {
-                <button type="button" class="setup-chip" [class.is-on]="isFormat(fmt)" (click)="toggleFormat(fmt)">
-                  @if (isFormat(fmt)) { <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon> }
-                  {{ fmt | uppercase }}
-                </button>
-              }
-            </div>
-          </div>
-
-          <hr class="surface-rule" />
-
-          <div class="note-composer">
-            <app-counter-field
-              [label]="'i18n.Setup.briefing.notes' | translate" [optionalLabel]="'i18n.Setup.S1.optional' | translate"
-              [maxLength]="notesMax" multiline [rows]="3"
-              [placeholder]="'i18n.Setup.briefing.notesPlaceholder' | translate"
-              [value]="notes()" (valueChange)="notes.set($event)" />
-
-            <div class="note-attach">
-              @if (noteFiles().length) {
-                <ul class="note-attach__chips">
-                  @for (f of noteFiles(); track f.id) {
-                    <li class="note-attach__chip" [attr.data-status]="f.status || 'ready'">
-                      @switch (f.status) {
-                        @case ('uploading') {
-                          <mat-icon class="note-attach__spin" fontSet="material-symbols-outlined" aria-hidden="true">progress_activity</mat-icon>
-                        }
-                        @case ('error') {
-                          <mat-icon class="note-attach__ico note-attach__ico--error" fontSet="material-symbols-outlined" aria-hidden="true">error</mat-icon>
-                        }
-                        @default {
-                          <mat-icon class="note-attach__ico note-attach__ico--ready" fontSet="material-symbols-outlined" aria-hidden="true">check_circle</mat-icon>
-                        }
-                      }
-                      <span class="note-attach__name">{{ f.name }}</span>
-                      @if (f.status === 'uploading') { <span class="note-attach__pct">{{ f.progress ?? 0 }}%</span> }
-                      <button class="note-attach__remove" type="button" [attr.aria-label]="f.name" (click)="removeNoteFile(f.id)">
-                        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
-                      </button>
-                    </li>
-                  }
-                </ul>
-              }
-              <button class="note-attach__add" type="button" (click)="openAttach()">
-                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
-                <span class="note-attach__add-label">{{ 'i18n.Setup.briefing.attach' | translate }}</span>
-                <span class="note-attach__add-hint">{{ 'i18n.Setup.sources.hint' | translate }}</span>
-              </button>
-            </div>
-          </div>
-        </app-form-section>
-      </section>
-
-      <!-- 4 · Carica le tue fonti -->
-      <section class="surface-card">
-        <app-form-section
-          [heading]="'i18n.Setup.sources.title' | translate"
-          [subtitle]="'i18n.Setup.sources.subtitle' | translate">
-          <app-source-dropzone
-            [promptLabel]="'i18n.Setup.sources.prompt' | translate"
-            [hintLabel]="'i18n.Setup.sources.hint' | translate"
-            [items]="sources()"
-            (filesSelected)="addSources($event)"
-            (itemRemove)="removeSource($event)" />
-        </app-form-section>
-      </section>
-    </div>
-
-    <!-- Action bar -->
-    <app-action-bar sticky>
-      <app-back-link start [label]="'i18n.Setup.back' | translate" (navigate)="back()" />
-      <button end mat-flat-button color="primary" (click)="generate()">
+    <!-- Barra azioni in alto, subito sotto l'header -->
+    <app-action-bar sticky placement="top">
+      <app-back-link start [label]="'i18n.Setup.backToModels' | translate" (navigate)="back()" />
+      <button end mat-flat-button color="primary" [disabled]="!canGenerate()" (click)="generate()">
         {{ 'i18n.Setup.generateIndex' | translate }}
         <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
       </button>
     </app-action-bar>
+
+    <div class="setup-stack site-container">
+      <!-- Riquadro centrato: titolo + input sopra, Istruzioni + File estese sotto -->
+      <section class="surface-card setup-card">
+        <h1 class="setup-pagetitle">{{ defTitle() }}</h1>
+        <div class="setup-brief__form">
+          <app-counter-field
+            [label]="titleFieldLabel()" required [maxLength]="titleMax"
+            [error]="titleError()"
+            [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate"
+            [value]="title()" (valueChange)="title.set($event)"
+            (blurred)="titleTouched.set(true)" />
+          <app-counter-field
+            [label]="descFieldLabel" [optionalLabel]="'i18n.Setup.S1.optional' | translate"
+            [maxLength]="descMax" multiline [rows]="4"
+            [placeholder]="descPlaceholder()"
+            [value]="description()" (valueChange)="description.set($event)" />
+        </div>
+
+        <!-- Istruzioni + File estese sotto agli input -->
+        <div class="setup-aside-row">
+              <!-- Istruzioni -->
+              <section class="setup-aside setup-aside--inner">
+                <header class="setup-aside__head">
+                  <span class="setup-aside__title">Istruzioni</span>
+                  <button class="setup-aside__add" type="button" aria-label="Aggiungi istruzioni" [matMenuTriggerFor]="instrMenu">
+                    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+                  </button>
+                  <mat-menu #instrMenu="matMenu">
+                    <button mat-menu-item type="button" (click)="openAttach('instr')">
+                      <mat-icon fontSet="material-symbols-outlined">upload</mat-icon>
+                      <span>Carica dal dispositivo</span>
+                    </button>
+                    <button mat-menu-item type="button" (click)="openInstr()">
+                      <mat-icon fontSet="material-symbols-outlined">notes</mat-icon>
+                      <span>Aggiungi contenuto testuale</span>
+                    </button>
+                  </mat-menu>
+                </header>
+                @if (notes().trim()) {
+                  <p class="setup-aside__snippet">{{ notes() }}</p>
+                  <div class="setup-aside__actions">
+                    <button class="setup-aside__link" type="button" (click)="openInstr()">
+                      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">edit</mat-icon>
+                      Modifica
+                    </button>
+                    <button class="setup-aside__link setup-aside__link--danger" type="button" (click)="clearInstr()">
+                      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">delete</mat-icon>
+                      Elimina
+                    </button>
+                  </div>
+                }
+                @if (instrFiles().length) {
+                  <ul class="setup-files">
+                    @for (f of instrFiles(); track f.id) {
+                      <li class="setup-file" [attr.data-status]="f.status || 'ready'">
+                        <button class="setup-file__remove" type="button" [attr.aria-label]="f.name" (click)="removeInstrFile(f.id)">
+                          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+                        </button>
+                        <span class="setup-file__thumb" [attr.data-kind]="fileKind(f.name)">
+                          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ fileIcon(f.name) }}</mat-icon>
+                        </span>
+                        <span class="setup-file__name" [title]="f.name">{{ f.name }}</span>
+                        @if (f.status === 'uploading') {
+                          <span class="setup-file__pct">{{ f.progress ?? 0 }}%</span>
+                        } @else if (f.status === 'error') {
+                          <span class="setup-file__err">errore</span>
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+                @if (!notes().trim() && !instrFiles().length) {
+                  <p class="setup-aside__hint">Aggiungi istruzioni per <strong>stile</strong>, <strong>lunghezza</strong> e contenuti — a mano o da file. Es. «interlinea 1,5, ~30 pagine, senza appendici».</p>
+                }
+              </section>
+
+              <!-- File -->
+              <section class="setup-aside setup-aside--inner">
+                <header class="setup-aside__head">
+                  <span class="setup-aside__title">File</span>
+                  <button class="setup-aside__add" type="button" aria-label="Aggiungi file" [matMenuTriggerFor]="fileMenu">
+                    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+                  </button>
+                  <mat-menu #fileMenu="matMenu">
+                    <button mat-menu-item type="button" (click)="openAttach()">
+                      <mat-icon fontSet="material-symbols-outlined">upload</mat-icon>
+                      <span>Carica dal dispositivo</span>
+                    </button>
+                    <button mat-menu-item type="button" (click)="openText()">
+                      <mat-icon fontSet="material-symbols-outlined">notes</mat-icon>
+                      <span>Aggiungi contenuto testuale</span>
+                    </button>
+                  </mat-menu>
+                </header>
+
+                <div class="setup-cap">
+                  <div class="setup-cap__track"><span class="setup-cap__fill" [style.width.%]="capacityUsed()"></span></div>
+                  <span class="setup-cap__label">{{ capacityUsed() }}% della capacità del progetto usata</span>
+                </div>
+
+                @if (sources().length) {
+                  <ul class="setup-files">
+                    @for (f of sources(); track f.id) {
+                      <li class="setup-file" [attr.data-status]="f.status || 'ready'">
+                        <button class="setup-file__remove" type="button" [attr.aria-label]="f.name" (click)="removeSource(f.id)">
+                          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+                        </button>
+                        <span class="setup-file__thumb" [attr.data-kind]="fileKind(f.name)">
+                          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ fileIcon(f.name) }}</mat-icon>
+                        </span>
+                        <span class="setup-file__name" [title]="f.name">{{ f.name }}</span>
+                        @if (f.status === 'uploading') {
+                          <span class="setup-file__pct">{{ f.progress ?? 0 }}%</span>
+                        } @else if (f.status === 'error') {
+                          <span class="setup-file__err">errore</span>
+                        }
+                      </li>
+                    }
+                  </ul>
+                } @else {
+                  <p class="setup-aside__hint">Nessun file. Aggiungine dal dispositivo o incolla del testo.</p>
+                }
+              </section>
+        </div>
+      </section>
+    </div>
 
     <!-- Editor (dialog): contenuto dinamico per area -->
     <app-modal-shell
@@ -186,7 +142,7 @@
       [title]="editorTitle()"
       [subtitle]="editorSubtitle()"
       [closeLabel]="'i18n.Setup.editClose' | translate"
-      (close)="closeEditor()">
+      (closed)="closeEditor()">
       @switch (activeEditor()) {
         @case ('length') {
           <div class="ed-group">
@@ -280,23 +236,69 @@
       </div>
     </app-modal-shell>
 
-    <!-- Dialog: allega file alle note (il dropzone vive qui, non nel composer) -->
+    <!-- Dialog: Istruzioni per l'AI -->
     <app-modal-shell
-      [open]="attachOpen()"
-      [title]="'i18n.Setup.briefing.attachTitle' | translate"
-      [subtitle]="'i18n.Setup.sources.subtitle' | translate"
-      [closeLabel]="'i18n.Setup.editClose' | translate"
-      (close)="closeAttach()">
-      <app-source-dropzone
-        [promptLabel]="'i18n.Setup.sources.prompt' | translate"
-        [hintLabel]="'i18n.Setup.sources.hint' | translate"
-        [items]="noteFiles()"
-        (filesSelected)="addNoteFiles($event)"
-        (itemRemove)="removeNoteFile($event)" />
+      [open]="instrOpen()"
+      [title]="'Istruzioni per l’AI'"
+      [subtitle]="'Valgono per tutto il documento: tono, contenuti, stile e lunghezza.'"
+      [closeLabel]="'Chiudi'"
+      (closed)="closeInstr()">
+      <p class="setup-instr-help">
+        Qui guidi l’intero documento: <strong>stile</strong> (font, dimensione, interlinea, allineamento),
+        <strong>lunghezza</strong> (a pagine o a parole totali, spazi inclusi) e
+        <strong>struttura</strong> (parti da includere o escludere).
+        Es. «Garamond 12, interlinea 1,5, circa 30 pagine, senza appendici».
+      </p>
+      <app-counter-field
+        label="Istruzioni" multiline [rows]="8" [maxLength]="notesMax"
+        placeholder="Es. enfatizza i dati del 2024, evita il gergo tecnico, includi raccomandazioni operative…"
+        [value]="notes()" (valueChange)="notes.set($event)" />
       <div footer class="ed-footer">
         <span></span>
         <div class="ed-footer__actions">
-          <button mat-flat-button color="primary" type="button" (click)="closeAttach()">{{ 'i18n.Setup.briefing.attachDone' | translate }}</button>
+          <button mat-stroked-button type="button" (click)="closeInstr()">Annulla</button>
+          <button mat-flat-button color="primary" type="button" (click)="closeInstr()">Salva istruzioni</button>
+        </div>
+      </div>
+    </app-modal-shell>
+
+    <!-- Dialog: Carica dal dispositivo (dropzone) -->
+    <app-modal-shell
+      [open]="attachOpen()"
+      [title]="'Carica file'"
+      [subtitle]="'i18n.Setup.sources.subtitle' | translate"
+      [closeLabel]="'Chiudi'"
+      (closed)="closeAttach()">
+      <app-source-dropzone
+        [promptLabel]="'i18n.Setup.sources.prompt' | translate"
+        [hintLabel]="'i18n.Setup.sources.hint' | translate"
+        [items]="attachItems()"
+        (filesSelected)="addAttach($event)"
+        (itemRemove)="removeAttach($event)" />
+      <div footer class="ed-footer">
+        <span></span>
+        <div class="ed-footer__actions">
+          <button mat-flat-button color="primary" type="button" (click)="closeAttach()">Fatto</button>
+        </div>
+      </div>
+    </app-modal-shell>
+
+    <!-- Dialog: Aggiungi contenuto testuale -->
+    <app-modal-shell
+      [open]="textOpen()"
+      [title]="'Aggiungi contenuto testuale'"
+      [subtitle]="'Incolla del testo da usare come fonte; sarà catalogato col progetto.'"
+      [closeLabel]="'Chiudi'"
+      (closed)="closeText()">
+      <app-counter-field
+        label="Contenuto" multiline [rows]="7" [maxLength]="8000"
+        placeholder="Incolla qui il testo…"
+        [value]="textContent()" (valueChange)="textContent.set($event)" />
+      <div footer class="ed-footer">
+        <span></span>
+        <div class="ed-footer__actions">
+          <button mat-stroked-button type="button" (click)="closeText()">Annulla</button>
+          <button mat-flat-button color="primary" type="button" (click)="addTextSource()">Aggiungi</button>
         </div>
       </div>
     </app-modal-shell>

@@ -38,8 +38,8 @@ import { MatIconModule } from '@angular/material/icon';
   },
   template: `
     @if (open()) {
-      <div class="modal-shell__backdrop" (click)="close.emit()"></div>
-      <div class="modal-shell__panel" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <button class="modal-shell__backdrop" type="button" [attr.aria-label]="closeLabel()" (click)="closed.emit()"></button>
+      <div class="modal-shell__panel" [class.modal-shell__panel--lg]="size() === 'lg'" role="dialog" aria-modal="true">
         <header class="modal-shell__head">
           <div class="modal-shell__heading">
             <h2 class="modal-shell__title">{{ title() }}</h2>
@@ -47,7 +47,7 @@ import { MatIconModule } from '@angular/material/icon';
               <p class="modal-shell__subtitle">{{ subtitle() }}</p>
             }
           </div>
-          <button class="modal-shell__close" type="button" [attr.aria-label]="closeLabel()" (click)="close.emit()">
+          <button class="modal-shell__close" type="button" [attr.aria-label]="closeLabel()" (click)="closed.emit()">
             <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
           </button>
         </header>
@@ -73,13 +73,15 @@ export class ModalShellComponent {
   readonly subtitle = input<string>('');
   /** Etichetta accessibile del bottone di chiusura. */
   readonly closeLabel = input<string>('');
+  /** Larghezza del pannello: `md` (default, form) o `lg` (lettura/contenuti ampi). */
+  readonly size = input<'md' | 'lg'>('md');
 
   /** Emesso quando si richiede la chiusura (backdrop / Esc / "×"). */
-  readonly close = output<void>();
+  readonly closed = output<void>();
 
   protected onEsc(): void {
     if (this.open()) {
-      this.close.emit();
+      this.closed.emit();
     }
   }
 }

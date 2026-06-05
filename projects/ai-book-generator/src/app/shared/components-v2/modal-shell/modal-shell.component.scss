@@ -6,6 +6,12 @@
   position: fixed;
   inset: 0;
   z-index: 40;
+  // È un <button> a tutta area (chiusura accessibile via tastiera); reset look.
+  appearance: none;
+  border: 0;
+  padding: 0;
+  display: block;
+  cursor: default;
   background: var(--scrim);
   animation: modal-fade 0.12s ease;
 }
@@ -18,6 +24,11 @@
   transform: translate(-50%, -50%);
   width: min(540px, calc(100vw - 32px));
   max-height: calc(100vh - 48px);
+
+  // Variante ampia (lettura / contenuti larghi).
+  &.modal-shell__panel--lg {
+    width: min(880px, calc(100vw - 32px));
+  }
   display: flex;
   flex-direction: column;
   background: var(--card-bg);

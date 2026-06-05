@@ -212,9 +212,9 @@ export const ProjectsStore = signalStore(
         patchState(store, updateEntity({ id, changes: project }));
       },
 
-      /** Crea un progetto derivato collegato. */
-      async derive(id: string, derivedKind: DerivedKind): Promise<Project> {
-        const child = await api.derive(id, derivedKind);
+      /** Crea un progetto derivato collegato (lingua opzionale per traduzione). */
+      async derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project> {
+        const child = await api.derive(id, derivedKind, language);
         await loadAll();
         return child;
       },

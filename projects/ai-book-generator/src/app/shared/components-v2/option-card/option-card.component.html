@@ -19,7 +19,7 @@
 @if (modified()) {
   <div class="option-card__footer">
     @if (resetLabel()) {
-      <button class="option-card__reset" type="button" (click)="reset.emit()">
+      <button class="option-card__reset" type="button" (click)="resetDefault.emit()">
         <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">undo</mat-icon>
         {{ resetLabel() }}
       </button>

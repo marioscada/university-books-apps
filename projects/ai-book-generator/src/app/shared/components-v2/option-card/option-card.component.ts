@@ -67,5 +67,5 @@ export class OptionCardComponent {
   /** Emesso attivando il bottone d'apertura. */
   readonly open = output<void>();
   /** Emesso attivando "ripristina default". */
-  readonly reset = output<void>();
+  readonly resetDefault = output<void>();
 }
