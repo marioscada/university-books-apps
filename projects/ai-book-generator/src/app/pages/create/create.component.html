@@ -1,105 +1,28 @@
 <app-auth-shell>
-  <!-- Banda 1 (bianco): hero — testo + bottone a sinistra, immagine a destra -->
-  <section class="band">
-    <div class="site-container">
-      <div class="dash-hero">
-        <div class="dash-hero__text">
-          <h1 class="dash-hero__title">Continue creating</h1>
-          <p class="dash-hero__subtitle">Riprendi un lavoro in corso o avviane uno nuovo.</p>
-          <a class="site-cta-pill dash-hero__cta" routerLink="/create">
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
-            <span>New project</span>
-          </a>
-        </div>
-        <div class="dash-hero__media" aria-hidden="true">
-          <img src="images/dash-hero.webp" alt="" decoding="async" />
-        </div>
-      </div>
+  <div class="create site-container">
+    <header class="create__head">
+      <h1 class="page-title">{{ 'i18n.Create.gallery.title' | translate }}</h1>
+      <p class="create__lead">{{ 'i18n.Create.callout.title' | translate }}</p>
+      <p class="create__hint">
+        <mat-icon class="create__hint-icon" fontSet="material-symbols-outlined" aria-hidden="true">swap_horiz</mat-icon>
+        {{ 'i18n.Create.callout.desc' | translate }}
+      </p>
+    </header>
+
+    <div class="create__grid">
+      @for (card of cards(); track card.id) {
+        <app-choice-card
+          [icon]="card.icon"
+          [tone]="card.tone"
+          [heading]="card.heading"
+          [description]="card.description"
+          [meterValue]="card.meter"
+          [meterMax]="meterMax"
+          [meterStartLabel]="shortLabel()"
+          [meterEndLabel]="longLabel()"
+          [note]="card.note"
+          (activate)="chooseModel(card.id)" />
+      }
     </div>
-  </section>
-
-  <!-- Banda 2 (slate): lavori in corso — min-height + scroll interno -->
-  <section class="band band--alt">
-    <div class="site-container">
-      <div class="scroll-area">
-        <div class="cards-grid">
-          @for (work of inProgress(); track work.id) {
-            <mat-card appearance="outlined" class="project-card">
-              <a class="project-card__link" routerLink="/create" [attr.aria-label]="'Apri ' + work.title"></a>
-              <span class="cover-art cover-art--{{ work.cover }}" aria-hidden="true"></span>
-
-              <div class="project-card__body">
-                <div class="project-card__head">
-                  <span class="status status--{{ work.statusTone }}">{{ work.status }}</span>
-                  <button
-                    mat-icon-button
-                    class="project-card__menu"
-                    aria-label="Azioni progetto"
-                    [matMenuTriggerFor]="actionsMenu">
-                    <mat-icon fontSet="material-symbols-outlined">more_vert</mat-icon>
-                  </button>
-                </div>
-
-                <h3 class="project-card__title">{{ work.title }}</h3>
-
-                <mat-progress-bar
-                  class="accent-progress project-card__bar"
-                  mode="determinate"
-                  [value]="work.progress"></mat-progress-bar>
-
-                <div class="project-card__foot">
-                  <span>{{ work.progress }}% completato</span>
-                  <span>agg. {{ work.updatedLabel }}</span>
-                </div>
-              </div>
-
-              <mat-menu #actionsMenu="matMenu">
-                <button mat-menu-item>
-                  <mat-icon fontSet="material-symbols-outlined">drive_file_rename_outline</mat-icon>
-                  <span>Rinomina</span>
-                </button>
-                <button mat-menu-item>
-                  <mat-icon fontSet="material-symbols-outlined">content_copy</mat-icon>
-                  <span>Duplica</span>
-                </button>
-                <button mat-menu-item class="is-danger">
-                  <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
-                  <span>Elimina</span>
-                </button>
-              </mat-menu>
-            </mat-card>
-          }
-
-          <!-- Card "nuovo progetto" -->
-          <a class="project-card project-card--add" routerLink="/create">
-            <span class="project-card__add-icon" aria-hidden="true">
-              <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
-            </span>
-            <span class="project-card__add-title">Nuovo progetto</span>
-            <span class="project-card__add-sub">Crea da zero o usa un template</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Banda 3 (bianco): attività recente -->
-  <section class="band">
-    <div class="site-container band__inner">
-      <h2 class="activity__title">Recent activity</h2>
-      <div class="scroll-area scroll-area--activity">
-        <mat-card appearance="outlined" class="activity__card">
-          <mat-list>
-            @for (entry of recentActivity(); track entry.id) {
-              <mat-list-item>
-                <mat-icon matListItemIcon fontSet="material-symbols-outlined">{{ entry.icon }}</mat-icon>
-                <span matListItemTitle>{{ entry.text }}</span>
-                <span matListItemMeta class="activity__time">{{ entry.timeLabel }}</span>
-              </mat-list-item>
-            }
-          </mat-list>
-        </mat-card>
-      </div>
-    </div>
-  </section>
+  </div>
 </app-auth-shell>

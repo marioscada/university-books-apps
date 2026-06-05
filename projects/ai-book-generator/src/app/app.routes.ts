@@ -38,6 +38,26 @@ export const routes: Routes = [
     title: 'Create - AI Book Generator',
   },
   {
+    // Personalizza il modello — struttura + impostazioni + anteprima (?template=:id).
+    path: 'create/new',
+    loadComponent: () =>
+      import('./pages/model-setup/model-setup.component').then(
+        (m) => m.ModelSetupComponent,
+      ),
+    // canActivate: [authGuard], // TODO ripristinare
+    title: 'New project - AI Book Generator',
+  },
+  {
+    // Project Workspace — shell dinamica per stato (state machine §2).
+    path: 'project/:id',
+    loadComponent: () =>
+      import('./pages/project/project-workspace.component').then(
+        (m) => m.ProjectWorkspaceComponent,
+      ),
+    // canActivate: [authGuard], // TODO ripristinare
+    title: 'Project - AI Book Generator',
+  },
+  {
     // Collezione: archivio storico (solo completati) per categoria.
     path: 'collection',
     loadComponent: () => import('./pages/collection/collection.component').then((m) => m.CollectionComponent),

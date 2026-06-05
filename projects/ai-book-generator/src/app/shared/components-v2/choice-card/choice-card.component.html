@@ -1,0 +1,47 @@
+<span class="cc__tile" aria-hidden="true">
+  <mat-icon fontSet="material-symbols-outlined">{{ icon() }}</mat-icon>
+</span>
+
+<span class="cc__heading">{{ heading() }}</span>
+
+@if (description()) {
+  <span class="cc__desc">{{ description() }}</span>
+}
+
+@if (features().length) {
+  @if (featuresLabel()) {
+    <span class="cc__eyebrow">{{ featuresLabel() }}</span>
+  }
+  <ul class="cc__features">
+    @for (feature of features(); track $index) {
+      <li class="cc__feature">
+        <mat-icon class="cc__check" fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
+        <span>{{ feature }}</span>
+      </li>
+    }
+  </ul>
+}
+
+@if (meterMax() > 0) {
+  <span class="cc__divider" aria-hidden="true"></span>
+  <span class="cc__meter">
+    @if (meterStartLabel()) {
+      <span class="cc__meter-label">{{ meterStartLabel() }}</span>
+    }
+    <span class="cc__ticks">
+      @for (on of ticks(); track $index) {
+        <span class="cc__tick" [class.is-on]="on"></span>
+      }
+    </span>
+    @if (meterEndLabel()) {
+      <span class="cc__meter-label">{{ meterEndLabel() }}</span>
+    }
+  </span>
+}
+
+<span class="cc__footer">
+  @if (note()) {
+    <span class="cc__note">{{ note() }}</span>
+  }
+  <mat-icon class="cc__arrow" fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+</span>

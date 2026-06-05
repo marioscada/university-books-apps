@@ -135,7 +135,7 @@ header {
   height: 36px;
   border-radius: 50%;
   background: var(--site-dark-surface, #1a1d21);
-  color: #fff;
+  color: var(--site-dark-on-surface, #fff);
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: 0.01em;

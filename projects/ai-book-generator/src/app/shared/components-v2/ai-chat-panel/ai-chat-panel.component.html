@@ -1,0 +1,76 @@
+<header class="ai-chat__head">
+  <span class="ai-chat__avatar" aria-hidden="true">
+    <mat-icon fontSet="material-symbols-outlined">auto_awesome</mat-icon>
+  </span>
+  <span class="ai-chat__heading">
+    @if (title()) {
+      <span class="ai-chat__title">{{ title() }}</span>
+    }
+    @if (subtitle()) {
+      <span class="ai-chat__subtitle">{{ subtitle() }}</span>
+    }
+  </span>
+  @if (closable()) {
+    <button class="ai-chat__close" type="button" [attr.aria-label]="sendLabel()" (click)="closed.emit()">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+    </button>
+  }
+</header>
+
+<div class="ai-chat__thread" role="log" aria-live="polite">
+  @for (m of messages(); track m.id) {
+    <div class="ai-chat__row" [attr.data-role]="m.role">
+      <div class="ai-chat__bubble" [class.is-pending]="m.pending">
+        <span class="ai-chat__text">{{ m.text }}</span>
+        @if (m.operationLabel) {
+          <span class="ai-chat__op">
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">tune</mat-icon>
+            {{ m.operationLabel }}
+          </span>
+        }
+        @if (m.pending) {
+          <span class="ai-chat__typing">
+            <mat-icon class="ai-chat__spin" fontSet="material-symbols-outlined" aria-hidden="true">progress_activity</mat-icon>
+          </span>
+        }
+      </div>
+    </div>
+  } @empty {
+    @if (emptyHint()) {
+      <p class="ai-chat__empty">{{ emptyHint() }}</p>
+    }
+  }
+</div>
+
+@if (quickOps().length) {
+  <div class="ai-chat__ops">
+    @for (op of quickOps(); track op.key) {
+      <button class="ai-chat__chip" type="button" (click)="quickOp.emit(op.key)">{{ op.label }}</button>
+    }
+  </div>
+}
+
+<form class="ai-chat__composer" (submit)="$event.preventDefault(); onSubmit()">
+  @if (disabled() && waitingHint()) {
+    <p class="ai-chat__waiting">{{ waitingHint() }}</p>
+  }
+  <div class="ai-chat__inputrow">
+    <label class="ai-chat__srlabel" [attr.for]="fieldId">{{ title() }}</label>
+    <textarea
+      class="ai-chat__field"
+      [id]="fieldId"
+      rows="1"
+      [disabled]="disabled()"
+      [value]="value()"
+      [placeholder]="placeholder()"
+      (input)="onInput($event)"
+      (keydown)="onKeydown($event)"></textarea>
+    <button
+      class="ai-chat__send"
+      type="submit"
+      [disabled]="disabled() || !value().trim()"
+      [attr.aria-label]="sendLabel()">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_upward</mat-icon>
+    </button>
+  </div>
+</form>

@@ -1,84 +1,57 @@
-// Create — stili SPECIFICI: hero (testo + immagine) e recent activity.
-// Le card (project-card, cover-art, add-card) sono GLOBALI in theme/_components.
+// Create — header editoriale (eyebrow + titolo + lead + hint) con respiro verso
+// la galleria. Solo token globali.
 :host {
   display: block;
 }
 
-// --- Hero: testo + bottone a sinistra, immagine a destra --------------------
-.dash-hero {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  align-items: center;
-  gap: clamp(24px, 4vw, 56px);
+.create {
+  display: flex;
+  flex-direction: column;
+  // Margine di pagina standard (uguale a collezione) — token globale unico.
+  padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px));
 }
 
-.dash-hero__text {
+// --- Header -----------------------------------------------------------------
+.create__head {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 14px;
+  gap: 10px;
+  // Respiro generoso tra header e griglia (nessuna linea separatrice).
+  margin-bottom: clamp(32px, 5vw, 56px);
 }
 
-.dash-hero__title {
-  margin: 0;
-  font-size: var(--site-display-small, clamp(2rem, 3vw, 2.75rem));
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--mat-sys-on-surface, #1a1d21);
-}
-
-.dash-hero__subtitle {
-  margin: 0;
+// Lead (sottotitolo forte).
+.create__lead {
+  margin: 2px 0 0;
   font-size: var(--site-body-large, 1.0625rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  max-width: 60ch;
 }
 
-.dash-hero__cta {
-  margin-top: 6px;
-}
-
-.dash-hero__media {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.dash-hero__media img {
-  display: block;
-  width: 100%;
-  height: auto;
-  // Altezza dal token globale → band header uguale alle altre pagine.
-  max-height: var(--page-header-media-height, 160px);
-  object-fit: contain;
-}
-
-@media (max-width: 899px) {
-  .dash-hero {
-    grid-template-columns: 1fr;
-  }
-  .dash-hero__media {
-    display: none;
-  }
-}
-
-// --- Recent activity --------------------------------------------------------
-.activity__title {
+// Hint snello con icona accento (al posto del banner pieno).
+.create__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin: 0;
-  font-size: var(--site-title-large, 1.5rem);
-  font-weight: 600;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+  max-width: 70ch;
+}
+.create__hint-icon {
+  flex: 0 0 auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--accent-600, var(--accent-700));
 }
 
-.activity__card.mat-mdc-card {
-  border-radius: var(--card-radius, 16px);
-  box-shadow: var(--card-shadow);
-  padding-block: 4px;
-}
-
-.activity__card .mat-mdc-list-item-icon {
-  color: var(--accent-500, #039fce);
-}
-
-.activity__time {
-  font-size: var(--site-body-small, 0.8125rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+// --- Galleria ---------------------------------------------------------------
+.create__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-2, 16px);
+  align-items: stretch;
 }

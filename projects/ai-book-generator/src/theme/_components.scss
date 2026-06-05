@@ -6,6 +6,27 @@
 // identica ovunque. Componenti Material tematizzati senza ::ng-deep (qui è
 // stylesheet globale).
 
+// =============================================================================
+// Macro-card di superficie — blocco bianco "sollevato" su canvas tinto. GLOBALE
+// (single source): le pagine compongono le proprie sezioni dentro `.surface-card`
+// per dare profondità con ombra (non bordi pesanti) — Refactoring UI / M3 tonal.
+// =============================================================================
+.surface-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius, 16px);
+  box-shadow: var(--card-shadow);
+  padding: clamp(20px, 3vw, 32px);
+}
+
+// Filetto orizzontale per separare gruppi dentro una card (stacco visivo).
+.surface-rule {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: var(--card-border-color);
+}
+
 // Griglia a card responsive (auto-fill).
 .cards-grid {
   display: grid;
@@ -359,5 +380,87 @@
 
   mat-icon {
     color: var(--mat-sys-error, #b3261e);
+  }
+}
+
+// Wizard stepper "headless": nascondiamo l'header default di mat-stepper (usiamo
+// il WizardProgress custom) e azzeriamo il padding del contenitore di contenuto.
+.np-stepper .mat-horizontal-stepper-header-container {
+  display: none;
+}
+.np-stepper .mat-horizontal-content-container {
+  padding: 0;
+}
+
+// =============================================================================
+// Titolo / sottotitolo di PAGINA — stile GLOBALE single-source. Il titolo usa
+// l'accent del progetto; il sottotitolo è prominente. Usalo in ogni pagina.
+// =============================================================================
+.page-title {
+  margin: 0;
+  // ~36→44px — scala "Display Small" (M3 / scala tipografica del progetto).
+  font-size: clamp(2.25rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  color: var(--mat-sys-on-surface);
+}
+.page-subtitle {
+  margin: 10px 0 0;
+  // ~18→22px — sottotitolo grande e leggibile (Title Medium→Large).
+  font-size: clamp(1.125rem, 1.4vw, 1.375rem);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--mat-sys-on-surface);
+  max-width: 60ch;
+}
+
+// Titolo / sottotitolo di SEZIONE — GLOBALE single-source, dimensioni standard.
+.section-title {
+  margin: 0;
+  // ~22→26px — Title Large / Headline Small.
+  font-size: clamp(1.375rem, 1.8vw, 1.625rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--mat-sys-on-surface);
+}
+.section-subtitle {
+  margin: 4px 0 0;
+  // ~17px — Body Large.
+  font-size: var(--site-body-large);
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--mat-sys-on-surface-variant);
+  max-width: 70ch;
+}
+
+// =============================================================================
+// Dropdown / overlay panels (menu · select · autocomplete) — stile GLOBALE UNICO
+// (single source): stessa superficie/bordo/raggio/ombra ovunque, voce attiva in
+// accent. Cambiando qui → tutti i dropdown del sito.
+// =============================================================================
+.mat-mdc-menu-panel,
+.mat-mdc-select-panel,
+.mat-mdc-autocomplete-panel {
+  --mat-menu-container-color: var(--card-bg);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: 12px !important;
+  box-shadow: var(--card-shadow-hover);
+  overflow: hidden;
+}
+
+// Voci: hover/active/selezionata → tinta accento.
+.mat-mdc-menu-item:hover:not([disabled]),
+.mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.mat-mdc-option.mat-mdc-option-active {
+  background: var(--accent-100);
+}
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: var(--accent-100);
+
+  .mdc-list-item__primary-text {
+    color: var(--accent-700);
   }
 }

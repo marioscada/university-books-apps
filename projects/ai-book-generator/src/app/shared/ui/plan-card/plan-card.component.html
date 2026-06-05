@@ -1,0 +1,61 @@
+@if (showBadge()) {
+  <span class="plan-card__badge">
+    <mat-icon class="plan-card__badge-icon" fontSet="material-symbols-outlined" aria-hidden="true">star</mat-icon>
+    {{ badgeLabel() }}
+  </span>
+}
+
+<header class="plan-card__header">
+  @if (icon()) {
+    <mat-icon class="plan-card__icon" fontSet="material-symbols-outlined" aria-hidden="true">{{ icon() }}</mat-icon>
+  }
+  <h3 class="plan-card__name">{{ name() }}</h3>
+  @if (tagline()) {
+    <p class="plan-card__tagline">{{ tagline() }}</p>
+  }
+</header>
+
+<div class="plan-card__pricing">
+  <p class="plan-card__price-row">
+    @if (originalPrice()) {
+      <span class="plan-card__price-original">{{ originalPrice() }}</span>
+    }
+    <span class="plan-card__price">{{ price() }}</span>
+    @if (period()) {
+      <span class="plan-card__period">{{ period() }}</span>
+    }
+  </p>
+  @if (secondaryNote()) {
+    <p class="plan-card__secondary-note">{{ secondaryNote() }}</p>
+  }
+</div>
+
+@if (features().length) {
+  <ul class="plan-card__features">
+    @for (feature of features(); track $index) {
+      <li class="plan-card__feature">
+        <mat-icon class="plan-card__feature-icon" fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
+        <span class="plan-card__feature-label">{{ feature }}</span>
+      </li>
+    }
+  </ul>
+}
+
+<!-- Slot opzionale per contenuto extra (es. disclaimer, link). -->
+<ng-content />
+
+@if (isOutline()) {
+  <button type="button" class="plan-card__cta" mat-stroked-button (click)="ctaClick.emit()">
+    {{ ctaLabel() }}
+  </button>
+} @else {
+  <button
+    type="button"
+    class="plan-card__cta"
+    [class.plan-card__cta--success]="ctaTone() === 'success'"
+    mat-flat-button
+    (click)="ctaClick.emit()"
+  >
+    {{ ctaLabel() }}
+  </button>
+}

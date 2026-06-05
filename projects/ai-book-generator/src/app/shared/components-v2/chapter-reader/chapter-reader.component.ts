@@ -1,0 +1,69 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  booleanAttribute,
+  input,
+  output,
+} from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+
+/** Tono del chip di stato del capitolo (mappa sui token globali dei toni). */
+export type ChapterReaderTone = 'neutral' | 'accent' | 'success' | 'warning';
+
+/**
+ * ChapterReaderComponent — lettura di un capitolo, dumb/presentational: titolo,
+ * chip di stato, meta (es. n° parole), corpo (paragrafi via input o contenuto
+ * proiettato), navigazione prev/successivo e — se non in sola lettura — azione
+ * **Approva**.
+ *
+ * Le modifiche al testo NON avvengono qui (si fanno via `app-ai-chat-panel`):
+ * questo componente mostra e basta. i18n-agnostico (label/paragrafi via input),
+ * `OnPush` + signals, token globali, a11y (heading, nav con aria-label).
+ *
+ * @example
+ * ```html
+ * <app-chapter-reader
+ *   [title]="'6 · Opportunità e rischi'" [meta]="'≈ 1.240 parole'"
+ *   [statusLabel]="'Da rivedere'" statusTone="warning"
+ *   [paragraphs]="chapter().paragraphs"
+ *   [approveLabel]="'Approva capitolo'"
+ *   [prevLabel]="'5 · Trend e scenari 2024'" [nextLabel]="'7 · Raccomandazioni'"
+ *   (approve)="approve()" (prev)="goPrev()" (next)="goNext()" />
+ * ```
+ */
+@Component({
+  selector: 'app-chapter-reader',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'chapter-reader' },
+  imports: [MatIconModule],
+  templateUrl: './chapter-reader.component.html',
+  styleUrl: './chapter-reader.component.scss',
+})
+export class ChapterReaderComponent {
+  /** Titolo del capitolo (già tradotto/composto, es. "6 · Opportunità e rischi"). */
+  readonly title = input<string>('');
+  /** Meta sotto il titolo (es. "≈ 1.240 parole", già tradotto). */
+  readonly meta = input<string>('');
+  /** Etichetta del chip di stato (vuoto = nessun chip). */
+  readonly statusLabel = input<string>('');
+  /** Tono del chip di stato. */
+  readonly statusTone = input<ChapterReaderTone>('neutral');
+  /** Paragrafi del corpo (in alternativa/aggiunta al contenuto proiettato). */
+  readonly paragraphs = input<string[]>([]);
+  /** Etichetta del bottone Approva (vuoto o `readOnly` = nascosto). */
+  readonly approveLabel = input<string>('');
+  /** Sola lettura: nasconde l'azione Approva. */
+  readonly readOnly = input(false, { transform: booleanAttribute });
+  /** Etichetta del capitolo precedente (vuoto = disabilitato). */
+  readonly prevLabel = input<string>('');
+  /** Etichetta del capitolo successivo (vuoto = disabilitato). */
+  readonly nextLabel = input<string>('');
+
+  /** Emesso all'Approva. */
+  readonly approve = output<void>();
+  /** Emesso al capitolo precedente. */
+  readonly prev = output<void>();
+  /** Emesso al capitolo successivo. */
+  readonly next = output<void>();
+}

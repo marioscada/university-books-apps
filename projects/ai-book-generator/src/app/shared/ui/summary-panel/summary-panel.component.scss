@@ -1,0 +1,113 @@
+// SummaryPanel — look self-contained sui token globali del design system.
+:host {
+  display: block;
+  padding: var(--card-padding);
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
+}
+
+.summary-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 4px;
+}
+
+.summary-panel__title {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--site-title-medium, 1.125rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.summary-panel__badge {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  // Greenish success pill if the token exists, else fall back to the accent ramp.
+  color: var(--site-success, var(--accent-700));
+  background: color-mix(
+    in srgb,
+    var(--site-success, var(--accent-500)) 14%,
+    transparent
+  );
+}
+
+// Cover slot: only takes space when the parent projects something into it.
+.summary-panel__cover:not(:empty) {
+  margin-top: var(--space-2);
+}
+
+.summary-panel__rows {
+  margin: var(--space-2) 0 0;
+}
+
+.summary-panel__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--card-border-color);
+
+  &:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+.summary-panel__label {
+  margin: 0;
+  flex: 0 0 auto;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.summary-panel__value {
+  margin: 0;
+  min-width: 0;
+  text-align: right;
+  font-weight: 600;
+  word-break: break-word;
+  color: var(--mat-sys-on-surface);
+}
+
+// Footer slot: box-nota arrotondato con padding UNIFORME (solo se proiettato).
+.summary-panel__footer:not(:empty) {
+  margin-top: var(--space-2);
+  padding: var(--space-2);
+  border-radius: 10px;
+  background: var(--section-band-alt);
+}
+
+// Self-responsive (convenzione marioscadasite): compatta su small.
+:host(.isSmall) {
+  padding: var(--space-2);
+
+  .summary-panel__row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+  }
+
+  .summary-panel__value {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  :host * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

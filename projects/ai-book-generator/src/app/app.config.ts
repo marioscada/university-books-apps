@@ -9,9 +9,10 @@
  */
 
 import { ApplicationConfig, provideZoneChangeDetection, provideAppInitializer, inject } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { MatIconRegistry } from '@angular/material/icon';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { firstValueFrom } from 'rxjs';
@@ -23,6 +24,8 @@ import { configureApiClient } from './core/config/api-client.config';
 import { AuthService } from './auth/services/auth.service';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { LocaleService } from './shared/services/locale.service';
+import { API_PORT } from './core/data/api-port';
+import { MockApiService } from './core/data/mock-api.service';
 
 // =============================================================================
 // Amplify Configuration
@@ -60,14 +63,27 @@ export const appConfig: ApplicationConfig = {
     // Zone.js change detection optimization
     provideZoneChangeDetection({ eventCoalescing: true }),
 
-    // Router configuration
-    provideRouter(routes),
+    // Router configuration — withComponentInputBinding() per bindare i param di
+    // route (es. `:id`) direttamente su `input()` dei componenti (Angular 19).
+    provideRouter(routes, withComponentInputBinding()),
 
     // HTTP Client with auth interceptor
     provideHttpClient(withInterceptors([authInterceptor])),
 
     // Animations (for Angular animations like slide-in, fade-in, etc.)
     provideAnimations(),
+
+    // Data layer (mock v1): l'ApiPort è mappato al MockApiService. Quando arriva
+    // il backend reale basta cambiare questa riga, senza toccare store/UI.
+    { provide: API_PORT, useExisting: MockApiService },
+
+    // Icone: il progetto carica SOLO "Material Symbols Outlined" (index.html).
+    // Impostiamo il fontSet di default così anche le icone interne dei componenti
+    // Material (es. mat-stepper edit/done) usano Symbols e non renderizzano la
+    // ligature come testo ("create"→"cr"). Vedi i18n/mariosite.
+    provideAppInitializer(() => {
+      inject(MatIconRegistry).setDefaultFontSetClass('material-symbols-outlined');
+    }),
 
     // i18n (ngx-translate) — pattern mariosite/customer-portal, default EN.
     // I file flat dot-path vivono in /public/i18n/<lang>.json.

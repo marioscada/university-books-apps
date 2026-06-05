@@ -1,0 +1,40 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px 9px 14px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--accent-500);
+  color: var(--accent-700);
+  cursor: pointer;
+  outline: none;
+  position: relative;   // ancoraggio ripple
+  overflow: hidden;     // clip ripple
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+:host(:hover) {
+  background: var(--accent-100);
+}
+:host(:focus-visible) {
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+.back-link__icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.back-link__label {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+  }
+}

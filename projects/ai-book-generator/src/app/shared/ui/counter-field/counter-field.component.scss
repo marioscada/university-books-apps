@@ -1,0 +1,96 @@
+// CounterField — campo con intestazione + contatore, self-contained sui token.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cf__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2, 16px);
+}
+
+.cf__label {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+.cf__req {
+  margin-left: 2px;
+  // Asterisco obbligatorio in accent (come Figma), non in rosso.
+  color: var(--accent-500);
+}
+.cf__opt {
+  margin-left: 6px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cf__counter {
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+.cf__counter.is-full {
+  color: var(--accent-700);
+  font-weight: 600;
+}
+
+.cf__control {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--field-radius, 10px);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cf__control::placeholder {
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.7;
+}
+.cf__control:focus-visible {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+.cf__control:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.cf__control[aria-invalid='true'] {
+  border-color: var(--tone-danger-fg, #d33);
+}
+.cf__control--area {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.5;
+}
+
+// Modalità "fill": il campo (e la textarea) cresce a riempire l'altezza.
+:host(.cf--fill) {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+:host(.cf--fill) .cf__control--area {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.cf__msg {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+.cf__msg--error {
+  color: var(--tone-danger-fg, #d33);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf__control {
+    transition: none;
+  }
+}

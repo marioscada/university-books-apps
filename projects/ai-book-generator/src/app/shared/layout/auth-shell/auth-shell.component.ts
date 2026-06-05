@@ -1,7 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  booleanAttribute,
   inject,
+  input,
   signal,
 } from '@angular/core';
 
@@ -42,6 +44,14 @@ import type { SearchItem } from '../../../core/models/search-item.model';
 })
 export class AuthShellComponent {
   private readonly searchOverlay = inject(SearchOverlayService);
+
+  /**
+   * Mostra il footer marketing. Default `true` per le pagine hub (collection,
+   * library, pricing…). Le schermate di **flusso task-focused** (create/new,
+   * Studio) passano `false`: niente footer sotto l'action bar sticky (best
+   * practice app-shell — focus, no doppio "fondo").
+   */
+  readonly showFooter = input(true, { transform: booleanAttribute });
 
   readonly brand = BRAND;
   readonly navItems = APP_NAV_ITEMS;

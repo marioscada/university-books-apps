@@ -1,0 +1,76 @@
+// SelectField — stesso look dei campi di testo, dai token globali --field-*.
+:host {
+  display: block;
+}
+
+.select-field__label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: var(--site-body-small);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+
+.select-field__wrap {
+  position: relative;
+}
+
+.select-field__control {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 40px 12px 14px;
+  font: inherit;
+  font-size: var(--site-body-medium);
+  color: var(--mat-sys-on-surface);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border-color);
+  border-radius: var(--field-radius);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.select-field__control:hover:not(:disabled) {
+  border-color: var(--accent-400);
+}
+
+.select-field__control:focus {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+.select-field__control:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.select-field__control[aria-invalid='true'] {
+  border-color: var(--mat-sys-error);
+}
+
+.select-field__chevron {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.select-field__msg {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--site-body-small);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.select-field__msg--error {
+  color: var(--mat-sys-error);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .select-field__control {
+    transition: none;
+  }
+}

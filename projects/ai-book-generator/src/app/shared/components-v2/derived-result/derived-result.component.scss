@@ -1,0 +1,197 @@
+:host {
+  display: block;
+}
+
+.dr__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.dr__title {
+  margin: 0;
+  flex: 1 1 auto;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.dr__badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-100);
+  color: var(--accent-700);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.dr__readonly {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+// --- Documento (summary / translation) --------------------------------------
+.dr__doc {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.dr__p {
+  margin: 0;
+  max-width: 70ch;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--mat-sys-on-surface);
+}
+
+// --- Quiz -------------------------------------------------------------------
+.dr__quiz {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.dr__q {
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border-color);
+  background: var(--surface-soft, #f8fafc);
+}
+.dr__q-text {
+  margin: 0 0 10px;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.dr__opts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dr__opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  &.is-correct {
+    color: var(--site-success, #16a34a);
+    font-weight: 600;
+  }
+}
+.dr__q-exp {
+  margin: 10px 0 0;
+  font-size: 0.875rem;
+  font-style: italic;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// --- Slide ------------------------------------------------------------------
+.dr__slides {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.dr__slide {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border-color);
+  background: var(--card-bg);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+.dr__slide-no {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface-variant);
+}
+.dr__slide-title {
+  margin: 0 0 10px;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.dr__slide-bullets {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9375rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// --- Manuale ----------------------------------------------------------------
+.dr__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.dr__step {
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border-color);
+  background: var(--surface-soft, #f8fafc);
+}
+.dr__step-title {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.dr__step-body {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// --- Guida allo studio (schede) ---------------------------------------------
+.dr__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.dr__card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border-color);
+  background: var(--card-bg);
+}
+.dr__card-front {
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.dr__card-back {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--mat-sys-on-surface-variant);
+}

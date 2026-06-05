@@ -1,0 +1,57 @@
+<header class="chapter-index__head">
+  <span class="chapter-index__titlewrap">
+    @if (heading()) {
+      <span class="chapter-index__title">{{ heading() }}</span>
+    }
+    @if (countLabel()) {
+      <span class="chapter-index__count">{{ countLabel() }}</span>
+    }
+  </span>
+  @if (collapsible()) {
+    <button
+      class="chapter-index__toggle"
+      type="button"
+      [attr.aria-pressed]="collapsed()"
+      (click)="collapsed.set(!collapsed())">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">
+        {{ collapsed() ? 'chevron_right' : 'chevron_left' }}
+      </mat-icon>
+    </button>
+  }
+</header>
+
+@if (!collapsed()) {
+  <ul class="chapter-index__list">
+    @for (c of chapters(); track c.key) {
+      <li>
+        <button
+          class="chapter-index__row"
+          type="button"
+          [class.is-selected]="c.key === selectedKey()"
+          [attr.data-status]="c.status"
+          [attr.aria-current]="c.key === selectedKey() ? 'true' : null"
+          (click)="selected.emit(c.key)">
+          <span class="chapter-index__dot">
+            @if (icon(c.status); as ic) {
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ ic }}</mat-icon>
+            } @else {
+              {{ c.index }}
+            }
+          </span>
+          <span class="chapter-index__label">{{ c.index }} · {{ c.title }}</span>
+          @if (c.statusLabel) {
+            <span class="chapter-index__status">{{ c.statusLabel }}</span>
+          }
+          <mat-icon class="chapter-index__chevron" fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
+        </button>
+      </li>
+    }
+  </ul>
+
+  @if (addLabel()) {
+    <button class="chapter-index__add" type="button" (click)="add.emit()">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+      {{ addLabel() }}
+    </button>
+  }
+}

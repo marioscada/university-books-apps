@@ -1,0 +1,239 @@
+// GenerationPanel — pannello unico di elaborazione/attesa, data-driven.
+// Ritmo verticale via margini espliciti; `is-flat` per l'uso dentro un dialog.
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(32px, 4vw, 44px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius, 16px);
+  box-shadow: var(--card-shadow);
+}
+:host(.is-flat) {
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+// --- Copertina --------------------------------------------------------------
+.gen__cover {
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  height: 200px;
+  margin-bottom: 18px;
+  padding: 16px;
+  border-radius: 6px 12px 12px 6px;
+  color: var(--on-accent, #fff);
+  box-shadow: var(--shadow-lift, 0 18px 40px -16px rgb(15 23 42 / 50%));
+}
+.gen__cover-kicker {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+}
+.gen__cover-title {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: left;
+}
+.gen__cover-brand {
+  margin-top: auto;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  opacity: 0.9;
+}
+
+// --- Stato ------------------------------------------------------------------
+.gen__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--accent-100);
+  color: var(--accent-700);
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+}
+
+// --- Testi ------------------------------------------------------------------
+.gen__heading {
+  margin: 14px 0 0;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+.gen__subtitle {
+  margin: 8px 0 0;
+  max-width: 46ch;
+  line-height: 1.5;
+  font-size: var(--site-body-small, 0.9375rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// --- Step pipeline ----------------------------------------------------------
+.gen__steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 0;
+  margin-top: 24px;
+}
+.gen__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.gen__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border-color);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+.gen__step[data-status='done'] .gen__dot {
+  background: var(--site-success, #16a34a);
+  border-color: transparent;
+  color: #fff;
+}
+.gen__step[data-status='current'] .gen__dot {
+  background: var(--accent-500);
+  border-color: transparent;
+  color: var(--on-accent, #fff);
+
+  mat-icon {
+    animation: gen-spin 0.9s linear infinite;
+  }
+}
+.gen__step-label {
+  font-size: var(--site-body-small, 0.8125rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+.gen__step[data-status='done'] .gen__step-label {
+  color: var(--site-success, #16a34a);
+}
+.gen__step[data-status='current'] .gen__step-label {
+  color: var(--mat-sys-on-surface);
+}
+// Passi futuri (non ancora previsti in questa fase): attenuati.
+.gen__step[data-status='todo'] {
+  opacity: 0.45;
+}
+.gen__conn {
+  width: 28px;
+  height: 2px;
+  border-radius: 2px;
+  margin: 0 6px;
+  background: var(--card-border-color);
+}
+.gen__conn[data-done='true'] {
+  background: var(--site-success, #16a34a);
+}
+
+// --- Avanzamento ------------------------------------------------------------
+.gen__progress {
+  width: 100%;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gen__track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-soft, #f1f3f6);
+  border: 1px solid var(--card-border-color);
+  overflow: hidden;
+}
+.gen__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent-500);
+  transition: width 0.3s ease;
+}
+.gen__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gen__detail {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--accent-700);
+}
+.gen__eta {
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// --- Annulla ----------------------------------------------------------------
+.gen__cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 24px;
+  padding: 11px 18px;
+  border: 1px solid var(--card-border-color);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--site-body-small, 0.875rem);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-soft, #f8fafc);
+  }
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.gen__spin {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  animation: gen-spin 0.9s linear infinite;
+}
+
+@keyframes gen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gen__spin,
+  .gen__step[data-status='current'] .gen__dot mat-icon,
+  .gen__fill {
+    animation: none;
+    transition: none;
+  }
+}

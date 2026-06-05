@@ -1,0 +1,182 @@
+<!-- Pulsante "aggiungi sezione" in testa alla lista. -->
+@if (addSectionLabel()) {
+  <button
+    type="button"
+    mat-button
+    class="doc-structure-list__add"
+    (click)="addSection.emit()"
+  >
+    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+    <span>{{ addSectionLabel() }}</span>
+  </button>
+}
+
+<!-- Lista riordinabile (cdkDropList verticale). -->
+<div
+  class="doc-structure-list__list"
+  cdkDropList
+  cdkDropListLockAxis="y"
+  [cdkDropListDisabled]="!reorderable()"
+  (cdkDropListDropped)="onDrop($event)"
+>
+  @for (part of parts(); track trackByKey($index, part)) {
+    <div
+      class="doc-structure-list__item"
+      [class.is-off]="!part.included"
+      [class.is-open]="expandedKey() === part.key"
+      cdkDrag
+      [cdkDragDisabled]="!reorderable()"
+    >
+      <div class="doc-structure-list__row">
+        <!-- Maniglia di drag. -->
+        @if (reorderable()) {
+          <button
+            type="button"
+            class="doc-structure-list__handle"
+            cdkDragHandle
+            [attr.aria-label]="reorderHint()"
+            [matTooltip]="reorderHint()"
+          >
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
+              >drag_indicator</mat-icon
+            >
+          </button>
+        }
+
+        <!-- Riquadro icona a tono. -->
+        <span
+          class="doc-structure-list__tone"
+          aria-hidden="true"
+          [style.--model-tone-bg]="'var(--tone-' + part.iconTone + '-bg)'"
+          [style.--model-tone-fg]="'var(--tone-' + part.iconTone + '-fg)'"
+        >
+          <mat-icon fontSet="material-symbols-outlined">{{ part.icon }}</mat-icon>
+        </span>
+
+        <!-- Blocco label + sottotitolo. -->
+        <span class="doc-structure-list__labels">
+          <span class="doc-structure-list__label">{{ part.label }}</span>
+          @if (part.sublabel) {
+            <span class="doc-structure-list__sublabel">{{ part.sublabel }}</span>
+          }
+        </span>
+
+        <!-- Trailing: toggle (opzionale) o lucchetto (obbligatoria). -->
+        @if (part.optional) {
+          <mat-slide-toggle
+            class="doc-structure-list__toggle"
+            [checked]="part.included"
+            [attr.aria-label]="part.label"
+            (change)="toggleSection.emit(part.key)"
+          />
+        } @else {
+          <mat-icon
+            class="doc-structure-list__lock"
+            fontSet="material-symbols-outlined"
+            [attr.aria-label]="requiredLabel()"
+            [matTooltip]="requiredLabel()"
+            >lock</mat-icon
+          >
+        }
+
+        <!-- Chevron di espansione editor inline. -->
+        <button
+          type="button"
+          class="doc-structure-list__chevron"
+          [class.is-open]="expandedKey() === part.key"
+          [attr.aria-label]="editLabel()"
+          [attr.aria-expanded]="expandedKey() === part.key"
+          (click)="toggleExpanded(part.key)"
+        >
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
+            >expand_more</mat-icon
+          >
+        </button>
+      </div>
+
+      <!-- Editor inline. -->
+      @if (expandedKey() === part.key) {
+        <div class="doc-structure-list__editor">
+          @if (part.repeatable) {
+            <div class="doc-structure-list__stepper">
+              @if (countLabel()) {
+                <span class="doc-structure-list__stepper-label">{{
+                  countLabel()
+                }}</span>
+              }
+              <div class="doc-structure-list__stepper-controls">
+                <button
+                  type="button"
+                  mat-icon-button
+                  class="doc-structure-list__step"
+                  [disabled]="part.count <= part.countMin"
+                  [attr.aria-label]="countLabel()"
+                  (click)="decrement(part)"
+                >
+                  <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
+                    >remove</mat-icon
+                  >
+                </button>
+                <span
+                  class="doc-structure-list__count"
+                  aria-live="polite"
+                  >{{ part.count }}</span
+                >
+                <button
+                  type="button"
+                  mat-icon-button
+                  class="doc-structure-list__step"
+                  [disabled]="part.count >= part.countMax"
+                  [attr.aria-label]="countLabel()"
+                  (click)="increment(part)"
+                >
+                  <mat-icon fontSet="material-symbols-outlined" aria-hidden="true"
+                    >add</mat-icon
+                  >
+                </button>
+              </div>
+              <span class="doc-structure-list__range" aria-hidden="true"
+                >{{ part.countMin }}–{{ part.countMax }}</span
+              >
+            </div>
+          }
+
+          <app-text-field
+            class="doc-structure-list__words"
+            [label]="wordsLabel()"
+            type="number"
+            [value]="part.wordCount + ''"
+            (valueChange)="onWords(part.key, $event)"
+          />
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Legenda + suggerimento riordino. -->
+@if (activeLabel() || disabledLabel() || reorderHint()) {
+  <div class="doc-structure-list__legend">
+    @if (activeLabel()) {
+      <span class="doc-structure-list__legend-item">
+        <span
+          class="doc-structure-list__dot doc-structure-list__dot--active"
+          aria-hidden="true"
+        ></span>
+        <span>{{ activeLabel() }}</span>
+      </span>
+    }
+    @if (disabledLabel()) {
+      <span class="doc-structure-list__legend-item">
+        <span
+          class="doc-structure-list__dot doc-structure-list__dot--off"
+          aria-hidden="true"
+        ></span>
+        <span>{{ disabledLabel() }}</span>
+      </span>
+    }
+    @if (reorderHint()) {
+      <span class="doc-structure-list__legend-hint">{{ reorderHint() }}</span>
+    }
+  </div>
+}

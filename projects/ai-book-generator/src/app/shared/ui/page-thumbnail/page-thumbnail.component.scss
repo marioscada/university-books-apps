@@ -1,0 +1,222 @@
+// PageThumbnail — faux-page in pura CSS, self-contained sui token globali.
+:host {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--space-1, 8px);
+  width: 100%;
+  min-width: 0;
+}
+
+// La "pagina": card con aspect-ratio 3/4 e ombra leggera.
+.page-thumbnail__page {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  aspect-ratio: 3 / 4;
+  width: 100%;
+  padding: 10px;
+  border-radius: calc(var(--card-radius, 16px) / 2);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+:host(:hover) .page-thumbnail__page {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+// === Elementi mock condivisi ===
+
+// Barra titolo/heading in cima a testo/indice/grafico.
+.page-thumbnail__heading {
+  display: block;
+  height: 8px;
+  width: 60%;
+  border-radius: 4px;
+  background: var(--page-tone-fg);
+  opacity: 0.85;
+}
+
+// Linea sottile di paragrafo / voce indice.
+.page-thumbnail__line {
+  display: block;
+  height: 5px;
+  flex: 1 1 auto;
+  border-radius: 3px;
+  background: var(--field-border-color);
+}
+
+// === Variante: cover ===
+
+.page-thumbnail__cover {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 5px;
+  height: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--page-tone-bg);
+}
+
+.page-thumbnail__cover-bar {
+  display: block;
+  height: 7px;
+  width: 50%;
+  border-radius: 4px;
+  background: var(--page-tone-fg);
+  opacity: 0.9;
+}
+
+.page-thumbnail__cover-bar--wide {
+  width: 80%;
+}
+
+// === Variante: toc ===
+
+.page-thumbnail__toc {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.page-thumbnail__toc-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-thumbnail__toc-num {
+  flex: 0 0 auto;
+  height: 5px;
+  width: 12px;
+  border-radius: 3px;
+  background: var(--page-tone-fg);
+  opacity: 0.7;
+}
+
+// === Variante: text ===
+
+.page-thumbnail__text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.page-thumbnail__line--last {
+  flex: 0 0 auto;
+  width: 45%;
+}
+
+// === Variante: chart ===
+
+.page-thumbnail__chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+  flex: 1 1 auto;
+  margin-top: auto;
+  padding-top: 6px;
+  min-height: 0;
+}
+
+.page-thumbnail__chart-bar {
+  flex: 1 1 0;
+  border-radius: 3px 3px 0 0;
+  background: var(--page-tone-fg);
+  opacity: 0.85;
+}
+
+// === Variante: empty ===
+
+.page-thumbnail__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  border: 1px dashed var(--field-border-color);
+  border-radius: 6px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.page-thumbnail__empty mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  opacity: 0.6;
+}
+
+// === Didascalia ===
+
+.page-thumbnail__caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1, 8px);
+  min-width: 0;
+}
+
+.page-thumbnail__label {
+  font-weight: 500;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-thumbnail__index {
+  flex: 0 0 auto;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-thumbnail__page {
+    transition: none;
+  }
+  :host(:hover) .page-thumbnail__page {
+    transform: none;
+  }
+}
+
+// Self-responsive (convenzione marioscadasite): compatta su small.
+:host(.isSmall) .page-thumbnail__page {
+  padding: 8px;
+}
+
+// Pagina esclusa: attenuata, contenuto sostituito da placeholder.
+:host(.is-excluded) .page-thumbnail__page {
+  border-style: dashed;
+  background: var(--field-bg);
+}
+:host(.is-excluded) .page-thumbnail__label,
+:host(.is-excluded) .page-thumbnail__index {
+  opacity: 0.6;
+}
+.page-thumbnail__excluded {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    opacity: 0.7;
+  }
+}
+.page-thumbnail__excluded-label {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+}

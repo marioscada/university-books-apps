@@ -1,0 +1,119 @@
+// StatCard — look self-contained sui soli token globali (accent #039FCE).
+// La `tone` definisce un --stat-tone locale usato da icona/accento/ring.
+:host {
+  --stat-tone: var(--mat-sys-on-surface-variant);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
+  outline: none;
+  position: relative;
+}
+
+// === Tonalità → colore icona/accento (token-only) ===
+:host(.is-neutral) {
+  --stat-tone: var(--mat-sys-on-surface-variant);
+}
+:host(.is-accent) {
+  --stat-tone: var(--accent-500);
+}
+:host(.is-success) {
+  --stat-tone: var(--tone-success-fg);
+}
+:host(.is-warning) {
+  --stat-tone: var(--tone-warning-fg);
+}
+:host(.is-info) {
+  --stat-tone: var(--accent-400);
+}
+
+// === Stato interattivo: semantica bottone ===
+:host(.is-interactive) {
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease,
+    background 0.15s ease;
+}
+
+:host(.is-interactive:hover) {
+  border-color: var(--accent-400);
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-1px);
+}
+
+:host(.is-interactive:focus-visible) {
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px var(--accent-100);
+}
+
+// === Stato selezionato: ring/sfondo accento ===
+:host(.is-selected) {
+  border-color: var(--accent-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500), var(--card-shadow);
+  background: color-mix(in srgb, var(--accent-100) 45%, var(--card-bg));
+}
+
+// === Icona ===
+.stat-card__icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: var(--stat-tone);
+  background: color-mix(in srgb, var(--stat-tone) 12%, transparent);
+}
+
+// === Corpo: valore + label ===
+.stat-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.stat-card__value {
+  font: var(--site-title-medium);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--stat-tone);
+}
+
+:host(.is-selected) .stat-card__value {
+  color: var(--accent-700);
+}
+
+.stat-card__label {
+  font: var(--site-body-small);
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// === Self-responsive (convenzione marioscadasite): compatta su small. ===
+:host(.isSmall) {
+  padding: 12px;
+  gap: 10px;
+}
+
+:host(.isSmall) .stat-card__icon {
+  width: 34px;
+  height: 34px;
+}
+
+// === Rispetto delle preferenze di motion ridotto. ===
+@media (prefers-reduced-motion: reduce) {
+  :host(.is-interactive) {
+    transition: none;
+  }
+  :host(.is-interactive:hover) {
+    transform: none;
+  }
+}

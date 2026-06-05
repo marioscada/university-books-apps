@@ -24,10 +24,44 @@
   --page-padding-block: clamp(40px, 6vw, 72px); // spazio header↔contenuto generoso
   // Card / blocchi su canvas
   --card-bg: #ffffff;
+  // Superficie "tenue": card leggermente staccate dal bianco pagina (low-noise).
+  --surface-soft: #f8fafc;
   --card-radius: 16px;
   --card-border-color: #eceff3;
   --card-shadow: 0 1px 2px rgb(15 23 42 / 4%), 0 2px 6px rgb(15 23 42 / 5%);
   --card-shadow-hover: 0 10px 30px rgb(15 23 42 / 10%);
+  // Ombra "di rilievo" per elementi sollevati (es. copertina libro).
+  --shadow-lift: 0 18px 40px -16px rgb(15 23 42 / 50%);
+  // Copertina-libro: colore del dorso + scrim del testo su superficie colorata.
+  --book-spine-color: rgb(15 23 42 / 18%);
+  --cover-text-scrim: 0 2px 14px rgb(0 0 0 / 40%);
+  // Scrim modale (backdrop dei dialog).
+  --scrim: rgb(15 23 42 / 45%);
+
+  // --- Palette GREY — SINGLE SOURCE (mirror operators/azzurro generic-styles
+  // `_colors.scss`, shade 100→500). Base per testi, bordi e fill tenui di TUTTO
+  // il sito e i componenti. Cambiando qui → cambia ovunque.
+  --grey-100: #f2f2f2;
+  --grey-200: #c2c2c2;
+  --grey-300: #9c9c9c;
+  --grey-400: #576065; // colore testo standard del sito
+  --grey-500: #586166;
+
+  // Campi form (input/textarea/select custom) — SINGLE SOURCE per TUTTO il sito.
+  // Stile globale mirror di operators (`generic-styles` .custom-mat-form-field):
+  // fill = gradiente tenue bianco→grey-100, bordo grey-300, raggio compatto. Il
+  // focus accende l'accent (vedi i singoli campi). Cambiando qui → tutti i campi.
+  --field-bg: linear-gradient(359deg, var(--grey-100), #ffffff);
+  --field-border-color: var(--grey-300);
+  --field-radius: 10px;
+
+  // Spaziature standard (griglia 8pt) — SINGLE SOURCE per padding/gap/margini dei
+  // componenti. `--card-padding` = padding interno standard di card/pannelli.
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --card-padding: 20px;
 
   // --- Sezioni --------------------------------------------------------------
   --section-padding-block: clamp(40px, 6vw, 80px);
@@ -65,13 +99,40 @@
   --session-media-frame-aspect-ratio: 3 / 2;
   --session-media-frame-height: clamp(187px, 21.3vw, 267px);
 
+  // --- Colore testo GLOBALE — SINGLE SOURCE ---------------------------------
+  // Tutte le "scritte" del sito derivano da qui (ponte su --mat-sys-on-surface*
+  // in styles.scss → cambi in un punto solo). Niente più near-black: il testo
+  // forte usa il grey-400 della palette operators/generic-styles; il testo muted
+  // (hint, counter, tag "facoltativo") usa lo slate-500 del Figma.
+  --text-strong: var(--grey-400); // colore testo standard (titoli, label, valori)
+  --text-muted: #64748b; // slate-500 (Figma) — hint, caption, facoltativo, counter
+
   // --- Brand / accent -------------------------------------------------------
   // Accent del progetto = accent di customer-portal ($accent-palette).
   --accent-100: #dcf7ff;
   --accent-400: #47c2e8;
   --accent-500: #039fce; // accent principale
   --accent-700: #0289b2;
+  --on-accent: #ffffff; // testo/icone su superfici accento/colorate
   --site-success: #16a34a;
+
+  // --- Toni (foreground + bg tenue) — SINGLE SOURCE per i componenti riusabili.
+  // Cambiando questi valori si ri-tematizzano stat-card/entity-card/folder-card…
+  // SENZA toccare i componenti (il look dei toni arriva dinamicamente dal globale).
+  --tone-success-fg: #1a8754;
+  --tone-success-bg: #e3f6ea;
+  --tone-warning-fg: #b26a00;
+  --tone-warning-bg: #fff3e0;
+  --tone-danger-fg: #c0362c;
+  --tone-danger-bg: #fdecec;
+  --tone-info-fg: var(--accent-700);
+  --tone-info-bg: var(--accent-100);
+  --tone-violet-fg: #6b3fb5;
+  --tone-violet-bg: #efe7fb;
+  --tone-amber-fg: #b6791f;
+  --tone-amber-bg: #fbf0d8;
+  --tone-rose-fg: #c2456b;
+  --tone-rose-bg: #fbe3eb;
   --site-accent-blue: var(--accent-500); // retro-compat: punta all'accent
   --site-nav-item-active-color: var(--site-accent-blue);
   --site-nav-item-indicator-height: 0;

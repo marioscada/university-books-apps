@@ -1,0 +1,305 @@
+// ResultPreview — anteprima dinamica, self-contained sui token globali.
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 16px);
+  padding: var(--card-padding, 20px);
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
+}
+
+// --- Header -----------------------------------------------------------------
+.rp-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2, 16px);
+  flex-wrap: wrap;
+}
+.rp-head__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rp-head__title {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.rp-head__sub {
+  margin: 0;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+.rp-head__refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  background: var(--card-bg);
+  color: var(--accent-700);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--site-body-small, 0.875rem);
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+.rp-head__refresh:hover {
+  border-color: var(--accent-400);
+}
+
+// --- Toolbar ----------------------------------------------------------------
+.rp-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 16px);
+  flex-wrap: wrap;
+}
+.rp-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  background: var(--field-bg);
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+.rp-zoom__value {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+}
+.rp-fit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  background: var(--card-bg);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--site-body-small, 0.875rem);
+  cursor: pointer;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+.rp-fit:hover {
+  border-color: var(--accent-400);
+}
+
+// --- Superficie -------------------------------------------------------------
+.rp-surface {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 24px);
+  width: 100%;
+  margin-inline: auto;
+  padding: var(--space-3, 24px);
+  border-radius: 14px;
+  background: var(--field-bg);
+  border: 1px solid var(--card-border-color);
+  transition: max-width 0.2s ease;
+}
+.rp-surface--tablet {
+  max-width: 760px;
+}
+.rp-surface--phone {
+  max-width: 420px;
+}
+
+// --- Hero -------------------------------------------------------------------
+.rp-hero {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) 1fr;
+  gap: var(--space-3, 24px);
+  align-items: start;
+}
+.rp-cover {
+  border-radius: 12px;
+  aspect-ratio: 3 / 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: var(--space-2, 16px);
+  position: relative;
+  overflow: hidden;
+}
+.rp-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.35));
+}
+.rp-cover__kicker,
+.rp-cover__title,
+.rp-cover__brand {
+  position: relative;
+  z-index: 1;
+  color: var(--on-accent, #fff);
+}
+.rp-cover__kicker {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.rp-cover__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.35);
+}
+.rp-cover__brand {
+  margin-top: auto;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.85;
+}
+
+.rp-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 16px);
+  min-width: 0;
+}
+.rp-summary__title {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-700);
+  margin-bottom: 4px;
+}
+.rp-summary__text {
+  margin: 0;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.5;
+}
+.rp-toc__title {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface);
+  margin-bottom: 6px;
+}
+.rp-toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rp-toc__row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface);
+}
+.rp-toc__num {
+  color: var(--mat-sys-on-surface-variant);
+  flex: 0 0 auto;
+}
+.rp-toc__label {
+  flex: 0 0 auto;
+}
+.rp-toc__leader {
+  flex: 1 1 auto;
+  border-bottom: 1px dotted var(--card-border-color);
+  transform: translateY(-3px);
+}
+.rp-toc__page {
+  flex: 0 0 auto;
+  color: var(--mat-sys-on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+
+// --- Griglia pagine ---------------------------------------------------------
+.rp-pages {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--space-2, 16px);
+}
+
+// --- Footer statistiche -----------------------------------------------------
+.rp-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 16px);
+  padding: var(--space-2, 16px);
+  border-radius: 12px;
+  background: var(--field-bg);
+  border: 1px solid var(--card-border-color);
+}
+.rp-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 150px;
+}
+.rp-stat__icon {
+  flex: 0 0 auto;
+  color: var(--accent-700);
+}
+.rp-stat__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.rp-stat__label {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+.rp-stat__value {
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+// --- Responsive -------------------------------------------------------------
+@media (max-width: 720px) {
+  .rp-hero {
+    grid-template-columns: 1fr;
+  }
+  .rp-cover {
+    max-width: 220px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rp-surface {
+    transition: none;
+  }
+}

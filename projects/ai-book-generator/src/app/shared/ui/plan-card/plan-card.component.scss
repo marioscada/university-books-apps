@@ -1,0 +1,190 @@
+// PlanCard — look self-contained sui token globali (accent #039FCE, success green).
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 24px;
+  border-radius: var(--card-radius, 16px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
+  position: relative;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+:host(:hover) {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-2px);
+}
+
+// Variante evidenziata: ring accento + leggera elevazione.
+:host(.is-highlighted) {
+  border-color: var(--accent-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500), var(--card-shadow-hover);
+}
+
+// === Badge "più popolare" ===
+.plan-card__badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--accent-500);
+  color: var(--on-accent);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: var(--card-shadow);
+}
+
+.plan-card__badge-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+// === Header (icona + nome + tagline) ===
+.plan-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.plan-card__icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: var(--accent-700);
+}
+
+.plan-card__name {
+  margin: 0;
+  font: var(--site-title-medium);
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+.plan-card__tagline {
+  margin: 0;
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// === Pricing ===
+.plan-card__pricing {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+.plan-card__price-row {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.plan-card__price-original {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: line-through;
+}
+
+.plan-card__price {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--mat-sys-on-surface);
+}
+
+.plan-card__period {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.plan-card__secondary-note {
+  margin: 0;
+  font-size: var(--site-body-small, 0.8125rem);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// === Feature checklist ===
+.plan-card__features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1 1 auto;
+}
+
+.plan-card__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.plan-card__feature-icon {
+  flex: 0 0 auto;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--site-success);
+}
+
+.plan-card__feature-label {
+  font-size: var(--site-body-small, 0.875rem);
+  color: var(--mat-sys-on-surface);
+  line-height: 1.4;
+}
+
+// === CTA ===
+.plan-card__cta {
+  width: 100%;
+  margin-top: auto;
+}
+
+// CTA "success": override verde su mat-flat-button.
+.plan-card__cta--success {
+  --mdc-filled-button-container-color: var(--site-success);
+  --mdc-filled-button-label-text-color: var(--on-accent);
+}
+
+// Striscia di sezione alternata opzionale dietro la variante evidenziata,
+// utile quando la card è dentro una band: usa il token dedicato.
+:host(.is-highlighted) .plan-card__pricing {
+  border-bottom-color: color-mix(in srgb, var(--accent-100) 70%, var(--section-band-alt));
+}
+
+// === Self-responsive (convenzione marioscadasite): compatta su small ===
+:host(.isSmall) {
+  padding: 22px 18px;
+  gap: 16px;
+}
+
+:host(.isSmall) .plan-card__price {
+  font-size: 2.125rem;
+}
+
+// === Accessibilità: rispetta la riduzione del movimento ===
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+  }
+
+  :host(:hover) {
+    transform: none;
+  }
+}

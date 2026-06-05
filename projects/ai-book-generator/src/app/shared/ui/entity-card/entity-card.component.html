@@ -1,0 +1,89 @@
+<!--
+  Corpo cliccabile: emette `open`. Lo slot menu è isolato (stopPropagation) così
+  che le sue interazioni non attivino mai `open`.
+-->
+<div
+  class="entity-card__cover"
+  role="button"
+  tabindex="0"
+  [attr.aria-label]="title()"
+  (click)="activate()"
+  (keydown.enter)="onKey($event)"
+  (keydown.space)="onKey($event)"
+>
+  <ng-content select="[cover]" />
+
+  @if (statusLabel()) {
+    <span
+      class="entity-card__status"
+      [class]="'entity-card__status--' + statusTone()"
+    >
+      {{ statusLabel() }}
+    </span>
+  }
+
+  <!-- Guardia di propagazione per lo slot menu (non è un controllo interattivo). -->
+  <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
+  <span
+    class="entity-card__menu"
+    (click)="stopMenu($event)"
+    (keydown)="stopMenu($event)"
+  >
+    <ng-content select="[menu]" />
+  </span>
+</div>
+
+<div
+  class="entity-card__body"
+  role="button"
+  tabindex="0"
+  [attr.aria-label]="title()"
+  (click)="activate()"
+  (keydown.enter)="onKey($event)"
+  (keydown.space)="onKey($event)"
+>
+  <h3 class="entity-card__title">{{ title() }}</h3>
+
+  @if (typeLabel() || metaLabel()) {
+    <p class="entity-card__meta">
+      @if (typeLabel()) {
+        <span class="entity-card__type">{{ typeLabel() }}</span>
+      }
+      @if (typeLabel() && metaLabel()) {
+        <span class="entity-card__sep" aria-hidden="true">·</span>
+      }
+      @if (metaLabel()) {
+        <span class="entity-card__updated">{{ metaLabel() }}</span>
+      }
+    </p>
+  }
+
+  @if (hasProgress()) {
+    <div class="entity-card__progress">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="progressValue()"
+        [attr.aria-label]="progressLabel() || title()"
+      />
+      @if (progressLabel()) {
+        <span class="entity-card__progress-label">{{ progressLabel() }}</span>
+      }
+    </div>
+  }
+
+  @if (published() && publishedLabel()) {
+    <p class="entity-card__published">
+      <mat-icon
+        class="entity-card__published-icon"
+        fontSet="material-symbols-outlined"
+        aria-hidden="true"
+        >public</mat-icon
+      >
+      <span>{{ publishedLabel() }}</span>
+    </p>
+  }
+</div>
+
+@if (footerLabel()) {
+  <div class="entity-card__footer">{{ footerLabel() }}</div>
+}

@@ -42,6 +42,22 @@ html {
   );
 }
 
+// Allinea il `primary` di Material all'accent del progetto (#039FCE): così
+// toggle/checkbox/radio/select/bottoni "primary" usano l'accent, non l'azure
+// di base. Deve venire DOPO mat.theme() per vincere sui token emessi.
+html {
+  --mat-sys-primary: var(--accent-500);
+  --mat-sys-on-primary: var(--on-accent);
+  --mat-sys-primary-container: var(--accent-100);
+  --mat-sys-on-primary-container: var(--accent-700);
+
+  // Colore testo GLOBALE: ponte dei token semantici (--text-*) sui token
+  // Material usati ovunque. Cambiando --text-* in _tokens.scss si ri-colora
+  // TUTTO il testo del sito in un punto solo (niente più near-black).
+  --mat-sys-on-surface: var(--text-strong);
+  --mat-sys-on-surface-variant: var(--text-muted);
+}
+
 body {
   background: var(--mat-sys-surface-container-lowest, #ffffff);
   color: var(--mat-sys-on-surface, #1a1d21);
@@ -62,6 +78,17 @@ section[id] {
 }
 .mat-drawer-container .mat-drawer-backdrop {
   z-index: 19;
+}
+
+// Bottoni primari (mat-flat) disabilitati: stesso accent ma attenuato (non il
+// grigio di default). Abilitato = accent forte; disabilitato = accent opaco.
+.mat-mdc-unelevated-button {
+  --mdc-filled-button-disabled-container-color: var(--accent-500);
+  --mdc-filled-button-disabled-label-text-color: var(--on-accent, #fff);
+}
+.mat-mdc-unelevated-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 @tailwind utilities;

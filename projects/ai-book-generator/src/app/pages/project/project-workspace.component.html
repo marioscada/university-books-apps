@@ -1,0 +1,542 @@
+<app-auth-shell [showFooter]="false">
+  @if (project(); as project) {
+    @if (project.derivedKind) {
+      <!-- DERIVATO: attesa elaborazione → risultato (sola lettura) + feedback AI -->
+      @if (derivedGenerating() || publishing()) {
+        <div class="studio-genpage">
+          <app-generation-panel
+            [coverKicker]="derivedLabel()"
+            [coverTitle]="project.title"
+            [statusLabel]="publishing() ? 'Pubblicazione…' : 'Elaborazione…'"
+            [heading]="publishing() ? 'Sto pubblicando il derivato…' : 'Generazione ' + derivedLabel() + ' in corso…'"
+            [subtitle]="'Elaboro il derivato a partire dal documento sorgente.'"
+            [percent]="publishing() ? pubProgress() : derivedProgress()" />
+        </div>
+      } @else if (project.status === 'published') {
+        <!-- CONFERMA derivato: punto finale (niente ripubblicazione) -->
+        <div class="studio">
+          <div class="studio-stack site-container">
+            <section class="surface-card studio-confirm">
+              <span class="studio-confirm__check" aria-hidden="true">
+                <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
+              </span>
+              <h2 class="studio-confirm__title">{{ derivedLabel() }} pubblicato</h2>
+              <p class="studio-confirm__sub">
+                “{{ project.title }}” è pronto. Scaricalo nei formati scelti o condividilo.
+              </p>
+              <div class="studio-confirm__downloads">
+                @for (f of publishFormats(); track f) {
+                  <button mat-stroked-button type="button">
+                    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">download</mat-icon>
+                    Scarica {{ f }}
+                  </button>
+                }
+                <button mat-stroked-button type="button">
+                  <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">link</mat-icon>
+                  Copia link
+                </button>
+              </div>
+              <hr class="surface-rule" />
+              <h3 class="studio-confirm__next">E adesso?</h3>
+              <div class="studio-confirm__tiles">
+                <button class="studio-tile" type="button" (click)="openParent()">
+                  <span class="studio-tile__title">Apri il progetto sorgente</span>
+                  <span class="studio-tile__sub">Torna al documento originale</span>
+                </button>
+                <button class="studio-tile" type="button" (click)="back()">
+                  <span class="studio-tile__title">Torna ai progetti</span>
+                  <span class="studio-tile__sub">Vai alla tua collezione</span>
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+      } @else if (derived()) {
+        <div class="studio">
+          <header class="studio-bar site-container">
+            <div class="studio-titlerow">
+              <h1 class="studio-title">{{ project.title }}</h1>
+              <span class="studio-status" [attr.data-status]="project.status">Derivato · {{ derivedLabel() }}</span>
+            </div>
+          </header>
+          <div class="studio-stack site-container">
+            <app-review-shell [showIndex]="false">
+              <section class="surface-card">
+                <app-derived-result [content]="derived()!" />
+              </section>
+              <app-ai-chat-panel
+                ai
+                [title]="'Segnala errori all’AI'"
+                [subtitle]="'Niente modifiche manuali: descrivi gli errori e rigenero il derivato corretto.'"
+                [messages]="[]"
+                [placeholder]="'Es. errore di traduzione…'"
+                [sendLabel]="'Rigenera'"
+                [emptyHint]="'Scrivi cosa correggere e premi Rigenera.'"
+                [(value)]="derivedFeedback"
+                (send)="regenerateDerived($event)" />
+            </app-review-shell>
+          </div>
+          <app-action-bar sticky placement="top">
+            <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+            <button end mat-flat-button color="primary" type="button" (click)="publishDerived()">
+              Pubblica
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+            </button>
+          </app-action-bar>
+        </div>
+      } @else {
+        <div class="studio">
+          <div class="studio-stack site-container"><p class="empty">Carico il derivato…</p></div>
+        </div>
+      }
+    } @else if (isGenerating()) {
+      <!-- ATTESA/GENERAZIONE: SOLO il pannello, a tutta pagina (nessuna chrome) -->
+      <div class="studio-genpage">
+        @if (project.status === 'queued' || project.status === 'processing') {
+          <app-generation-panel
+            [coverKicker]="coverKicker()"
+            [coverTitle]="project.title"
+            statusLabel="In generazione…"
+            heading="Sto generando l’indice…"
+            [subtitle]="'Analizzo le fonti ed estraggo i temi per comporre l’indice del documento.'"
+            showSteps
+            [steps]="indexSteps()"
+            [percent]="progress()"
+            [detailLabel]="indexDetail()"
+            [etaLabel]="etaLabel()"
+            cancelLabel="Annulla"
+            (cancelled)="cancel()" />
+        } @else if (publishing()) {
+          <app-generation-panel
+            [coverKicker]="coverKicker()"
+            [coverTitle]="project.title"
+            statusLabel="Pubblicazione…"
+            heading="Sto pubblicando il documento…"
+            [subtitle]="'Impagino, eseguo il render e preparo i file da scaricare.'"
+            showSteps
+            [steps]="publishSteps()"
+            [percent]="pubProgress()"
+            [detailLabel]="publishDetail()" />
+        } @else {
+          <app-generation-panel
+            [coverKicker]="coverKicker()"
+            [coverTitle]="project.title"
+            statusLabel="Sviluppo capitoli…"
+            heading="Sto sviluppando i capitoli…"
+            [subtitle]="'Scrivo il contenuto di ogni capitolo a partire dall’indice approvato.'"
+            showSteps
+            [steps]="chapterSteps()"
+            [percent]="genProgress()"
+            [detailLabel]="chapterDetail()" />
+        }
+      </div>
+    } @else {
+      <div class="studio">
+        <!-- Top: titolo + stato (la navigazione "indietro" vive nella bottom bar) -->
+        <header class="studio-bar site-container">
+          <div class="studio-titlerow">
+            <h1 class="studio-title">{{ project.title }}</h1>
+            <span class="studio-status" [attr.data-status]="project.status">
+              {{ statusLabelKey() | translate }}
+            </span>
+          </div>
+        </header>
+
+        <div class="studio-stack site-container">
+          <!-- Stepper di percorso -->
+          <section class="surface-card studio-stepper">
+            <span class="studio-stepper__label">Avanzamento</span>
+            <app-step-indicator
+              [steps]="flowSteps"
+              [activeIndex]="flowActive()"
+              [completed]="flowCompleted()" />
+          </section>
+
+          @if (project.status === 'draft') {
+            <section class="surface-card studio-panel">
+              <span class="studio-eyebrow">Bozza</span>
+              <h2 class="studio-panel__title">Tutto pronto per generare</h2>
+              <p class="studio-panel__body">
+                Analizzeremo le fonti e comporremo l’indice del documento. Potrai rivedere
+                indice e capitoli prima di pubblicare.
+              </p>
+            </section>
+          } @else if (project.status === 'review' && workspace.loading()) {
+            <section class="surface-card studio-panel">
+              <p class="studio-panel__body">Carico lo Studio…</p>
+            </section>
+          } @else if (project.status === 'review' && !chaptersReady()) {
+            <!-- Revisione INDICE: solo outline, capitoli non ancora sviluppati -->
+            <section class="studio-body studio-body--index">
+              <app-chapter-index
+                class="studio-index studio-index--wide"
+                [heading]="'Indice del documento'"
+                [countLabel]="indexCountLabel()"
+                [chapters]="chapterItems()"
+                [selectedKey]="selectedKey()"
+                (selected)="selectChapter($event)" />
+              <app-ai-chat-panel
+                class="studio-chat"
+                [title]="'Assistente AI'"
+                [subtitle]="'Rivedi l’indice prima di sviluppare i capitoli'"
+                [messages]="chatBubbles()"
+                [quickOps]="quickOps"
+                [placeholder]="'Scrivi un’istruzione…'"
+                [sendLabel]="'Invia'"
+                [(value)]="chatDraft"
+                (send)="sendChat($event)"
+                (quickOp)="runQuickOp($event)" />
+            </section>
+            <section class="surface-card studio-outcome">
+              <h2 class="studio-outcome__title">Cosa otterrai</h2>
+              <p class="studio-outcome__sub">Stima di ciò che verrà generato, dai capitoli dell’indice.</p>
+              <div class="studio-outcome__grid">
+                @for (s of outcomeStats(); track s.label) {
+                  <app-stat-card [value]="s.value" [label]="s.label" tone="accent" />
+                }
+              </div>
+            </section>
+          } @else if (project.status === 'review') {
+            <!-- Revisione CAPITOLI: shell riutilizzabile (indice · lettura · chat) -->
+            <app-review-shell showIndex>
+              <app-chapter-index
+                index
+                [heading]="'Indice'"
+                [countLabel]="approvedCountLabel()"
+                [chapters]="chapterItems()"
+                [selectedKey]="selectedKey()"
+                collapsible
+                (selected)="selectChapter($event)" />
+              @if (selectedChapter(); as ch) {
+                <app-chapter-reader
+                  [title]="ch.index + ' · ' + ch.title"
+                  [meta]="'≈ ' + ch.wordCount + ' parole'"
+                  [statusLabel]="selectedApproved() ? 'Approvato' : 'Da rivedere'"
+                  [statusTone]="selectedApproved() ? 'success' : 'warning'"
+                  [paragraphs]="selectedParagraphs()"
+                  [approveLabel]="selectedApproved() ? 'Approvato' : 'Approva capitolo'"
+                  [prevLabel]="prevLabel()"
+                  [nextLabel]="nextLabel()"
+                  (approve)="approveChapter()"
+                  (prev)="step(-1)"
+                  (next)="step(1)" />
+              }
+              <app-ai-chat-panel
+                ai
+                [title]="'Assistente AI'"
+                [subtitle]="chatSubtitle()"
+                [messages]="chatBubbles()"
+                [quickOps]="quickOps"
+                [placeholder]="'Scrivi un’istruzione…'"
+                [sendLabel]="'Invia'"
+                [(value)]="chatDraft"
+                (send)="sendChat($event)"
+                (quickOp)="runQuickOp($event)" />
+            </app-review-shell>
+          } @else if (project.status === 'published') {
+            <!-- CONFERMA: pubblicazione riuscita (il lettore si apre in dialog) -->
+            <section class="surface-card studio-confirm">
+              <span class="studio-confirm__check" aria-hidden="true">
+                <mat-icon fontSet="material-symbols-outlined">check</mat-icon>
+              </span>
+              <h2 class="studio-confirm__title">Documento pubblicato</h2>
+              <p class="studio-confirm__sub">
+                “{{ project.title }}” è pronto. Scaricalo nei formati scelti o condividilo.
+              </p>
+              <div class="studio-confirm__downloads">
+                @for (f of publishFormats(); track f) {
+                  <button mat-stroked-button type="button">
+                    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">download</mat-icon>
+                    Scarica {{ f }}
+                  </button>
+                }
+                <button mat-stroked-button type="button">
+                  <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">link</mat-icon>
+                  Copia link
+                </button>
+              </div>
+              <hr class="surface-rule" />
+              <h3 class="studio-confirm__next">E adesso?</h3>
+              <div class="studio-confirm__tiles">
+                <button class="studio-tile" type="button" (click)="openDocument()">
+                  <span class="studio-tile__title">Apri documento</span>
+                  <span class="studio-tile__sub">Leggi la versione pubblicata</span>
+                </button>
+                <button class="studio-tile" type="button" (click)="newVersion()">
+                  <span class="studio-tile__title">Crea nuova versione</span>
+                  <span class="studio-tile__sub">Riparti per modifiche maggiori</span>
+                </button>
+                <button class="studio-tile" type="button" (click)="derive()">
+                  <span class="studio-tile__title">Genera un derivato</span>
+                  <span class="studio-tile__sub">Riassunto, slide, articolo</span>
+                </button>
+                <button class="studio-tile" type="button" (click)="back()">
+                  <span class="studio-tile__title">Torna ai progetti</span>
+                  <span class="studio-tile__sub">Vai alla tua collezione</span>
+                </button>
+              </div>
+            </section>
+          } @else if (project.status === 'archived') {
+            <section class="studio-body studio-body--read">
+              <app-chapter-index
+                class="studio-index"
+                [heading]="'Indice'"
+                [countLabel]="workspace.chapters().length + ' capitoli'"
+                [chapters]="chapterItems()"
+                [selectedKey]="selectedKey()"
+                collapsible
+                (selected)="selectChapter($event)" />
+              @if (selectedChapter(); as ch) {
+                <app-chapter-reader
+                  class="studio-reader"
+                  [title]="ch.index + ' · ' + ch.title"
+                  [meta]="'≈ ' + ch.wordCount + ' parole'"
+                  [paragraphs]="selectedParagraphs()"
+                  readOnly
+                  [prevLabel]="prevLabel()"
+                  [nextLabel]="nextLabel()"
+                  (prev)="step(-1)"
+                  (next)="step(1)" />
+              }
+            </section>
+          } @else if (project.status === 'failed') {
+            <section class="surface-card studio-panel">
+              <span class="studio-eyebrow studio-eyebrow--danger">Errore</span>
+              <h2 class="studio-panel__title">Generazione non riuscita</h2>
+              <p class="studio-panel__body">
+                Qualcosa è andato storto durante l’elaborazione. Puoi riprovare.
+              </p>
+            </section>
+          }
+        </div>
+
+        <!-- Bottom action bar: indietro (sx) + azione di stato (dx) — su ogni schermata -->
+        @if (project.status === 'draft') {
+          <app-action-bar sticky>
+            <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+            <button end mat-flat-button color="primary" type="button" (click)="generate()">
+              Genera l’indice
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+            </button>
+          </app-action-bar>
+        } @else if (project.status === 'review' && !chaptersReady()) {
+          <app-action-bar sticky>
+            <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+            <button end mat-flat-button color="primary" type="button" (click)="generateChapters()">
+              Genera i capitoli
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+            </button>
+          </app-action-bar>
+        } @else if (project.status === 'review') {
+          <app-action-bar sticky>
+            <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+            <button end mat-flat-button color="primary" type="button" (click)="goToPublish()">
+              Pubblica
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+            </button>
+          </app-action-bar>
+        } @else if (project.status === 'published') {
+          <app-action-bar sticky>
+            <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+            <button end mat-flat-button color="primary" type="button" (click)="openDocument()">
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">menu_book</mat-icon>
+              Apri documento
+            </button>
+          </app-action-bar>
+        } @else if (project.status === 'archived') {
+          <app-action-bar sticky>
+            <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+            <button end mat-stroked-button type="button" (click)="reopen()">
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">unarchive</mat-icon>
+              Riapri
+            </button>
+          </app-action-bar>
+        } @else if (project.status === 'failed') {
+          <app-action-bar sticky>
+            <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+            <button end mat-flat-button color="primary" type="button" (click)="generate()">
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">refresh</mat-icon>
+              Riprova
+            </button>
+          </app-action-bar>
+        }
+
+        <!-- Dialog di conferma pubblicazione (conferma / annulla) -->
+        <app-modal-shell
+          [open]="showPublish()"
+          size="lg"
+          [title]="'Pubblica il documento'"
+          [closeLabel]="'Chiudi'"
+          (closed)="backToChapters()">
+          <p class="studio-pub-desc">
+            Scegli i formati di output che preferisci, puoi ancora modificarli adesso.
+            <strong>Confermando pubblichi il documento</strong> e prepariamo i file pronti da
+            scaricare.
+          </p>
+          <div class="studio-outcome__grid">
+            @for (s of outcomeStats(); track s.label) {
+              <app-stat-card [value]="s.value" [label]="s.label" tone="accent" />
+            }
+          </div>
+          <div class="studio-pub-group">
+            <span class="studio-publish__label">Formati di output</span>
+            <div class="studio-formats">
+              @for (f of allFormats; track f) {
+                <button
+                  type="button"
+                  class="studio-format-chip"
+                  [class.is-on]="isFormatOn(f)"
+                  [attr.aria-pressed]="isFormatOn(f)"
+                  (click)="toggleFormat(f)">
+                  @if (isFormatOn(f)) {
+                    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
+                  }
+                  {{ f.toUpperCase() }}
+                </button>
+              }
+            </div>
+          </div>
+          <div class="studio-toggle-row">
+            <span>Includi copertina</span>
+            <button class="studio-toggle" type="button" [class.is-on]="includeCover()"
+              [attr.aria-pressed]="includeCover()" (click)="includeCover.set(!includeCover())">
+              <span class="studio-toggle__knob"></span>
+            </button>
+          </div>
+          <div footer class="studio-dialog-foot">
+            <button mat-stroked-button type="button" (click)="backToChapters()">Annulla</button>
+            <button mat-flat-button color="primary" type="button" [disabled]="!pubFormats().length" (click)="confirmPublish()">
+              Pubblica ora
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+            </button>
+          </div>
+        </app-modal-shell>
+
+        <!-- Dialog informativo: costo della nuova versione (stesso modal-shell) -->
+        <app-modal-shell
+          [open]="showNewVersion()"
+          [title]="'Crea una nuova versione'"
+          [closeLabel]="'Chiudi'"
+          (closed)="showNewVersion.set(false)">
+          <p class="studio-pub-desc">
+            Creare una nuova versione conta come un nuovo progetto. Se hai pagato per un
+            singolo progetto ti verrà addebitato il costo di un nuovo progetto, mentre se hai
+            un abbonamento verrà scalato un progetto tra quelli inclusi nel tuo piano.
+          </p>
+          <div footer class="studio-dialog-foot">
+            <button mat-stroked-button type="button" (click)="showNewVersion.set(false)">Annulla</button>
+            <button mat-flat-button color="primary" type="button" (click)="confirmNewVersion()">
+              Crea nuova versione
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+            </button>
+          </div>
+        </app-modal-shell>
+
+        <!-- Dialog: Genera un derivato (scelta del tipo) -->
+        <app-modal-shell
+          [open]="showDerive()"
+          size="lg"
+          [title]="'Genera un derivato'"
+          [subtitle]="'Crea un nuovo documento da “' + project.title + '”. Il derivato segue lo stesso flusso: analisi, indice e capitoli.'"
+          [closeLabel]="'Chiudi'"
+          (closed)="showDerive.set(false)">
+          <div class="studio-derive-grid">
+            @for (o of derivedOptions; track o.kind) {
+              <button
+                type="button"
+                class="studio-derive-opt"
+                [class.is-on]="derivedKind() === o.kind"
+                [attr.aria-pressed]="derivedKind() === o.kind"
+                (click)="selectDerived(o.kind)">
+                <span class="studio-derive-opt__head">
+                  <span class="studio-derive-opt__title">{{ o.title }}</span>
+                  @if (derivedKind() === o.kind) {
+                    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
+                  }
+                </span>
+                <span class="studio-derive-opt__desc">{{ o.desc }}</span>
+              </button>
+            }
+          </div>
+          <div footer class="studio-dialog-foot">
+            <button mat-stroked-button type="button" (click)="showDerive.set(false)">Annulla</button>
+            <button mat-flat-button color="primary" type="button" (click)="confirmDerive()">
+              Genera derivato
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+            </button>
+          </div>
+        </app-modal-shell>
+
+        <!-- Dialog: scelta lingua (traduzione) -->
+        <app-modal-shell
+          [open]="showLang()"
+          size="lg"
+          [title]="'Traduci il documento'"
+          [subtitle]="'Scegli la lingua di destinazione. La traduzione segue lo stesso flusso e potrai rivederla prima di pubblicarla.'"
+          [closeLabel]="'Chiudi'"
+          (closed)="showLang.set(false)">
+          <div class="studio-derive-grid">
+            @for (l of languages; track l) {
+              <button
+                type="button"
+                class="studio-derive-opt"
+                [class.is-on]="selectedLang() === l"
+                [attr.aria-pressed]="selectedLang() === l"
+                (click)="selectLang(l)">
+                <span class="studio-derive-opt__head">
+                  <span class="studio-derive-opt__title">{{ l }}</span>
+                  @if (selectedLang() === l) {
+                    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
+                  }
+                </span>
+              </button>
+            }
+          </div>
+          <div footer class="studio-dialog-foot">
+            <button mat-stroked-button type="button" (click)="showLang.set(false)">Annulla</button>
+            <button mat-flat-button color="primary" type="button" (click)="confirmLang()">
+              Traduci
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+            </button>
+          </div>
+        </app-modal-shell>
+
+        <!-- Lettore read-only in dialog (Apri documento): alla chiusura si torna dov'eri -->
+        <app-modal-shell
+          [open]="reading()"
+          size="lg"
+          [title]="project.title"
+          [subtitle]="'Sola lettura'"
+          [closeLabel]="'Chiudi'"
+          (closed)="reading.set(false)">
+          @if (selectedChapter(); as ch) {
+            <article class="studio-read">
+              <h3 class="studio-read__title">{{ ch.index }} · {{ ch.title }}</h3>
+              <p class="studio-read__meta">≈ {{ ch.wordCount }} parole</p>
+              @for (p of readerParagraphs(); track $index) {
+                <p class="studio-read__p">{{ p }}</p>
+              }
+            </article>
+          }
+          <div footer class="studio-read__nav">
+            <button mat-button type="button" [disabled]="!canReadPrev()" (click)="readPrev()">
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_left</mat-icon>
+              Precedente
+            </button>
+            <span class="studio-read__pos">{{ readerPosLabel() }}</span>
+            <button mat-button type="button" [disabled]="!canReadNext()" (click)="readNext()">
+              Successivo
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
+            </button>
+          </div>
+        </app-modal-shell>
+      </div>
+    }
+  } @else if (!loading()) {
+    <div class="studio">
+      <div class="studio-stack site-container">
+        <p class="empty">Progetto non trovato.</p>
+      </div>
+    </div>
+  }
+</app-auth-shell>
