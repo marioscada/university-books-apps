@@ -9,7 +9,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { ListRowComponent } from '../../shared/components-v2/list-row/list-row.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
-import type { ModelTone, ModelCardAction } from '../../shared/ui/model-card/model-card.component';
+import type { Tone } from '../../shared/components-v2/tone';
+import type { RowAction } from '../../shared/components-v2/list-row/list-row.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { SourcesStore } from '../../core/state/sources.store';
 import { BillingService } from '../../core/services/billing.service';
@@ -27,13 +28,13 @@ import type {
 interface RowVM {
   id: string;
   icon: string;
-  iconTone: ModelTone;
+  iconTone: Tone;
   cover: string;
   title: string;
   meta: string;
   badge: string;
-  badgeTone: ModelTone;
-  actions: ModelCardAction[];
+  badgeTone: Tone;
+  actions: RowAction[];
 }
 interface GroupVM {
   id: string;
@@ -71,7 +72,7 @@ const COVER_COLOR: Record<CoverTheme, string> = {
   mint: 'var(--cover-mint)',
   gold: 'var(--cover-gold)',
 };
-const STATUS_INFO: Record<ProjectStatus, { label: string; tone: ModelTone }> = {
+const STATUS_INFO: Record<ProjectStatus, { label: string; tone: Tone }> = {
   draft: { label: 'Bozza', tone: 'neutral' },
   queued: { label: 'In coda', tone: 'info' },
   processing: { label: 'In generazione', tone: 'info' },
@@ -80,7 +81,7 @@ const STATUS_INFO: Record<ProjectStatus, { label: string; tone: ModelTone }> = {
   archived: { label: 'Archiviato', tone: 'neutral' },
   failed: { label: 'Errore', tone: 'danger' },
 };
-const TYPE_META: Record<SourceType, { icon: string; tone: ModelTone }> = {
+const TYPE_META: Record<SourceType, { icon: string; tone: Tone }> = {
   pdf: { icon: 'picture_as_pdf', tone: 'danger' },
   docx: { icon: 'description', tone: 'info' },
   pptx: { icon: 'slideshow', tone: 'amber' },
@@ -89,7 +90,7 @@ const TYPE_META: Record<SourceType, { icon: string; tone: ModelTone }> = {
   url: { icon: 'link', tone: 'info' },
   note: { icon: 'article', tone: 'neutral' },
 };
-const INGEST_META: Record<IngestStatus, { label: string; tone: ModelTone }> = {
+const INGEST_META: Record<IngestStatus, { label: string; tone: Tone }> = {
   ready: { label: 'Pronta', tone: 'success' },
   processing: { label: 'In elaborazione', tone: 'info' },
   pending: { label: 'In coda', tone: 'neutral' },
@@ -259,10 +260,10 @@ export class CollectionComponent {
     };
   }
 
-  private projectActions(p: Project): ModelCardAction[] {
-    const del: ModelCardAction = { id: 'delete', label: 'Elimina', icon: 'delete', danger: true };
-    const reuse: ModelCardAction = { id: 'reuse', label: 'Riutilizza', icon: 'autorenew' };
-    const download: ModelCardAction = { id: 'download', label: 'Scarica', icon: 'download' };
+  private projectActions(p: Project): RowAction[] {
+    const del: RowAction = { id: 'delete', label: 'Elimina', icon: 'delete', danger: true };
+    const reuse: RowAction = { id: 'reuse', label: 'Riutilizza', icon: 'autorenew' };
+    const download: RowAction = { id: 'download', label: 'Scarica', icon: 'download' };
     if (p.status === 'published') {
       return [download, reuse, { id: 'archive', label: 'Archivia', icon: 'archive' }, del];
     }

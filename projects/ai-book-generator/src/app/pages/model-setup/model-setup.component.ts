@@ -18,7 +18,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { CounterFieldComponent } from '../../shared/ui/counter-field/counter-field.component';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
-import { type FieldOption } from '../../shared/components-v2/field-select/field-select.component';
 import {
   SourceDropzoneComponent,
   type SourceItem,
@@ -29,6 +28,12 @@ import type { Tone } from '../../shared/components-v2/tone';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { TemplatesStore } from '../../core/state/templates.store';
 import type { OutputFormat, ProjectSettings, ProjectTemplate } from '../../core/domain';
+
+/** Opzione di un campo select (value/label). */
+interface FieldOption {
+  value: string;
+  label: string;
+}
 
 /** Genere grammaticale del nome modello (per gli articoli IT). */
 const MODEL_GENDER: Record<string, 'm' | 'f'> = {

@@ -2,7 +2,15 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input, output } f
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 
-import type { ModelTone, ModelCardAction } from '../../ui/model-card/model-card.component';
+import type { Tone } from '../tone';
+
+/** Azione di riga (icona inline su desktop / voce menu su mobile). */
+export interface RowAction {
+  id: string;
+  label: string;
+  icon: string;
+  danger?: boolean;
+}
 
 /**
  * ListRowComponent — riga di lista generica (dumb): icona-tipo (tono o copertina
@@ -12,7 +20,7 @@ import type { ModelTone, ModelCardAction } from '../../ui/model-card/model-card.
  * a11y (role button + tastiera). Riusabile (progetti, fonti, allegati…).
  *
  * Props: `emphasis` (riga progetto: più grande) · `indent` (annidata) · `cover`
- * (tile a colore pieno + icona bianca). Riusa `ModelTone`/`ModelCardAction`.
+ * (tile a colore pieno + icona bianca). Usa `Tone` (tone.ts) e `RowAction`.
  */
 @Component({
   selector: 'app-list-row',
@@ -34,13 +42,13 @@ import type { ModelTone, ModelCardAction } from '../../ui/model-card/model-card.
 })
 export class ListRowComponent {
   readonly icon = input<string>('');
-  readonly iconTone = input<ModelTone>('neutral');
+  readonly iconTone = input<Tone>('neutral');
   readonly title = input.required<string>();
   readonly meta = input<string>('');
   readonly badge = input<string>('');
-  readonly badgeTone = input<ModelTone>('neutral');
+  readonly badgeTone = input<Tone>('neutral');
   /** Azioni: icone inline su desktop, menu "⋯" su mobile (stesso set). */
-  readonly actions = input<readonly ModelCardAction[]>([]);
+  readonly actions = input<readonly RowAction[]>([]);
   /** Copertina a colore pieno (CSS color/var) + icona bianca, invece del tono. */
   readonly cover = input<string>('');
   /** Riga in evidenza (es. progetto): icona/titolo più grandi. */
