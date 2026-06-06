@@ -83,6 +83,7 @@
   color: var(--mat-sys-on-surface-variant);
 }
 .coll__dialogfoot {
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: flex-end;
