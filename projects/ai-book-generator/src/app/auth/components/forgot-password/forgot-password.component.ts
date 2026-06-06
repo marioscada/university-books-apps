@@ -4,13 +4,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractContro
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
+import { CounterFieldComponent } from '../../../shared/ui/counter-field/counter-field.component';
 import { parsePasswordResetError } from './forgot-password.utils';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CounterFieldComponent],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss'
 })
@@ -117,5 +118,35 @@ export class ForgotPasswordComponent {
   get passwordMismatch() {
     return this.resetForm.errors?.['passwordMismatch'] &&
            this.confirmPassword?.touched;
+  }
+
+  get emailError(): string {
+    const c = this.emailControl;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Email is required';
+    if (c.errors['email']) return 'Please enter a valid email';
+    return '';
+  }
+
+  get codeError(): string {
+    const c = this.code;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Code is required';
+    if (c.errors['minlength']) return 'Code must be 6 digits';
+    return '';
+  }
+
+  get newPasswordError(): string {
+    const c = this.newPassword;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Password is required';
+    if (c.errors['minlength']) return 'Password must be at least 12 characters';
+    return '';
+  }
+
+  get confirmPasswordError(): string {
+    if (this.passwordMismatch) return 'Passwords do not match';
+    const c = this.confirmPassword;
+    return c?.touched && c.errors?.['required'] ? 'Please confirm your password' : '';
   }
 }
