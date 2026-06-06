@@ -60,6 +60,22 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
+.coll__gate {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.coll__gate-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--accent-100);
+  color: var(--accent-700);
+}
 .coll__upsell {
   margin: 0;
   font-size: 0.9375rem;

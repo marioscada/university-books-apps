@@ -86,14 +86,34 @@
     [subtitle]="'Rielaborare un lavoro conta come un nuovo progetto.'"
     [closeLabel]="'Chiudi'"
     (closed)="reuseOpen.set(false)">
-    <p class="coll__upsell">
-      Per creare una nuova versione o un derivato da un lavoro in collezione serve un
-      <strong>abbonamento attivo</strong>, entro le chance mensili previste. La lettura e il
-      download restano sempre disponibili.
-    </p>
+    <div class="coll__gate">
+      <mat-icon class="coll__gate-icon" fontSet="material-symbols-outlined" aria-hidden="true">lock</mat-icon>
+      <p class="coll__upsell">
+        Per creare una nuova versione o un derivato da un lavoro in collezione serve un
+        <strong>abbonamento attivo</strong>, entro le chance mensili previste. La lettura e il
+        download restano sempre disponibili.
+      </p>
+    </div>
     <div footer class="coll__dialogfoot">
       <button mat-stroked-button type="button" (click)="reuseOpen.set(false)">Non ora</button>
       <button mat-flat-button color="primary" type="button" (click)="goPricing()">Vedi i piani</button>
+    </div>
+  </app-modal-shell>
+
+  <!-- Dialog: conferma eliminazione (irreversibile) -->
+  <app-modal-shell
+    [open]="!!pendingDelete()"
+    [title]="'Elimina definitivamente'"
+    [subtitle]="'Questa operazione è irreversibile.'"
+    [closeLabel]="'Chiudi'"
+    (closed)="cancelDelete()">
+    <p class="coll__upsell">
+      Stai per eliminare <strong>«{{ pendingDelete()?.title }}»</strong>. Non potrai annullare né
+      recuperare il contenuto.
+    </p>
+    <div footer class="coll__dialogfoot">
+      <button mat-stroked-button type="button" (click)="cancelDelete()">Annulla</button>
+      <button mat-flat-button color="warn" type="button" (click)="confirmDelete()">Elimina</button>
     </div>
   </app-modal-shell>
 </app-auth-shell>

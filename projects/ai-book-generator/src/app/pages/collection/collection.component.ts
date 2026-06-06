@@ -128,9 +128,6 @@ export class CollectionComponent {
   private readonly sources = inject(SourcesStore);
   private readonly router = inject(Router);
 
-  /** v1: nessun abbonamento attivo → rielaborare è gated. */
-  private readonly canReuse = false;
-
   readonly query = signal('');
 
   readonly continua = computed<GroupVM[]>(() => this.build(IN_PROGRESS));
@@ -161,14 +158,36 @@ export class CollectionComponent {
         void this.projects.reopen(id);
         break;
       case 'delete':
-        void this.projects.delete(id);
+        this.askDelete('project', id);
         break;
       // 'download': placeholder col backend.
     }
   }
   onSourceAction(id: string, action: string): void {
-    if (action === 'delete') void this.sources.delete(id);
+    if (action === 'delete') this.askDelete('source', id);
     // 'download': placeholder col backend.
+  }
+
+  // --- Conferma eliminazione (operazione irreversibile) -----------------------
+  readonly pendingDelete = signal<{ kind: 'project' | 'source'; id: string; title: string } | null>(
+    null,
+  );
+  private askDelete(kind: 'project' | 'source', id: string): void {
+    const title =
+      kind === 'project'
+        ? (this.projects.entities().find((p) => p.id === id)?.title ?? '')
+        : (this.sources.entities().find((s) => s.id === id)?.name ?? '');
+    this.pendingDelete.set({ kind, id, title });
+  }
+  confirmDelete(): void {
+    const d = this.pendingDelete();
+    if (!d) return;
+    if (d.kind === 'project') void this.projects.delete(d.id);
+    else void this.sources.delete(d.id);
+    this.pendingDelete.set(null);
+  }
+  cancelDelete(): void {
+    this.pendingDelete.set(null);
   }
 
   // --- Dialog abbonamento (rielaborazione gated) ------------------------------
@@ -226,11 +245,7 @@ export class CollectionComponent {
 
   private projectActions(p: Project): ModelCardAction[] {
     const del: ModelCardAction = { id: 'delete', label: 'Elimina', icon: 'delete', danger: true };
-    const reuse: ModelCardAction = {
-      id: 'reuse',
-      label: 'Riutilizza',
-      icon: this.canReuse ? 'autorenew' : 'lock',
-    };
+    const reuse: ModelCardAction = { id: 'reuse', label: 'Riutilizza', icon: 'autorenew' };
     const download: ModelCardAction = { id: 'download', label: 'Scarica', icon: 'download' };
     if (p.status === 'published') {
       return [download, reuse, { id: 'archive', label: 'Archivia', icon: 'archive' }, del];
