@@ -15,7 +15,7 @@
  */
 
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {
   signIn,
   signOut,
@@ -362,9 +362,17 @@ export class AuthService {
   /**
    * Parse Cognito/Amplify errors into user-friendly messages
    */
-  private parseAuthError(error: CognitoError): string {
-    const errorCode = error?.name || error?.code || 'UnknownError';
-    const errorMessage = error?.message || 'An unknown error occurred';
+  private parseAuthError(error: unknown): string {
+    // Errori dalla chiamata HttpClient al backend (/v1/auth/me): rete vs server.
+    if (error instanceof HttpErrorResponse) {
+      return error.status === 0
+        ? 'Network error. Please check your internet connection.'
+        : 'Server error. Please try again later.';
+    }
+
+    const err = error as CognitoError;
+    const errorCode = err?.name || err?.code || 'UnknownError';
+    const errorMessage = err?.message || 'An unknown error occurred';
 
     switch (errorCode) {
       case 'UserNotFoundException':
