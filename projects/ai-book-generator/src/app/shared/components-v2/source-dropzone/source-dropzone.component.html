@@ -26,47 +26,30 @@
 </div>
 
 @if (items().length) {
-  <ul class="source-dropzone__chips">
+  <mat-chip-set class="source-dropzone__chips" aria-label="Allegati">
     @for (item of items(); track item.id) {
-      <li class="source-dropzone__chip" [attr.data-status]="item.status || 'ready'">
+      <mat-chip-row
+        [attr.data-status]="item.status || 'ready'"
+        [removable]="removable()"
+        (removed)="itemRemove.emit(item.id)">
         @switch (item.status) {
           @case ('uploading') {
-            <span class="source-dropzone__chip-body">
-              <span class="source-dropzone__chip-row">
-                <mat-icon class="source-dropzone__spinner" fontSet="material-symbols-outlined" aria-hidden="true">progress_activity</mat-icon>
-                <span class="source-dropzone__chip-name">{{ item.name }}</span>
-                <span class="source-dropzone__chip-pct">{{ item.progress ?? 0 }}%</span>
-                @if (removable()) {
-                  <button class="source-dropzone__chip-remove" type="button" [attr.aria-label]="item.name" (click)="itemRemove.emit(item.id)">
-                    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
-                  </button>
-                }
-              </span>
-              <span class="source-dropzone__bar" aria-hidden="true">
-                <span class="source-dropzone__bar-fill" [style.width.%]="item.progress ?? 0"></span>
-              </span>
-            </span>
+            <mat-progress-spinner matChipAvatar mode="indeterminate" [diameter]="18" />
           }
           @case ('error') {
-            <mat-icon class="source-dropzone__state source-dropzone__state--error" fontSet="material-symbols-outlined" aria-hidden="true">error</mat-icon>
-            <span class="source-dropzone__chip-name">{{ item.name }}</span>
-            @if (removable()) {
-              <button class="source-dropzone__chip-remove" type="button" [attr.aria-label]="item.name" (click)="itemRemove.emit(item.id)">
-                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
-              </button>
-            }
+            <mat-icon matChipAvatar class="source-dropzone__state--error" fontSet="material-symbols-outlined">error</mat-icon>
           }
           @default {
-            <mat-icon class="source-dropzone__state source-dropzone__state--ready" fontSet="material-symbols-outlined" aria-hidden="true">check_circle</mat-icon>
-            <span class="source-dropzone__chip-name">{{ item.name }}</span>
-            @if (removable()) {
-              <button class="source-dropzone__chip-remove" type="button" [attr.aria-label]="item.name" (click)="itemRemove.emit(item.id)">
-                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
-              </button>
-            }
+            <mat-icon matChipAvatar class="source-dropzone__state--ready" fontSet="material-symbols-outlined">check_circle</mat-icon>
           }
         }
-      </li>
+        {{ item.name }}
+        @if (removable()) {
+          <button matChipRemove [attr.aria-label]="'Rimuovi ' + item.name">
+            <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+          </button>
+        }
+      </mat-chip-row>
     }
-  </ul>
+  </mat-chip-set>
 }
