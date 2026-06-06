@@ -21,11 +21,14 @@ import {
   signOut,
   signUp,
   confirmSignUp,
+  resetPassword,
+  confirmResetPassword,
   fetchAuthSession,
   SignInInput,
   SignInOutput,
   type SignUpOutput,
   type ConfirmSignUpOutput,
+  type ResetPasswordOutput,
 } from 'aws-amplify/auth';
 import { Observable, from, BehaviorSubject } from 'rxjs';
 import { tap, catchError, map, switchMap } from 'rxjs/operators';
@@ -256,6 +259,20 @@ export class AuthService {
    */
   confirmSignUp(email: string, code: string): Promise<ConfirmSignUpOutput> {
     return confirmSignUp({ username: email, confirmationCode: code });
+  }
+
+  /**
+   * Start the password reset flow (sends a code to the user email).
+   */
+  resetPassword(email: string): Promise<ResetPasswordOutput> {
+    return resetPassword({ username: email });
+  }
+
+  /**
+   * Confirm the password reset with code + new password.
+   */
+  confirmResetPassword(email: string, code: string, newPassword: string): Promise<void> {
+    return confirmResetPassword({ username: email, confirmationCode: code, newPassword });
   }
 
   /**

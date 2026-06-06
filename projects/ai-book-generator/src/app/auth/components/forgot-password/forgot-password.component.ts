@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { resetPassword, confirmResetPassword } from 'aws-amplify/auth';
 
+import { AuthService } from '../../services/auth.service';
 import { parsePasswordResetError } from './forgot-password.utils';
 
 @Component({
@@ -17,6 +17,7 @@ import { parsePasswordResetError } from './forgot-password.utils';
 export class ForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
 
   public readonly emailForm: FormGroup;
   public readonly resetForm: FormGroup;
@@ -53,7 +54,7 @@ export class ForgotPasswordComponent {
 
     this.email = this.emailForm.value.email;
 
-    resetPassword({ username: this.email })
+    this.auth.resetPassword(this.email)
       .then(() => {
         this.loading.set(false);
         this.step.set('code');
@@ -77,11 +78,7 @@ export class ForgotPasswordComponent {
 
     const { code, newPassword } = this.resetForm.value;
 
-    confirmResetPassword({
-      username: this.email,
-      confirmationCode: code,
-      newPassword
-    })
+    this.auth.confirmResetPassword(this.email, code, newPassword)
       .then(() => {
         this.loading.set(false);
         this.successMessage.set('Password reset successful! Redirecting to login...');
