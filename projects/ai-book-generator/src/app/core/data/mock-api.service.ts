@@ -48,9 +48,9 @@ function inferSourceType(name: string, mime?: string): Source['type'] {
   if (ext === 'pdf' || mime === 'application/pdf') return 'pdf';
   if (ext === 'doc' || ext === 'docx') return 'docx';
   if (ext === 'ppt' || ext === 'pptx') return 'pptx';
-  if (ext === 'csv') return 'csv';
+  if (ext === 'csv' || ext === 'xls' || ext === 'xlsx') return 'csv';
   if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(ext) || mime?.startsWith('image/')) return 'image';
-  if (['mp3', 'wav', 'm4a', 'aac', 'ogg'].includes(ext) || mime?.startsWith('audio/')) return 'audio';
+  // Solo formati AWS-safe (Textract/OCR/parsing): niente audio/video.
   return 'note';
 }
 
@@ -269,6 +269,12 @@ export class MockApiService implements ApiPort {
     project.status = project.versionIds.length > 0 ? 'review' : 'draft';
     project.updatedAt = new Date().toISOString();
     return structuredClone(project);
+  }
+
+  async deleteProject(id: string): Promise<void> {
+    await this.delay();
+    this.projects.delete(id);
+    this.versions.delete(id);
   }
 
   async duplicate(id: string): Promise<Project> {

@@ -2,26 +2,22 @@
   <div class="coll site-container">
     <!-- Header -->
     <header class="coll__head">
-      <div>
-        <h1 class="page-title">La tua collezione</h1>
-        <p class="page-subtitle">Riprendi i lavori in corso o sfoglia la tua libreria.</p>
-      </div>
-      <div class="coll__tools">
-        <label class="page-search">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">search</mat-icon>
-          <input
-            type="search"
-            placeholder="Cerca nella collezione…"
-            aria-label="Cerca nella collezione"
-            [ngModel]="query()"
-            (ngModelChange)="query.set($event)" />
-        </label>
-        <button mat-flat-button color="primary" type="button" (click)="newProject()">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
-          Nuovo progetto
-        </button>
-      </div>
+      <h1 class="page-title coll__title">Le tue collezioni</h1>
+      <label class="page-search coll__search">
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">search</mat-icon>
+        <input
+          type="search"
+          placeholder="Cerca…"
+          aria-label="Cerca nelle collezioni"
+          [ngModel]="query()"
+          (ngModelChange)="query.set($event)" />
+      </label>
+      <button mat-flat-button color="primary" type="button" (click)="newProject()">
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+        Nuovo progetto
+      </button>
     </header>
+    <p class="page-subtitle coll__sub">Ogni progetto con le sue fonti: apri, scarica, rielabora o elimina.</p>
 
     <!-- Continua dove eri -->
     @if (continua().length) {
@@ -30,71 +26,74 @@
           Continua dove eri
           <span class="coll__count">{{ continua().length }} in corso</span>
         </h2>
-        <div class="cards-grid">
-          @for (vm of continua(); track vm.id) {
-            <app-model-card
-              [eyebrow]="vm.kicker"
-              [badge]="vm.statusLabel"
-              [badgeTone]="vm.statusTone"
-              [title]="vm.title"
-              [description]="vm.stats"
-              [lineage]="vm.lineage"
-              [estimateLabel]="vm.updated"
-              estimateMuted
-              [menuActions]="vm.menu"
-              (selectModel)="openProject(vm.id)"
-              (menuAction)="onMenu(vm.id, $event)" />
-          }
-        </div>
+        @for (g of continua(); track g.id) {
+          <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
+        }
       </section>
     }
 
     <!-- La tua libreria -->
     <section class="coll__section">
       <h2 class="section-title">La tua libreria</h2>
-      <div class="coll__bar">
-        <div class="filter-chips">
-          @for (t of typeTabs; track t.value) {
-            <button
-              class="filter-chip"
-              type="button"
-              [class.is-on]="typeFilter() === t.value"
-              (click)="setType(t.value)">
-              {{ t.label }}
-            </button>
-          }
-        </div>
-        <button mat-stroked-button type="button" [matMenuTriggerFor]="statusMenu">
-          Stato: {{ statusFilterLabel() }}
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">expand_more</mat-icon>
-        </button>
-        <mat-menu #statusMenu="matMenu">
-          @for (o of statusOptions; track o.value) {
-            <button mat-menu-item type="button" (click)="setStatus(o.value)">{{ o.label }}</button>
-          }
-        </mat-menu>
-      </div>
-
       @if (library().length) {
-        <div class="cards-grid">
-          @for (vm of library(); track vm.id) {
-            <app-model-card
-              [eyebrow]="vm.kicker"
-              [badge]="vm.statusLabel"
-              [badgeTone]="vm.statusTone"
-              [title]="vm.title"
-              [description]="vm.stats"
-              [lineage]="vm.lineage"
-              [estimateLabel]="vm.updated"
-              estimateMuted
-              [menuActions]="vm.menu"
-              (selectModel)="openProject(vm.id)"
-              (menuAction)="onMenu(vm.id, $event)" />
-          }
-        </div>
+        @for (g of library(); track g.id) {
+          <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
+        }
       } @else {
-        <p class="empty">Nessun lavoro in questa vista.</p>
+        <p class="empty">Ancora nessun lavoro pubblicato.</p>
       }
     </section>
   </div>
+
+  <!-- Pannello progetto + fonti annidate -->
+  <ng-template #panel let-g>
+    <div class="coll__panel surface-card">
+      <app-list-row
+        emphasis
+        [icon]="g.project.icon"
+        [iconTone]="g.project.iconTone"
+        [title]="g.project.title"
+        [meta]="g.project.meta"
+        [badge]="g.project.badge"
+        [badgeTone]="g.project.badgeTone"
+        [menuActions]="g.project.menu"
+        (open)="openProject(g.id)"
+        (menuAction)="onProjectMenu(g.id, $event)" />
+
+      <div class="coll__srchead">Fonti · {{ g.sources.length }}</div>
+      @for (r of g.sources; track r.id) {
+        <app-list-row
+          indent
+          [icon]="r.icon"
+          [iconTone]="r.iconTone"
+          [title]="r.title"
+          [meta]="r.meta"
+          [badge]="r.badge"
+          [badgeTone]="r.badgeTone"
+          [menuActions]="r.menu"
+          (open)="openSource(r.id)"
+          (menuAction)="onSourceMenu(r.id, $event)" />
+      } @empty {
+        <p class="coll__nosrc">Nessuna fonte collegata.</p>
+      }
+    </div>
+  </ng-template>
+
+  <!-- Dialog: rielaborazione gated dall'abbonamento -->
+  <app-modal-shell
+    [open]="reuseOpen()"
+    [title]="'Riutilizza per generare altro'"
+    [subtitle]="'Rielaborare un lavoro conta come un nuovo progetto.'"
+    [closeLabel]="'Chiudi'"
+    (closed)="reuseOpen.set(false)">
+    <p class="coll__upsell">
+      Per creare una nuova versione o un derivato da un lavoro in collezione serve un
+      <strong>abbonamento attivo</strong>, entro le chance mensili previste. La lettura e il
+      download restano sempre disponibili.
+    </p>
+    <div footer class="coll__dialogfoot">
+      <button mat-stroked-button type="button" (click)="reuseOpen.set(false)">Non ora</button>
+      <button mat-flat-button color="primary" type="button" (click)="goPricing()">Vedi i piani</button>
+    </div>
+  </app-modal-shell>
 </app-auth-shell>
