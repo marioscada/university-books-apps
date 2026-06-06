@@ -1,5 +1,50 @@
-// Collection/Library — nessuno stile specifico: card (entity-card), griglia,
-// bande, chip, empty sono tutti GLOBALI (theme/_components.scss e _sections.scss).
+// Collection — solo layout di pagina (token globali). Card, griglia, chip,
+// ricerca, titoli, empty sono GLOBALI (theme/_components.scss).
 :host {
   display: block;
+}
+
+.coll {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 4vw, 40px);
+  padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px)) clamp(40px, 6vw, 72px);
+}
+
+.coll__head {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.coll__tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+.coll__tools .page-search {
+  width: min(320px, 60vw);
+}
+
+.coll__section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.coll__count {
+  margin-left: 10px;
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.coll__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.coll__bar .filter-chips {
+  flex: 1 1 auto;
 }

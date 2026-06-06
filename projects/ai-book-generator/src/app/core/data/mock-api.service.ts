@@ -605,6 +605,7 @@ export class MockApiService implements ApiPort {
     job.finishedAt = now;
     job.log = [...job.log, { at: now, level: 'info', message: 'Job succeeded' }];
     project.status = 'review';
+    project.reviewStage = 'index'; // indice pronto; capitoli da sviluppare
     project.currentJobId = undefined;
     project.updatedAt = now;
   }
@@ -633,8 +634,10 @@ export class MockApiService implements ApiPort {
       version = this.buildVersion(project);
       this.versions.set(projectId, version);
     }
-    // I progetti già pubblicati/archiviati hanno i capitoli sviluppati.
-    if (project.status !== 'review') {
+    // Capitoli sviluppati per pubblicati/archiviati e per le revisioni già a
+    // stadio "capitoli" (da pubblicare). La revisione "indice" resta con i
+    // capitoli pending (outline soltanto).
+    if (project.status !== 'review' || project.reviewStage === 'chapters') {
       this.developChapters(version);
     }
     return structuredClone(version);
@@ -649,6 +652,8 @@ export class MockApiService implements ApiPort {
       this.versions.set(projectId, version);
     }
     this.developChapters(version);
+    project.reviewStage = 'chapters'; // capitoli sviluppati → pronti da pubblicare
+    project.updatedAt = new Date().toISOString();
     return structuredClone(version);
   }
 

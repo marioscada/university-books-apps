@@ -1,74 +1,100 @@
 <app-auth-shell>
-  <!-- Banda 1 (bianco): intestazione + filtri -->
-  <section class="band">
-    <div class="site-container band__inner">
-      <app-page-header
-        title="La tua collezione"
-        subtitle="Tutto ciò che hai realizzato, classificato per categoria.">
-      </app-page-header>
+  <div class="coll site-container">
+    <!-- Header -->
+    <header class="coll__head">
+      <div>
+        <h1 class="page-title">La tua collezione</h1>
+        <p class="page-subtitle">Riprendi i lavori in corso o sfoglia la tua libreria.</p>
+      </div>
+      <div class="coll__tools">
+        <label class="page-search">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">search</mat-icon>
+          <input
+            type="search"
+            placeholder="Cerca nella collezione…"
+            aria-label="Cerca nella collezione"
+            [ngModel]="query()"
+            (ngModelChange)="query.set($event)" />
+        </label>
+        <button mat-flat-button color="primary" type="button" (click)="newProject()">
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+          Nuovo progetto
+        </button>
+      </div>
+    </header>
 
-      <mat-chip-listbox
-        class="filters"
-        aria-label="Filtra per categoria"
-        [value]="activeFilter()"
-        (change)="setFilter($event.value)">
-        @for (tab of filters; track tab.value) {
-          <mat-chip-option [value]="tab.value" [selected]="activeFilter() === tab.value">
-            {{ tab.label }}
-          </mat-chip-option>
-        }
-      </mat-chip-listbox>
-    </div>
-  </section>
+    <!-- Continua dove eri -->
+    @if (continua().length) {
+      <section class="coll__section">
+        <h2 class="section-title">
+          Continua dove eri
+          <span class="coll__count">{{ continua().length }} in corso</span>
+        </h2>
+        <div class="cards-grid">
+          @for (vm of continua(); track vm.id) {
+            <app-model-card
+              [eyebrow]="vm.kicker"
+              [badge]="vm.statusLabel"
+              [badgeTone]="vm.statusTone"
+              [title]="vm.title"
+              [description]="vm.stats"
+              [lineage]="vm.lineage"
+              [estimateLabel]="vm.updated"
+              estimateMuted
+              [menuActions]="vm.menu"
+              (selectModel)="openProject(vm.id)"
+              (menuAction)="onMenu(vm.id, $event)" />
+          }
+        </div>
+      </section>
+    }
 
-  <!-- Banda 2 (slate): griglia elementi — min-height + scroll interno -->
-  <section class="band band--alt">
-    <div class="site-container">
-      @if (visibleItems().length) {
-        <div class="scroll-area">
-          <div class="cards-grid">
-            @for (item of visibleItems(); track item.id) {
-              <mat-card appearance="outlined" class="project-card">
-                <span class="cover-art cover-art--{{ kindMeta[item.kind].cover }}" aria-hidden="true"></span>
+    <!-- La tua libreria -->
+    <section class="coll__section">
+      <h2 class="section-title">La tua libreria</h2>
+      <div class="coll__bar">
+        <div class="filter-chips">
+          @for (t of typeTabs; track t.value) {
+            <button
+              class="filter-chip"
+              type="button"
+              [class.is-on]="typeFilter() === t.value"
+              (click)="setType(t.value)">
+              {{ t.label }}
+            </button>
+          }
+        </div>
+        <button mat-stroked-button type="button" [matMenuTriggerFor]="statusMenu">
+          Stato: {{ statusFilterLabel() }}
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">expand_more</mat-icon>
+        </button>
+        <mat-menu #statusMenu="matMenu">
+          @for (o of statusOptions; track o.value) {
+            <button mat-menu-item type="button" (click)="setStatus(o.value)">{{ o.label }}</button>
+          }
+        </mat-menu>
+      </div>
 
-                <div class="project-card__body">
-                  <div class="project-card__head">
-                    <span class="status status--done">Completato</span>
-                    <button
-                      mat-icon-button
-                      class="project-card__menu"
-                      aria-label="Azioni elemento"
-                      [matMenuTriggerFor]="actionsMenu">
-                      <mat-icon fontSet="material-symbols-outlined">more_vert</mat-icon>
-                    </button>
-                  </div>
-
-                  <h3 class="project-card__title">{{ item.title }}</h3>
-
-                  <div class="project-card__foot">
-                    <span>{{ kindMeta[item.kind].label }}</span>
-                    <span>{{ item.completedLabel }}</span>
-                  </div>
-                </div>
-
-                <mat-menu #actionsMenu="matMenu">
-                  @for (action of actionsFor(item); track action.id) {
-                    <button
-                      mat-menu-item
-                      [class.is-danger]="action.danger"
-                      (click)="onAction(action, item)">
-                      <mat-icon fontSet="material-symbols-outlined">{{ action.icon }}</mat-icon>
-                      <span>{{ action.label }}</span>
-                    </button>
-                  }
-                </mat-menu>
-              </mat-card>
-            }
-          </div>
+      @if (library().length) {
+        <div class="cards-grid">
+          @for (vm of library(); track vm.id) {
+            <app-model-card
+              [eyebrow]="vm.kicker"
+              [badge]="vm.statusLabel"
+              [badgeTone]="vm.statusTone"
+              [title]="vm.title"
+              [description]="vm.stats"
+              [lineage]="vm.lineage"
+              [estimateLabel]="vm.updated"
+              estimateMuted
+              [menuActions]="vm.menu"
+              (selectModel)="openProject(vm.id)"
+              (menuAction)="onMenu(vm.id, $event)" />
+          }
         </div>
       } @else {
-        <p class="empty">Nessun elemento in questa categoria.</p>
+        <p class="empty">Nessun lavoro in questa vista.</p>
       }
-    </div>
-  </section>
+    </section>
+  </div>
 </app-auth-shell>

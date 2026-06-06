@@ -346,6 +346,65 @@
   font-size: var(--site-body-large, 1.0625rem);
 }
 
+// Filtri a chip — riusabili tra le pagine (Collection, Library…).
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.filter-chip {
+  border: 1px solid var(--card-border-color);
+  background: var(--card-bg);
+  color: var(--mat-sys-on-surface);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font: inherit;
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+
+  &:hover {
+    border-color: var(--accent-400);
+  }
+  &.is-on {
+    background: var(--accent-500);
+    border-color: var(--accent-500);
+    color: var(--on-accent, #fff);
+  }
+}
+
+// Campo di ricerca a pillola (gradient field globale) — riusabile.
+.page-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--field-bg);
+  border: 1px solid var(--field-border-color);
+  color: var(--mat-sys-on-surface-variant);
+
+  input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border: none;
+    background: none;
+    outline: none;
+    font: inherit;
+    color: var(--mat-sys-on-surface);
+  }
+  input::placeholder {
+    color: var(--mat-sys-on-surface-variant);
+  }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
 // Area contenuto: nessuno scroll interno (il contenuto cresce naturalmente,
 // scrolla solo la pagina). Padding per non tagliare l'ombra/hover delle card.
 .scroll-area {

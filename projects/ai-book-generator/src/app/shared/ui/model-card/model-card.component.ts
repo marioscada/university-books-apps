@@ -6,11 +6,12 @@ import {
   output,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 
 import { ScreenTypeDirective } from '../../directives/screen-type.directive';
 
 /**
- * Tono cromatico del riquadro icona (agnostico dal dominio): mappa su token
+ * Tono cromatico (riquadro icona / badge), agnostico dal dominio: mappa su token
  * globali `--tone-<name>-{bg,fg}`. Esportato per consumo dei genitori.
  */
 export type ModelTone =
@@ -23,38 +24,32 @@ export type ModelTone =
   | 'danger'
   | 'neutral';
 
+/** Voce del menu "⋯" (data-driven: il dominio lo decide il padre). */
+export interface ModelCardAction {
+  id: string;
+  label: string;
+  icon: string;
+  danger?: boolean;
+}
+
 /**
- * ModelCardComponent — card "modello di pubblicazione" per la galleria di
- * creazione. Dumb/presentational al 100% (nessun DI, nessuna logica di dominio):
- * solo `input()`/`output()`.
+ * ModelCardComponent — card generica e riutilizzabile (dumb/presentational,
+ * nessun DI, nessuna logica di dominio). Tutti i campi sono **opzionali** così il
+ * padre compone ciò che serve:
+ * - **galleria modelli** (Create): icona a tono, titolo, descrizione, highlight,
+ *   stima, freccia; tutta la card è selezionabile (`selectModel`).
+ * - **progetti in Collection**: `eyebrow` (tipo) + `badge` di stato (a tono) +
+ *   titolo + descrizione (stat) + `lineage` (derivato da…) + footer (ultima
+ *   attività) + menu `⋯`; click = apri (`selectModel`).
  *
- * Struttura: riquadro icona a tono, titolo, descrizione, elenco di **highlight**
- * (parti salienti della struttura, ciascuna con spunta), footer con la **stima**
- * (pagine/slide/moduli) e freccia. Selezionabile (ring accento). Le label sono
- * già tradotte (i18n-agnostico).
- *
- * **Self-responsive** via `ScreenTypeDirective`; stile self-contained sui token
- * globali; rispetta `prefers-reduced-motion`.
- *
- * @example
- * ```html
- * <app-model-card
- *   icon="menu_book"
- *   iconTone="info"
- *   [title]="'Libro'"
- *   [description]="'Un libro completo organizzato in capitoli.'"
- *   [highlights]="['Prefazione, indice, capitoli', 'Conclusione e bibliografia']"
- *   [estimateLabel]="'≈ 300 pagine'"
- *   (selectModel)="choose('book')"
- * />
- * ```
+ * Self-responsive, token-only, a11y (role button + tastiera), reduced-motion.
  */
 @Component({
   selector: 'app-model-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   hostDirectives: [ScreenTypeDirective],
-  imports: [MatIconModule],
+  imports: [MatIconModule, MatMenuModule],
   host: {
     class: 'model-card',
     role: 'button',
@@ -67,52 +62,44 @@ export type ModelTone =
     '(keydown.enter)': 'onKey($event)',
     '(keydown.space)': 'onKey($event)',
   },
-  template: `
-    <span class="model-card__icon" aria-hidden="true">
-      <mat-icon fontSet="material-symbols-outlined">{{ icon() }}</mat-icon>
-    </span>
-
-    <span class="model-card__title">{{ title() }}</span>
-    @if (description()) {
-      <span class="model-card__desc">{{ description() }}</span>
-    }
-
-    @if (highlights().length) {
-      <ul class="model-card__highlights">
-        @for (h of highlights(); track $index) {
-          <li class="model-card__highlight">
-            <mat-icon class="model-card__check" fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
-            <span>{{ h }}</span>
-          </li>
-        }
-      </ul>
-    }
-
-    <span class="model-card__footer">
-      <span class="model-card__estimate">{{ estimateLabel() }}</span>
-      <mat-icon class="model-card__arrow" fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
-    </span>
-  `,
+  templateUrl: './model-card.component.html',
   styleUrl: './model-card.component.scss',
 })
 export class ModelCardComponent {
-  /** Icona Material Symbols. */
+  /** Icona Material Symbols (vuoto = nessuna icona). */
   readonly icon = input<string>('');
-  /** Tono del riquadro icona (mappa su token globali). */
+  /** Tono del riquadro icona. */
   readonly iconTone = input<ModelTone>('neutral');
-  /** Titolo del modello (già tradotto). */
+  /** Etichetta sopra il titolo (es. tipo di lavoro). */
+  readonly eyebrow = input<string>('');
+  /** Badge di stato in alto a destra (vuoto = nascosto). */
+  readonly badge = input<string>('');
+  readonly badgeTone = input<ModelTone>('neutral');
+  /** Titolo (già tradotto). */
   readonly title = input.required<string>();
-  /** Descrizione breve (già tradotta). */
+  /** Descrizione breve / statistiche (già tradotte). */
   readonly description = input<string>('');
-  /** Parti salienti della struttura (già tradotte), una per riga con spunta. */
+  /** Lignaggio (es. "da: AI & Machine Learning Book"). */
+  readonly lineage = input<string>('');
+  /** Parti salienti, una per riga con spunta (galleria modelli). */
   readonly highlights = input<readonly string[]>([]);
-  /** Stima sintetica (già tradotta), es. "≈ 300 pagine" / "Libero". */
+  /** Avanzamento 0–100 (null = nessuna barra). */
+  readonly progress = input<number | null>(null);
+  /** Testo del footer (stima o ultima attività). */
   readonly estimateLabel = input<string>('');
+  /** Footer in tono tenue (es. "ultima attività") invece di accent. */
+  readonly estimateMuted = input(false, { transform: booleanAttribute });
+  /** Mostra la freccia nel footer. */
+  readonly showArrow = input(true, { transform: booleanAttribute });
   /** Stato selezionato (ring accento). */
   readonly selected = input(false, { transform: booleanAttribute });
+  /** Voci del menu "⋯" (vuoto = nessun menu). */
+  readonly menuActions = input<readonly ModelCardAction[]>([]);
 
   /** Emesso attivando la card (mouse/tastiera). */
   readonly selectModel = output<void>();
+  /** Emesso scegliendo una voce del menu. */
+  readonly menuAction = output<string>();
 
   protected activate(): void {
     this.selectModel.emit();

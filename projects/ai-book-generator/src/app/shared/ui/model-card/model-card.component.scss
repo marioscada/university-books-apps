@@ -31,6 +31,84 @@
   box-shadow: inset 0 0 0 1px var(--accent-500), var(--card-shadow);
 }
 
+// Riga superiore (eyebrow + badge stato + menu) — usata in Collection.
+.model-card__top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+.model-card__eyebrow {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.model-card__badge {
+  flex: 0 0 auto;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  background: var(--b-bg, var(--tone-neutral-bg));
+  color: var(--b-fg, var(--tone-neutral-fg));
+}
+.model-card__menu {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-soft);
+  }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+.model-card__lineage {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+.model-card__track {
+  display: block;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  overflow: hidden;
+  margin-top: 4px;
+}
+.model-card__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent-500);
+}
+
 // Riquadro icona a tono (bg/fg da token globali, iniettati via host style).
 .model-card__icon {
   display: inline-flex;
@@ -94,6 +172,12 @@
   font-weight: 600;
   font-size: var(--site-body-small, 0.875rem);
   color: var(--accent-600, var(--accent-700));
+
+  &.is-muted {
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
 }
 
 .model-card__arrow {
