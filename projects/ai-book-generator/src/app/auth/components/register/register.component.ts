@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { signUp, confirmSignUp } from 'aws-amplify/auth';
 
+import { AuthService } from '../../services/auth.service';
 import { parseRegistrationError, parseConfirmationError } from './register.utils';
 
 @Component({
@@ -17,6 +17,7 @@ import { parseRegistrationError, parseConfirmationError } from './register.utils
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
 
   public readonly registerForm: FormGroup;
   public readonly confirmationForm: FormGroup;
@@ -60,19 +61,7 @@ export class RegisterComponent {
     const { givenName, familyName, email, password } = this.registerForm.value;
     this.userEmail = email;
 
-    signUp({
-      username: email,
-      password,
-      options: {
-        userAttributes: {
-          email,
-          'name': `${givenName} ${familyName}`,
-          'given_name': givenName,
-          'family_name': familyName
-        },
-        autoSignIn: false
-      }
-    }).then((result) => {
+    this.auth.signUp({ email, password, givenName, familyName }).then((result) => {
       this.loading.set(false);
 
       if (result.isSignUpComplete) {
@@ -86,12 +75,6 @@ export class RegisterComponent {
       }
     }).catch((error) => {
       this.loading.set(false);
-      console.error('❌ Registration error:', error);
-      console.log('Error details:', {
-        name: error.name,
-        message: error.message,
-        code: error.code
-      });
       this.errorMessage.set(parseRegistrationError(error));
     });
   }
@@ -108,10 +91,7 @@ export class RegisterComponent {
 
     const { code } = this.confirmationForm.value;
 
-    confirmSignUp({
-      username: this.userEmail,
-      confirmationCode: code
-    }).then(() => {
+    this.auth.confirmSignUp(this.userEmail, code).then(() => {
       this.loading.set(false);
       this.successMessage.set('Email verified successfully! Redirecting to login...');
       setTimeout(() => {

@@ -16,7 +16,17 @@
 
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { signIn, signOut, fetchAuthSession, SignInInput, SignInOutput } from 'aws-amplify/auth';
+import {
+  signIn,
+  signOut,
+  signUp,
+  confirmSignUp,
+  fetchAuthSession,
+  SignInInput,
+  SignInOutput,
+  type SignUpOutput,
+  type ConfirmSignUpOutput,
+} from 'aws-amplify/auth';
 import { Observable, from, BehaviorSubject } from 'rxjs';
 import { tap, catchError, map, switchMap } from 'rxjs/operators';
 
@@ -214,6 +224,38 @@ export class AuthService {
         throw error;
       })
     );
+  }
+
+  /**
+   * Register a new user (Cognito sign-up). Boundary unico verso Amplify.
+   */
+  signUp(params: {
+    email: string;
+    password: string;
+    givenName: string;
+    familyName: string;
+  }): Promise<SignUpOutput> {
+    const { email, password, givenName, familyName } = params;
+    return signUp({
+      username: email,
+      password,
+      options: {
+        userAttributes: {
+          email,
+          name: `${givenName} ${familyName}`,
+          given_name: givenName,
+          family_name: familyName,
+        },
+        autoSignIn: false,
+      },
+    });
+  }
+
+  /**
+   * Confirm sign-up with the email verification code.
+   */
+  confirmSignUp(email: string, code: string): Promise<ConfirmSignUpOutput> {
+    return confirmSignUp({ username: email, confirmationCode: code });
   }
 
   /**
