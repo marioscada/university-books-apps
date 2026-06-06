@@ -7,6 +7,10 @@ import {
   output,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
+import { A11yModule } from '@angular/cdk/a11y';
 import { trigger, style, transition, animate } from '@angular/animations';
 
 import type { AuthUser } from '../../../auth/models/auth.model';
@@ -20,7 +24,7 @@ import type { AuthUser } from '../../../auth/models/auth.model';
 @Component({
   selector: 'app-user-profile-sidebar',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [MatIconModule, MatButtonModule, MatListModule, MatDividerModule, A11yModule],
   templateUrl: './user-profile-sidebar.component.html',
   styleUrls: ['./user-profile-sidebar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

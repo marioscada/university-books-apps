@@ -1,22 +1,13 @@
 @use '../../../../theme/variables' as vars;
 
-// =============================================================================
-// Backdrop Overlay
-// =============================================================================
+// Drawer profilo — tema chiaro su token globali; liste/bottoni = Angular Material.
 
 .backdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  inset: 0;
+  background: var(--scrim);
   z-index: vars.$z-index-modal-backdrop;
 }
-
-// =============================================================================
-// Profile Sidebar (GitHub Style)
-// =============================================================================
 
 .profile-sidebar {
   position: fixed;
@@ -24,247 +15,93 @@
   right: 0;
   height: 100vh;
   width: 320px;
-  background: #252525;
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  max-width: 100vw;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  overflow-x: hidden;
-  box-shadow: -2px 0 24px rgba(0, 0, 0, 0.4);
+  background: var(--card-bg);
+  border-left: 1px solid var(--card-border-color);
+  box-shadow: -2px 0 28px -6px rgba(15, 23, 42, 0.18);
+  outline: none;
   z-index: vars.$z-index-modal;
-
-  // Custom scrollbar
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: #252525;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: vars.$surface-3;
-    border-radius: 3px;
-
-    &:hover {
-      background: vars.$gray-600;
-    }
-  }
 }
 
-// =============================================================================
-// User Header
-// =============================================================================
-
-.user-header {
-  position: relative;
-  padding: 1.5rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.back-btn {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  width: 2rem;
-  height: 2rem;
+.ps-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all vars.$transition-speed-fast ease;
-
-  &:hover {
-    background: vars.$surface-2;
-  }
-
-  .back-icon {
-    font-size: 2rem; // 32px
-    width: 2rem;
-    height: 2rem;
-    color: vars.$text-color;
-  }
+  padding: 8px 8px 0;
+}
+.ps-header__spacer {
+  flex: 1 1 auto;
 }
 
-.close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all vars.$transition-speed-fast ease;
-
-  &:hover {
-    background: vars.$surface-2;
-  }
-
-  .close-icon {
-    font-size: 2rem; // 32px
-    width: 2rem;
-    height: 2rem;
-    color: vars.$text-color-secondary;
-  }
-}
-
-.user-info {
+.ps-user {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 6px;
+  padding: 4px 24px 20px;
+  border-bottom: 1px solid var(--card-border-color);
 }
-
-.user-avatar {
-  font-size: 4rem;
-  width: 4rem;
-  height: 4rem;
-  color: vars.$text-color-secondary;
+.ps-user__avatar {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: var(--accent-500);
 }
-
-.user-name {
-  font-size: 1.125rem;
+.ps-user__name {
+  font-size: 0.8125rem;
   font-weight: 700;
-  color: vars.$text-color;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
+  color: var(--mat-sys-on-surface-variant);
 }
 
-// =============================================================================
-// Menu Content
-// =============================================================================
-
-.menu-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-// =============================================================================
-// Menu Sections
-// =============================================================================
-
-.menu-section {
-  padding: 0.5rem 0;
-}
-
-.menu-divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.05);
-  margin: 0.5rem 0;
-}
-
-// =============================================================================
-// Menu Items
-// =============================================================================
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: transparent;
-  border: none;
-  color: vars.$text-color;
-  font-size: 0.875rem;
-  text-align: left;
-  transition: all vars.$transition-speed-fast ease;
-  cursor: default;
-
-  // Clickable items
-  &.clickable {
-    width: 100%;
-    cursor: pointer;
-
-    &:hover:not(:disabled) {
-      background: vars.$surface-2;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  .item-icon {
-    font-size: 1rem; // 16px
-    width: 1rem;
-    height: 1rem;
-    color: vars.$text-color-secondary;
-  }
-}
-
-// Info items (non-clickable)
-.info-item {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.25rem;
-  padding: 0.75rem 1rem;
-
-  .item-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: vars.$text-color-secondary;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .item-value {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: vars.$text-color;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-}
-
-.verified-icon {
-  color: vars.$success;
-  font-size: 1rem; // 16px
-  width: 1rem;
-  height: 1rem;
-}
-
-.unverified-icon {
-  color: vars.$warning;
-  font-size: 1rem; // 16px
-  width: 1rem;
-  height: 1rem;
-}
-
-// =============================================================================
-// Alert
-// =============================================================================
-
-.alert {
-  margin: 0 1rem 0.75rem;
-  padding: 0.75rem 1rem;
+.ps-error {
+  margin: 8px 16px 0;
+  padding: 8px 12px;
   border-radius: 8px;
-  font-size: 0.875rem;
-
-  &.alert-error {
-    background-color: rgba(252, 165, 165, 0.1);
-    color: vars.$error;
-    border: 1px solid vars.$error;
-  }
+  background: var(--tone-danger-bg);
+  color: var(--tone-danger-fg);
+  font-size: 0.8125rem;
+}
+.ps-logout {
+  color: var(--tone-danger-fg);
 }
 
-// =============================================================================
-// Responsive Adjustments
-// =============================================================================
+.ps-account {
+  margin: 0;
+  padding: 8px 0;
+}
+.ps-account__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 24px;
+}
+.ps-account__row dt {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+.ps-account__row dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--mat-sys-on-surface);
+}
+.ps-account__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--tone-danger-fg);
 
-// Mobile optimizations
-@media (max-width: vars.$breakpoint-sm - 1) {
-  .profile-sidebar {
-    width: 100%;
-    max-width: 320px;
+  &.is-verified {
+    color: var(--tone-success-fg);
+  }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
   }
 }
