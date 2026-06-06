@@ -45,15 +45,7 @@
 }
 
 <div class="gen__progress">
-  <div
-    class="gen__track"
-    role="progressbar"
-    aria-live="polite"
-    [attr.aria-valuenow]="clamped()"
-    aria-valuemin="0"
-    aria-valuemax="100">
-    <span class="gen__fill" [style.width.%]="clamped()"></span>
-  </div>
+  <mat-progress-bar class="gen__bar" mode="determinate" [value]="clamped()" />
   @if (detailLabel() || etaLabel()) {
     <div class="gen__meta">
       <span class="gen__detail">{{ clamped() }}%@if (detailLabel()) { — {{ detailLabel() }}}</span>

@@ -8,6 +8,7 @@ import {
   output,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 /** Stato di uno step della pipeline mostrata nel pannello. */
 export type GenStepStatus = 'done' | 'current' | 'todo';
@@ -49,7 +50,7 @@ export interface GenStep {
     class: 'generation-panel',
     '[class.is-flat]': 'flat()',
   },
-  imports: [MatIconModule],
+  imports: [MatIconModule, MatProgressBarModule],
   templateUrl: './generation-panel.component.html',
   styleUrl: './generation-panel.component.scss',
 })
