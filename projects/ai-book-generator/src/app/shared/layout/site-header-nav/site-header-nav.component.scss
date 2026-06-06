@@ -82,34 +82,6 @@ header {
   margin-left: auto;
 }
 
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  color: var(--mat-sys-on-surface, #1a1d21);
-}
-
-.search-btn {
-  padding: 8px 14px;
-  border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
-  border-radius: 999px;
-  color: var(--mat-sys-on-surface-variant, #5b6068);
-
-  &__text {
-    font-size: var(--site-body-small, 0.875rem);
-  }
-
-  &__key {
-    font-size: 0.75rem;
-    padding: 1px 6px;
-    border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
-    border-radius: 4px;
-  }
-}
-
 // Avatar profilo (header autenticato).
 .profile-btn {
   display: inline-flex;

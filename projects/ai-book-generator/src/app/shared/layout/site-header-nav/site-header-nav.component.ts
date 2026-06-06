@@ -12,7 +12,7 @@ import { LocaleService } from '../../services/locale.service';
  * SiteHeaderNav — header sticky a 3 zone (fedele a mariosite):
  *   • logo a SINISTRA
  *   • voci di navigazione al CENTRO
- *   • azioni a DESTRA (search + Sign In / Get Started o profilo)
+ *   • azioni a DESTRA (Sign In / Get Started o profilo)
  * Responsive: pattern `[appScreenType]` come mariosite — su isMedium/isSmall
  * (< 960px) nav + azioni si nascondono e compare l'hamburger.
  * Vedi docs/MIGRATION-TO-WEBSITE.md §3.
@@ -40,8 +40,6 @@ export class SiteHeaderNavComponent {
   /** Destinazione del click sul logo (landing pubblica: '/'; area app: '/create'). */
   readonly logoRoute = input<string>('/');
 
-  /** Mostra il bottone di ricerca a destra (come top-app-bar). */
-  readonly showSearch = input<boolean>(false);
   /** Mostra i link Sign In + Get Started a destra (come landing-header). */
   readonly showAuthLinks = input<boolean>(false);
   /** Mostra il bottone profilo a destra (contesto autenticato). */
@@ -49,8 +47,6 @@ export class SiteHeaderNavComponent {
 
   /** Apertura del menu mobile (collegata a site-shell.toggleSidebar). */
   readonly toggleSidebar = output<void>();
-  /** Click sul bottone di ricerca: emette l'elemento origine per l'overlay. */
-  readonly searchRequested = output<HTMLElement>();
   /** Click sul bottone profilo. */
   readonly profile = output<void>();
 
@@ -66,10 +62,6 @@ export class SiteHeaderNavComponent {
 
   onToggle(): void {
     this.toggleSidebar.emit();
-  }
-
-  onSearch(origin: HTMLElement): void {
-    this.searchRequested.emit(origin);
   }
 
   onProfile(): void {
