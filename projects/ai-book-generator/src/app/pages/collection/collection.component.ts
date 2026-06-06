@@ -12,6 +12,7 @@ import { ModalShellComponent } from '../../shared/components-v2/modal-shell/moda
 import type { ModelTone, ModelCardAction } from '../../shared/ui/model-card/model-card.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { SourcesStore } from '../../core/state/sources.store';
+import { BillingService } from '../../core/services/billing.service';
 import { derivedKindLabel } from '../../core/data/derived-seed';
 import type {
   Project,
@@ -126,7 +127,11 @@ const LIBRARY: readonly ProjectStatus[] = ['published', 'archived'];
 export class CollectionComponent {
   private readonly projects = inject(ProjectsStore);
   private readonly sources = inject(SourcesStore);
+  private readonly billing = inject(BillingService);
   private readonly router = inject(Router);
+
+  /** Stato fatturazione → guida il dialog di rielaborazione. */
+  readonly billingStatus = this.billing.status;
 
   readonly query = signal('');
 
@@ -192,12 +197,23 @@ export class CollectionComponent {
 
   // --- Dialog abbonamento (rielaborazione gated) ------------------------------
   readonly reuseOpen = signal(false);
-  openReuse(_projectId: string): void {
+  openReuse(projectId: string): void {
+    // Abbonamento attivo con chance → procedi (mock: apri il progetto per rielaborare).
+    if (this.billing.canReuse()) {
+      this.openProject(projectId);
+      return;
+    }
     this.reuseOpen.set(true);
   }
+  /** Caso `none`: abbonati. Caso `past_due`: regolarizza. → pagina Prezzi. */
   goPricing(): void {
     this.reuseOpen.set(false);
     void this.router.navigate(['/pricing']);
+  }
+  /** Caso `none`: paga il costo del singolo progetto (mock). */
+  paySingle(): void {
+    this.reuseOpen.set(false);
+    // TODO: checkout singolo progetto (backend).
   }
 
   // --- Build ------------------------------------------------------------------

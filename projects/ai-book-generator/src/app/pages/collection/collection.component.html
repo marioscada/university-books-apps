@@ -82,21 +82,36 @@
   <!-- Dialog: rielaborazione gated dall'abbonamento -->
   <app-modal-shell
     [open]="reuseOpen()"
-    [title]="'Riutilizza per generare altro'"
+    [title]="billingStatus() === 'past_due' ? 'Pagamento in sospeso' : 'Serve un abbonamento'"
     [subtitle]="'Rielaborare un lavoro conta come un nuovo progetto.'"
     [closeLabel]="'Chiudi'"
     (closed)="reuseOpen.set(false)">
     <div class="coll__gate">
       <mat-icon class="coll__gate-icon" fontSet="material-symbols-outlined" aria-hidden="true">lock</mat-icon>
-      <p class="coll__upsell">
-        Per creare una nuova versione o un derivato da un lavoro in collezione serve un
-        <strong>abbonamento attivo</strong>, entro le chance mensili previste. La lettura e il
-        download restano sempre disponibili.
-      </p>
+      @if (billingStatus() === 'past_due') {
+        <p class="coll__upsell">
+          Il tuo abbonamento è attivo ma c'è un <strong>pagamento da regolarizzare</strong>.
+          Sistemalo per riprendere a rielaborare i tuoi lavori in collezione. Lettura e download
+          restano sempre disponibili.
+        </p>
+      } @else {
+        <p class="coll__upsell">
+          Per rielaborare un lavoro serve un <strong>abbonamento attivo</strong> (entro le chance
+          mensili) oppure puoi pagare il costo di <strong>questo singolo progetto</strong>. Lettura
+          e download restano sempre disponibili.
+        </p>
+      }
     </div>
     <div footer class="coll__dialogfoot">
-      <button mat-stroked-button type="button" (click)="reuseOpen.set(false)">Non ora</button>
-      <button mat-flat-button color="primary" type="button" (click)="goPricing()">Vedi i piani</button>
+      @if (billingStatus() === 'past_due') {
+        <button mat-stroked-button type="button" (click)="reuseOpen.set(false)">Non ora</button>
+        <button mat-flat-button color="primary" type="button" (click)="goPricing()">
+          Regolarizza il pagamento
+        </button>
+      } @else {
+        <button mat-stroked-button type="button" (click)="paySingle()">Paga questo progetto</button>
+        <button mat-flat-button color="primary" type="button" (click)="goPricing()">Abbonati</button>
+      }
     </div>
   </app-modal-shell>
 
