@@ -15,6 +15,7 @@ export const BRAND = 'AI Book Generator';
  * nei template di header/mobile-menu/footer).
  */
 export const APP_NAV_ITEMS: readonly SiteNavItem[] = [
+  { id: 'home', label: 'i18n.Header.Nav.home', route: '/landing', icon: 'home' },
   { id: 'create', label: 'i18n.Header.Nav.create', route: '/create', icon: 'add_circle' },
   { id: 'collection', label: 'i18n.Header.Nav.collection', route: '/collection', icon: 'collections_bookmark' },
   { id: 'pricing', label: 'i18n.Header.Nav.pricing', route: '/pricing', icon: 'sell' },

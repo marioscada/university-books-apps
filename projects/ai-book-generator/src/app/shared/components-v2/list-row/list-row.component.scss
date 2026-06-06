@@ -112,6 +112,15 @@
   color: var(--b-fg, var(--tone-neutral-fg));
 }
 
+// Gruppo azioni inline (desktop).
+.lr__actions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.lr__quick,
 .lr__menu {
   flex: 0 0 auto;
   display: inline-flex;
@@ -126,12 +135,30 @@
   cursor: pointer;
 
   &:hover {
-    background: var(--card-bg);
+    background: var(--surface-soft);
+    color: var(--accent-700);
+  }
+  &.is-danger:hover {
+    background: var(--tone-danger-bg);
+    color: var(--tone-danger-fg);
   }
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
+  }
+}
+
+// Desktop: icone inline visibili, ⋯ nascosto. Mobile: solo ⋯.
+.lr__menu {
+  display: none;
+}
+@media (max-width: 768px) {
+  .lr__actions {
+    display: none;
+  }
+  .lr__menu {
+    display: inline-flex;
   }
 }
 

@@ -27,11 +27,12 @@ interface RowVM {
   id: string;
   icon: string;
   iconTone: ModelTone;
+  cover: string;
   title: string;
   meta: string;
   badge: string;
   badgeTone: ModelTone;
-  menu: ModelCardAction[];
+  actions: ModelCardAction[];
 }
 interface GroupVM {
   id: string;
@@ -61,13 +62,13 @@ const KIND_ICON: Record<ProjectKind, string> = {
   documentation: 'description',
   custom: 'draft',
 };
-const COVER_TONE: Record<CoverTheme, ModelTone> = {
-  aurora: 'info',
-  ocean: 'info',
-  ember: 'amber',
-  rose: 'rose',
-  mint: 'success',
-  gold: 'amber',
+const COVER_COLOR: Record<CoverTheme, string> = {
+  aurora: 'var(--cover-aurora)',
+  ocean: 'var(--cover-ocean)',
+  ember: 'var(--cover-ember)',
+  rose: 'var(--cover-rose)',
+  mint: 'var(--cover-mint)',
+  gold: 'var(--cover-gold)',
 };
 const STATUS_INFO: Record<ProjectStatus, { label: string; tone: ModelTone }> = {
   draft: { label: 'Bozza', tone: 'neutral' },
@@ -99,10 +100,11 @@ const LIBRARY: readonly ProjectStatus[] = ['published', 'archived'];
 
 /**
  * Collezioni — pagina unica project-centrica (assorbe le ex "Fonti"): ogni
- * progetto è una riga (apri/scarica/rielabora/elimina) con le **fonti annidate**
- * sotto. Due sezioni: "Continua dove eri" (savepoint in corso) e "La tua
- * libreria" (pubblicati/archiviati). Rielaborare è gated dall'abbonamento (🔒 →
- * upsell). Dati da `ProjectsStore` + `SourcesStore` (signals). Righe = `list-row`.
+ * progetto è una riga (copertina piena + apri/scarica/rielabora/elimina) con le
+ * **fonti annidate** sotto. Le azioni sono icone inline su desktop, menu "⋯" su
+ * mobile (`list-row`). Due sezioni: "Continua dove eri" (savepoint) + "La tua
+ * libreria". Rielaborare è gated dall'abbonamento (🔒 → upsell). Dati da
+ * `ProjectsStore` + `SourcesStore` (signals).
  */
 @Component({
   selector: 'app-collection',
@@ -144,7 +146,7 @@ export class CollectionComponent {
   openSource(_id: string): void {
     // TODO: anteprima fonte (col backend).
   }
-  onProjectMenu(id: string, action: string): void {
+  onProjectAction(id: string, action: string): void {
     switch (action) {
       case 'open':
         this.openProject(id);
@@ -164,7 +166,7 @@ export class CollectionComponent {
       // 'download': placeholder col backend.
     }
   }
-  onSourceMenu(id: string, action: string): void {
+  onSourceAction(id: string, action: string): void {
     if (action === 'delete') void this.sources.delete(id);
     // 'download': placeholder col backend.
   }
@@ -212,26 +214,32 @@ export class CollectionComponent {
     return {
       id: p.id,
       icon: p.derivedKind ? 'auto_awesome' : KIND_ICON[p.kind],
-      iconTone: COVER_TONE[p.coverTheme],
+      iconTone: 'neutral',
+      cover: COVER_COLOR[p.coverTheme],
       title: p.title,
       meta: `${kicker} · ${fonti} · ${this.relTime(p.updatedAt)}`,
       badge,
       badgeTone: tone,
-      menu: this.projectMenu(p),
+      actions: this.projectActions(p),
     };
   }
 
-  private projectMenu(p: Project): ModelCardAction[] {
-    const m: ModelCardAction[] = [{ id: 'open', label: 'Apri', icon: 'open_in_new' }];
-    const finished = p.status === 'published' || p.status === 'archived';
-    if (finished) {
-      m.push({ id: 'download', label: 'Scarica', icon: 'download' });
-      m.push({ id: 'reuse', label: 'Riutilizza', icon: this.canReuse ? 'autorenew' : 'lock' });
+  private projectActions(p: Project): ModelCardAction[] {
+    const del: ModelCardAction = { id: 'delete', label: 'Elimina', icon: 'delete', danger: true };
+    const reuse: ModelCardAction = {
+      id: 'reuse',
+      label: 'Riutilizza',
+      icon: this.canReuse ? 'autorenew' : 'lock',
+    };
+    const download: ModelCardAction = { id: 'download', label: 'Scarica', icon: 'download' };
+    if (p.status === 'published') {
+      return [download, reuse, { id: 'archive', label: 'Archivia', icon: 'archive' }, del];
     }
-    if (p.status === 'published') m.push({ id: 'archive', label: 'Archivia', icon: 'archive' });
-    if (p.status === 'archived') m.push({ id: 'reopen', label: 'Riapri', icon: 'unarchive' });
-    m.push({ id: 'delete', label: 'Elimina', icon: 'delete', danger: true });
-    return m;
+    if (p.status === 'archived') {
+      return [download, reuse, { id: 'reopen', label: 'Riapri', icon: 'unarchive' }, del];
+    }
+    // in lavorazione → apri/riprendi + elimina
+    return [{ id: 'open', label: 'Apri', icon: 'open_in_new' }, del];
   }
 
   private sourceRow(s: Source): RowVM {
@@ -241,11 +249,12 @@ export class CollectionComponent {
       id: s.id,
       icon: tm.icon,
       iconTone: tm.tone,
+      cover: '',
       title: s.name,
       meta: this.sourceMeta(s),
       badge: im.label,
       badgeTone: im.tone,
-      menu: [
+      actions: [
         { id: 'download', label: 'Scarica', icon: 'download' },
         { id: 'delete', label: 'Elimina', icon: 'delete', danger: true },
       ],

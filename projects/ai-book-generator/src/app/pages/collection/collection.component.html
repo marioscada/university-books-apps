@@ -51,14 +51,14 @@
       <app-list-row
         emphasis
         [icon]="g.project.icon"
-        [iconTone]="g.project.iconTone"
+        [cover]="g.project.cover"
         [title]="g.project.title"
         [meta]="g.project.meta"
         [badge]="g.project.badge"
         [badgeTone]="g.project.badgeTone"
-        [menuActions]="g.project.menu"
+        [actions]="g.project.actions"
         (open)="openProject(g.id)"
-        (menuAction)="onProjectMenu(g.id, $event)" />
+        (action)="onProjectAction(g.id, $event)" />
 
       <div class="coll__srchead">Fonti · {{ g.sources.length }}</div>
       @for (r of g.sources; track r.id) {
@@ -70,9 +70,9 @@
           [meta]="r.meta"
           [badge]="r.badge"
           [badgeTone]="r.badgeTone"
-          [menuActions]="r.menu"
+          [actions]="r.actions"
           (open)="openSource(r.id)"
-          (menuAction)="onSourceMenu(r.id, $event)" />
+          (action)="onSourceAction(r.id, $event)" />
       } @empty {
         <p class="coll__nosrc">Nessuna fonte collegata.</p>
       }

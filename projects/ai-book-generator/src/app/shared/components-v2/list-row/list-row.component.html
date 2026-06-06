@@ -2,8 +2,9 @@
   <span
     class="lr__icon"
     aria-hidden="true"
-    [style.--t-bg]="'var(--tone-' + iconTone() + '-bg)'"
-    [style.--t-fg]="'var(--tone-' + iconTone() + '-fg)'">
+    [class.is-cover]="cover()"
+    [style.--t-bg]="cover() || 'var(--tone-' + iconTone() + '-bg)'"
+    [style.--t-fg]="cover() ? 'var(--on-accent, #fff)' : 'var(--tone-' + iconTone() + '-fg)'">
     <mat-icon fontSet="material-symbols-outlined">{{ icon() }}</mat-icon>
   </span>
 }
@@ -24,7 +25,23 @@
   >
 }
 
-@if (menuActions().length) {
+@if (actions().length) {
+  <!-- Desktop: icone inline -->
+  <span class="lr__actions">
+    @for (a of actions(); track a.id) {
+      <button
+        class="lr__quick"
+        type="button"
+        [class.is-danger]="a.danger"
+        [attr.aria-label]="a.label"
+        [attr.title]="a.label"
+        (click)="$event.stopPropagation(); action.emit(a.id)">
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ a.icon }}</mat-icon>
+      </button>
+    }
+  </span>
+
+  <!-- Mobile: menu "⋯" (stesso set) -->
   <button
     class="lr__menu"
     type="button"
@@ -34,12 +51,12 @@
     <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">more_horiz</mat-icon>
   </button>
   <mat-menu #menu="matMenu">
-    @for (a of menuActions(); track a.id) {
+    @for (a of actions(); track a.id) {
       <button
         mat-menu-item
         type="button"
         [class.is-danger]="a.danger"
-        (click)="menuAction.emit(a.id)">
+        (click)="action.emit(a.id)">
         <mat-icon fontSet="material-symbols-outlined">{{ a.icon }}</mat-icon>
         <span>{{ a.label }}</span>
       </button>

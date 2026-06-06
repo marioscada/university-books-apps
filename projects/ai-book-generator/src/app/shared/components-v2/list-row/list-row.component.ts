@@ -5,13 +5,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import type { ModelTone, ModelCardAction } from '../../ui/model-card/model-card.component';
 
 /**
- * ListRowComponent — riga di lista generica (dumb): icona-tipo a tono · titolo +
- * meta · badge di stato a tono · menu "⋯". Tutta la riga è cliccabile (`open`).
- * i18n-agnostica, token-only, a11y (role button + tastiera). Riusabile per
- * qualunque elenco con icona/stato (es. progetti, fonti, allegati).
+ * ListRowComponent — riga di lista generica (dumb): icona-tipo (tono o copertina
+ * piena) · titolo + meta · badge di stato · azioni. Le **azioni** sono rese
+ * responsive: su **desktop** come icone inline, su **mobile** come menu "⋯"
+ * (stesso set). Tutta la riga è cliccabile (`open`). i18n-agnostica, token-only,
+ * a11y (role button + tastiera). Riusabile (progetti, fonti, allegati…).
  *
- * Props reattive `emphasis` (riga progetto: più grande) / `indent` (riga
- * annidata: rientro). Riusa i tipi `ModelTone`/`ModelCardAction` (single source).
+ * Props: `emphasis` (riga progetto: più grande) · `indent` (annidata) · `cover`
+ * (tile a colore pieno + icona bianca). Riusa `ModelTone`/`ModelCardAction`.
  */
 @Component({
   selector: 'app-list-row',
@@ -38,14 +39,17 @@ export class ListRowComponent {
   readonly meta = input<string>('');
   readonly badge = input<string>('');
   readonly badgeTone = input<ModelTone>('neutral');
-  readonly menuActions = input<readonly ModelCardAction[]>([]);
+  /** Azioni: icone inline su desktop, menu "⋯" su mobile (stesso set). */
+  readonly actions = input<readonly ModelCardAction[]>([]);
+  /** Copertina a colore pieno (CSS color/var) + icona bianca, invece del tono. */
+  readonly cover = input<string>('');
   /** Riga in evidenza (es. progetto): icona/titolo più grandi. */
   readonly emphasis = input(false, { transform: booleanAttribute });
   /** Riga annidata (es. fonte sotto il progetto): rientro a sinistra. */
   readonly indent = input(false, { transform: booleanAttribute });
 
   readonly open = output<void>();
-  readonly menuAction = output<string>();
+  readonly action = output<string>();
 
   protected onKey(event: Event): void {
     event.preventDefault();

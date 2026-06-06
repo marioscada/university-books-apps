@@ -1,40 +1,48 @@
 <!--
-  Landing pubblica — vetrina. Header minimale (logo + Login + Sign Up),
-  contenuto vetrina, footer. Ogni CTA porta alla login.
+  Landing pubblica — vetrina. Ospite: header marketing (logo + Login + Sign Up).
+  Loggato: header completo dell'app (Home + nav + ricerca + profilo) via auth-shell,
+  così resta in landing ma può raggiungere le altre pagine. Contenuto unico (#body).
 -->
-<app-site-shell>
-  <ng-template #header>
-    <app-site-header-nav
-      [brand]="brand"
-      [showAuthLinks]="true" />
-  </ng-template>
+@if (isAuthed()) {
+  <app-auth-shell>
+    <ng-container [ngTemplateOutlet]="body" />
+  </app-auth-shell>
+} @else {
+  <app-site-shell>
+    <ng-template #header>
+      <app-site-header-nav [brand]="brand" [showAuthLinks]="true" />
+    </ng-template>
+    <ng-template #main>
+      <ng-container [ngTemplateOutlet]="body" />
+    </ng-template>
+    <ng-template #footer>
+      <app-site-footer-block [brand]="brand" [columns]="footerColumns" />
+    </ng-template>
+  </app-site-shell>
+}
 
-  <ng-template #main>
-    <!-- 1. Hero -->
-    <app-hero-section [data]="hero" />
+<!-- Contenuto vetrina (una sola definizione, proiettato in entrambi i gusci) -->
+<ng-template #body>
+  <!-- 1. Hero -->
+  <app-hero-section [data]="hero" />
 
-    <!-- 2. Cosa ottieni — formati disponibili -->
-    <app-output-types
-      eyebrow="Cosa puoi creare"
-      title="Un solo strumento, tanti formati"
-      [items]="outputTypes" />
+  <!-- 2. Cosa ottieni — formati disponibili -->
+  <app-output-types
+    eyebrow="Cosa puoi creare"
+    title="Un solo strumento, tanti formati"
+    [items]="outputTypes" />
 
-    <!-- 3. Come funziona (sfondi alternati automatici) -->
-    @for (section of howItWorks; track section.id) {
-      <app-content-section [data]="section" />
-    }
+  <!-- 3. Come funziona (sfondi alternati automatici) -->
+  @for (section of howItWorks; track section.id) {
+    <app-content-section [data]="section" />
+  }
 
-    <!-- 4. Esempi reali -->
-    <app-output-showcase
-      eyebrow="Esempi reali"
-      title="Ecco cosa otterrai"
-      [items]="showcase" />
+  <!-- 4. Esempi reali -->
+  <app-output-showcase
+    eyebrow="Esempi reali"
+    title="Ecco cosa otterrai"
+    [items]="showcase" />
 
-    <!-- 5. CTA finale (banda scura) -->
-    <app-content-section class="cta-band" [data]="finalCta" />
-  </ng-template>
-
-  <ng-template #footer>
-    <app-site-footer-block [brand]="brand" [columns]="footerColumns" />
-  </ng-template>
-</app-site-shell>
+  <!-- 5. CTA finale (banda scura) -->
+  <app-content-section class="cta-band" [data]="finalCta" />
+</ng-template>
