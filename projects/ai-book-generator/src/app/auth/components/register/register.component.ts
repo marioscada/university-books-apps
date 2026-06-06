@@ -4,13 +4,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractContro
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
+import { CounterFieldComponent } from '../../../shared/ui/counter-field/counter-field.component';
 import { parseRegistrationError, parseConfirmationError } from './register.utils';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CounterFieldComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
@@ -151,5 +152,47 @@ export class RegisterComponent {
 
   get code() {
     return this.confirmationForm.get('code');
+  }
+
+  get givenNameError(): string {
+    const c = this.givenName;
+    return c?.touched && c.errors?.['required'] ? 'First name is required' : '';
+  }
+
+  get familyNameError(): string {
+    const c = this.familyName;
+    return c?.touched && c.errors?.['required'] ? 'Last name is required' : '';
+  }
+
+  get emailError(): string {
+    const c = this.email;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Email is required';
+    if (c.errors['email']) return 'Please enter a valid email';
+    return '';
+  }
+
+  get passwordError(): string {
+    const c = this.password;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Password is required';
+    if (c.errors['minlength']) return 'Password must be at least 12 characters';
+    if (c.errors['passwordStrength'])
+      return 'Password must contain uppercase, lowercase, number, and special character';
+    return '';
+  }
+
+  get confirmPasswordError(): string {
+    if (this.passwordMismatch) return 'Passwords do not match';
+    const c = this.confirmPassword;
+    return c?.touched && c.errors?.['required'] ? 'Please confirm your password' : '';
+  }
+
+  get codeError(): string {
+    const c = this.code;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Verification code is required';
+    if (c.errors['minlength']) return 'Please enter the complete 6-digit code';
+    return '';
   }
 }
