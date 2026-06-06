@@ -2,11 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   booleanAttribute,
+  computed,
   inject,
   input,
   signal,
 } from '@angular/core';
+import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
+import { AuthService } from '../../../auth/services/auth.service';
 import { SiteShellComponent } from '../site-shell/site-shell.component';
 import { SiteHeaderNavComponent } from '../site-header-nav/site-header-nav.component';
 import { SiteMobileMenuComponent } from '../site-mobile-menu/site-mobile-menu.component';
@@ -44,6 +48,13 @@ import type { SearchItem } from '../../../core/models/search-item.model';
 })
 export class AuthShellComponent {
   private readonly searchOverlay = inject(SearchOverlayService);
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
+  /** Utente corrente per il drawer profilo (dumb). */
+  readonly profileUser = computed(() => this.auth.state().user);
+  readonly loggingOut = signal(false);
+  readonly logoutError = signal<string | null>(null);
 
   /**
    * Mostra il footer marketing. Default `true` per le pagine hub (collection,
@@ -85,5 +96,20 @@ export class AuthShellComponent {
 
   onProfileClose(): void {
     this.profileOpen.set(false);
+  }
+
+  /** Logout: gestito dal container (il drawer è dumb). */
+  async onProfileLogout(): Promise<void> {
+    this.loggingOut.set(true);
+    this.logoutError.set(null);
+    try {
+      await firstValueFrom(this.auth.signOut$());
+      this.profileOpen.set(false);
+      void this.router.navigate(['/auth/login']);
+    } catch {
+      this.logoutError.set('Logout failed. Please try again.');
+    } finally {
+      this.loggingOut.set(false);
+    }
   }
 }

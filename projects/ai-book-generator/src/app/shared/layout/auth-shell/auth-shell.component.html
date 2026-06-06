@@ -38,5 +38,10 @@
 
 <!-- Sidebar profilo (overlay) — riuso del componente esistente. -->
 @if (profileOpen()) {
-  <app-user-profile-sidebar (closeSidebar)="onProfileClose()" />
+  <app-user-profile-sidebar
+    [user]="profileUser()"
+    [loggingOut]="loggingOut()"
+    [logoutError]="logoutError()"
+    (closeSidebar)="onProfileClose()"
+    (logout)="onProfileLogout()" />
 }

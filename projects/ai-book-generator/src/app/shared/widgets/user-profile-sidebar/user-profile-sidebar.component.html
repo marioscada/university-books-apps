@@ -92,26 +92,24 @@
       <div class="menu-divider"></div>
 
       <!-- Logout Section -->
-      @if (logoutState$ | async; as logoutState) {
-        <div class="menu-section">
-          @if (logoutState.error) {
-            <div class="alert alert-error">{{ logoutState.error }}</div>
-          }
-          <button
-            class="menu-item clickable logout-item"
-            type="button"
-            [disabled]="logoutState.loading"
-            (click)="onLogout()"
-          >
-            <mat-icon
-              fontSet="material-symbols-outlined"
-              class="item-icon"
-              aria-hidden="true"
-            >logout</mat-icon>
-            <span>{{ logoutState.loading ? 'Signing out...' : 'Sign out' }}</span>
-          </button>
-        </div>
-      }
+      <div class="menu-section">
+        @if (logoutError()) {
+          <div class="alert alert-error">{{ logoutError() }}</div>
+        }
+        <button
+          class="menu-item clickable logout-item"
+          type="button"
+          [disabled]="loggingOut()"
+          (click)="onLogout()"
+        >
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            class="item-icon"
+            aria-hidden="true"
+          >logout</mat-icon>
+          <span>{{ loggingOut() ? 'Signing out...' : 'Sign out' }}</span>
+        </button>
+      </div>
     </div>
   }
 
