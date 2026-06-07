@@ -17,10 +17,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
-import {
-  StepIndicatorComponent,
-  type StepItem,
-} from '../../shared/ui/step-indicator/step-indicator.component';
+import { StepIndicatorComponent } from '../../shared/ui/step-indicator/step-indicator.component';
 import {
   GenerationPanelComponent,
   type GenStep,
@@ -38,26 +35,24 @@ import { ModalShellComponent } from '../../shared/components-v2/modal-shell/moda
 import {
   AiChatPanelComponent,
   type ChatBubble,
-  type QuickOp,
 } from '../../shared/components-v2/ai-chat-panel/ai-chat-panel.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { WorkspaceStore } from '../../core/state/workspace.store';
 import type { Chapter, DerivedKind } from '../../core/domain';
-
-/** Step del percorso prodotto (stepper unificato dello Studio). */
-const FLOW_STEPS: StepItem[] = [
-  { label: 'Configura' },
-  { label: 'Analisi' },
-  { label: 'Indice' },
-  { label: 'Capitoli' },
-  { label: 'Render' },
-];
-
-/** Stati con un output (versione + capitoli) disponibile. */
-const HAS_OUTPUT = new Set(['review', 'published', 'archived']);
-
-/** Paragrafi per "pagina" nel lettore paginato (niente scroll, sfoglio a pagine). */
-const READER_PAGE_SIZE = 3;
+import {
+  FLOW_STEPS,
+  HAS_OUTPUT,
+  READER_PAGE_SIZE,
+  QUICK_OPS,
+  DERIVED_OPTIONS,
+  LANGUAGES,
+  buildPipeline,
+  paginate,
+  quickOpText,
+  toChapterItems,
+  toChatBubbles,
+  toOutcomeStats,
+} from './project-workspace.util';
 
 /**
  * ProjectWorkspace — **Studio** del singolo progetto (`/project/:id`).
@@ -236,26 +231,6 @@ export class ProjectWorkspaceComponent {
     return p.status === 'review' && (this.workspace.generating() || this.workspace.publishing());
   });
 
-  /**
-   * Pipeline del pannello: include sempre "Configura" come passo già completato
-   * (verde), poi done prima dell'attivo, current sull'attivo, todo dopo.
-   */
-  private pipeline(active: 'analisi' | 'indice' | 'capitoli' | 'render'): GenStep[] {
-    const order = ['configura', 'analisi', 'indice', 'capitoli', 'render'] as const;
-    const labels: Record<string, string> = {
-      configura: 'Configura',
-      analisi: 'Analisi',
-      indice: 'Indice',
-      capitoli: 'Capitoli',
-      render: 'Render',
-    };
-    const ai = order.indexOf(active);
-    return order.map((k, i) => {
-      const status: GenStep['status'] = i < ai ? 'done' : i === ai ? 'current' : 'todo';
-      return { label: labels[k], status };
-    });
-  }
-
   // Generazione indice (queued/processing)
   readonly progress = computed(() => this.job()?.progress ?? 0);
   readonly etaLabel = computed(() => {
@@ -263,7 +238,7 @@ export class ProjectWorkspaceComponent {
     return eta ? this.t('i18n.Workspace.Live.eta', { seconds: eta }) : '';
   });
   readonly indexSteps = computed<GenStep[]>(() =>
-    this.pipeline(this.job()?.currentStepKey === 'outline' ? 'indice' : 'analisi'),
+    buildPipeline(this.job()?.currentStepKey === 'outline' ? 'indice' : 'analisi'),
   );
   readonly indexDetail = computed(() => {
     const job = this.job();
@@ -272,7 +247,7 @@ export class ProjectWorkspaceComponent {
   });
 
   // Generazione capitoli (review + generating)
-  readonly chapterSteps = computed<GenStep[]>(() => this.pipeline('capitoli'));
+  readonly chapterSteps = computed<GenStep[]>(() => buildPipeline('capitoli'));
   readonly chapterDetail = computed(() => {
     const n = this.workspace.chapters().length || 1;
     const k = Math.min(n, Math.max(1, Math.ceil((this.genProgress() / 100) * n)));
@@ -280,7 +255,7 @@ export class ProjectWorkspaceComponent {
   });
 
   // Pubblicazione (review + publishing)
-  readonly publishSteps = computed<GenStep[]>(() => this.pipeline('render'));
+  readonly publishSteps = computed<GenStep[]>(() => buildPipeline('render'));
   readonly publishDetail = computed(() => {
     const p = this.pubProgress();
     return p < 40 ? 'Impaginazione' : p < 80 ? 'Render del PDF' : 'Esportazione';
@@ -305,14 +280,9 @@ export class ProjectWorkspaceComponent {
   // --- Lettore paginato (dialog read-only): sfoglio a pagine, niente scroll ----
   private readonly readerPage = signal(0);
   /** Paragrafi del capitolo suddivisi in pagine. */
-  readonly readerPages = computed<string[][]>(() => {
-    const paras = this.selectedParagraphs();
-    const pages: string[][] = [];
-    for (let i = 0; i < paras.length; i += READER_PAGE_SIZE) {
-      pages.push(paras.slice(i, i + READER_PAGE_SIZE));
-    }
-    return pages.length ? pages : [[]];
-  });
+  readonly readerPages = computed<string[][]>(() =>
+    paginate(this.selectedParagraphs(), READER_PAGE_SIZE),
+  );
   readonly readerPageCount = computed(() => this.readerPages().length);
   readonly readerCurrentPage = computed(() =>
     Math.min(this.readerPage(), this.readerPageCount() - 1),
@@ -370,70 +340,23 @@ export class ProjectWorkspaceComponent {
   /** True nella fase Capitoli (corpi sviluppati); false in revisione indice. */
   readonly chaptersReady = computed(() => this.workspace.chaptersReady());
 
-  readonly chapterItems = computed<ChapterItem[]>(() => {
-    const ready = this.chaptersReady();
-    const approved = new Set(this.workspace.approvedChapterIds());
-    const sel = this.selectedKey();
-    return this.workspace.chapters().map((c) => {
-      // Revisione indice: lista neutra con stima di lunghezza per voce.
-      if (!ready) {
-        return {
-          key: c.id,
-          index: c.index,
-          title: c.title,
-          status: 'todo' as const,
-          statusLabel: `≈ ${this.pages(c.wordCount)} pag.`,
-        };
-      }
-      const status = approved.has(c.id)
-        ? 'approved'
-        : c.status === 'generating'
-          ? 'generating'
-          : c.id === sel
-            ? 'current'
-            : 'review';
-      return {
-        key: c.id,
-        index: c.index,
-        title: c.title,
-        status,
-        statusLabel: this.statusLabel(status),
-      };
-    });
-  });
+  readonly chapterItems = computed<ChapterItem[]>(() =>
+    toChapterItems(
+      this.workspace.chapters(),
+      this.chaptersReady(),
+      this.workspace.approvedChapterIds(),
+      this.selectedKey(),
+    ),
+  );
   readonly approvedCountLabel = computed(
     () => `${this.workspace.approvedCount()} di ${this.workspace.chapters().length} approvati`,
   );
   readonly indexCountLabel = computed(() => `${this.workspace.chapters().length} capitoli`);
 
   // --- Cosa otterrai (data view, revisione indice) ----------------------------
-  readonly outcomeStats = computed(() => {
-    const chapters = this.workspace.chapters();
-    const words = chapters.reduce((sum, c) => sum + c.wordCount, 0);
-    return [
-      { value: `≈ ${this.pages(words)}`, label: 'Pagine' },
-      { value: `≈ ${words.toLocaleString('it-IT')}`, label: 'Parole' },
-      { value: String(chapters.length), label: 'Capitoli' },
-      { value: String(this.project()?.sourceIds.length ?? 0), label: 'Fonti' },
-      { value: `≈ ${Math.max(1, Math.round(words / 200))} min`, label: 'Lettura' },
-    ];
-  });
-  private pages(words: number): number {
-    return Math.max(1, Math.round(words / 350));
-  }
-
-  private statusLabel(status: ChapterItem['status']): string {
-    switch (status) {
-      case 'approved':
-        return 'Approvato';
-      case 'generating':
-        return 'In generazione';
-      case 'current':
-        return 'In lettura';
-      default:
-        return 'Da rivedere';
-    }
-  }
+  readonly outcomeStats = computed(() =>
+    toOutcomeStats(this.workspace.chapters(), this.project()?.sourceIds.length ?? 0),
+  );
 
   /** Etichette prev/next dal capitolo adiacente (vuoto = bordo lista). */
   readonly prevLabel = computed(() => this.adjacent(-1));
@@ -447,45 +370,14 @@ export class ProjectWorkspaceComponent {
 
   // --- Chat -------------------------------------------------------------------
   readonly chatDraft = signal('');
-  readonly chatBubbles = computed<ChatBubble[]>(() => {
-    const bubbles: ChatBubble[] = this.workspace.messages().map((m) => ({
-      id: m.id,
-      role: m.role,
-      text: m.content,
-      operationLabel: (m as { operationLabel?: string }).operationLabel,
-    }));
-    if (this.workspace.sending()) {
-      bubbles.push({ id: 'pending', role: 'assistant', text: 'Sto applicando la modifica…', pending: true });
-    }
-    return bubbles;
-  });
+  readonly chatBubbles = computed<ChatBubble[]>(() =>
+    toChatBubbles(this.workspace.messages(), this.workspace.sending()),
+  );
   readonly chatSubtitle = computed(() => {
     const ch = this.selectedChapter();
     return ch ? `Modifica: ${ch.index} · ${ch.title}` : 'Chiedi una modifica al documento';
   });
-  readonly quickOps: QuickOp[] = [
-    { key: 'reduce', label: 'Riduci' },
-    { key: 'expand', label: 'Espandi' },
-    { key: 'examples', label: 'Aggiungi esempi' },
-    { key: 'technical', label: 'Rendi tecnico' },
-    { key: 'translate', label: 'Traduci' },
-  ];
-  private quickOpText(key: string): string {
-    switch (key) {
-      case 'reduce':
-        return 'Riduci questo capitolo del 20%.';
-      case 'expand':
-        return 'Espandi questo capitolo con più dettagli.';
-      case 'examples':
-        return 'Aggiungi un esempio concreto al capitolo.';
-      case 'technical':
-        return 'Rendi il tono più tecnico.';
-      case 'translate':
-        return 'Traduci il capitolo in inglese.';
-      default:
-        return key;
-    }
-  }
+  readonly quickOps = QUICK_OPS;
 
   // --- Azioni -----------------------------------------------------------------
   selectChapter(key: string): void {
@@ -504,7 +396,7 @@ export class ProjectWorkspaceComponent {
     this.chatDraft.set('');
   }
   runQuickOp(key: string): void {
-    void this.workspace.send(this.id(), this.quickOpText(key));
+    void this.workspace.send(this.id(), quickOpText(key));
   }
   approveChapter(): void {
     this.workspace.toggleApproved(this.selectedKey());
@@ -574,18 +466,11 @@ export class ProjectWorkspaceComponent {
     void this.store.reopen(this.id());
   }
   /** Genera un derivato: scelta del tipo via dialog, poi crea il progetto figlio. */
-  readonly derivedOptions: readonly { kind: DerivedKind; title: string; desc: string }[] = [
-    { kind: 'summary', title: 'Riassunto', desc: 'Sintesi esecutiva dei punti chiave.' },
-    { kind: 'slides', title: 'Presentazione', desc: 'Slide pronte da presentare.' },
-    { kind: 'quiz', title: 'Quiz', desc: 'Domande di verifica sul contenuto.' },
-    { kind: 'manual', title: 'Manuale', desc: 'Versione operativa, passo-passo.' },
-    { kind: 'study_guide', title: 'Guida allo studio', desc: 'Schede e ripasso per studiare.' },
-    { kind: 'translation', title: 'Traduzione', desc: 'Il documento in un’altra lingua.' },
-  ];
+  readonly derivedOptions = DERIVED_OPTIONS;
   readonly showDerive = signal(false);
   readonly derivedKind = signal<DerivedKind>('summary');
   /** Scelta lingua (solo per la traduzione). */
-  readonly languages = ['Inglese', 'Spagnolo', 'Francese', 'Tedesco', 'Portoghese', 'Cinese'];
+  readonly languages = LANGUAGES;
   readonly showLang = signal(false);
   readonly selectedLang = signal('Inglese');
   derive(): void {
