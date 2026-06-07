@@ -107,6 +107,15 @@ export function chapterStatusLabel(status: ChapterItem['status']): string {
   }
 }
 
+/** Suddivide una lista in pagine di dimensione fissa (mai vuota: almeno `[[]]`). */
+export function paginate<T>(items: readonly T[], size: number): T[][] {
+  const pages: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    pages.push(items.slice(i, i + size));
+  }
+  return pages.length ? pages : [[]];
+}
+
 /** Stima pagine da un conteggio parole (≈ 350 parole/pagina). */
 export function pagesFromWords(words: number): number {
   return Math.max(1, Math.round(words / 350));

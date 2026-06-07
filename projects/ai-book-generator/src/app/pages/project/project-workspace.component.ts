@@ -47,6 +47,7 @@ import {
   DERIVED_OPTIONS,
   LANGUAGES,
   buildPipeline,
+  paginate,
   quickOpText,
   toChapterItems,
   toChatBubbles,
@@ -279,14 +280,9 @@ export class ProjectWorkspaceComponent {
   // --- Lettore paginato (dialog read-only): sfoglio a pagine, niente scroll ----
   private readonly readerPage = signal(0);
   /** Paragrafi del capitolo suddivisi in pagine. */
-  readonly readerPages = computed<string[][]>(() => {
-    const paras = this.selectedParagraphs();
-    const pages: string[][] = [];
-    for (let i = 0; i < paras.length; i += READER_PAGE_SIZE) {
-      pages.push(paras.slice(i, i + READER_PAGE_SIZE));
-    }
-    return pages.length ? pages : [[]];
-  });
+  readonly readerPages = computed<string[][]>(() =>
+    paginate(this.selectedParagraphs(), READER_PAGE_SIZE),
+  );
   readonly readerPageCount = computed(() => this.readerPages().length);
   readonly readerCurrentPage = computed(() =>
     Math.min(this.readerPage(), this.readerPageCount() - 1),
