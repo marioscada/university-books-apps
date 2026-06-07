@@ -4,17 +4,17 @@
 // `!important` perché il `.cta-band` deve vincere sulla zebra
 // `:nth-of-type(even)` della content-section a prescindere dalla sua posizione.
 :host ::ng-deep .cta-band {
-  background: var(--site-dark-surface, #1a1d21) !important;
+  background: var(--site-dark-surface) !important;
 
   .content-section {
     min-height: 0;
   }
 
   .content-section__title {
-    color: var(--site-dark-on-surface, #ffffff) !important;
+    color: var(--site-dark-on-surface) !important;
   }
 
   .content-section__body {
-    color: var(--site-dark-on-surface-variant, rgba(255, 255, 255, 0.7)) !important;
+    color: var(--site-dark-on-surface-variant) !important;
   }
 }

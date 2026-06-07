@@ -37,10 +37,11 @@ import { buildDerivedContent } from './derived-seed';
 
 /** Latenza simulata di rete (ms). */
 const NETWORK_DELAY_MS = 120;
-/** Cadenza dell'avanzamento del job simulato (ms). */
-const JOB_TICK_MS = 1000;
-/** Incremento di progress per tick. */
-const JOB_PROGRESS_STEP = 4;
+/** Cadenza dell'avanzamento del job simulato (ms). Veloce come lo sviluppo
+ * capitoli (~2s totali) per non far perdere tempo nella demo. */
+const JOB_TICK_MS = 220;
+/** Incremento di progress per tick (≈ 9 tick → ~2s). */
+const JOB_PROGRESS_STEP = 12;
 
 /** Deduce il `SourceType` dall'estensione del nome file (o dal mime). */
 function inferSourceType(name: string, mime?: string): Source['type'] {
@@ -540,7 +541,7 @@ export class MockApiService implements ApiPort {
       })),
       currentStepKey: GENERATE_STEPS[0].key,
       progress: 0,
-      etaSeconds: 120,
+      etaSeconds: 12,
       queuedSourceIds: [],
       log: [{ at: now, level: 'info', message: 'Job queued' }],
       createdAt: now,
@@ -576,7 +577,7 @@ export class MockApiService implements ApiPort {
     }
 
     job.progress = Math.min(100, job.progress + JOB_PROGRESS_STEP);
-    job.etaSeconds = Math.max(0, Math.round(((100 - job.progress) / 100) * 120));
+    job.etaSeconds = Math.max(0, Math.round(((100 - job.progress) / 100) * 12));
     this.advanceStepsTo(job, job.progress);
     project.updatedAt = new Date().toISOString();
 

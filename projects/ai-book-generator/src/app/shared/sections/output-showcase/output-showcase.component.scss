@@ -1,10 +1,10 @@
 :host {
   display: block;
-  background: var(--mat-sys-surface-container-lowest, #ffffff);
+  background: var(--mat-sys-surface-container-lowest);
 }
 
 :host(:nth-of-type(even)) {
-  background: var(--section-band-alt, #f1f5f9);
+  background: var(--section-band-alt);
 }
 
 .output-showcase {
@@ -24,7 +24,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--site-accent-blue, #7aa7ff);
+  color: var(--site-accent-blue);
   margin: 0;
 }
 
@@ -33,7 +33,7 @@
   font-weight: 600;
   letter-spacing: -0.02em;
   margin: 0 0 clamp(16px, 3vw, 32px);
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 .output-showcase__grid {
@@ -57,10 +57,10 @@
   width: 100%;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-overlay);
 }
 
 .showcase-card__caption {
   font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }

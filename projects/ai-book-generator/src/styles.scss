@@ -17,6 +17,8 @@
 @use './theme/blocks';
 @use './theme/components';
 @use './theme/mat-button';
+@use './theme/flex';
+@use './theme/auth';
 
 @import '@angular/cdk/overlay-prebuilt.css';
 

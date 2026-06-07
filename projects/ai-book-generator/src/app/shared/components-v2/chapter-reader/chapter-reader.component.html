@@ -1,4 +1,7 @@
 <header class="chapter-reader__head">
+  @if (documentTitle()) {
+    <span class="chapter-reader__doc">{{ documentTitle() }}</span>
+  }
   <div class="chapter-reader__titlerow">
     <h2 class="chapter-reader__title">{{ title() }}</h2>
     @if (statusLabel()) {

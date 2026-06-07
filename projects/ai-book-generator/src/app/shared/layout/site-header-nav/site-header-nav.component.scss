@@ -12,7 +12,7 @@
 
 header {
   // Nessun bordo inferiore: l'header si fonde con la pagina (come mariosite).
-  background: var(--mat-sys-surface-container-lowest, #ffffff);
+  background: var(--mat-sys-surface-container-lowest);
 }
 
 .header-inner {
@@ -28,11 +28,11 @@ header {
   align-items: center;
   gap: 8px;
   text-decoration: none;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
   flex: 0 0 auto;
 
   &:focus-visible {
-    outline: 2px solid var(--mat-sys-on-surface, #1a1d21);
+    outline: 2px solid var(--mat-sys-on-surface);
     outline-offset: 4px;
     border-radius: 4px;
   }
@@ -56,15 +56,15 @@ header {
   .nav-link {
     text-decoration: none;
     font-size: var(--site-body-medium, 1rem);
-    color: var(--mat-sys-on-surface, #1a1d21);
+    color: var(--mat-sys-on-surface);
     transition: color 0.15s ease;
 
     &:hover {
-      color: var(--site-accent-blue, #7aa7ff);
+      color: var(--site-accent-blue);
     }
 
     &.is-active {
-      color: var(--site-nav-item-active-color, #7aa7ff);
+      color: var(--site-nav-item-active-color);
       font-weight: 600;
     }
   }
@@ -94,7 +94,7 @@ header {
   border-radius: 50%;
 
   &:focus-visible {
-    outline: 2px solid var(--accent-500, #039fce);
+    outline: 2px solid var(--accent-500);
     outline-offset: 2px;
   }
 }
@@ -106,16 +106,16 @@ header {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--site-dark-surface, #1a1d21);
-  color: var(--site-dark-on-surface, #fff);
+  background: var(--site-dark-surface);
+  color: var(--site-dark-on-surface);
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: 0.01em;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 18%);
+  box-shadow: var(--shadow-avatar);
   transition: box-shadow 0.15s ease, transform 0.12s ease;
 
   .profile-btn:hover & {
-    box-shadow: 0 3px 8px rgb(15 23 42 / 28%);
+    box-shadow: var(--shadow-avatar-hover);
     transform: translateY(-1px);
   }
 }
@@ -123,10 +123,10 @@ header {
 .auth-link {
   text-decoration: none;
   font-size: var(--site-body-medium, 1rem);
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 
   &:hover {
-    color: var(--site-accent-blue, #7aa7ff);
+    color: var(--site-accent-blue);
   }
 }
 
@@ -140,7 +140,7 @@ header {
   background: none;
   border: 0;
   cursor: pointer;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 // Pattern mariosite: su tablet/mobile (isMedium = 600–959, isSmall = <600)

@@ -1,0 +1,100 @@
+@use 'breakpoints' as bp;
+
+// Utility flex GLOBALI — stesso approccio di customer-portal
+// (generic-styles/scss/utilities/_flex.scss). Servono a costruire catene di
+// layout a altezza definita: una sola altezza alla radice (es. 100dvh) e poi
+// `flex-grow:1 + flex-basis:0` ad ogni livello, con `min-height:0` dove serve lo
+// scroll interno. Lo scroll vive SOLO sulle foglie (overflow-*), MAI sui livelli
+// intermedi della catena.
+
+// Direzione (forza display:flex)
+.fx-col {
+  display: flex !important;
+  flex-direction: column !important;
+}
+.fx-row {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+// Grow
+@each $g in (0, 1, 2, 3) {
+  .fx-g-#{$g} {
+    flex-grow: #{$g} !important;
+  }
+}
+
+// Basis
+@each $b in (0, 1) {
+  .fx-b-#{$b} {
+    flex-basis: #{$b} !important;
+  }
+}
+
+// Shrink
+@each $s in (0, 1) {
+  .fx-s-#{$s} {
+    flex-shrink: #{$s} !important;
+  }
+}
+
+// Min-size a 0 (sblocca lo shrink → overflow/scroll nei flex, regola MDN)
+.fx-min-h-0 {
+  min-height: 0 !important;
+}
+.fx-min-w-0 {
+  min-width: 0 !important;
+}
+
+// Scroll foglia (verticale)
+.fx-scroll-y {
+  overflow-y: auto !important;
+  min-height: 0 !important;
+}
+
+// Gap
+@each $gap in (1, 2, 3, 4) {
+  .fx-gap-#{$gap} {
+    gap: #{$gap * 4}px !important;
+  }
+}
+
+// Align-items
+@each $a in (start, end, center, baseline, stretch) {
+  .fx-align-#{$a} {
+    align-items: #{if($a == 'start' or $a == 'end', 'flex-', '')}#{$a} !important;
+  }
+}
+
+// Justify-content
+@each $name, $val in (start: flex-start, end: flex-end, center: center, between: space-between, around: space-around, evenly: space-evenly) {
+  .fx-justify-#{$name} {
+    justify-content: #{$val} !important;
+  }
+}
+
+.fx-center {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+// Pannello a riempimento (globale, attraversa la proiezione <ng-content>): da
+// desktop riempie la colonna (flex-basis:0 → altezza deterministica) con scroll
+// interno; su mobile/tablet torna ad altezza naturale (le colonne si impilano e
+// scorre la pagina), evitando il collasso da basis:0 senza altezza definita.
+.fill-pane {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+}
+// Su mobile/tablet i pannelli si IMPILANO ad altezza naturale (flusso di pagina,
+// come customer-portal): niente basis:0 senza altezza definita → niente collasso.
+// Se un pannello è molto alto, scrolla al suo interno (cap ~80vh); fra i pannelli
+// scorre la pagina.
+@include bp.lt(bp.$studio) {
+  .fill-pane {
+    flex: 0 0 auto !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+  }
+}

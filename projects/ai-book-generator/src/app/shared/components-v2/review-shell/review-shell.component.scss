@@ -1,41 +1,48 @@
+@use '../../../../theme/breakpoints' as bp;
+
 :host {
   display: flex;
   gap: 24px;
   align-items: stretch;
+  // L'altezza arriva dal flex del contenitore (`app-review-shell { flex: 1 1 0 }`).
+  // Le colonne sono flex-column e si estendono all'altezza della riga; i PANNELLI
+  // proiettati riempiono via utility globali `fx-g-1 fx-b-0 fx-min-h-0` (le regole
+  // scoped NON raggiungono il contenuto proiettato con ViewEncapsulation.Emulated).
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
 }
-// Ogni colonna è flex-column: il contenuto proiettato riempie l'altezza della
-// riga (così l'AI e il corpo hanno sempre la stessa altezza).
+
 .review-shell__index,
 .review-shell__body,
 .review-shell__ai {
   display: flex;
   flex-direction: column;
   min-width: 0;
-}
-.review-shell__index > *,
-.review-shell__body > *,
-.review-shell__ai > * {
-  flex: 1 1 auto;
   min-height: 0;
 }
+
 .review-shell__index {
   flex: 0 0 248px;
 }
 .review-shell__body {
-  flex: 1 1 auto;
+  flex: 1 1 0;
 }
 .review-shell__ai {
   flex: 0 0 360px;
 }
 
-@media (max-width: 1100px) {
+@include bp.lt(bp.$studio) {
+  // Mobile/tablet: indice, corpo e chat IMPILATI ad altezza naturale (flusso di
+  // pagina, come customer-portal). Ciascun pannello scrolla al suo interno se
+  // troppo alto (cap via `.fill-pane`).
   :host {
     flex-direction: column;
   }
   .review-shell__index,
   .review-shell__body,
   .review-shell__ai {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     width: 100%;
   }
 }

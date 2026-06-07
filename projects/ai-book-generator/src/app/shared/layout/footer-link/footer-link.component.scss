@@ -1,9 +1,9 @@
 .footer-link {
   text-decoration: none;
-  color: var(--site-dark-on-surface-variant, rgba(255, 255, 255, 0.65));
+  color: var(--site-dark-on-surface-variant);
   transition: color 0.15s ease;
 
   &:hover {
-    color: var(--site-dark-on-surface, #fff);
+    color: var(--site-dark-on-surface);
   }
 }

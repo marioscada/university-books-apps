@@ -1,15 +1,19 @@
-// Register — tema chiaro coerente con le altre pagine (card su sfondo tenue, token).
+// =============================================================================
+// _auth.scss — stile GLOBALE e UNICO delle pagine di autenticazione
+// (login / register / forgot-password). Niente duplicazione per-componente:
+// i tre template usano queste classi `auth-*`. Tema chiaro, solo token globali.
+// =============================================================================
 
-.register-container {
+.auth-page {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 24px;
-  background: var(--section-band-alt, #f1f5f9);
+  background: var(--section-band-alt);
 }
 
-.register-card {
+.auth-card {
   width: 100%;
   max-width: 460px;
   padding: clamp(28px, 4vw, 40px);
@@ -19,7 +23,7 @@
   box-shadow: var(--card-shadow);
 }
 
-.register-title {
+.auth-title {
   margin: 0 0 6px;
   font-size: 1.75rem;
   font-weight: 700;
@@ -27,20 +31,21 @@
   text-align: center;
 }
 
-.register-subtitle {
+.auth-subtitle {
   margin: 0 0 28px;
   color: var(--mat-sys-on-surface-variant);
   text-align: center;
   font-size: 0.95rem;
 }
 
-.register-form {
+.auth-form {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-.verify-message {
+// Messaggio nello step di verifica (register).
+.auth-verify {
   margin: 0 0 4px;
   font-size: 0.9rem;
   line-height: 1.45;
@@ -52,84 +57,77 @@
   }
 }
 
-.alert {
+// Alert (errore / successo) dai token tono.
+.auth-alert {
   padding: 10px 14px;
   border-radius: 8px;
   font-size: 0.875rem;
 }
-.alert-error {
+.auth-alert--error {
   background: var(--tone-danger-bg);
   color: var(--tone-danger-fg);
 }
-.alert-success {
+.auth-alert--success {
   background: var(--tone-success-bg);
   color: var(--tone-success-fg);
 }
 
-.btn-primary {
+// Bottoni: primario accent, secondario outline.
+.auth-btn {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   padding: 13px 18px;
-  border: none;
   border-radius: 10px;
   font: inherit;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  background: var(--accent-500);
-  color: var(--on-accent, #fff);
   transition: background 0.15s ease;
 
-  &:hover:not(:disabled) {
-    background: var(--accent-600, var(--accent-700));
-  }
   &:disabled {
     opacity: 0.55;
     cursor: not-allowed;
   }
+}
+.auth-btn--primary {
+  border: none;
+  background: var(--accent-500);
+  color: var(--on-accent);
 
-  .spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid rgb(255 255 255 / 40%);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
+  &:hover:not(:disabled) {
+    background: var(--accent-700);
   }
 }
-
-.btn-secondary {
-  width: 100%;
-  padding: 13px 18px;
+.auth-btn--secondary {
   border: 1px solid var(--card-border-color);
-  border-radius: 10px;
-  font: inherit;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
   background: var(--card-bg);
   color: var(--mat-sys-on-surface);
-  transition: background 0.15s ease;
 
   &:hover:not(:disabled) {
     background: var(--surface-soft);
   }
-  &:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
 }
 
-@keyframes spin {
+// Spinner: anello derivato dal colore on-accent (no colore hardcoded).
+.auth-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid color-mix(in srgb, var(--on-accent) 35%, transparent);
+  border-top-color: var(--on-accent);
+  border-radius: 50%;
+  animation: auth-spin 0.6s linear infinite;
+}
+
+@keyframes auth-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-.register-footer {
+.auth-footer {
   margin-top: 24px;
   text-align: center;
 
@@ -147,5 +145,11 @@
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-spinner {
+    animation: none;
   }
 }

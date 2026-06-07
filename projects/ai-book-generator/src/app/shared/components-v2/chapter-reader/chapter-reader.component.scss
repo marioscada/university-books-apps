@@ -1,4 +1,6 @@
 // ChapterReader — lettura capitolo dumb, self-contained sui token globali.
+@use '../../../../theme/breakpoints' as bp;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -14,6 +16,15 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 0 0 auto;
+}
+// Titolo del libro/documento (overline sopra il titolo del capitolo).
+.chapter-reader__doc {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-700);
 }
 .chapter-reader__titlerow {
   display: flex;
@@ -42,7 +53,7 @@
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   color: var(--mat-sys-on-surface-variant);
 }
 .chapter-reader__status[data-tone='accent'] {
@@ -60,13 +71,27 @@
 
 .chapter-reader__divider {
   height: 1px;
+  flex: 0 0 auto;
   background: var(--card-border-color);
 }
 
+// Corpo = zona di scroll: riempie l'altezza disponibile (header/footer fissi) e
+// scrolla quando il contenuto supera lo spazio.
 .chapter-reader__body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+}
+// Mobile/tablet: il corpo torna a flusso naturale (testo visibile); è l'host del
+// lettore a scrollare entro il cap (vedi `.fill-pane`).
+@include bp.lt(bp.$studio) {
+  .chapter-reader__body {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
 }
 .chapter-reader__p {
   margin: 0;
@@ -80,6 +105,7 @@
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+  flex: 0 0 auto;
 }
 .chapter-reader__nav {
   display: flex;
@@ -124,7 +150,7 @@
   border: none;
   border-radius: 10px;
   background: var(--accent-500);
-  color: var(--on-accent, #fff);
+  color: var(--on-accent);
   font: inherit;
   font-weight: 600;
   font-size: var(--site-body-small, 0.875rem);

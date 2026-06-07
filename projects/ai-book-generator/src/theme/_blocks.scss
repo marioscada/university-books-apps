@@ -1,6 +1,7 @@
 // =============================================================================
 // _blocks.scss — blocchi/CTA GLOBALI centralizzati (fedele a mariosite).
 // =============================================================================
+@use 'breakpoints' as bp;
 // Single source of truth: ogni CTA del sito usa `.site-cta-pill`. Le sezioni
 // decidono solo l'allineamento (`align-self`), MAI il colore. Adattato da
 // ~/marianoscada-site/projects/site-web/src/theme/_blocks.scss (rimosse le
@@ -21,9 +22,9 @@
   align-self: flex-start;
   padding: 12px 24px;
   border-radius: 999px;
-  background: var(--mat-sys-surface-container-lowest, #ffffff);
-  color: var(--mat-sys-on-surface, #1a1d21);
-  border: 1px solid var(--mat-sys-on-surface, #1a1d21);
+  background: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-on-surface);
+  border: 1px solid var(--mat-sys-on-surface);
   font-size: var(--site-body-medium, 1rem);
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -36,12 +37,12 @@
 
   &:hover,
   &:focus-visible {
-    background: var(--mat-sys-on-surface, #1a1d21);
-    color: var(--mat-sys-surface-container-lowest, #ffffff);
+    background: var(--mat-sys-on-surface);
+    color: var(--mat-sys-surface-container-lowest);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--mat-sys-on-surface, #1a1d21);
+    outline: 2px solid var(--mat-sys-on-surface);
     outline-offset: 3px;
   }
 
@@ -52,9 +53,9 @@
   // Mobile (< 900px): pill pre-riempito nero. Su touch non c'è hover, quindi
   // l'outline → fill non scatterebbe mai e un pill outline leggerebbe come
   // bottone passivo. CENTRALIZZATO qui: ogni pill si comporta identico.
-  @media (max-width: 899px) {
-    background: var(--mat-sys-on-surface, #1a1d21);
-    color: var(--mat-sys-surface-container-lowest, #ffffff);
+  @include bp.lt(bp.$md) {
+    background: var(--mat-sys-on-surface);
+    color: var(--mat-sys-surface-container-lowest);
   }
 }
 
@@ -65,12 +66,12 @@
   border-color: transparent;
 
   &:focus-visible {
-    outline-color: var(--mat-sys-surface-container-lowest, #ffffff);
+    outline-color: var(--mat-sys-surface-container-lowest);
   }
 
-  @media (max-width: 899px) {
-    background: var(--mat-sys-surface-container-lowest, #ffffff);
-    color: var(--mat-sys-on-surface, #1a1d21);
+  @include bp.lt(bp.$md) {
+    background: var(--mat-sys-surface-container-lowest);
+    color: var(--mat-sys-on-surface);
   }
 }
 

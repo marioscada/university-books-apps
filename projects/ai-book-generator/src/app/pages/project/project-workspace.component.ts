@@ -113,10 +113,6 @@ export class ProjectWorkspaceComponent {
   readonly loading = this.store.loading;
   readonly project = computed(() => this.store.entities().find((p) => p.id === this.id()));
   readonly job = computed(() => this.store.jobsByProject()[this.id()] ?? null);
-  readonly statusLabelKey = computed(() => {
-    const p = this.project();
-    return p ? `i18n.Project.Status.${p.status}` : '';
-  });
 
   constructor() {
     // Apre lo Studio quando il progetto ha un output; per i DERIVATI apre il
@@ -144,16 +140,6 @@ export class ProjectWorkspaceComponent {
     const k = this.project()?.derivedKind;
     return k ? derivedKindLabel(k) : '';
   });
-  readonly derivedFeedback = signal('');
-  /** Rigenera il derivato applicando il feedback all'AI. */
-  regenerateDerived(text?: string): void {
-    const feedback = (text ?? this.derivedFeedback()).trim();
-    if (!feedback) {
-      return;
-    }
-    this.derivedFeedback.set('');
-    void this.workspace.regenerateDerived(this.id(), feedback);
-  }
   /** Pubblica il derivato (riusa l'attesa di pubblicazione). */
   publishDerived(): void {
     void this.workspace.publish(this.id());

@@ -63,7 +63,7 @@
   cursor: not-allowed;
 }
 .cf__control[aria-invalid='true'] {
-  border-color: var(--tone-danger-fg, #d33);
+  border-color: var(--tone-danger-fg);
 }
 .cf__control--area {
   resize: vertical;
@@ -86,7 +86,7 @@
   color: var(--mat-sys-on-surface-variant);
 }
 .cf__msg--error {
-  color: var(--tone-danger-fg, #d33);
+  color: var(--tone-danger-fg);
 }
 
 @media (prefers-reduced-motion: reduce) {

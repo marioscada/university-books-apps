@@ -1,6 +1,7 @@
 // =============================================================================
 // _tokens.scss — design tokens (CSS custom properties) del tema mariosite.
 // =============================================================================
+@use 'breakpoints' as bp;
 // Portati 1:1 da ~/marianoscada-site/projects/site-web/src/styles.scss (:root).
 // NOTA: questo partial è additivo. Diventa attivo quando `src/styles.scss`
 // farà `@use 'theme/tokens'` (vedi docs/MIGRATION-TO-WEBSITE.md, Fase 2).
@@ -32,11 +33,18 @@
   --card-shadow-hover: 0 10px 30px rgb(15 23 42 / 10%);
   // Ombra "di rilievo" per elementi sollevati (es. copertina libro).
   --shadow-lift: 0 18px 40px -16px rgb(15 23 42 / 50%);
+  // Ombre semantiche aggiuntive (avatar, drawer laterale, overlay/showcase).
+  --shadow-avatar: 0 1px 2px rgb(15 23 42 / 18%);
+  --shadow-avatar-hover: 0 3px 8px rgb(15 23 42 / 28%);
+  --shadow-drawer: -2px 0 28px -6px rgb(15 23 42 / 18%);
+  --shadow-overlay: 0 12px 32px rgb(15 23 42 / 18%);
   // Copertina-libro: colore del dorso + scrim del testo su superficie colorata.
   --book-spine-color: rgb(15 23 42 / 18%);
   --cover-text-scrim: 0 2px 14px rgb(0 0 0 / 40%);
   // Scrim modale (backdrop dei dialog).
   --scrim: rgb(15 23 42 / 45%);
+  // Scrim morbido (backdrop del drawer mobile).
+  --scrim-soft: rgb(15 23 42 / 25%);
 
   // --- Palette GREY — SINGLE SOURCE (mirror operators/azzurro generic-styles
   // `_colors.scss`, shade 100→500). Base per testi, bordi e fill tenui di TUTTO
@@ -151,6 +159,7 @@
   --site-dark-on-surface: #ffffff;
   --site-dark-on-surface-variant: rgba(255, 255, 255, 0.65);
   --site-dark-outline: rgba(255, 255, 255, 0.15);
+  --site-dark-hover: rgb(255 255 255 / 6%);
   --site-footer-watermark-color: rgba(255, 255, 255, 0.04);
 
   // --- Sidebar widths (mirror) ----------------------------------------------
@@ -171,13 +180,13 @@
   --site-label-large: 0.875rem; // 14px (eyebrow)
 }
 
-@media (min-width: 600px) {
+@include bp.gte(bp.$sm) {
   :root {
     --page-padding-inline: 24px;
   }
 }
 
-@media (min-width: 1200px) {
+@include bp.gte(bp.$lg) {
   :root {
     --page-padding-inline: 32px;
   }

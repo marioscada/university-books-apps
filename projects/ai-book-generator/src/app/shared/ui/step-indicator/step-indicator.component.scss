@@ -78,7 +78,7 @@
 .step-indicator__step.is-done:not(.is-active) .step-indicator__dot {
   background: var(--tone-success-fg);
   border-color: var(--tone-success-fg);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 // --- Connectors (lines between dots, drawn from the dot row center) ---

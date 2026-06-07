@@ -1,10 +1,10 @@
-<div class="login-container">
-  <div class="login-card">
-    <h1 class="login-title">University Books</h1>
-    <p class="login-subtitle">Sign in to continue</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <h1 class="auth-title">University Books</h1>
+    <p class="auth-subtitle">Sign in to continue</p>
 
     @if (loginState$ | async; as state) {
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
         <app-counter-field
           label="Email"
           type="email"
@@ -27,7 +27,7 @@
 
         <!-- Error Message -->
         @if (state.error) {
-          <div class="alert alert-error">
+          <div class="auth-alert auth-alert--error">
             {{ state.error }}
           </div>
         }
@@ -35,11 +35,11 @@
         <!-- Submit Button -->
         <button
           type="submit"
-          class="btn-primary"
+          class="auth-btn auth-btn--primary"
           [disabled]="state.loading || loginForm.invalid"
         >
           @if (state.loading) {
-            <span class="spinner"></span>
+            <span class="auth-spinner"></span>
             <span>Signing in...</span>
           } @else {
             <span>Sign In</span>
@@ -49,7 +49,7 @@
     }
 
     <!-- Footer -->
-    <div class="login-footer">
+    <div class="auth-footer">
       <p>Don't have an account? <a routerLink="/auth/register">Sign up</a></p>
       <p><a routerLink="/auth/forgot-password">Forgot password?</a></p>
     </div>

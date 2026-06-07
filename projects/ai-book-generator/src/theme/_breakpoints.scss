@@ -1,0 +1,30 @@
+// ============================================================================
+// Breakpoint — UNICA fonte di verità del responsive (Sass: nessun output CSS).
+// Allineati a BreakpointHelperService (CDK):
+//   small  < 600        (phone)
+//   medium 600 – 959    (tablet)
+//   large  960 – 1279   (desktop)
+//   xlarge ≥ 1280       (wide)
+// `$studio` = soglia a cui lo Studio passa da 3 colonne a impilato.
+// I componenti fanno `@use '.../theme/breakpoints' as bp;` e usano i mixin:
+//   @include bp.lt(bp.$md) { … }   // sotto 960 (max-width: 959.98px)
+//   @include bp.gte(bp.$md) { … }  // da 960 in su (min-width: 960px)
+// L'offset .02px evita la sovrapposizione max/min (niente più 899 vs 900).
+// ============================================================================
+
+$sm: 600px;
+$md: 960px;
+$lg: 1280px;
+$studio: 1100px;
+
+@mixin lt($bp) {
+  @media (max-width: ($bp - 0.02px)) {
+    @content;
+  }
+}
+
+@mixin gte($bp) {
+  @media (min-width: $bp) {
+    @content;
+  }
+}

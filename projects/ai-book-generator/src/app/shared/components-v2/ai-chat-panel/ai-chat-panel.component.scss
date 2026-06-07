@@ -1,8 +1,12 @@
 // AiChatPanel — pannello chat dumb, self-contained sui token globali.
+@use '../../../../theme/breakpoints' as bp;
+
 :host {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
+  min-width: 0;
   min-height: 0;
   padding: 20px;
   background: var(--card-bg);
@@ -65,7 +69,7 @@
   cursor: pointer;
 
   &:hover {
-    background: var(--surface-soft, #f8fafc);
+    background: var(--surface-soft);
   }
   mat-icon {
     font-size: 20px;
@@ -101,12 +105,12 @@
 }
 .ai-chat__row[data-role='assistant'] .ai-chat__bubble,
 .ai-chat__row[data-role='system'] .ai-chat__bubble {
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   color: var(--mat-sys-on-surface);
 }
 .ai-chat__row[data-role='user'] .ai-chat__bubble {
   background: var(--accent-500);
-  color: var(--on-accent, #fff);
+  color: var(--on-accent);
 }
 .ai-chat__text {
   white-space: pre-wrap;
@@ -158,11 +162,21 @@
   flex-wrap: wrap;
   gap: 8px;
 }
+// Su mobile/tablet: altezza definita (così il thread scrolla dal primo messaggio
+// e il composer resta fisso) e niente suggerimenti rapidi (chat più compatta).
+@include bp.lt(bp.$studio) {
+  :host {
+    height: 50vh;
+  }
+  .ai-chat__ops {
+    display: none;
+  }
+}
 .ai-chat__chip {
   padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid var(--field-border-color, var(--card-border-color));
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   color: var(--mat-sys-on-surface);
   font: inherit;
   font-size: 0.75rem;
@@ -238,7 +252,7 @@
   border: none;
   border-radius: 999px;
   background: var(--accent-500);
-  color: var(--on-accent, #fff);
+  color: var(--on-accent);
   cursor: pointer;
   transition: background 0.15s ease, opacity 0.15s ease;
 
