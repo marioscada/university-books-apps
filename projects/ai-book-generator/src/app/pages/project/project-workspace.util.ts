@@ -5,9 +5,12 @@
  */
 import type { StepItem } from '../../shared/ui/step-indicator/step-indicator.component';
 import type { GenStep } from '../../shared/components-v2/generation-panel/generation-panel.component';
-import type { QuickOp } from '../../shared/components-v2/ai-chat-panel/ai-chat-panel.component';
+import type {
+  ChatBubble,
+  QuickOp,
+} from '../../shared/components-v2/ai-chat-panel/ai-chat-panel.component';
 import type { ChapterItem } from '../../shared/components-v2/chapter-index/chapter-index.component';
-import type { Chapter, DerivedKind } from '../../core/domain';
+import type { Chapter, ChatMessage, DerivedKind } from '../../core/domain';
 
 /** Statistica sintetica mostrata in "Cosa otterrai" (value + label). */
 export interface OutcomeStat {
@@ -140,6 +143,23 @@ export function toChapterItems(
           : 'review';
     return { key: c.id, index: c.index, title: c.title, status, statusLabel: chapterStatusLabel(status) };
   });
+}
+
+/**
+ * Bolle della chat dai messaggi dello store; in invio aggiunge una bolla
+ * "pending" dell'assistente come feedback ottimistico.
+ */
+export function toChatBubbles(messages: readonly ChatMessage[], sending: boolean): ChatBubble[] {
+  const bubbles: ChatBubble[] = messages.map((m) => ({
+    id: m.id,
+    role: m.role,
+    text: m.content,
+    operationLabel: (m as { operationLabel?: string }).operationLabel,
+  }));
+  if (sending) {
+    bubbles.push({ id: 'pending', role: 'assistant', text: 'Sto applicando la modifica…', pending: true });
+  }
+  return bubbles;
 }
 
 /** Statistiche "Cosa otterrai" da capitoli + numero di fonti. */

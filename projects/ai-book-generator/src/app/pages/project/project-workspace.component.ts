@@ -49,6 +49,7 @@ import {
   buildPipeline,
   quickOpText,
   toChapterItems,
+  toChatBubbles,
   toOutcomeStats,
 } from './project-workspace.util';
 
@@ -373,18 +374,9 @@ export class ProjectWorkspaceComponent {
 
   // --- Chat -------------------------------------------------------------------
   readonly chatDraft = signal('');
-  readonly chatBubbles = computed<ChatBubble[]>(() => {
-    const bubbles: ChatBubble[] = this.workspace.messages().map((m) => ({
-      id: m.id,
-      role: m.role,
-      text: m.content,
-      operationLabel: (m as { operationLabel?: string }).operationLabel,
-    }));
-    if (this.workspace.sending()) {
-      bubbles.push({ id: 'pending', role: 'assistant', text: 'Sto applicando la modifica…', pending: true });
-    }
-    return bubbles;
-  });
+  readonly chatBubbles = computed<ChatBubble[]>(() =>
+    toChatBubbles(this.workspace.messages(), this.workspace.sending()),
+  );
   readonly chatSubtitle = computed(() => {
     const ch = this.selectedChapter();
     return ch ? `Modifica: ${ch.index} · ${ch.title}` : 'Chiedi una modifica al documento';
