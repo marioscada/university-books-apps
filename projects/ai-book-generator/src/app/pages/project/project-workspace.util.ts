@@ -7,7 +7,13 @@ import type { StepItem } from '../../shared/ui/step-indicator/step-indicator.com
 import type { GenStep } from '../../shared/components-v2/generation-panel/generation-panel.component';
 import type { QuickOp } from '../../shared/components-v2/ai-chat-panel/ai-chat-panel.component';
 import type { ChapterItem } from '../../shared/components-v2/chapter-index/chapter-index.component';
-import type { DerivedKind } from '../../core/domain';
+import type { Chapter, DerivedKind } from '../../core/domain';
+
+/** Statistica sintetica mostrata in "Cosa otterrai" (value + label). */
+export interface OutcomeStat {
+  value: string;
+  label: string;
+}
 
 /** Step del percorso prodotto (stepper unificato dello Studio). */
 export const FLOW_STEPS: StepItem[] = [
@@ -101,4 +107,49 @@ export function chapterStatusLabel(status: ChapterItem['status']): string {
 /** Stima pagine da un conteggio parole (≈ 350 parole/pagina). */
 export function pagesFromWords(words: number): number {
   return Math.max(1, Math.round(words / 350));
+}
+
+/**
+ * Mappa i capitoli nel view-model della lista indice. In revisione indice
+ * (`ready=false`) lista neutra con stima lunghezza; a capitoli sviluppati lo
+ * stato riflette approvato/in generazione/in lettura/da rivedere.
+ */
+export function toChapterItems(
+  chapters: readonly Chapter[],
+  ready: boolean,
+  approvedIds: readonly string[],
+  selectedKey: string,
+): ChapterItem[] {
+  const approved = new Set(approvedIds);
+  return chapters.map((c) => {
+    if (!ready) {
+      return {
+        key: c.id,
+        index: c.index,
+        title: c.title,
+        status: 'todo' as const,
+        statusLabel: `≈ ${pagesFromWords(c.wordCount)} pag.`,
+      };
+    }
+    const status = approved.has(c.id)
+      ? 'approved'
+      : c.status === 'generating'
+        ? 'generating'
+        : c.id === selectedKey
+          ? 'current'
+          : 'review';
+    return { key: c.id, index: c.index, title: c.title, status, statusLabel: chapterStatusLabel(status) };
+  });
+}
+
+/** Statistiche "Cosa otterrai" da capitoli + numero di fonti. */
+export function toOutcomeStats(chapters: readonly Chapter[], sourcesCount: number): OutcomeStat[] {
+  const words = chapters.reduce((sum, c) => sum + c.wordCount, 0);
+  return [
+    { value: `≈ ${pagesFromWords(words)}`, label: 'Pagine' },
+    { value: `≈ ${words.toLocaleString('it-IT')}`, label: 'Parole' },
+    { value: String(chapters.length), label: 'Capitoli' },
+    { value: String(sourcesCount), label: 'Fonti' },
+    { value: `≈ ${Math.max(1, Math.round(words / 200))} min`, label: 'Lettura' },
+  ];
 }

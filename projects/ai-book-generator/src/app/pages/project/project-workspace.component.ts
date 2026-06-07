@@ -48,8 +48,8 @@ import {
   LANGUAGES,
   buildPipeline,
   quickOpText,
-  chapterStatusLabel,
-  pagesFromWords,
+  toChapterItems,
+  toOutcomeStats,
 } from './project-workspace.util';
 
 /**
@@ -343,54 +343,23 @@ export class ProjectWorkspaceComponent {
   /** True nella fase Capitoli (corpi sviluppati); false in revisione indice. */
   readonly chaptersReady = computed(() => this.workspace.chaptersReady());
 
-  readonly chapterItems = computed<ChapterItem[]>(() => {
-    const ready = this.chaptersReady();
-    const approved = new Set(this.workspace.approvedChapterIds());
-    const sel = this.selectedKey();
-    return this.workspace.chapters().map((c) => {
-      // Revisione indice: lista neutra con stima di lunghezza per voce.
-      if (!ready) {
-        return {
-          key: c.id,
-          index: c.index,
-          title: c.title,
-          status: 'todo' as const,
-          statusLabel: `≈ ${pagesFromWords(c.wordCount)} pag.`,
-        };
-      }
-      const status = approved.has(c.id)
-        ? 'approved'
-        : c.status === 'generating'
-          ? 'generating'
-          : c.id === sel
-            ? 'current'
-            : 'review';
-      return {
-        key: c.id,
-        index: c.index,
-        title: c.title,
-        status,
-        statusLabel: chapterStatusLabel(status),
-      };
-    });
-  });
+  readonly chapterItems = computed<ChapterItem[]>(() =>
+    toChapterItems(
+      this.workspace.chapters(),
+      this.chaptersReady(),
+      this.workspace.approvedChapterIds(),
+      this.selectedKey(),
+    ),
+  );
   readonly approvedCountLabel = computed(
     () => `${this.workspace.approvedCount()} di ${this.workspace.chapters().length} approvati`,
   );
   readonly indexCountLabel = computed(() => `${this.workspace.chapters().length} capitoli`);
 
   // --- Cosa otterrai (data view, revisione indice) ----------------------------
-  readonly outcomeStats = computed(() => {
-    const chapters = this.workspace.chapters();
-    const words = chapters.reduce((sum, c) => sum + c.wordCount, 0);
-    return [
-      { value: `≈ ${pagesFromWords(words)}`, label: 'Pagine' },
-      { value: `≈ ${words.toLocaleString('it-IT')}`, label: 'Parole' },
-      { value: String(chapters.length), label: 'Capitoli' },
-      { value: String(this.project()?.sourceIds.length ?? 0), label: 'Fonti' },
-      { value: `≈ ${Math.max(1, Math.round(words / 200))} min`, label: 'Lettura' },
-    ];
-  });
+  readonly outcomeStats = computed(() =>
+    toOutcomeStats(this.workspace.chapters(), this.project()?.sourceIds.length ?? 0),
+  );
 
   /** Etichette prev/next dal capitolo adiacente (vuoto = bordo lista). */
   readonly prevLabel = computed(() => this.adjacent(-1));
