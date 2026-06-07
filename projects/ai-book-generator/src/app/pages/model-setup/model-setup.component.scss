@@ -58,10 +58,10 @@
   gap: 12px;
   padding: 16px;
   border-radius: 12px;
-  background: var(--card-bg, #fff);
+  background: var(--card-bg);
   // Contorni marcati (stesso bordo degli input) + lieve ombra di stacco.
-  border: 1px solid var(--field-border-color, #9c9c9c);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--field-border-color);
+  box-shadow: var(--card-shadow);
 }
 @include bp.lt(bp.$sm) {
   .setup-aside-row {
@@ -93,7 +93,7 @@
   height: 28px;
   border: 1px solid var(--field-border-color, var(--card-border-color));
   border-radius: 8px;
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   color: var(--accent-700);
   cursor: pointer;
 
@@ -107,7 +107,7 @@
   margin: 0;
   padding: 12px;
   border-radius: 10px;
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   border: 1px solid var(--card-border-color);
   font-size: var(--site-body-small, 0.875rem);
   line-height: 1.5;
@@ -150,7 +150,7 @@
   }
 
   &--danger {
-    color: var(--tone-danger-fg, #c0362c);
+    color: var(--tone-danger-fg);
   }
 }
 
@@ -178,7 +178,7 @@
 .setup-cap__track {
   height: 6px;
   border-radius: 999px;
-  background: var(--surface-soft, #f1f3f6);
+  background: var(--surface-soft);
   border: 1px solid var(--card-border-color);
   overflow: hidden;
 }
@@ -211,7 +211,7 @@
   gap: 8px;
   padding: 14px 10px;
   border-radius: 12px;
-  background: var(--card-bg, #fff);
+  background: var(--card-bg);
   border: 1px solid var(--card-border-color);
   text-align: center;
 }
@@ -222,7 +222,7 @@
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: var(--surface-soft, #f1f3f6);
+  background: var(--surface-soft);
   color: var(--mat-sys-on-surface-variant);
 
   mat-icon {
@@ -231,26 +231,27 @@
     height: 26px;
   }
 
+  // Colori per categoria file dai token tono globali (no hex hardcoded).
   &[data-kind='pdf'] {
-    background: #fdecec;
-    color: #d9362b;
+    background: var(--tone-danger-bg);
+    color: var(--tone-danger-fg);
   }
   &[data-kind='doc'] {
-    background: #e8f0fe;
-    color: #2b6cb0;
+    background: var(--tone-info-bg);
+    color: var(--tone-info-fg);
   }
   &[data-kind='img'] {
-    background: #e6f6ef;
-    color: #1a8754;
+    background: var(--tone-success-bg);
+    color: var(--tone-success-fg);
   }
   &[data-kind='sheet'] {
-    background: #e7f5ec;
-    color: #1f8a4c;
+    background: var(--tone-amber-bg);
+    color: var(--tone-amber-fg);
   }
   &[data-kind='text'],
   &[data-kind='file'] {
-    background: #eef1f5;
-    color: #475569;
+    background: var(--tone-neutral-bg);
+    color: var(--tone-neutral-fg);
   }
 }
 .setup-file__name {
@@ -272,7 +273,7 @@
 .setup-file__err {
   font-size: 0.6875rem;
   font-weight: 700;
-  color: var(--tone-danger-fg, #c0362c);
+  color: var(--tone-danger-fg);
 }
 .setup-file__remove {
   position: absolute;
@@ -285,7 +286,7 @@
   height: 20px;
   border: none;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.05);
+  background: var(--surface-soft);
   color: var(--mat-sys-on-surface-variant);
   cursor: pointer;
   opacity: 0;
@@ -302,7 +303,7 @@
   opacity: 1;
 }
 .setup-file__remove:hover {
-  background: rgba(15, 23, 42, 0.12);
+  background: var(--card-border-color);
 }
 
 // --- Footer dei dialog (Istruzioni / Carica / Testo) ------------------------

@@ -237,7 +237,7 @@ app-review-shell {
   &.is-on {
     background: var(--accent-500);
     border-color: var(--accent-500);
-    color: var(--on-accent, #fff);
+    color: var(--on-accent);
   }
 }
 
@@ -284,7 +284,7 @@ app-review-shell {
   width: 18px;
   height: 18px;
   border-radius: 999px;
-  background: #fff;
+  background: var(--card-bg);
   transition: transform 0.12s ease;
 }
 .studio-toggle.is-on .studio-toggle__knob {
@@ -307,8 +307,8 @@ app-review-shell {
   height: 72px;
   margin-bottom: 20px;
   border-radius: 999px;
-  background: var(--tone-success-fg, #1a8754);
-  color: #fff;
+  background: var(--tone-success-fg);
+  color: var(--on-accent);
 
   mat-icon {
     font-size: 38px;
@@ -360,7 +360,7 @@ app-review-shell {
   text-align: left;
   padding: 16px;
   border-radius: 12px;
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   border: 1px solid var(--card-border-color);
   cursor: pointer;
   font: inherit;

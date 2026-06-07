@@ -8,8 +8,8 @@
   flex-direction: column;
   height: 100%;
   padding: 24px;
-  background: var(--site-dark-surface, #1a1d21);
-  color: var(--site-dark-on-surface, #fff);
+  background: var(--site-dark-surface);
+  color: var(--site-dark-on-surface);
 }
 
 // Riga in alto: solo la X, allineata a destra (mirror mariosite).
@@ -40,7 +40,7 @@
   display: inline-flex;
   background: none;
   border: 0;
-  color: var(--site-dark-on-surface, #fff);
+  color: var(--site-dark-on-surface);
   cursor: pointer;
 }
 
@@ -57,14 +57,14 @@
     border-radius: 8px;
     text-decoration: none;
     font-size: var(--site-title-medium, 1.125rem);
-    color: var(--site-dark-on-surface, #fff);
+    color: var(--site-dark-on-surface);
 
     &:hover {
       background: rgba(255, 255, 255, 0.06);
     }
 
     &.is-active {
-      color: var(--site-nav-item-active-color, #7aa7ff);
+      color: var(--site-nav-item-active-color);
     }
   }
 }
@@ -76,14 +76,14 @@
   flex-direction: column;
   gap: 12px;
   padding-top: 16px;
-  border-top: 1px solid var(--site-dark-outline, rgba(255, 255, 255, 0.15));
+  border-top: 1px solid var(--site-dark-outline);
 }
 
 .mobile-menu__signin {
   text-align: center;
   text-decoration: none;
   padding: 12px;
-  color: var(--site-dark-on-surface, #fff);
+  color: var(--site-dark-on-surface);
 }
 
 .mobile-menu__cta {
@@ -92,6 +92,6 @@
   padding: 12px 18px;
   border-radius: 999px;
   font-weight: 500;
-  background: var(--site-dark-on-surface, #fff);
-  color: var(--site-dark-surface, #1a1d21);
+  background: var(--site-dark-on-surface);
+  color: var(--site-dark-surface);
 }

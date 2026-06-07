@@ -6,7 +6,7 @@
   align-items: center;
   min-height: 100vh;
   padding: 24px;
-  background: var(--section-band-alt, #f1f5f9);
+  background: var(--section-band-alt);
 }
 
 .login-card {
@@ -68,7 +68,7 @@
   font-weight: 600;
   cursor: pointer;
   background: var(--accent-500);
-  color: var(--on-accent, #fff);
+  color: var(--on-accent);
   transition: background 0.15s ease;
 
   &:hover:not(:disabled) {

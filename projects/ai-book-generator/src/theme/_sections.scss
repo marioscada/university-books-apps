@@ -28,7 +28,7 @@
 // verticale generoso. Contenuto confinato in `.site-container` (di solito su
 // `.page__inner`).
 .page {
-  background: #ffffff;
+  background: var(--mat-sys-surface-container-lowest);
   padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px));
   min-height: 60vh;
 }
@@ -50,7 +50,7 @@
 
 // `.band--alt` coincide col canvas tinto: tenuta per retro-compatibilità.
 .band--alt {
-  background: var(--section-band-alt, #f1f5f9);
+  background: var(--section-band-alt);
 }
 
 .band__inner {

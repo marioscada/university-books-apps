@@ -1,6 +1,6 @@
 :host {
   display: block;
-  background: var(--mat-sys-surface-container-lowest, #ffffff);
+  background: var(--mat-sys-surface-container-lowest);
 }
 
 :host(:nth-of-type(even)) {
@@ -24,7 +24,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--site-accent-blue, #7aa7ff);
+  color: var(--site-accent-blue);
   margin: 0;
 }
 
@@ -33,7 +33,7 @@
   font-weight: 600;
   letter-spacing: -0.02em;
   margin: 0 0 clamp(16px, 3vw, 32px);
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 .output-types__grid {
@@ -51,8 +51,8 @@
   gap: 10px;
   padding: clamp(20px, 3vw, 28px);
   border-radius: 16px;
-  background: var(--mat-sys-surface, #ffffff);
-  border: 1px solid var(--mat-sys-outline-variant, #e3e5e8);
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
 }
 
 .output-card__icon {
@@ -62,8 +62,8 @@
   width: 56px;
   height: 56px;
   border-radius: 14px;
-  background: #e8efff;
-  color: var(--site-accent-blue, #7aa7ff);
+  background: var(--accent-100);
+  color: var(--site-accent-blue);
 
   mat-icon {
     font-size: 28px;
@@ -76,12 +76,12 @@
   font-size: var(--site-title-medium, 1.125rem);
   font-weight: 600;
   margin: 0;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 .output-card__desc {
   font-size: var(--site-body-small, 0.875rem);
   line-height: 1.5;
   margin: 0;
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }

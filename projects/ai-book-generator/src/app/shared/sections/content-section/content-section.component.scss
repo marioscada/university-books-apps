@@ -5,13 +5,13 @@
 
 :host {
   display: block;
-  background: var(--mat-sys-surface-container-lowest, #ffffff); // bianco di default
+  background: var(--mat-sys-surface-container-lowest); // bianco di default
 }
 
 // Zebra striping self-contained: ogni sezione si tinta in base alla sua
 // posizione tra le sorelle (`:nth-of-type` ignora l'hero, elemento diverso).
 :host(:nth-of-type(even)) {
-  background: var(--section-band-alt, #f1f5f9);
+  background: var(--section-band-alt);
 }
 
 .content-section {
@@ -79,7 +79,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
   margin: 0;
 }
 
@@ -89,7 +89,7 @@
   letter-spacing: -0.02em;
   line-height: 1.15;
   margin: 0;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 .content-section__subtitle {
@@ -97,14 +97,14 @@
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.25;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
   margin: 0;
 }
 
 .content-section__body {
   font-size: var(--section-body-size, 1.0625rem);
   line-height: 1.6;
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
   margin: 0;
   white-space: pre-line;
   text-align: justify;

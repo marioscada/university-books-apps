@@ -4,7 +4,7 @@
   display: block;
   padding-block: 16px;
   // Stesso fondo della pagina (canvas tinto), non bianco.
-  background: var(--section-band-alt, #f1f5f9);
+  background: var(--section-band-alt);
   border-top: 1px solid var(--card-border-color);
 }
 

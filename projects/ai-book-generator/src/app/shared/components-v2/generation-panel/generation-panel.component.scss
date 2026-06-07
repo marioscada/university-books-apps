@@ -29,7 +29,7 @@
   margin-bottom: 18px;
   padding: 16px;
   border-radius: 6px 12px 12px 6px;
-  color: var(--on-accent, #fff);
+  color: var(--on-accent);
   box-shadow: var(--shadow-lift, 0 18px 40px -16px rgb(15 23 42 / 50%));
 }
 .gen__cover-kicker {
@@ -115,14 +115,14 @@
   }
 }
 .gen__step[data-status='done'] .gen__dot {
-  background: var(--site-success, #16a34a);
+  background: var(--site-success);
   border-color: transparent;
-  color: #fff;
+  color: var(--on-accent);
 }
 .gen__step[data-status='current'] .gen__dot {
   background: var(--accent-500);
   border-color: transparent;
-  color: var(--on-accent, #fff);
+  color: var(--on-accent);
 
   mat-icon {
     animation: gen-spin 0.9s linear infinite;
@@ -134,7 +134,7 @@
   color: var(--mat-sys-on-surface-variant);
 }
 .gen__step[data-status='done'] .gen__step-label {
-  color: var(--site-success, #16a34a);
+  color: var(--site-success);
 }
 .gen__step[data-status='current'] .gen__step-label {
   color: var(--mat-sys-on-surface);
@@ -151,7 +151,7 @@
   background: var(--card-border-color);
 }
 .gen__conn[data-done='true'] {
-  background: var(--site-success, #16a34a);
+  background: var(--site-success);
 }
 
 // --- Avanzamento ------------------------------------------------------------
@@ -200,7 +200,7 @@
   cursor: pointer;
 
   &:hover {
-    background: var(--surface-soft, #f8fafc);
+    background: var(--surface-soft);
   }
   mat-icon {
     font-size: 16px;

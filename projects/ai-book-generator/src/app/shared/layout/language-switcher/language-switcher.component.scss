@@ -4,8 +4,8 @@
 
 // Testo neutro: il trigger fa parte della nav, non è un CTA (mirror mariosite).
 .language-switcher {
-  --mdc-text-button-label-text-color: var(--mat-sys-on-surface-variant, #5b6068);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  --mdc-text-button-label-text-color: var(--mat-sys-on-surface-variant);
+  color: var(--mat-sys-on-surface-variant);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -42,7 +42,7 @@
 // Riga del locale attivo nel menu aperto.
 ::ng-deep .mat-mdc-menu-item.is-active {
   font-weight: 600;
-  color: var(--accent-500, #039fce);
+  color: var(--accent-500);
 }
 
 ::ng-deep .mat-mdc-menu-item .mat-icon[data-mat-icon-type='svg'] {

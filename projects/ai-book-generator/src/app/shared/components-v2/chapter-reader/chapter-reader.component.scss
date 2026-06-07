@@ -53,7 +53,7 @@
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   color: var(--mat-sys-on-surface-variant);
 }
 .chapter-reader__status[data-tone='accent'] {
@@ -150,7 +150,7 @@
   border: none;
   border-radius: 10px;
   background: var(--accent-500);
-  color: var(--on-accent, #fff);
+  color: var(--on-accent);
   font: inherit;
   font-weight: 600;
   font-size: var(--site-body-small, 0.875rem);

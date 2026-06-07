@@ -43,7 +43,7 @@
   height: 28px;
   border: 1px solid var(--field-border-color, var(--card-border-color));
   border-radius: 8px;
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   color: var(--mat-sys-on-surface-variant);
   cursor: pointer;
 
@@ -81,7 +81,7 @@
   transition: background 0.12s ease;
 
   &:hover {
-    background: var(--surface-soft, #f8fafc);
+    background: var(--surface-soft);
   }
   &.is-selected {
     background: var(--accent-100);
@@ -98,7 +98,7 @@
   width: 24px;
   height: 24px;
   border-radius: 7px;
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   border: 1px solid var(--field-border-color, var(--card-border-color));
   font-size: 0.75rem;
   font-weight: 700;
@@ -122,7 +122,7 @@
 .chapter-index__row[data-status='review'] .chapter-index__dot {
   background: var(--accent-500);
   border-color: transparent;
-  color: var(--on-accent, #fff);
+  color: var(--on-accent);
 }
 
 .chapter-index__label {
@@ -155,7 +155,7 @@
 }
 .chapter-index__row[data-status='review'] .chapter-index__status,
 .chapter-index__row[data-status='current'] .chapter-index__status {
-  color: var(--tone-warning-fg, #b26a00);
+  color: var(--tone-warning-fg);
 }
 
 .chapter-index__chevron {

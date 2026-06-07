@@ -32,7 +32,7 @@
   // Canvas GLOBALE tinto per tutte le pagine app (stile create/new): le card
   // bianche "staccano" con l'ombra. Sezioni full-bleed con bg proprio (hero,
   // footer) lo coprono comunque. Single source = --section-band-alt.
-  background: var(--section-band-alt, #f1f5f9);
+  background: var(--section-band-alt);
   // Sicurezza: il bg di hero/sezioni è full-bleed; clip impedisce lo scroll
   // orizzontale accidentale (mirror mat-sidenav-content di mariosite).
   overflow-x: clip;
@@ -54,6 +54,6 @@
   inset: 0 0 0 auto;
   z-index: 20;
   width: min(320px, 85vw);
-  background: var(--site-dark-surface, #1a1d21);
+  background: var(--site-dark-surface);
   overflow-y: auto;
 }

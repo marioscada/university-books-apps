@@ -23,7 +23,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--page-hero-eyebrow-color, #1d4ed8);
+  color: var(--page-hero-eyebrow-color);
 }
 
 .page-header__title {
@@ -31,13 +31,13 @@
   font-size: var(--site-display-small, clamp(1.75rem, 3vw, 2.5rem));
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: var(--mat-sys-on-surface, #1a1d21);
+  color: var(--mat-sys-on-surface);
 }
 
 .page-header__subtitle {
   margin: 0;
   font-size: var(--site-body-large, 1.0625rem);
-  color: var(--mat-sys-on-surface-variant, #5b6068);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .page-header__actions {

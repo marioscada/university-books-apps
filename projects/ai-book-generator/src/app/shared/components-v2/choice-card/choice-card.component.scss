@@ -7,7 +7,7 @@
   padding: var(--card-padding, 20px);
   border-radius: var(--card-radius, 16px);
   // Opzione B: superficie tenue, staccata dal bianco pagina.
-  background: var(--surface-soft, #f8fafc);
+  background: var(--surface-soft);
   border: 1px solid var(--card-border-color);
   cursor: pointer;
   outline: none;
