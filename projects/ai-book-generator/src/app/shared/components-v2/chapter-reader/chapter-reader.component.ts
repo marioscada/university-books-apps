@@ -41,6 +41,8 @@ export type ChapterReaderTone = 'neutral' | 'accent' | 'success' | 'warning';
   styleUrl: './chapter-reader.component.scss',
 })
 export class ChapterReaderComponent {
+  /** Titolo del documento/libro (overline sopra il titolo del capitolo). */
+  readonly documentTitle = input<string>('');
   /** Titolo del capitolo (già tradotto/composto, es. "6 · Opportunità e rischi"). */
   readonly title = input<string>('');
   /** Meta sotto il titolo (es. "≈ 1.240 parole", già tradotto). */

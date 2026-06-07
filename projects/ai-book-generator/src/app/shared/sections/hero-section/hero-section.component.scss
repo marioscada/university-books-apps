@@ -1,6 +1,7 @@
 // Page hero — full-bleed image con overlay testo a SINISTRA e scrim che
 // sfuma a destra. Altezza/colori/scrim da token globali (theme/_tokens.scss):
 // punto centrale unico per tutte le pagine.
+@use '../../../../theme/breakpoints' as bp;
 
 :host {
   display: block;
@@ -14,7 +15,7 @@
 }
 
 // Desktop: banda full-width con altezza controllata dal token globale.
-@media (min-width: 900px) {
+@include bp.gte(bp.$md) {
   .hero-section {
     aspect-ratio: auto;
     height: var(--page-hero-height, clamp(460px, 57vw, 640px));
@@ -98,7 +99,7 @@
 }
 
 // Mobile + small tablet: testo centrato sopra l'immagine intera (16/9).
-@media (max-width: 899px) {
+@include bp.lt(bp.$md) {
   .hero-section__scrim {
     background: var(--page-hero-scrim-mobile);
   }

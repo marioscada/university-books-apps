@@ -1,3 +1,5 @@
+@use '../../../../theme/breakpoints' as bp;
+
 :host {
   display: flex;
   align-items: center;
@@ -153,7 +155,7 @@
 .lr__menu {
   display: none;
 }
-@media (max-width: 768px) {
+@include bp.lt(bp.$md) {
   .lr__actions {
     display: none;
   }

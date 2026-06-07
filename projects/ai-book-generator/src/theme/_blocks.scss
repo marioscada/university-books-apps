@@ -1,6 +1,7 @@
 // =============================================================================
 // _blocks.scss — blocchi/CTA GLOBALI centralizzati (fedele a mariosite).
 // =============================================================================
+@use 'breakpoints' as bp;
 // Single source of truth: ogni CTA del sito usa `.site-cta-pill`. Le sezioni
 // decidono solo l'allineamento (`align-self`), MAI il colore. Adattato da
 // ~/marianoscada-site/projects/site-web/src/theme/_blocks.scss (rimosse le
@@ -52,7 +53,7 @@
   // Mobile (< 900px): pill pre-riempito nero. Su touch non c'è hover, quindi
   // l'outline → fill non scatterebbe mai e un pill outline leggerebbe come
   // bottone passivo. CENTRALIZZATO qui: ogni pill si comporta identico.
-  @media (max-width: 899px) {
+  @include bp.lt(bp.$md) {
     background: var(--mat-sys-on-surface, #1a1d21);
     color: var(--mat-sys-surface-container-lowest, #ffffff);
   }
@@ -68,7 +69,7 @@
     outline-color: var(--mat-sys-surface-container-lowest, #ffffff);
   }
 
-  @media (max-width: 899px) {
+  @include bp.lt(bp.$md) {
     background: var(--mat-sys-surface-container-lowest, #ffffff);
     color: var(--mat-sys-on-surface, #1a1d21);
   }

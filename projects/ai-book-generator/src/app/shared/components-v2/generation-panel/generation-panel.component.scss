@@ -5,6 +5,8 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  width: 100%;
+  min-width: 0;
   padding: clamp(32px, 4vw, 44px);
   background: var(--card-bg);
   border: 1px solid var(--card-border-color);

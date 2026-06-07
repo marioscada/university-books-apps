@@ -1,4 +1,6 @@
 // Model setup (create/new) — riquadro centrato composto con components-v2.
+@use '../../../theme/breakpoints' as bp;
+
 :host {
   display: block;
 }
@@ -61,7 +63,7 @@
   border: 1px solid var(--field-border-color, #9c9c9c);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
 }
-@media (max-width: 700px) {
+@include bp.lt(bp.$sm) {
   .setup-aside-row {
     flex-direction: column;
   }

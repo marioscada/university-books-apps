@@ -1,10 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   booleanAttribute,
+  effect,
   input,
   model,
   output,
+  viewChild,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -96,6 +99,20 @@ export class AiChatPanelComponent {
 
   private static seq = 0;
   protected readonly fieldId = `chat-${AiChatPanelComponent.seq++}`;
+
+  /** Riferimento al thread per l'auto-scroll. */
+  private readonly threadRef = viewChild<ElementRef<HTMLElement>>('thread');
+  /**
+   * Auto-scroll all'ultimo messaggio quando il thread cambia (come Claude/ChatGPT):
+   * dopo il render porta lo scroll in fondo. Costruttore magro → effect come campo.
+   */
+  private readonly autoScroll = effect(() => {
+    this.messages();
+    const el = this.threadRef()?.nativeElement;
+    if (el) {
+      requestAnimationFrame(() => (el.scrollTop = el.scrollHeight));
+    }
+  });
 
   protected onSubmit(): void {
     const text = this.value().trim();

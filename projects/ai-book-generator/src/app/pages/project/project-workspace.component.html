@@ -53,27 +53,23 @@
         </div>
       } @else if (derived()) {
         <div class="studio">
-          <header class="studio-bar site-container">
-            <div class="studio-titlerow">
-              <h1 class="studio-title">{{ project.title }}</h1>
-              <span class="studio-status" [attr.data-status]="project.status">Derivato · {{ derivedLabel() }}</span>
-            </div>
-          </header>
           <div class="studio-stack site-container">
             <app-review-shell [showIndex]="false">
-              <section class="surface-card">
+              <section class="surface-card studio-derived-panel fill-pane">
                 <app-derived-result [content]="derived()!" [readonlyLabel]="'Sola lettura'" />
               </section>
               <app-ai-chat-panel
                 ai
-                [title]="'Segnala errori all’AI'"
-                [subtitle]="'Niente modifiche manuali: descrivi gli errori e rigenero il derivato corretto.'"
-                [messages]="[]"
-                [placeholder]="'Es. errore di traduzione…'"
-                [sendLabel]="'Rigenera'"
-                [emptyHint]="'Scrivi cosa correggere e premi Rigenera.'"
-                [(value)]="derivedFeedback"
-                (send)="regenerateDerived($event)" />
+                class="fill-pane"
+                [title]="'Assistente AI'"
+                [subtitle]="chatSubtitle()"
+                [messages]="chatBubbles()"
+                [quickOps]="quickOps"
+                [placeholder]="'Scrivi un’istruzione…'"
+                [sendLabel]="'Invia'"
+                [(value)]="chatDraft"
+                (send)="sendChat($event)"
+                (quickOp)="runQuickOp($event)" />
             </app-review-shell>
           </div>
           <app-action-bar sticky placement="top">
@@ -132,26 +128,7 @@
       </div>
     } @else {
       <div class="studio">
-        <!-- Top: titolo + stato (la navigazione "indietro" vive nella bottom bar) -->
-        <header class="studio-bar site-container">
-          <div class="studio-titlerow">
-            <h1 class="studio-title">{{ project.title }}</h1>
-            <span class="studio-status" [attr.data-status]="project.status">
-              {{ statusLabelKey() | translate }}
-            </span>
-          </div>
-        </header>
-
         <div class="studio-stack site-container">
-          <!-- Stepper di percorso -->
-          <section class="surface-card studio-stepper">
-            <span class="studio-stepper__label">Avanzamento</span>
-            <app-step-indicator
-              [steps]="flowSteps"
-              [activeIndex]="flowActive()"
-              [completed]="flowCompleted()" />
-          </section>
-
           @if (project.status === 'draft') {
             <section class="surface-card studio-panel">
               <span class="studio-eyebrow">Bozza</span>
@@ -187,20 +164,12 @@
                 (send)="sendChat($event)"
                 (quickOp)="runQuickOp($event)" />
             </section>
-            <section class="surface-card studio-outcome">
-              <h2 class="studio-outcome__title">Cosa otterrai</h2>
-              <p class="studio-outcome__sub">Stima di ciò che verrà generato, dai capitoli dell’indice.</p>
-              <div class="studio-outcome__grid">
-                @for (s of outcomeStats(); track s.label) {
-                  <app-stat-card [value]="s.value" [label]="s.label" tone="accent" />
-                }
-              </div>
-            </section>
           } @else if (project.status === 'review') {
             <!-- Revisione CAPITOLI: shell riutilizzabile (indice · lettura · chat) -->
             <app-review-shell showIndex>
               <app-chapter-index
                 index
+                class="fill-pane"
                 [heading]="'Indice'"
                 [countLabel]="approvedCountLabel()"
                 [chapters]="chapterItems()"
@@ -209,6 +178,8 @@
                 (selected)="selectChapter($event)" />
               @if (selectedChapter(); as ch) {
                 <app-chapter-reader
+                  class="fill-pane"
+                  [documentTitle]="project.title"
                   [title]="ch.index + ' · ' + ch.title"
                   [meta]="'≈ ' + ch.wordCount + ' parole'"
                   [statusLabel]="selectedApproved() ? 'Approvato' : 'Da rivedere'"
@@ -223,6 +194,7 @@
               }
               <app-ai-chat-panel
                 ai
+                class="fill-pane"
                 [title]="'Assistente AI'"
                 [subtitle]="chatSubtitle()"
                 [messages]="chatBubbles()"
@@ -289,6 +261,7 @@
               @if (selectedChapter(); as ch) {
                 <app-chapter-reader
                   class="studio-reader"
+                  [documentTitle]="project.title"
                   [title]="ch.index + ' · ' + ch.title"
                   [meta]="'≈ ' + ch.wordCount + ' parole'"
                   [paragraphs]="selectedParagraphs()"
@@ -312,7 +285,7 @@
 
         <!-- Bottom action bar: indietro (sx) + azione di stato (dx) — su ogni schermata -->
         @if (project.status === 'draft') {
-          <app-action-bar sticky>
+          <app-action-bar sticky placement="top">
             <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
             <button end mat-flat-button color="primary" type="button" (click)="generate()">
               Genera l’indice
@@ -320,7 +293,7 @@
             </button>
           </app-action-bar>
         } @else if (project.status === 'review' && !chaptersReady()) {
-          <app-action-bar sticky>
+          <app-action-bar sticky placement="top">
             <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
             <button end mat-flat-button color="primary" type="button" (click)="generateChapters()">
               Genera i capitoli
@@ -328,7 +301,7 @@
             </button>
           </app-action-bar>
         } @else if (project.status === 'review') {
-          <app-action-bar sticky>
+          <app-action-bar sticky placement="top">
             <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
             <button end mat-flat-button color="primary" type="button" (click)="goToPublish()">
               Pubblica
@@ -336,7 +309,7 @@
             </button>
           </app-action-bar>
         } @else if (project.status === 'published') {
-          <app-action-bar sticky>
+          <app-action-bar sticky placement="top">
             <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
             <button end mat-flat-button color="primary" type="button" (click)="openDocument()">
               <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">menu_book</mat-icon>
@@ -344,7 +317,7 @@
             </button>
           </app-action-bar>
         } @else if (project.status === 'archived') {
-          <app-action-bar sticky>
+          <app-action-bar sticky placement="top">
             <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
             <button end mat-stroked-button type="button" (click)="reopen()">
               <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">unarchive</mat-icon>
@@ -352,7 +325,7 @@
             </button>
           </app-action-bar>
         } @else if (project.status === 'failed') {
-          <app-action-bar sticky>
+          <app-action-bar sticky placement="top">
             <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
             <button end mat-flat-button color="primary" type="button" (click)="generate()">
               <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">refresh</mat-icon>
