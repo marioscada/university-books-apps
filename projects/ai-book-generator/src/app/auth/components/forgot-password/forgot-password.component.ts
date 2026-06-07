@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
 import { CounterFieldComponent } from '../../../shared/ui/counter-field/counter-field.component';
+import { fieldError } from '../../auth-form.util';
 import { parsePasswordResetError } from './forgot-password.utils';
 
 @Component({
@@ -12,8 +13,7 @@ import { parsePasswordResetError } from './forgot-password.utils';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, CounterFieldComponent],
-  templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss'
+  templateUrl: './forgot-password.component.html'
 })
 export class ForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);
@@ -121,32 +121,28 @@ export class ForgotPasswordComponent {
   }
 
   get emailError(): string {
-    const c = this.emailControl;
-    if (!c?.touched || !c.errors) return '';
-    if (c.errors['required']) return 'Email is required';
-    if (c.errors['email']) return 'Please enter a valid email';
-    return '';
+    return fieldError(this.emailControl, {
+      required: 'Email is required',
+      email: 'Please enter a valid email',
+    });
   }
 
   get codeError(): string {
-    const c = this.code;
-    if (!c?.touched || !c.errors) return '';
-    if (c.errors['required']) return 'Code is required';
-    if (c.errors['minlength']) return 'Code must be 6 digits';
-    return '';
+    return fieldError(this.code, {
+      required: 'Code is required',
+      minlength: 'Code must be 6 digits',
+    });
   }
 
   get newPasswordError(): string {
-    const c = this.newPassword;
-    if (!c?.touched || !c.errors) return '';
-    if (c.errors['required']) return 'Password is required';
-    if (c.errors['minlength']) return 'Password must be at least 12 characters';
-    return '';
+    return fieldError(this.newPassword, {
+      required: 'Password is required',
+      minlength: 'Password must be at least 12 characters',
+    });
   }
 
   get confirmPasswordError(): string {
     if (this.passwordMismatch) return 'Passwords do not match';
-    const c = this.confirmPassword;
-    return c?.touched && c.errors?.['required'] ? 'Please confirm your password' : '';
+    return fieldError(this.confirmPassword, { required: 'Please confirm your password' });
   }
 }

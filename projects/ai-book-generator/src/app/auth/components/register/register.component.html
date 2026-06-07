@@ -1,10 +1,10 @@
-<div class="register-container">
-  <div class="register-card">
-    <h1 class="register-title">Create Account</h1>
-    <p class="register-subtitle">Sign up to get started</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <h1 class="auth-title">Create Account</h1>
+    <p class="auth-subtitle">Sign up to get started</p>
 
     @if (step() === 'register') {
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
       <app-counter-field
         label="First Name" required placeholder="Mario"
         [value]="givenName?.value ?? ''"
@@ -45,14 +45,14 @@
 
       <!-- Success Message -->
       @if (successMessage()) {
-        <div class="alert alert-success">
+        <div class="auth-alert auth-alert--success">
           {{ successMessage() }}
         </div>
       }
 
       <!-- Error Message -->
       @if (errorMessage()) {
-        <div class="alert alert-error">
+        <div class="auth-alert auth-alert--error">
           {{ errorMessage() }}
         </div>
       }
@@ -60,11 +60,11 @@
       <!-- Submit Button -->
       <button
         type="submit"
-        class="btn-primary"
+        class="auth-btn auth-btn--primary"
         [disabled]="loading() || registerForm.invalid"
       >
         @if (loading()) {
-          <span class="spinner"></span>
+          <span class="auth-spinner"></span>
           <span>Creating account...</span>
         } @else {
           <span>Sign Up</span>
@@ -74,8 +74,8 @@
     }
 
     @if (step() === 'verify') {
-    <form [formGroup]="confirmationForm" (ngSubmit)="onConfirm()" class="register-form">
-      <p class="verify-message">
+    <form [formGroup]="confirmationForm" (ngSubmit)="onConfirm()" class="auth-form">
+      <p class="auth-verify">
         We've sent a verification code to <strong>{{ userEmail }}</strong>.
         Please check your email and enter the code below.
       </p>
@@ -90,14 +90,14 @@
 
       <!-- Success Message -->
       @if (successMessage()) {
-        <div class="alert alert-success">
+        <div class="auth-alert auth-alert--success">
           {{ successMessage() }}
         </div>
       }
 
       <!-- Error Message -->
       @if (errorMessage()) {
-        <div class="alert alert-error">
+        <div class="auth-alert auth-alert--error">
           {{ errorMessage() }}
         </div>
       }
@@ -105,11 +105,11 @@
       <!-- Submit Button -->
       <button
         type="submit"
-        class="btn-primary"
+        class="auth-btn auth-btn--primary"
         [disabled]="loading() || confirmationForm.invalid"
       >
         @if (loading()) {
-          <span class="spinner"></span>
+          <span class="auth-spinner"></span>
           <span>Verifying...</span>
         } @else {
           <span>Verify Email</span>
@@ -119,7 +119,7 @@
       <!-- Back to Register -->
       <button
         type="button"
-        class="btn-secondary"
+        class="auth-btn auth-btn--secondary"
         (click)="step.set('register')"
         [disabled]="loading()"
       >
@@ -129,7 +129,7 @@
     }
 
     <!-- Footer -->
-    <div class="register-footer">
+    <div class="auth-footer">
       <p>Already have an account? <a routerLink="/auth/login">Sign in</a></p>
     </div>
   </div>
