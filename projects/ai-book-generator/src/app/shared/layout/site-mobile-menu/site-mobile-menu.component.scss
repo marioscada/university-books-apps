@@ -60,7 +60,7 @@
     color: var(--site-dark-on-surface);
 
     &:hover {
-      background: rgba(255, 255, 255, 0.06);
+      background: var(--site-dark-hover);
     }
 
     &.is-active {

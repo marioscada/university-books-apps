@@ -57,7 +57,7 @@
   width: 100%;
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-overlay);
 }
 
 .showcase-card__caption {

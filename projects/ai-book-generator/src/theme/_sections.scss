@@ -11,8 +11,8 @@
   margin: 0 auto;
   padding-inline: var(--page-padding-inline, 20px);
   max-width: 1200px;
-  min-width: 300px;
   width: 100%;
+  min-width: 0; // fluido anche in contesti stretti (embed/webview/dialog)
   z-index: 0;
   box-sizing: border-box;
 }
@@ -66,7 +66,7 @@
   gap: 12px;
   flex-grow: 1;
   margin-inline: auto;
-  min-width: 270px;
+  min-width: 0; // fluido (niente larghezza minima rigida)
 
   > * {
     width: 100%;
