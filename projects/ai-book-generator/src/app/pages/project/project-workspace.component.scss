@@ -39,11 +39,13 @@
   padding-block: clamp(12px, 1.6vw, 20px) clamp(40px, 6vw, 72px);
   width: 100%;
   min-width: 0;
-  // Livello INTERMEDIO della catena: propaga solo l'altezza (flex-grow:1,
-  // basis:0, min-height:0). NIENTE overflow qui — lo scroll vive sulle foglie
-  // (i pannelli in review-shell), come in customer-portal.
+  // Riempie l'altezza dello Studio (flex-grow:1, basis:0, min-height:0). Negli
+  // stati review i pannelli scrollano internamente (qui non si genera overflow);
+  // negli stati a contenuto lungo (conferma/bozza) è lo stack a scrollare,
+  // tenendo l'action-bar fissa.
   flex: 1 1 0;
   min-height: 0;
+  overflow-y: auto;
 }
 
 // L'area a colonne (capitoli/derivato) riempie lo spazio disponibile in modo
@@ -499,7 +501,17 @@ app-review-shell {
     height: auto;
     min-height: calc(100dvh - var(--header-height, 88px));
   }
+  // Catena a NATURALE: niente flex-basis:0 (collasserebbe senza altezza definita).
+  // Lo stack/area cresce col contenuto e scorre la PAGINA.
+  .studio-stack {
+    flex: 0 0 auto;
+    overflow-y: visible;
+  }
+  app-review-shell {
+    flex: 0 0 auto;
+  }
   .studio-body {
+    flex: 0 0 auto;
     flex-direction: column;
   }
   .studio-index,
