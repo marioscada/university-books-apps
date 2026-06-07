@@ -12,6 +12,7 @@ import {
   setAllEntities,
   addEntity,
   updateEntity,
+  removeEntity,
 } from '@ngrx/signals/entities';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import {
@@ -210,6 +211,12 @@ export const ProjectsStore = signalStore(
       async reopen(id: string): Promise<void> {
         const project = await api.reopen(id);
         patchState(store, updateEntity({ id, changes: project }));
+      },
+
+      /** Elimina definitivamente un progetto. */
+      async delete(id: string): Promise<void> {
+        await api.deleteProject(id);
+        patchState(store, removeEntity(id));
       },
 
       /** Crea un progetto derivato collegato (lingua opzionale per traduzione). */

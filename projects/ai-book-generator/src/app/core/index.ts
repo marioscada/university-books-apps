@@ -12,9 +12,6 @@
  * @see https://angular.dev/style-guide
  */
 
-// Domain Models (business logic)
-export * from './models';
-
 // Configuration
 export * from './config/amplify.config';
 export * from './config/api-client.config';

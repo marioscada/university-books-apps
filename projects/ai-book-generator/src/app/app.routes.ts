@@ -6,7 +6,7 @@ import { guestGuard } from './auth/guards/guest.guard';
  * Routing dell'app.
  * Pubblico: /landing (vetrina) + /auth.
  * Autenticato (area app): /create (home post-login: lavori in corso + nuovi) +
- * /collection + /library + /pricing.
+ * /collection + /pricing.
  * NB: i Templates non sono una pagina ma un componente usato dentro /create.
  *
  * ⚠️ TEMPORANEO (dev): authGuard staccato sulle route autenticate per navigare
@@ -63,12 +63,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/collection/collection.component').then((m) => m.CollectionComponent),
     // canActivate: [authGuard], // TODO ripristinare
     title: 'Collection - AI Book Generator',
-  },
-  {
-    path: 'library',
-    loadComponent: () => import('./pages/library/library.component').then((m) => m.LibraryComponent),
-    // canActivate: [authGuard], // TODO ripristinare
-    title: 'Library - AI Book Generator',
   },
   {
     path: 'pricing',

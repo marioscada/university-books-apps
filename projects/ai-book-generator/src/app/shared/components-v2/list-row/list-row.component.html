@@ -1,0 +1,65 @@
+@if (icon()) {
+  <span
+    class="lr__icon"
+    aria-hidden="true"
+    [class.is-cover]="cover()"
+    [style.--t-bg]="cover() || 'var(--tone-' + iconTone() + '-bg)'"
+    [style.--t-fg]="cover() ? 'var(--on-accent, #fff)' : 'var(--tone-' + iconTone() + '-fg)'">
+    <mat-icon fontSet="material-symbols-outlined">{{ icon() }}</mat-icon>
+  </span>
+}
+
+<span class="lr__body">
+  <span class="lr__title">{{ title() }}</span>
+  @if (meta()) {
+    <span class="lr__meta">{{ meta() }}</span>
+  }
+</span>
+
+@if (badge()) {
+  <span
+    class="lr__badge"
+    [style.--b-bg]="'var(--tone-' + badgeTone() + '-bg)'"
+    [style.--b-fg]="'var(--tone-' + badgeTone() + '-fg)'"
+    >{{ badge() }}</span
+  >
+}
+
+@if (actions().length) {
+  <!-- Desktop: icone inline -->
+  <span class="lr__actions">
+    @for (a of actions(); track a.id) {
+      <button
+        class="lr__quick"
+        type="button"
+        [class.is-danger]="a.danger"
+        [attr.aria-label]="a.label"
+        [attr.title]="a.label"
+        (click)="$event.stopPropagation(); action.emit(a.id)">
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ a.icon }}</mat-icon>
+      </button>
+    }
+  </span>
+
+  <!-- Mobile: menu "⋯" (stesso set) -->
+  <button
+    class="lr__menu"
+    type="button"
+    aria-label="Altre azioni"
+    [matMenuTriggerFor]="menu"
+    (click)="$event.stopPropagation()">
+    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">more_horiz</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    @for (a of actions(); track a.id) {
+      <button
+        mat-menu-item
+        type="button"
+        [class.is-danger]="a.danger"
+        (click)="action.emit(a.id)">
+        <mat-icon fontSet="material-symbols-outlined">{{ a.icon }}</mat-icon>
+        <span>{{ a.label }}</span>
+      </button>
+    }
+  </mat-menu>
+}

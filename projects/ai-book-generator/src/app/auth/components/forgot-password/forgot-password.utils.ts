@@ -25,5 +25,21 @@ export function parsePasswordResetError(error: CognitoError): string {
   if (error.name === 'InvalidPasswordException') {
     return 'Password does not meet requirements.';
   }
+  if (error.name === 'InvalidParameterException') {
+    return 'Invalid email format.';
+  }
+  if (
+    error.name === 'LimitExceededException' ||
+    error.name === 'TooManyRequestsException' ||
+    error.name === 'TooManyFailedAttemptsException'
+  ) {
+    return 'Too many attempts. Please try again later.';
+  }
+  if (error.name === 'CodeDeliveryFailureException') {
+    return 'Could not send the verification code. Please try again.';
+  }
+  if (error.name === 'NotAuthorizedException') {
+    return 'Unable to reset the password for this account.';
+  }
   return error.message || 'An error occurred. Please try again.';
 }

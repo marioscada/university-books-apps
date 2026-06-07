@@ -9,6 +9,8 @@ import {
   viewChild,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 /** Stato di un allegato (deciso dal padre dopo l'upload, non dal componente). */
 export type SourceStatus = 'uploading' | 'ready' | 'error';
@@ -45,7 +47,7 @@ export interface SourceItem {
   selector: 'app-source-dropzone',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule],
+  imports: [MatIconModule, MatChipsModule, MatProgressSpinnerModule],
   host: { class: 'source-dropzone' },
   templateUrl: './source-dropzone.component.html',
   styleUrl: './source-dropzone.component.scss',

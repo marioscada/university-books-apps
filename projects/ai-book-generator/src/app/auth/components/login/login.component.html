@@ -5,49 +5,25 @@
 
     @if (loginState$ | async; as state) {
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        <!-- Email Field -->
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            placeholder="you@example.com"
-            [class.error]="email?.invalid && email?.touched"
-          />
-          @if (email?.invalid && email?.touched) {
-            <div class="error-message">
-              @if (email?.errors?.['required']) {
-                <span>Email is required</span>
-              }
-              @if (email?.errors?.['email']) {
-                <span>Please enter a valid email</span>
-              }
-            </div>
-          }
-        </div>
+        <app-counter-field
+          label="Email"
+          type="email"
+          required
+          placeholder="you@example.com"
+          [value]="email?.value ?? ''"
+          (valueChange)="email?.setValue($event)"
+          (blurred)="email?.markAsTouched()"
+          [error]="emailError" />
 
-        <!-- Password Field -->
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="Enter your password"
-            [class.error]="password?.invalid && password?.touched"
-          />
-          @if (password?.invalid && password?.touched) {
-            <div class="error-message">
-              @if (password?.errors?.['required']) {
-                <span>Password is required</span>
-              }
-              @if (password?.errors?.['minlength']) {
-                <span>Password must be at least 8 characters</span>
-              }
-            </div>
-          }
-        </div>
+        <app-counter-field
+          label="Password"
+          type="password"
+          required
+          placeholder="Enter your password"
+          [value]="password?.value ?? ''"
+          (valueChange)="password?.setValue($event)"
+          (blurred)="password?.markAsTouched()"
+          [error]="passwordError" />
 
         <!-- Error Message -->
         @if (state.error) {

@@ -1,6 +1,6 @@
 <!--
-  SCAFFOLD (Fase 1) — drawer via signal + CSS (niente Material).
-  In Fase 2 sostituire con <mat-sidenav-container> di mariosite.
+  Layout a scroll naturale di pagina (header sticky). Il drawer mobile è un
+  overlay dichiarativo reso accessibile via CDK (focus-trap/scroll-block/ESC).
 -->
 @if (screenType(); as screenType) {
   <div class="site-shell">
@@ -27,7 +27,13 @@
           class="site-shell__backdrop"
           aria-label="Chiudi menu"
           (click)="closeSidebar()"></button>
-        <aside class="site-shell__drawer">
+        <aside
+          class="site-shell__drawer"
+          role="dialog"
+          aria-modal="true"
+          tabindex="-1"
+          cdkTrapFocus
+          [cdkTrapFocusAutoCapture]="true">
           <ng-container
             *ngTemplateOutlet="sidebar; context: { closeMenu: closeSidebar, screenType: screenType }"></ng-container>
         </aside>

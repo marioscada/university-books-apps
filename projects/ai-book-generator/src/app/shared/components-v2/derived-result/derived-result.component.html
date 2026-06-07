@@ -4,10 +4,12 @@
     @if (c.language) {
       <span class="dr__badge">{{ c.language }}</span>
     }
-    <span class="dr__readonly">
-      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">lock</mat-icon>
-      Sola lettura
-    </span>
+    @if (readonlyLabel()) {
+      <span class="dr__readonly">
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">lock</mat-icon>
+        {{ readonlyLabel() }}
+      </span>
+    }
   </header>
 
   @switch (c.kind) {

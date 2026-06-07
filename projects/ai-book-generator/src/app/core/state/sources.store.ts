@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { patchState, signalStore, withHooks, withMethods, withState } from '@ngrx/signals';
-import { withEntities, setAllEntities, addEntity } from '@ngrx/signals/entities';
+import { withEntities, setAllEntities, addEntity, removeEntity } from '@ngrx/signals/entities';
 
 import type { Source } from '../domain';
 import { API_PORT } from '../data/api-port';
@@ -38,6 +38,12 @@ export const SourcesStore = signalStore(
         const source = await api.createUpload(input);
         patchState(store, addEntity(source));
         return source;
+      },
+
+      /** Elimina una fonte. */
+      async delete(id: string): Promise<void> {
+        await api.deleteSource(id);
+        patchState(store, removeEntity(id));
       },
     };
   }),

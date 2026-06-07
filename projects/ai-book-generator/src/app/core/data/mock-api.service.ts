@@ -48,9 +48,9 @@ function inferSourceType(name: string, mime?: string): Source['type'] {
   if (ext === 'pdf' || mime === 'application/pdf') return 'pdf';
   if (ext === 'doc' || ext === 'docx') return 'docx';
   if (ext === 'ppt' || ext === 'pptx') return 'pptx';
-  if (ext === 'csv') return 'csv';
+  if (ext === 'csv' || ext === 'xls' || ext === 'xlsx') return 'csv';
   if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'].includes(ext) || mime?.startsWith('image/')) return 'image';
-  if (['mp3', 'wav', 'm4a', 'aac', 'ogg'].includes(ext) || mime?.startsWith('audio/')) return 'audio';
+  // Solo formati AWS-safe (Textract/OCR/parsing): niente audio/video.
   return 'note';
 }
 
@@ -269,6 +269,12 @@ export class MockApiService implements ApiPort {
     project.status = project.versionIds.length > 0 ? 'review' : 'draft';
     project.updatedAt = new Date().toISOString();
     return structuredClone(project);
+  }
+
+  async deleteProject(id: string): Promise<void> {
+    await this.delay();
+    this.projects.delete(id);
+    this.versions.delete(id);
   }
 
   async duplicate(id: string): Promise<Project> {
@@ -605,6 +611,7 @@ export class MockApiService implements ApiPort {
     job.finishedAt = now;
     job.log = [...job.log, { at: now, level: 'info', message: 'Job succeeded' }];
     project.status = 'review';
+    project.reviewStage = 'index'; // indice pronto; capitoli da sviluppare
     project.currentJobId = undefined;
     project.updatedAt = now;
   }
@@ -633,8 +640,10 @@ export class MockApiService implements ApiPort {
       version = this.buildVersion(project);
       this.versions.set(projectId, version);
     }
-    // I progetti già pubblicati/archiviati hanno i capitoli sviluppati.
-    if (project.status !== 'review') {
+    // Capitoli sviluppati per pubblicati/archiviati e per le revisioni già a
+    // stadio "capitoli" (da pubblicare). La revisione "indice" resta con i
+    // capitoli pending (outline soltanto).
+    if (project.status !== 'review' || project.reviewStage === 'chapters') {
       this.developChapters(version);
     }
     return structuredClone(version);
@@ -649,6 +658,8 @@ export class MockApiService implements ApiPort {
       this.versions.set(projectId, version);
     }
     this.developChapters(version);
+    project.reviewStage = 'chapters'; // capitoli sviluppati → pronti da pubblicare
+    project.updatedAt = new Date().toISOString();
     return structuredClone(version);
   }
 

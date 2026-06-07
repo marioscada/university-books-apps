@@ -5,117 +5,43 @@
 
     @if (step() === 'register') {
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
-      <!-- First Name Field -->
-      <div class="form-group">
-        <label for="givenName">First Name</label>
-        <input
-          id="givenName"
-          type="text"
-          formControlName="givenName"
-          placeholder="Mario"
-          [class.error]="givenName?.invalid && givenName?.touched"
-        />
-        @if (givenName?.invalid && givenName?.touched) {
-          <div class="error-message">
-            @if (givenName?.errors?.['required']) {
-              <span>First name is required</span>
-            }
-          </div>
-        }
-      </div>
+      <app-counter-field
+        label="First Name" required placeholder="Mario"
+        [value]="givenName?.value ?? ''"
+        (valueChange)="givenName?.setValue($event)"
+        (blurred)="givenName?.markAsTouched()"
+        [error]="givenNameError" />
 
-      <!-- Last Name Field -->
-      <div class="form-group">
-        <label for="familyName">Last Name</label>
-        <input
-          id="familyName"
-          type="text"
-          formControlName="familyName"
-          placeholder="Scada"
-          [class.error]="familyName?.invalid && familyName?.touched"
-        />
-        @if (familyName?.invalid && familyName?.touched) {
-          <div class="error-message">
-            @if (familyName?.errors?.['required']) {
-              <span>Last name is required</span>
-            }
-          </div>
-        }
-      </div>
+      <app-counter-field
+        label="Last Name" required placeholder="Scada"
+        [value]="familyName?.value ?? ''"
+        (valueChange)="familyName?.setValue($event)"
+        (blurred)="familyName?.markAsTouched()"
+        [error]="familyNameError" />
 
-      <!-- Email Field -->
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="you@example.com"
-          [class.error]="email?.invalid && email?.touched"
-        />
-        @if (email?.invalid && email?.touched) {
-          <div class="error-message">
-            @if (email?.errors?.['required']) {
-              <span>Email is required</span>
-            }
-            @if (email?.errors?.['email']) {
-              <span>Please enter a valid email</span>
-            }
-          </div>
-        }
-      </div>
+      <app-counter-field
+        label="Email" type="email" required placeholder="you@example.com"
+        [value]="email?.value ?? ''"
+        (valueChange)="email?.setValue($event)"
+        (blurred)="email?.markAsTouched()"
+        [error]="emailError" />
 
-      <!-- Password Field -->
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="Create a strong password"
-          [class.error]="password?.invalid && password?.touched"
-        />
-        @if (password?.invalid && password?.touched) {
-          <div class="error-message">
-            @if (password?.errors?.['required']) {
-              <span>Password is required</span>
-            }
-            @if (password?.errors?.['minlength']) {
-              <span>Password must be at least 12 characters</span>
-            }
-            @if (password?.errors?.['passwordStrength']) {
-              <span>Password must contain uppercase, lowercase, number, and special character</span>
-            }
-          </div>
-        }
-        <div class="password-hint">
-          Must be at least 12 characters with uppercase, lowercase, number, and special character (!&#64;#$%^&*...)
-        </div>
-      </div>
+      <app-counter-field
+        label="Password" type="password" required
+        placeholder="Create a strong password"
+        hint="Min 12 caratteri: maiuscola, minuscola, numero e carattere speciale."
+        [value]="password?.value ?? ''"
+        (valueChange)="password?.setValue($event)"
+        (blurred)="password?.markAsTouched()"
+        [error]="passwordError" />
 
-      <!-- Confirm Password Field -->
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <input
-          id="confirmPassword"
-          type="password"
-          formControlName="confirmPassword"
-          placeholder="Re-enter your password"
-          [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || passwordMismatch"
-        />
-        @if (confirmPassword?.invalid && confirmPassword?.touched) {
-          <div class="error-message">
-            @if (confirmPassword?.errors?.['required']) {
-              <span>Please confirm your password</span>
-            }
-          </div>
-        }
-        @if (passwordMismatch) {
-          <div class="error-message">
-            <span>Passwords do not match</span>
-          </div>
-        }
-      </div>
+      <app-counter-field
+        label="Confirm Password" type="password" required
+        placeholder="Re-enter your password"
+        [value]="confirmPassword?.value ?? ''"
+        (valueChange)="confirmPassword?.setValue($event)"
+        (blurred)="confirmPassword?.markAsTouched()"
+        [error]="confirmPasswordError" />
 
       <!-- Success Message -->
       @if (successMessage()) {
@@ -154,28 +80,13 @@
         Please check your email and enter the code below.
       </p>
 
-      <!-- Verification Code Field -->
-      <div class="form-group">
-        <label for="code">Verification Code</label>
-        <input
-          id="code"
-          type="text"
-          formControlName="code"
-          placeholder="Enter 6-digit code"
-          maxlength="6"
-          [class.error]="code?.invalid && code?.touched"
-        />
-        @if (code?.invalid && code?.touched) {
-          <div class="error-message">
-            @if (code?.errors?.['required']) {
-              <span>Verification code is required</span>
-            }
-            @if (code?.errors?.['minlength']) {
-              <span>Please enter the complete 6-digit code</span>
-            }
-          </div>
-        }
-      </div>
+      <app-counter-field
+        label="Verification Code" required placeholder="Enter 6-digit code"
+        [maxLength]="6"
+        [value]="code?.value ?? ''"
+        (valueChange)="code?.setValue($event)"
+        (blurred)="code?.markAsTouched()"
+        [error]="codeError" />
 
       <!-- Success Message -->
       @if (successMessage()) {

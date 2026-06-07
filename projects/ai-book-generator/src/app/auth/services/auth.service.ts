@@ -15,9 +15,22 @@
  */
 
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { signIn, signOut, fetchAuthSession, SignInInput, SignInOutput } from 'aws-amplify/auth';
-import { Observable, from, BehaviorSubject } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  signIn,
+  signOut,
+  signUp,
+  confirmSignUp,
+  resetPassword,
+  confirmResetPassword,
+  fetchAuthSession,
+  SignInInput,
+  SignInOutput,
+  type SignUpOutput,
+  type ConfirmSignUpOutput,
+  type ResetPasswordOutput,
+} from 'aws-amplify/auth';
+import { Observable, from, BehaviorSubject, firstValueFrom } from 'rxjs';
 import { tap, catchError, map, switchMap } from 'rxjs/operators';
 
 import { AuthUser, AuthTokens, AuthState, CognitoError } from '../models/auth.model';
@@ -89,8 +102,6 @@ export class AuthService {
           loading: false,
           error: null,
         });
-
-        console.log('✅ User session restored:', authUser.email || authUser.username);
       }
     } catch (_error) {
       // No active session, user needs to log in
@@ -110,17 +121,19 @@ export class AuthService {
    * @returns Promise with user data
    */
   private async fetchUserFromBackend(token: string): Promise<AuthUser> {
-    const response = await fetch(`${environment.api.baseUrl}/v1/auth/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch user data: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await firstValueFrom(
+      this.http.get<{
+        sub: string;
+        username: string;
+        email: string;
+        emailVerified: boolean;
+        name: string;
+        givenName: string;
+        familyName: string;
+      }>(`${environment.api.baseUrl}/v1/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    );
 
     return {
       userId: data.sub,
@@ -172,8 +185,6 @@ export class AuthService {
             loading: false,
             error: null,
           });
-
-          console.log('✅ Sign in successful:', authUser.email || authUser.username);
         } else {
           this.setLoading(false);
         }
@@ -204,8 +215,6 @@ export class AuthService {
           loading: false,
           error: null,
         });
-
-        console.log('✅ Sign out successful');
       }),
       catchError((error) => {
         const errorMessage = this.parseAuthError(error);
@@ -214,6 +223,52 @@ export class AuthService {
         throw error;
       })
     );
+  }
+
+  /**
+   * Register a new user (Cognito sign-up). Boundary unico verso Amplify.
+   */
+  signUp(params: {
+    email: string;
+    password: string;
+    givenName: string;
+    familyName: string;
+  }): Promise<SignUpOutput> {
+    const { email, password, givenName, familyName } = params;
+    return signUp({
+      username: email,
+      password,
+      options: {
+        userAttributes: {
+          email,
+          name: `${givenName} ${familyName}`,
+          given_name: givenName,
+          family_name: familyName,
+        },
+        autoSignIn: false,
+      },
+    });
+  }
+
+  /**
+   * Confirm sign-up with the email verification code.
+   */
+  confirmSignUp(email: string, code: string): Promise<ConfirmSignUpOutput> {
+    return confirmSignUp({ username: email, confirmationCode: code });
+  }
+
+  /**
+   * Start the password reset flow (sends a code to the user email).
+   */
+  resetPassword(email: string): Promise<ResetPasswordOutput> {
+    return resetPassword({ username: email });
+  }
+
+  /**
+   * Confirm the password reset with code + new password.
+   */
+  confirmResetPassword(email: string, code: string, newPassword: string): Promise<void> {
+    return confirmResetPassword({ username: email, confirmationCode: code, newPassword });
   }
 
   /**
@@ -249,8 +304,7 @@ export class AuthService {
     try {
       const session = await fetchAuthSession();
       return session.tokens?.accessToken.toString() || null;
-    } catch (error) {
-      console.error('Failed to get access token:', error);
+    } catch {
       return null;
     }
   }
@@ -308,9 +362,17 @@ export class AuthService {
   /**
    * Parse Cognito/Amplify errors into user-friendly messages
    */
-  private parseAuthError(error: CognitoError): string {
-    const errorCode = error?.name || error?.code || 'UnknownError';
-    const errorMessage = error?.message || 'An unknown error occurred';
+  private parseAuthError(error: unknown): string {
+    // Errori dalla chiamata HttpClient al backend (/v1/auth/me): rete vs server.
+    if (error instanceof HttpErrorResponse) {
+      return error.status === 0
+        ? 'Network error. Please check your internet connection.'
+        : 'Server error. Please try again later.';
+    }
+
+    const err = error as CognitoError;
+    const errorCode = err?.name || err?.code || 'UnknownError';
+    const errorMessage = err?.message || 'An unknown error occurred';
 
     switch (errorCode) {
       case 'UserNotFoundException':
@@ -335,7 +397,6 @@ export class AuthService {
         return 'Network error. Please check your internet connection.';
 
       default:
-        console.error('Auth error:', { errorCode, errorMessage });
         return errorMessage;
     }
   }

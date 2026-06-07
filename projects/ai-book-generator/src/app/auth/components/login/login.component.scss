@@ -1,35 +1,35 @@
-@use '../../../../theme/variables' as vars;
+// Login — tema chiaro coerente con le altre pagine (card su sfondo tenue, token).
 
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 1rem;
-  background: vars.$background-color;
+  padding: 24px;
+  background: var(--section-band-alt, #f1f5f9);
 }
 
 .login-card {
   width: 100%;
-  max-width: 400px;
-  padding: 2.5rem;
-  background: #1E1E1E;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  max-width: 420px;
+  padding: clamp(28px, 4vw, 40px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: var(--card-radius, 16px);
+  box-shadow: var(--card-shadow);
 }
 
 .login-title {
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
+  margin: 0 0 6px;
+  font-size: 1.75rem;
   font-weight: 700;
-  color: #B3B9C4;
+  color: var(--mat-sys-on-surface);
   text-align: center;
 }
 
 .login-subtitle {
-  margin: 0 0 2rem 0;
-  color: vars.$text-color-secondary;
+  margin: 0 0 28px;
+  color: var(--mat-sys-on-surface-variant);
   text-align: center;
   font-size: 0.95rem;
 }
@@ -37,102 +37,53 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  label {
-    font-weight: 500;
-    color: #B3B9C4;
-    font-size: 0.875rem;
-  }
-
-  input {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    font-size: 1rem;
-    background: vars.$surface-3;
-    color: vars.$text-color;
-    transition: all 0.3s ease;
-
-    &:focus {
-      outline: none;
-      border-color: vars.$primary-color;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-      background: vars.$surface-variant;
-    }
-
-    &.error {
-      border-color: vars.$error;
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
-    }
-
-    &::placeholder {
-      color: vars.$text-color-disabled;
-    }
-  }
-
-  .error-message {
-    color: vars.$error;
-    font-size: 0.875rem;
-    margin-top: -0.25rem;
-  }
+  gap: 18px;
 }
 
 .alert {
-  padding: 0.75rem 1rem;
+  padding: 10px 14px;
   border-radius: 8px;
   font-size: 0.875rem;
-
-  &.alert-error {
-    background-color: rgba(252, 165, 165, 0.1);
-    color: vars.$error;
-    border: 1px solid vars.$error;
-  }
+}
+.alert-error {
+  background: var(--tone-danger-bg);
+  color: var(--tone-danger-fg);
+}
+.alert-success {
+  background: var(--tone-success-bg);
+  color: var(--tone-success-fg);
 }
 
 .btn-primary {
   width: 100%;
-  padding: 1rem 1.5rem;
-  background: #282828;
-  color: #E8E8E8;
-  border: none;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--accent-500);
+  color: var(--on-accent, #fff);
+  transition: background 0.15s ease;
 
   &:hover:not(:disabled) {
-    background: #3A4A5A;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(58, 74, 90, 0.4);
+    background: var(--accent-600, var(--accent-700));
   }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.55;
     cursor: not-allowed;
   }
 
   .spinner {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: #E8E8E8;
+    border: 2px solid rgb(255 255 255 / 40%);
+    border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
   }
@@ -145,22 +96,21 @@
 }
 
 .login-footer {
-  margin-top: 1.5rem;
+  margin-top: 24px;
   text-align: center;
 
   p {
-    margin: 0.5rem 0;
+    margin: 6px 0;
     font-size: 0.875rem;
-    color: vars.$text-color-secondary;
+    color: var(--mat-sys-on-surface-variant);
   }
 
   a {
-    color: vars.$accent-color;
+    color: var(--accent-700);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
 
     &:hover {
-      color: vars.$accent-light;
       text-decoration: underline;
     }
   }

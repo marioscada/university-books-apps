@@ -15,9 +15,9 @@ export const BRAND = 'AI Book Generator';
  * nei template di header/mobile-menu/footer).
  */
 export const APP_NAV_ITEMS: readonly SiteNavItem[] = [
+  { id: 'home', label: 'i18n.Header.Nav.home', route: '/landing', icon: 'home' },
   { id: 'create', label: 'i18n.Header.Nav.create', route: '/create', icon: 'add_circle' },
   { id: 'collection', label: 'i18n.Header.Nav.collection', route: '/collection', icon: 'collections_bookmark' },
-  { id: 'library', label: 'i18n.Header.Nav.library', route: '/library', icon: 'local_library' },
   { id: 'pricing', label: 'i18n.Header.Nav.pricing', route: '/pricing', icon: 'sell' },
 ];
 
@@ -28,7 +28,6 @@ export const APP_FOOTER_COLUMNS: readonly FooterColumn[] = [
     items: [
       { label: 'i18n.Header.Nav.create', route: '/create', authOnly: true },
       { label: 'i18n.Header.Nav.collection', route: '/collection', authOnly: true },
-      { label: 'i18n.Header.Nav.library', route: '/library', authOnly: true },
       { label: 'i18n.Header.Nav.pricing', route: '/pricing' },
     ],
   },

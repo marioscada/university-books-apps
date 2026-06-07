@@ -2,21 +2,23 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { signUp, confirmSignUp } from 'aws-amplify/auth';
 
+import { AuthService } from '../../services/auth.service';
+import { CounterFieldComponent } from '../../../shared/ui/counter-field/counter-field.component';
 import { parseRegistrationError, parseConfirmationError } from './register.utils';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CounterFieldComponent],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
 
   public readonly registerForm: FormGroup;
   public readonly confirmationForm: FormGroup;
@@ -60,19 +62,7 @@ export class RegisterComponent {
     const { givenName, familyName, email, password } = this.registerForm.value;
     this.userEmail = email;
 
-    signUp({
-      username: email,
-      password,
-      options: {
-        userAttributes: {
-          email,
-          'name': `${givenName} ${familyName}`,
-          'given_name': givenName,
-          'family_name': familyName
-        },
-        autoSignIn: false
-      }
-    }).then((result) => {
+    this.auth.signUp({ email, password, givenName, familyName }).then((result) => {
       this.loading.set(false);
 
       if (result.isSignUpComplete) {
@@ -86,12 +76,6 @@ export class RegisterComponent {
       }
     }).catch((error) => {
       this.loading.set(false);
-      console.error('❌ Registration error:', error);
-      console.log('Error details:', {
-        name: error.name,
-        message: error.message,
-        code: error.code
-      });
       this.errorMessage.set(parseRegistrationError(error));
     });
   }
@@ -108,10 +92,7 @@ export class RegisterComponent {
 
     const { code } = this.confirmationForm.value;
 
-    confirmSignUp({
-      username: this.userEmail,
-      confirmationCode: code
-    }).then(() => {
+    this.auth.confirmSignUp(this.userEmail, code).then(() => {
       this.loading.set(false);
       this.successMessage.set('Email verified successfully! Redirecting to login...');
       setTimeout(() => {
@@ -171,5 +152,47 @@ export class RegisterComponent {
 
   get code() {
     return this.confirmationForm.get('code');
+  }
+
+  get givenNameError(): string {
+    const c = this.givenName;
+    return c?.touched && c.errors?.['required'] ? 'First name is required' : '';
+  }
+
+  get familyNameError(): string {
+    const c = this.familyName;
+    return c?.touched && c.errors?.['required'] ? 'Last name is required' : '';
+  }
+
+  get emailError(): string {
+    const c = this.email;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Email is required';
+    if (c.errors['email']) return 'Please enter a valid email';
+    return '';
+  }
+
+  get passwordError(): string {
+    const c = this.password;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Password is required';
+    if (c.errors['minlength']) return 'Password must be at least 12 characters';
+    if (c.errors['passwordStrength'])
+      return 'Password must contain uppercase, lowercase, number, and special character';
+    return '';
+  }
+
+  get confirmPasswordError(): string {
+    if (this.passwordMismatch) return 'Passwords do not match';
+    const c = this.confirmPassword;
+    return c?.touched && c.errors?.['required'] ? 'Please confirm your password' : '';
+  }
+
+  get codeError(): string {
+    const c = this.code;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Verification code is required';
+    if (c.errors['minlength']) return 'Please enter the complete 6-digit code';
+    return '';
   }
 }

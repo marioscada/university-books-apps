@@ -2,21 +2,23 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { resetPassword, confirmResetPassword } from 'aws-amplify/auth';
 
+import { AuthService } from '../../services/auth.service';
+import { CounterFieldComponent } from '../../../shared/ui/counter-field/counter-field.component';
 import { parsePasswordResetError } from './forgot-password.utils';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CounterFieldComponent],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss'
 })
 export class ForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
 
   public readonly emailForm: FormGroup;
   public readonly resetForm: FormGroup;
@@ -53,7 +55,7 @@ export class ForgotPasswordComponent {
 
     this.email = this.emailForm.value.email;
 
-    resetPassword({ username: this.email })
+    this.auth.resetPassword(this.email)
       .then(() => {
         this.loading.set(false);
         this.step.set('code');
@@ -77,11 +79,7 @@ export class ForgotPasswordComponent {
 
     const { code, newPassword } = this.resetForm.value;
 
-    confirmResetPassword({
-      username: this.email,
-      confirmationCode: code,
-      newPassword
-    })
+    this.auth.confirmResetPassword(this.email, code, newPassword)
       .then(() => {
         this.loading.set(false);
         this.successMessage.set('Password reset successful! Redirecting to login...');
@@ -120,5 +118,35 @@ export class ForgotPasswordComponent {
   get passwordMismatch() {
     return this.resetForm.errors?.['passwordMismatch'] &&
            this.confirmPassword?.touched;
+  }
+
+  get emailError(): string {
+    const c = this.emailControl;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Email is required';
+    if (c.errors['email']) return 'Please enter a valid email';
+    return '';
+  }
+
+  get codeError(): string {
+    const c = this.code;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Code is required';
+    if (c.errors['minlength']) return 'Code must be 6 digits';
+    return '';
+  }
+
+  get newPasswordError(): string {
+    const c = this.newPassword;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Password is required';
+    if (c.errors['minlength']) return 'Password must be at least 12 characters';
+    return '';
+  }
+
+  get confirmPasswordError(): string {
+    if (this.passwordMismatch) return 'Passwords do not match';
+    const c = this.confirmPassword;
+    return c?.touched && c.errors?.['required'] ? 'Please confirm your password' : '';
   }
 }

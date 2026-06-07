@@ -6,12 +6,13 @@ import { Subject, of } from 'rxjs';
 import { switchMap, map, catchError, startWith, tap, shareReplay } from 'rxjs/operators';
 
 import { AuthService } from '../../services/auth.service';
+import { CounterFieldComponent } from '../../../shared/ui/counter-field/counter-field.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CounterFieldComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -94,5 +95,21 @@ export class LoginComponent {
 
   get password() {
     return this.loginForm.get('password');
+  }
+
+  get emailError(): string {
+    const c = this.email;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Email is required';
+    if (c.errors['email']) return 'Please enter a valid email';
+    return '';
+  }
+
+  get passwordError(): string {
+    const c = this.password;
+    if (!c?.touched || !c.errors) return '';
+    if (c.errors['required']) return 'Password is required';
+    if (c.errors['minlength']) return 'Password must be at least 8 characters';
+    return '';
   }
 }

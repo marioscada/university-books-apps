@@ -52,6 +52,8 @@ export interface ApiPort {
   reopen(id: string): Promise<Project>;
   /** POST /projects/:id/duplicate */
   duplicate(id: string): Promise<Project>;
+  /** DELETE /projects/:id */
+  deleteProject(id: string): Promise<void>;
   /** POST /projects/:id/derive ({ derivedKind, language? }) figlio collegato */
   derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project>;
 

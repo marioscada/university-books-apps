@@ -1,39 +1,36 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonModule } from '@angular/material/button';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
-import { PageHeaderComponent } from '../../shared/layout/page-header/page-header.component';
-import { CoverTheme } from '../../core/domain';
-import {
-  CollectionAction,
-  CollectionFilter,
-  CollectionItem,
-  CollectionKind,
-} from './collection.types';
+import { ListRowComponent } from '../../shared/components-v2/list-row/list-row.component';
+import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
+import { ProjectsStore } from '../../core/state/projects.store';
+import { SourcesStore } from '../../core/state/sources.store';
+import { BillingService } from '../../core/services/billing.service';
+import type { ProjectStatus } from '../../core/domain';
+import { type RowVM, projectRow, sourceRow } from './collection-row.mapper';
 
-interface FilterTab {
-  value: CollectionFilter;
-  label: string;
+interface GroupVM {
+  id: string;
+  project: RowVM;
+  sources: RowVM[];
 }
 
-/** Metadati per categoria (etichetta + tema copertina). */
-const KIND_META: Record<CollectionKind, { label: string; cover: CoverTheme }> = {
-  book: { label: 'Libri', cover: 'aurora' },
-  summary: { label: 'Riassunti', cover: 'rose' },
-  course: { label: 'Corsi', cover: 'ocean' },
-  notes: { label: 'Note', cover: 'gold' },
-};
+const IN_PROGRESS: readonly ProjectStatus[] = ['draft', 'queued', 'processing', 'review', 'failed'];
+const LIBRARY: readonly ProjectStatus[] = ['published', 'archived'];
 
 /**
- * Collection — archivio storico di TUTTO ciò che l'utente ha già realizzato
- * (solo completati), classificato per categoria. La Dashboard mostra invece i
- * recenti / in corso (presente); qui c'è il passato consultabile/riutilizzabile.
- * Pattern Drive/Notion (archivio vs continue-working). Usa AuthShell. Dati mock.
- * Vedi docs/CREATE-PAGE-DESIGN.md.
+ * Collezioni — pagina unica project-centrica (assorbe le ex "Fonti"): ogni
+ * progetto è una riga (copertina piena + apri/scarica/rielabora/elimina) con le
+ * **fonti annidate** sotto. Container snello: orchestra `ProjectsStore` +
+ * `SourcesStore` + `BillingService` e delega la mappatura a `collection-row.mapper`.
+ * Due sezioni: "Continua dove eri" (savepoint) + "La tua libreria". Rielaborare è
+ * gated dall'abbonamento (🔒 → upsell).
  */
 @Component({
   selector: 'app-collection',
@@ -41,64 +38,125 @@ const KIND_META: Record<CollectionKind, { label: string; cover: CoverTheme }> = 
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     AuthShellComponent,
-    PageHeaderComponent,
+    ListRowComponent,
+    ModalShellComponent,
+    NgTemplateOutlet,
+    FormsModule,
     MatIconModule,
     MatMenuModule,
-    MatCardModule,
-    MatChipsModule,
     MatButtonModule,
   ],
   templateUrl: './collection.component.html',
   styleUrl: './collection.component.scss',
 })
 export class CollectionComponent {
-  readonly kindMeta = KIND_META;
+  private readonly projects = inject(ProjectsStore);
+  private readonly sources = inject(SourcesStore);
+  private readonly billing = inject(BillingService);
+  private readonly router = inject(Router);
 
-  /** Filtri per categoria (lo stato non serve: è tutto completato). */
-  readonly filters: readonly FilterTab[] = [
-    { value: 'all', label: 'Tutti' },
-    { value: 'book', label: 'Libri' },
-    { value: 'summary', label: 'Riassunti' },
-    { value: 'course', label: 'Corsi' },
-    { value: 'notes', label: 'Note' },
-  ];
+  /** Stato fatturazione → guida il dialog di rielaborazione. */
+  readonly billingStatus = this.billing.status;
 
-  readonly activeFilter = signal<CollectionFilter>('all');
+  readonly query = signal('');
 
-  // Mock: solo elementi COMPLETATI (lo storico). Sostituire con l'API.
-  private readonly items = signal<readonly CollectionItem[]>([
-    { id: 'c1', title: 'AI & Machine Learning Book', kind: 'book', completedLabel: '2 giorni fa' },
-    { id: 'c2', title: 'Physics Summary', kind: 'summary', completedLabel: 'ieri' },
-    { id: 'c3', title: 'Public Speaking Course', kind: 'course', completedLabel: '3 giorni fa' },
-    { id: 'c4', title: 'History Notes', kind: 'notes', completedLabel: '5 giorni fa' },
-    { id: 'c5', title: 'Microeconomics Manual', kind: 'book', completedLabel: '1 settimana fa' },
-    { id: 'c6', title: 'Contemporary History Summary', kind: 'summary', completedLabel: '2 settimane fa' },
-  ]);
+  readonly continua = computed<GroupVM[]>(() => this.build(IN_PROGRESS));
+  readonly library = computed<GroupVM[]>(() => this.build(LIBRARY));
 
-  /** Elementi filtrati per categoria attiva. */
-  readonly visibleItems = computed(() => {
-    const filter = this.activeFilter();
-    const all = this.items();
-    return filter === 'all' ? all : all.filter((i) => i.kind === filter);
-  });
-
-  setFilter(filter: CollectionFilter): void {
-    this.activeFilter.set(filter);
+  // --- Navigazione / azioni ---------------------------------------------------
+  openProject(id: string): void {
+    void this.router.navigate(['/project', id]);
+  }
+  newProject(): void {
+    void this.router.navigate(['/create']);
+  }
+  openSource(_id: string): void {
+    // TODO: anteprima fonte (col backend).
+  }
+  onProjectAction(id: string, action: string): void {
+    switch (action) {
+      case 'open':
+        this.openProject(id);
+        break;
+      case 'reuse':
+        this.openReuse(id);
+        break;
+      case 'archive':
+        void this.projects.archive(id);
+        break;
+      case 'reopen':
+        void this.projects.reopen(id);
+        break;
+      case 'delete':
+        this.askDelete('project', id);
+        break;
+      // 'download': placeholder col backend.
+    }
+  }
+  onSourceAction(id: string, action: string): void {
+    if (action === 'delete') this.askDelete('source', id);
+    // 'download': placeholder col backend.
   }
 
-  /** Azioni per un elemento (tutti completati → Open, non Continue). */
-  actionsFor(_item: CollectionItem): CollectionAction[] {
-    return [
-      { id: 'open', label: 'Open', icon: 'open_in_new' },
-      { id: 'duplicate', label: 'Duplicate', icon: 'content_copy' },
-      { id: 'export', label: 'Export', icon: 'download' },
-      { id: 'delete', label: 'Delete', icon: 'delete', danger: true },
-    ];
+  // --- Conferma eliminazione (operazione irreversibile) -----------------------
+  readonly pendingDelete = signal<{ kind: 'project' | 'source'; id: string; title: string } | null>(
+    null,
+  );
+  private askDelete(kind: 'project' | 'source', id: string): void {
+    const title =
+      kind === 'project'
+        ? (this.projects.entities().find((p) => p.id === id)?.title ?? '')
+        : (this.sources.entities().find((s) => s.id === id)?.name ?? '');
+    this.pendingDelete.set({ kind, id, title });
+  }
+  confirmDelete(): void {
+    const d = this.pendingDelete();
+    if (!d) return;
+    if (d.kind === 'project') void this.projects.delete(d.id);
+    else void this.sources.delete(d.id);
+    this.pendingDelete.set(null);
+  }
+  cancelDelete(): void {
+    this.pendingDelete.set(null);
   }
 
-  onAction(action: CollectionAction, item: CollectionItem): void {
-    // TODO: collegare alle operazioni reali (apertura editor, export, ecc.).
-    void action;
-    void item;
+  // --- Dialog abbonamento (rielaborazione gated) ------------------------------
+  readonly reuseOpen = signal(false);
+  openReuse(projectId: string): void {
+    // Abbonamento attivo con chance → procedi (mock: apri il progetto per rielaborare).
+    if (this.billing.canReuse()) {
+      this.openProject(projectId);
+      return;
+    }
+    this.reuseOpen.set(true);
+  }
+  /** Caso `none`: abbonati. Caso `past_due`: regolarizza. → pagina Prezzi. */
+  goPricing(): void {
+    this.reuseOpen.set(false);
+    void this.router.navigate(['/pricing']);
+  }
+  /** Caso `none`: paga il costo del singolo progetto (mock). */
+  paySingle(): void {
+    this.reuseOpen.set(false);
+    // TODO: checkout singolo progetto (backend).
+  }
+
+  // --- Build (orchestrazione store → view-model via mapper) --------------------
+  private build(statuses: readonly ProjectStatus[]): GroupVM[] {
+    const q = this.query().trim().toLowerCase();
+    const all = this.sources.entities();
+    return this.projects
+      .entities()
+      .filter((p) => statuses.includes(p.status))
+      .filter((p) => !q || p.title.toLowerCase().includes(q))
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+      .map((p) => {
+        const srcs = all.filter((s) => s.usedInProjectIds.includes(p.id));
+        return {
+          id: p.id,
+          project: projectRow(p, srcs.length),
+          sources: srcs.map((s) => sourceRow(s)),
+        };
+      });
   }
 }

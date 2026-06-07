@@ -1,5 +1,91 @@
-// Collection/Library — nessuno stile specifico: card (entity-card), griglia,
-// bande, chip, empty sono tutti GLOBALI (theme/_components.scss e _sections.scss).
+// Collezioni — solo layout di pagina (token globali). Righe = list-row (dumb),
+// card/ricerca/titoli/empty GLOBALI (theme/_components.scss).
 :host {
   display: block;
+}
+
+.coll {
+  padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px)) clamp(40px, 6vw, 72px);
+}
+
+.coll__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.coll__title {
+  flex: 1 1 auto;
+  margin: 0;
+}
+.coll__search {
+  width: min(260px, 60vw);
+}
+
+.coll__section {
+  margin-top: 36px;
+}
+.coll__section:first-of-type {
+  margin-top: 28px;
+}
+.coll__count {
+  margin-left: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Pannello-progetto: riga progetto + fonti annidate, a tutta larghezza.
+.coll__panel {
+  padding: 0;
+  overflow: hidden;
+  margin-top: 14px;
+}
+
+// Sottotestata "Fonti · N" che separa il progetto dalle sue fonti.
+.coll__srchead {
+  padding: 8px 18px;
+  background: var(--surface-soft);
+  border-top: 1px solid var(--card-border-color);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mat-sys-on-surface-variant);
+}
+.coll__nosrc {
+  margin: 0;
+  padding: 12px 18px 14px 64px;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.coll__gate {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.coll__gate-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--accent-100);
+  color: var(--accent-700);
+}
+.coll__upsell {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--mat-sys-on-surface-variant);
+}
+.coll__dialogfoot {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
 }

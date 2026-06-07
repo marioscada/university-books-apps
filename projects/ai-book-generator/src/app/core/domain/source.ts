@@ -6,7 +6,8 @@
  * (denormalizzata su `usedInProjectIds` + join esplicito `ProjectSource`).
  */
 
-export type SourceType = 'pdf' | 'docx' | 'pptx' | 'image' | 'audio' | 'url' | 'note' | 'csv';
+// Solo formati AWS-safe (Textract/OCR/parsing): niente audio/video.
+export type SourceType = 'pdf' | 'docx' | 'pptx' | 'image' | 'url' | 'note' | 'csv';
 export type IngestStatus = 'pending' | 'processing' | 'ready' | 'failed';
 
 export interface Source {

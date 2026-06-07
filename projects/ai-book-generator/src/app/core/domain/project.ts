@@ -86,6 +86,8 @@ export interface Project {
   title: string;
   kind: ProjectKind;
   status: ProjectStatus;
+  /** Sotto-stadio della revisione: indice pronto vs capitoli sviluppati. */
+  reviewStage?: 'index' | 'chapters';
   coverTheme: CoverTheme;          // riusa i temi cover-art (aurora|ocean|…)
 
   settings: ProjectSettings;       // config di generazione (dal wizard)

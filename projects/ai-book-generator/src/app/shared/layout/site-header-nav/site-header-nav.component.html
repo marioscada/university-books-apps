@@ -14,17 +14,8 @@
       </nav>
     }
 
-    <!-- DESTRA: azioni (search + language + login / avatar) -->
+    <!-- DESTRA: azioni (language + login / avatar) -->
     <div class="header-zone-right">
-      @if (showSearch()) {
-        <button #searchBtn type="button" class="action-btn search-btn" (click)="onSearch(searchBtn)" aria-label="Search">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">search</mat-icon>
-          <span class="search-btn__text">Type</span>
-          <kbd class="search-btn__key">/</kbd>
-          <span class="search-btn__text">to search</span>
-        </button>
-      }
-
       @if (showAuthLinks()) {
         <a routerLink="/auth/login" class="auth-link">Login</a>
         <a routerLink="/auth/register" class="site-cta-pill auth-cta">Sign Up</a>

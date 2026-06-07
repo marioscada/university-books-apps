@@ -1,0 +1,169 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  cursor: pointer;
+  outline: none;
+  border-top: 1px solid var(--card-border-color);
+  transition: background 0.12s ease;
+}
+:host(:first-child) {
+  border-top: none;
+}
+
+// Riga progetto (emphasis): icona/titolo più grandi, padding maggiore.
+:host(.is-emphasis) {
+  padding: 15px 18px;
+
+  .lr__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+
+    mat-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+    }
+  }
+  .lr__title {
+    font-size: 1.03125rem;
+    font-weight: 700;
+  }
+}
+
+// Riga annidata (fonte): rientro a sinistra + icona più piccola.
+:host(.is-indent) {
+  padding: 10px 18px 10px 64px;
+
+  .lr__icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+
+    mat-icon {
+      font-size: 17px;
+      width: 17px;
+      height: 17px;
+    }
+  }
+  .lr__title {
+    font-size: 0.875rem;
+  }
+}
+
+:host(:hover) {
+  background: var(--surface-soft);
+}
+:host(:focus-visible) {
+  background: var(--surface-soft);
+  box-shadow: inset 0 0 0 2px var(--accent-100);
+}
+
+.lr__icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: var(--t-bg, var(--tone-neutral-bg));
+  color: var(--t-fg, var(--tone-neutral-fg));
+
+  mat-icon {
+    font-size: 21px;
+    width: 21px;
+    height: 21px;
+  }
+}
+
+.lr__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lr__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lr__meta {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lr__badge {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: var(--b-bg, var(--tone-neutral-bg));
+  color: var(--b-fg, var(--tone-neutral-fg));
+}
+
+// Gruppo azioni inline (desktop).
+.lr__actions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.lr__quick,
+.lr__menu {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-soft);
+    color: var(--accent-700);
+  }
+  &.is-danger:hover {
+    background: var(--tone-danger-bg);
+    color: var(--tone-danger-fg);
+  }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Desktop: icone inline visibili, ⋯ nascosto. Mobile: solo ⋯.
+.lr__menu {
+  display: none;
+}
+@media (max-width: 768px) {
+  .lr__actions {
+    display: none;
+  }
+  .lr__menu {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+  }
+}
