@@ -32,6 +32,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  align-self: center; // centrata a prescindere dal contesto flex del wrapper
   width: 150px;
   height: 200px;
   margin-bottom: 18px;
