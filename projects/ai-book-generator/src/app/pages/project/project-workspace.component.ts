@@ -7,7 +7,6 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,6 +14,10 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
+import {
+  StepIndicatorComponent,
+  type StepItem,
+} from '../../shared/ui/step-indicator/step-indicator.component';
 import {
   GenerationPanelComponent,
   type GenStep,
@@ -38,7 +41,7 @@ import { WorkspaceStore } from '../../core/state/workspace.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
 import type { Chapter, DerivedKind } from '../../core/domain';
 import {
-  FLOW_STEPS,
+  FLOW_STEP_KEYS,
   HAS_OUTPUT,
   READER_PAGE_SIZE,
   QUICK_OPS,
@@ -68,6 +71,7 @@ import {
   imports: [
     BackLinkComponent,
     ActionBarComponent,
+    StepIndicatorComponent,
     GenerationPanelComponent,
     DerivedResultComponent,
     ReviewShellComponent,
@@ -87,7 +91,6 @@ export class ProjectWorkspaceComponent {
   private readonly store = inject(ProjectsStore);
   protected readonly workspace = inject(WorkspaceStore);
   private readonly router = inject(Router);
-  private readonly location = inject(Location);
 
   /** Id del progetto dalla route (`withComponentInputBinding`). */
   readonly id = input.required<string>();
@@ -138,7 +141,10 @@ export class ProjectWorkspaceComponent {
   }
 
   // --- Stepper di percorso ----------------------------------------------------
-  readonly flowSteps = FLOW_STEPS;
+  /** Step tradotti per lo step-indicator (label risolte via i18n). */
+  readonly flowSteps = computed<StepItem[]>(() =>
+    FLOW_STEP_KEYS.map((key) => ({ label: this.t(key) })),
+  );
   /** Indice dello step corrente (0=Configura … 4=Render). */
   readonly flowIndex = computed<number>(() => {
     const p = this.project();
@@ -175,9 +181,9 @@ export class ProjectWorkspaceComponent {
   // dove nessuno è "in corso" e tutti restano completati (verde).
   readonly flowActive = computed(() => {
     const i = this.flowIndex();
-    return i >= FLOW_STEPS.length ? FLOW_STEPS.length : Math.min(i, FLOW_STEPS.length - 1);
+    return i >= FLOW_STEP_KEYS.length ? FLOW_STEP_KEYS.length : Math.min(i, FLOW_STEP_KEYS.length - 1);
   });
-  readonly flowCompleted = computed(() => FLOW_STEPS.map((_, i) => i < this.flowIndex()));
+  readonly flowCompleted = computed(() => FLOW_STEP_KEYS.map((_, i) => i < this.flowIndex()));
 
   // --- Pannello di generazione (UNICO componente, data-driven) ----------------
   readonly genProgress = computed(() => this.workspace.genProgress());
@@ -475,17 +481,9 @@ export class ProjectWorkspaceComponent {
       void this.router.navigate(['/project', child.id]);
     });
   }
-  /**
-   * Torna alla pagina appena lasciata (history back): setup se vieni dal flusso
-   * di creazione, Collection se hai aperto da lì. Fallback a `/collection` per i
-   * deep-link diretti (nessuna storia precedente in-app).
-   */
+  /** Esce dal flusso → galleria modelli. Previsto solo da Setup e Pubblicato. */
   back(): void {
-    if (window.history.length > 1) {
-      this.location.back();
-    } else {
-      void this.router.navigate(['/collection']);
-    }
+    void this.router.navigate(['/create']);
   }
   generate(): void {
     void this.store.generate(this.id());

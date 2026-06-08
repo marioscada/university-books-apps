@@ -43,8 +43,8 @@
                 <span class="studio-tile__sub">Torna al documento originale</span>
               </button>
               <button class="studio-tile" type="button" (click)="back()">
-                <span class="studio-tile__title">Torna ai progetti</span>
-                <span class="studio-tile__sub">Vai alla tua collezione</span>
+                <span class="studio-tile__title">{{ 'i18n.Workspace.Published.backTitle' | translate }}</span>
+                <span class="studio-tile__sub">{{ 'i18n.Workspace.Published.backSub' | translate }}</span>
               </button>
             </div>
           </section>
@@ -72,9 +72,8 @@
           </app-review-shell>
         </div>
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
           <button end mat-flat-button color="primary" type="button" (click)="publishDerived()">
-            Pubblica
+            {{ 'i18n.Workspace.Action.publish' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
           </button>
         </app-action-bar>
@@ -242,8 +241,8 @@
                 <span class="studio-tile__sub">Riassunto, slide, articolo</span>
               </button>
               <button class="studio-tile" type="button" (click)="back()">
-                <span class="studio-tile__title">Torna ai progetti</span>
-                <span class="studio-tile__sub">Vai alla tua collezione</span>
+                <span class="studio-tile__title">{{ 'i18n.Workspace.Published.backTitle' | translate }}</span>
+                <span class="studio-tile__sub">{{ 'i18n.Workspace.Published.backSub' | translate }}</span>
               </button>
             </div>
           </section>
@@ -282,53 +281,55 @@
         }
       </div>
 
-      <!-- Bottom action bar: indietro (sx) + azione di stato (dx) — su ogni schermata -->
+      <!-- Top action bar: stepper SEMPRE centrato + azione di stato (dx).
+           Il "torna indietro" (→ modelli) è previsto solo a pubblicazione conclusa. -->
       @if (project.status === 'draft') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
+          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="generate()">
-            Genera l’indice
+            {{ 'i18n.Workspace.Action.generateIndex' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
           </button>
         </app-action-bar>
       } @else if (project.status === 'review' && !chaptersReady()) {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
+          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="generateChapters()">
-            Genera i capitoli
+            {{ 'i18n.Workspace.Action.generateChapters' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
           </button>
         </app-action-bar>
       } @else if (project.status === 'review') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
+          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="goToPublish()">
-            Pubblica
+            {{ 'i18n.Workspace.Action.publish' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
           </button>
         </app-action-bar>
       } @else if (project.status === 'published') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
+          <app-back-link start [label]="'i18n.Workspace.Action.back' | translate" (navigate)="back()" />
+          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="openDocument()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">menu_book</mat-icon>
-            Apri documento
+            {{ 'i18n.Workspace.Action.openDocument' | translate }}
           </button>
         </app-action-bar>
       } @else if (project.status === 'archived') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
+          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-stroked-button type="button" (click)="reopen()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">unarchive</mat-icon>
-            Riapri
+            {{ 'i18n.Workspace.Action.reopen' | translate }}
           </button>
         </app-action-bar>
       } @else if (project.status === 'failed') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
+          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="generate()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">refresh</mat-icon>
-            Riprova
+            {{ 'i18n.Workspace.Action.retry' | translate }}
           </button>
         </app-action-bar>
       }

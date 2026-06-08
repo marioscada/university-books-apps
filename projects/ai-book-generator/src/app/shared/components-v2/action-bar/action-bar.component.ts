@@ -6,9 +6,10 @@ import {
 } from '@angular/core';
 
 /**
- * ActionBarComponent — barra di azioni dumb/presentational con due aree
- * proiettate: **start** (sinistra) e **end** (destra). Tipicamente piè di pagina
- * con "Indietro" a sinistra e la CTA primaria a destra.
+ * ActionBarComponent — barra di azioni dumb/presentational con tre aree
+ * proiettate: **start** (sinistra), **center** (centro, es. stepper) e **end**
+ * (destra). Layout a griglia `1fr auto 1fr`: il centro resta centrato anche
+ * quando start/end sono vuoti.
  *
  * Puro layout: nessun dato, nessuna logica, nessun output — i contenuti
  * (bottoni, link…) arrivano via content projection dal padre. Opzionalmente
@@ -35,6 +36,9 @@ import {
     <div class="action-bar__inner">
       <div class="action-bar__start">
         <ng-content select="[start]" />
+      </div>
+      <div class="action-bar__center">
+        <ng-content select="[center]" />
       </div>
       <div class="action-bar__end">
         <ng-content select="[end]" />

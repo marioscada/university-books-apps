@@ -3,7 +3,6 @@
  * `this`/DI: dati di presentazione + funzioni pure, isolati per snellire il
  * container e renderli testabili.
  */
-import type { StepItem } from '../../shared/ui/step-indicator/step-indicator.component';
 import type { GenStep } from '../../shared/components-v2/generation-panel/generation-panel.component';
 import type {
   ChatBubble,
@@ -18,14 +17,18 @@ export interface OutcomeStat {
   label: string;
 }
 
-/** Step del percorso prodotto (stepper unificato dello Studio). */
-export const FLOW_STEPS: StepItem[] = [
-  { label: 'Configura' },
-  { label: 'Analisi' },
-  { label: 'Indice' },
-  { label: 'Capitoli' },
-  { label: 'Render' },
-];
+/**
+ * Step del percorso prodotto (stepper unificato dello Studio) come **chiavi
+ * i18n**: le label vengono tradotte dal componente (step-indicator è dumb e
+ * i18n-agnostico, riceve label già tradotte).
+ */
+export const FLOW_STEP_KEYS = [
+  'i18n.Workspace.Flow.configure',
+  'i18n.Workspace.Flow.analysis',
+  'i18n.Workspace.Flow.outline',
+  'i18n.Workspace.Flow.chapters',
+  'i18n.Workspace.Flow.render',
+] as const;
 
 /** Stati con un output (versione + capitoli) disponibile. */
 export const HAS_OUTPUT = new Set(['review', 'published', 'archived']);
