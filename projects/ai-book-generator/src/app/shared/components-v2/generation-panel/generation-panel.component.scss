@@ -33,6 +33,8 @@
   display: flex;
   flex-direction: column;
   align-self: center; // centrata a prescindere dal contesto flex del wrapper
+  align-items: center; // testo della cover centrato orizzontalmente
+  text-align: center;
   width: 150px;
   height: 200px;
   margin-bottom: 18px;
@@ -78,7 +80,7 @@
   font-size: 1rem;
   font-weight: 800;
   line-height: 1.15;
-  text-align: left;
+  text-align: center;
 }
 .gen__cover-brand {
   margin-top: auto;
