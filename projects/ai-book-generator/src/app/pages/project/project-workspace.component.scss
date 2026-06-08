@@ -116,13 +116,16 @@ app-review-shell {
 // Generazione/attesa (indice · capitoli · pubblicazione) — SOLO il pannello,
 // a tutta pagina, centrato; nessuna chrome dello Studio.
 .studio-genpage {
+  // Riempie lo spazio rimanente sotto la band (niente vuoto in alto); la card
+  // si estende in altezza e centra il proprio contenuto.
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
+  flex: 1 1 auto;
   width: 100%;
   min-width: 0;
-  min-height: calc(100dvh - var(--header-height, 88px));
-  padding-block: clamp(32px, 6vw, 72px);
+  min-height: 0;
+  padding-block: clamp(16px, 2vw, 28px);
   padding-inline: var(--page-padding-inline, 20px);
 }
 .studio-genpage > app-generation-panel {
