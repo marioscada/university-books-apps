@@ -6,7 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { ListRowComponent } from '../../shared/components-v2/list-row/list-row.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import { ProjectsStore } from '../../core/state/projects.store';
@@ -37,7 +36,6 @@ const LIBRARY: readonly ProjectStatus[] = ['published', 'archived'];
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AuthShellComponent,
     ListRowComponent,
     ModalShellComponent,
     NgTemplateOutlet,

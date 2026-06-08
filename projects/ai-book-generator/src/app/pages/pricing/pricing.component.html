@@ -1,29 +1,27 @@
-<app-auth-shell>
-  <section class="band">
-    <div class="site-container band__inner band__inner--center">
-      <app-page-header
-        center
-        title="Paga solo ciò che generi"
-        subtitle="Nessun abbonamento obbligatorio: un progetto = un libro completo, in tutti i formati.">
-      </app-page-header>
+<section class="band">
+  <div class="site-container band__inner band__inner--center">
+    <app-page-header
+      center
+      title="Paga solo ciò che generi"
+      subtitle="Nessun abbonamento obbligatorio: un progetto = un libro completo, in tutti i formati.">
+    </app-page-header>
 
-      <div class="plans">
-        @for (plan of plans; track plan.id) {
-          <app-plan-card
-            [name]="plan.name"
-            [price]="plan.price"
-            [period]="plan.period"
-            [originalPrice]="plan.originalPrice ?? ''"
-            [secondaryNote]="plan.secondaryNote ?? ''"
-            [tagline]="plan.tagline"
-            [features]="plan.features"
-            [highlighted]="!!plan.highlighted"
-            [badgeLabel]="plan.badge ?? ''"
-            [ctaLabel]="plan.cta"
-            [ctaTone]="plan.ctaTone"
-            (ctaClick)="choose(plan.id)" />
-        }
-      </div>
+    <div class="plans">
+      @for (plan of plans; track plan.id) {
+        <app-plan-card
+          [name]="plan.name"
+          [price]="plan.price"
+          [period]="plan.period"
+          [originalPrice]="plan.originalPrice ?? ''"
+          [secondaryNote]="plan.secondaryNote ?? ''"
+          [tagline]="plan.tagline"
+          [features]="plan.features"
+          [highlighted]="!!plan.highlighted"
+          [badgeLabel]="plan.badge ?? ''"
+          [ctaLabel]="plan.cta"
+          [ctaTone]="plan.ctaTone"
+          (ctaClick)="choose(plan.id)" />
+      }
     </div>
-  </section>
-</app-auth-shell>
+  </div>
+</section>

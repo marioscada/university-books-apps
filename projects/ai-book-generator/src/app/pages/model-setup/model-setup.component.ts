@@ -13,7 +13,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { CounterFieldComponent } from '../../shared/ui/counter-field/counter-field.component';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import {
@@ -50,7 +49,6 @@ const NOTES_MAX = 500;
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AuthShellComponent,
     CounterFieldComponent,
     BackLinkComponent,
     SourceDropzoneComponent,

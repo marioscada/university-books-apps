@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { ChoiceCardComponent } from '../../shared/components-v2/choice-card/choice-card.component';
 import { TemplatesStore } from '../../core/state/templates.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
@@ -20,7 +19,7 @@ import { METER_MAX, toModelChoices, type ModelChoice } from './create.util';
   selector: 'app-create',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AuthShellComponent, ChoiceCardComponent, MatIconModule, TranslateModule],
+  imports: [ChoiceCardComponent, MatIconModule, TranslateModule],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
 })

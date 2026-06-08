@@ -12,7 +12,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
 import {
@@ -66,7 +65,6 @@ import {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AuthShellComponent,
     BackLinkComponent,
     ActionBarComponent,
     GenerationPanelComponent,
