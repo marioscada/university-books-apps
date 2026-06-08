@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { MockApiService } from './mock-api.service';
+import { SEED_TEMPLATES } from './templates-seed';
 import type {
   ApiPort,
   ListProjectsFilter,
@@ -27,37 +27,38 @@ import type {
 } from '../domain';
 
 /**
- * AwsApiService — implementazione REALE di `ApiPort` verso il backend
- * `ai-platform-university-books` (API Gateway + Cognito). L'`authInterceptor`
- * aggiunge automaticamente il Bearer token alle richieste `execute-api`.
+ * AwsApiService — implementazione di PRODUZIONE di `ApiPort` verso il backend
+ * `ai-platform-university-books` (API Gateway + Cognito). NESSUN dato mock:
  *
- * È un adapter IBRIDO: i metodi già coperti dal backend usano HttpClient verso
- * gli endpoint reali (`/v1/projects`, `/v1/documents`); quelli non ancora pronti
- * lato server (templates, upload presigned, chat/derivati AI, piano/billing,
- * lifecycle avanzato, getSource/ingest) DELEGANO a `MockApiService`, così lo
- * switch del provider `API_PORT` è graduale e senza regressioni.
+ * - Tutto ciò che il backend espone → HTTP reale (`/v1/projects`, `/v1/documents`).
+ * - **AI non ancora collegata** (chat + contenuti derivati): ritorna **vuoto**
+ *   (no dati finti) finché Bedrock/Claude non sarà disponibile. È l'**unico** punto
+ *   da collegare per completare la produzione.
+ * - **Templates**: catalogo statico dell'app (definizioni immutabili dei modelli,
+ *   i18n-keyed) — non sono entità "dato", non si mescolano col reale. In futuro
+ *   potranno arrivare dal backend dietro la stessa firma.
+ * - **Plan**: default `free` finché non c'è il servizio billing.
  *
- * Mapping di dominio: il backend `Project` è 1:1 col dominio FE (by design) →
- * pass-through. Per `Version`/`Job` si normalizzano i campi assenti con default.
+ * L'`authInterceptor` aggiunge il Bearer Cognito alle richieste `execute-api`.
  */
 @Injectable({ providedIn: 'root' })
 export class AwsApiService implements ApiPort {
   private readonly http = inject(HttpClient);
-  private readonly mock = inject(MockApiService);
-
   private readonly base = environment.api.baseUrl;
   private url(path: string): string {
     return `${this.base}${path}`;
   }
 
   // ===========================================================================
-  // Templates — DELEGATI a mock (shape backend ≠ ProjectTemplate, da concordare)
+  // Templates — catalogo statico (config app, non mock di entità)
   // ===========================================================================
-  listTemplates(): Promise<ProjectTemplate[]> {
-    return this.mock.listTemplates();
+  async listTemplates(): Promise<ProjectTemplate[]> {
+    return SEED_TEMPLATES.map((t) => structuredClone(t));
   }
-  getTemplate(id: string): Promise<ProjectTemplate> {
-    return this.mock.getTemplate(id);
+  async getTemplate(id: string): Promise<ProjectTemplate> {
+    const tpl = SEED_TEMPLATES.find((t) => t.id === id);
+    if (!tpl) throw new Error(`Template not found: ${id}`);
+    return structuredClone(tpl);
   }
 
   // ===========================================================================
@@ -69,9 +70,7 @@ export class AwsApiService implements ApiPort {
     if (filter?.kind) params = params.set('kind', filter.kind);
     if (filter?.q) params = params.set('q', filter.q);
     const res = await firstValueFrom(
-      this.http.get<{ projects: Project[]; nextCursor?: string }>(this.url('/v1/projects'), {
-        params,
-      }),
+      this.http.get<{ projects: Project[] }>(this.url('/v1/projects'), { params }),
     );
     return res.projects ?? [];
   }
@@ -89,9 +88,9 @@ export class AwsApiService implements ApiPort {
   }
 
   generate(id: string): Promise<Job> {
-    return firstValueFrom(
-      this.http.post<unknown>(this.url(`/v1/projects/${id}/generate`), {}),
-    ).then((j) => this.mapJob(j));
+    return firstValueFrom(this.http.post<unknown>(this.url(`/v1/projects/${id}/generate`), {})).then(
+      (j) => this.mapJob(j),
+    );
   }
 
   cancel(id: string): Promise<Project> {
@@ -99,9 +98,7 @@ export class AwsApiService implements ApiPort {
   }
 
   async getJob(projectId: string): Promise<Job | null> {
-    const j = await firstValueFrom(
-      this.http.get<unknown>(this.url(`/v1/projects/${projectId}/job`)),
-    );
+    const j = await firstValueFrom(this.http.get<unknown>(this.url(`/v1/projects/${projectId}/job`)));
     return j ? this.mapJob(j) : null;
   }
 
@@ -122,41 +119,47 @@ export class AwsApiService implements ApiPort {
     await firstValueFrom(this.http.delete<void>(this.url(`/v1/projects/${id}`)));
   }
 
-  // ----- Lifecycle / publish / derive: backend non ancora pronto → mock --------
+  // ----- Lifecycle: una sola rotta reale, azione nel body ---------------------
+  private lifecycle(id: string, payload: Record<string, unknown>): Promise<Project> {
+    return firstValueFrom(this.http.post<Project>(this.url(`/v1/projects/${id}/lifecycle`), payload));
+  }
   publish(id: string): Promise<Project> {
-    return this.mock.publish(id);
+    return this.lifecycle(id, { action: 'publish' });
   }
   archive(id: string): Promise<Project> {
-    return this.mock.archive(id);
+    return this.lifecycle(id, { action: 'archive' });
   }
   reopen(id: string): Promise<Project> {
-    return this.mock.reopen(id);
+    return this.lifecycle(id, { action: 'reopen' });
   }
   duplicate(id: string): Promise<Project> {
-    return this.mock.duplicate(id);
+    return this.lifecycle(id, { action: 'duplicate' });
   }
   derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project> {
-    return this.mock.derive(id, derivedKind, language);
+    return this.lifecycle(id, { action: 'derive', derivedKind, language });
   }
 
   // ===========================================================================
-  // Derivati + Chat — AI: restano MOCK (come da accordo)
+  // AI (chat + derivati) — NON collegata: ritorna VUOTO (no dati finti).
+  // Unico punto da implementare quando Bedrock/Claude sarà disponibile.
   // ===========================================================================
-  generateDerived(projectId: string): Promise<DerivedContent> {
-    return this.mock.generateDerived(projectId);
+  async listChatMessages(_projectId: string): Promise<ChatMessage[]> {
+    return [];
   }
-  regenerateDerived(projectId: string, feedback: string): Promise<DerivedContent> {
-    return this.mock.regenerateDerived(projectId, feedback);
+  async sendChatMessage(_projectId: string, _text: string): Promise<ChatMessage[]> {
+    // AI non collegata: nessuna risposta finché non c'è il servizio AI.
+    return [];
   }
-  listChatMessages(projectId: string): Promise<ChatMessage[]> {
-    return this.mock.listChatMessages(projectId);
+  async generateDerived(projectId: string): Promise<DerivedContent> {
+    const project = await this.getProject(projectId);
+    return { kind: project.derivedKind ?? 'summary', title: project.title };
   }
-  sendChatMessage(projectId: string, text: string): Promise<ChatMessage[]> {
-    return this.mock.sendChatMessage(projectId, text);
+  async regenerateDerived(projectId: string, _feedback: string): Promise<DerivedContent> {
+    return this.generateDerived(projectId);
   }
 
   // ===========================================================================
-  // Sources / Library — REALI (/v1/documents) dove il backend è pronto
+  // Sources / Library — REALI (/v1/documents)
   // ===========================================================================
   async listSources(filter?: ListSourcesFilter): Promise<Source[]> {
     let params = new HttpParams();
@@ -164,17 +167,21 @@ export class AwsApiService implements ApiPort {
     if (filter?.tag) params = params.set('tag', filter.tag);
     if (filter?.q) params = params.set('q', filter.q);
     const res = await firstValueFrom(
-      this.http.get<{ sources: Source[]; nextCursor?: string }>(this.url('/v1/documents'), {
-        params,
-      }),
+      this.http.get<{ sources: Source[] }>(this.url('/v1/documents'), { params }),
     );
     return res.sources ?? [];
   }
 
+  async getSource(id: string): Promise<Source> {
+    // Il dettaglio Source usa la stessa proiezione della lista (shape coerente).
+    const all = await this.listSources();
+    const found = all.find((s) => s.id === id);
+    if (!found) throw new Error(`Source not found: ${id}`);
+    return found;
+  }
+
   createNote(name: string): Promise<Source> {
-    return firstValueFrom(
-      this.http.post<Source>(this.url('/v1/documents'), { name, content: '' }),
-    );
+    return firstValueFrom(this.http.post<Source>(this.url('/v1/documents'), { name, content: '' }));
   }
 
   patchSource(id: string, patch: PatchSourceInput): Promise<Source> {
@@ -185,18 +192,61 @@ export class AwsApiService implements ApiPort {
     await firstValueFrom(this.http.delete<void>(this.url(`/v1/documents/${id}`)));
   }
 
-  // ----- getSource / upload / ingest / plan: shape o flusso non 1:1 → mock -----
-  getSource(id: string): Promise<Source> {
-    return this.mock.getSource(id);
+  async getIngestJob(sourceId: string): Promise<Job> {
+    const res = await firstValueFrom(
+      this.http.get<{ sourceId: string; status: string }>(
+        this.url(`/v1/documents/${sourceId}/ingest`),
+      ),
+    );
+    // L'ingest non è un Job completo: lo normalizziamo a Job minimale.
+    const done = res.status === 'ready';
+    const failed = res.status === 'failed';
+    return {
+      id: `ingest-${sourceId}`,
+      sourceId,
+      type: 'ingest',
+      status: failed ? 'failed' : done ? 'succeeded' : 'running',
+      steps: [],
+      progress: done ? 100 : 0,
+      queuedSourceIds: [],
+      log: [],
+      createdAt: new Date().toISOString(),
+    };
   }
-  createUpload(input: CreateUploadInput): Promise<Source> {
-    return this.mock.createUpload(input);
+
+  /**
+   * Upload fonte file: crea il record reale via presigned-url. NB: il caricamento
+   * dei byte (PUT su S3) richiede il File, non presente in questa firma `ApiPort`
+   * → quando il flusso upload del FE passerà il File, qui si aggiunge il PUT.
+   */
+  async createUpload(input: CreateUploadInput): Promise<Source> {
+    const res = await firstValueFrom(
+      this.http.post<{ documentId: string }>(this.url('/v1/documents/presigned-url'), {
+        fileName: input.name,
+        contentType: input.mime ?? 'application/pdf',
+        fileSize: input.sizeBytes,
+      }),
+    );
+    return {
+      id: res.documentId,
+      workspaceId: '',
+      ownerId: '',
+      name: input.name,
+      type: 'pdf',
+      mime: input.mime,
+      sizeBytes: input.sizeBytes,
+      uploadedAt: new Date().toISOString(),
+      ingestStatus: 'pending',
+      tags: [],
+      usedInProjectIds: [],
+    };
   }
-  getIngestJob(sourceId: string): Promise<Job> {
-    return this.mock.getIngestJob(sourceId);
-  }
-  getPlan(): Promise<Plan> {
-    return this.mock.getPlan();
+
+  // ===========================================================================
+  // Plan — default `free` finché non c'è il servizio billing.
+  // ===========================================================================
+  async getPlan(): Promise<Plan> {
+    return 'free';
   }
 
   // ===========================================================================
