@@ -31,7 +31,7 @@ import {
 import type { DerivedKind, Job, Plan, Project, ProjectSettings } from '../domain';
 import { API_PORT } from '../data/api-port';
 import { RUNTIME_CONFIG } from '../config/runtime.config';
-import { ACTIVE_STATUSES } from '../data/mock-api.service';
+import { ACTIVE_STATUSES } from '../domain';
 
 /**
  * ProjectsStore — SignalStore (NgRx) per i progetti.

@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { SEED_TEMPLATES } from './templates-seed';
+import { TEMPLATE_CATALOG } from './templates-catalog';
 import type {
   ApiPort,
   ListProjectsFilter,
@@ -53,10 +53,10 @@ export class AwsApiService implements ApiPort {
   // Templates — catalogo statico (config app, non mock di entità)
   // ===========================================================================
   async listTemplates(): Promise<ProjectTemplate[]> {
-    return SEED_TEMPLATES.map((t) => structuredClone(t));
+    return TEMPLATE_CATALOG.map((t) => structuredClone(t));
   }
   async getTemplate(id: string): Promise<ProjectTemplate> {
-    const tpl = SEED_TEMPLATES.find((t) => t.id === id);
+    const tpl = TEMPLATE_CATALOG.find((t) => t.id === id);
     if (!tpl) throw new Error(`Template not found: ${id}`);
     return structuredClone(tpl);
   }

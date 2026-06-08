@@ -20,9 +20,8 @@ import type {
  * ApiPort — il "buco" per il backend.
  *
  * Mappa il contratto REST-ish di PRODUCT-ARCHITECTURE.md §7 in metodi tipizzati
- * `Promise`-based. In v1 è implementato da `MockApiService`; quando subentra il
- * backend reale, basterà fornire un'altra implementazione dietro lo stesso token,
- * senza toccare store né UI.
+ * `Promise`-based. Implementato da `AwsApiService` (backend reale); gli store/UI
+ * dipendono solo da questa interfaccia, non dall'implementazione.
  */
 export interface ApiPort {
   // --- Templates (modelli di pubblicazione) ---------------------------------
@@ -150,7 +149,7 @@ export interface PatchSourceInput {
 }
 
 /**
- * Token DI per `ApiPort`. In v1 è mappato a `MockApiService`
- * (`useExisting`), così gli store dipendono dall'interfaccia, non dal mock.
+ * Token DI per `ApiPort`. Mappato a `AwsApiService` (`useExisting`), così gli
+ * store dipendono dall'interfaccia, non dall'implementazione.
  */
 export const API_PORT = new InjectionToken<ApiPort>('ApiPort');

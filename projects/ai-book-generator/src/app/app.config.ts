@@ -74,10 +74,9 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
 
     // Data layer: l'ApiPort è mappato all'AwsApiService (backend reale via HTTP).
-    // È un adapter IBRIDO: usa gli endpoint reali (/v1/projects, /v1/documents,
-    // /auth/me) e delega a MockApiService SOLO ciò che non è ancora pronto lato
-    // server (templates i18n, upload presigned, chat+derivati AI in attesa di
-    // Claude su AWS, billing). Switch graduale, store/UI invariati.
+    // Nessun mock: tutto reale (/v1/projects, /v1/documents, /auth/me); l'AI
+    // (chat + derivati) resta VUOTA finché non c'è Bedrock/Claude; i templates
+    // sono catalogo statico dell'app. Store/UI dipendono solo da ApiPort.
     { provide: API_PORT, useExisting: AwsApiService },
 
     // Icone: il progetto carica SOLO "Material Symbols Outlined" (index.html).

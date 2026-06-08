@@ -20,6 +20,15 @@ export type ProjectStatus =
   | 'archived'     // non attivo, consultabile/riapribile
   | 'failed';      // generazione fallita → retry
 
+/** Stati "vivi" (lavori in corso) mostrati nella Create hub. */
+export const ACTIVE_STATUSES: readonly ProjectStatus[] = [
+  'draft',
+  'queued',
+  'processing',
+  'review',
+  'failed',
+];
+
 /** Tema della copertina astratta — riusa i temi cover-art globali. */
 export type CoverTheme = 'aurora' | 'ocean' | 'ember' | 'rose' | 'mint' | 'gold';
 

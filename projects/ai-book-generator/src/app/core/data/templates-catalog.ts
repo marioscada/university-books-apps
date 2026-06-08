@@ -357,7 +357,7 @@ const CUSTOM: ProjectTemplate = {
 };
 
 /** Tutti i modelli, nell'ordine della galleria Create (Personalizzato per ultimo). */
-export const SEED_TEMPLATES: readonly ProjectTemplate[] = [
+export const TEMPLATE_CATALOG: readonly ProjectTemplate[] = [
   BOOK,
   SUMMARY,
   STUDY_GUIDE,
