@@ -7,54 +7,23 @@
     @if (coverBrand()) {
       <span class="gen__cover-brand">{{ coverBrand() }}</span>
     }
+    @if (loading()) {
+      <span class="gen__cover-spin" aria-hidden="true">
+        <mat-icon class="gen__spin" fontSet="material-symbols-outlined">progress_activity</mat-icon>
+      </span>
+    }
   </div>
-}
-
-@if (statusLabel()) {
-  <span class="gen__status">
-    <mat-icon class="gen__spin" fontSet="material-symbols-outlined" aria-hidden="true">progress_activity</mat-icon>
-    {{ statusLabel() }}
-  </span>
 }
 
 @if (heading()) {
   <h2 class="gen__heading">{{ heading() }}</h2>
 }
-@if (subtitle()) {
-  <p class="gen__subtitle">{{ subtitle() }}</p>
-}
 
-@if (showSteps() && steps().length) {
-  <div class="gen__steps">
-    @for (s of steps(); track $index; let i = $index; let last = $last) {
-      <span class="gen__step" [attr.data-status]="s.status">
-        <span class="gen__dot">
-          @if (stepIcon(s); as ic) {
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ ic }}</mat-icon>
-          } @else {
-            {{ i + 1 }}
-          }
-        </span>
-        <span class="gen__step-label">{{ s.label }}</span>
-      </span>
-      @if (!last) {
-        <span class="gen__conn" [attr.data-done]="s.status === 'done'" aria-hidden="true"></span>
-      }
-    }
-  </div>
+@if (detailLabel()) {
+  <p class="gen__detail-line" aria-live="polite">
+    <span class="gen__pct">{{ clamped() }}%</span> — {{ detailLabel() }}
+  </p>
 }
-
-<div class="gen__progress">
-  <mat-progress-bar class="gen__bar" mode="determinate" [value]="clamped()" />
-  @if (detailLabel() || etaLabel()) {
-    <div class="gen__meta">
-      <span class="gen__detail">{{ clamped() }}%@if (detailLabel()) { — {{ detailLabel() }}}</span>
-      @if (etaLabel()) {
-        <span class="gen__eta">{{ etaLabel() }}</span>
-      }
-    </div>
-  }
-</div>
 
 @if (cancelLabel()) {
   <button class="gen__cancel" type="button" (click)="cancelled.emit()">

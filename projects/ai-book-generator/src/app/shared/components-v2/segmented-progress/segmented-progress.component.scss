@@ -1,0 +1,69 @@
+// Barra segmentata — token-only. Done/corrente = scala accent; track = neutro.
+:host {
+  display: block;
+  width: 100%;
+}
+
+.seg__track {
+  display: flex;
+  gap: 8px;
+}
+
+.seg__seg {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--progress-track);
+  overflow: hidden;
+}
+
+// Segmento completato → accent pieno.
+.seg__seg.is-done {
+  background: var(--accent-500);
+}
+
+// Riempimento del segmento corrente (parziale durante la generazione).
+.seg__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-400), var(--accent-500));
+  transition: width 0.45s ease;
+}
+
+.seg__labels {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.seg__label {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seg__label.is-current {
+  color: var(--accent-700);
+  font-weight: 700;
+}
+
+// Self-responsive: su viewport piccoli restano solo le barre.
+:host(.isSmall) .seg__label {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seg__fill {
+    transition: none;
+  }
+}

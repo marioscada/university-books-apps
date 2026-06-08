@@ -8,7 +8,6 @@ import {
   output,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 /** Stato di uno step della pipeline mostrata nel pannello. */
 export type GenStepStatus = 'done' | 'current' | 'todo';
@@ -50,7 +49,7 @@ export interface GenStep {
     class: 'generation-panel',
     '[class.is-flat]': 'flat()',
   },
-  imports: [MatIconModule, MatProgressBarModule],
+  imports: [MatIconModule],
   templateUrl: './generation-panel.component.html',
   styleUrl: './generation-panel.component.scss',
 })
@@ -63,6 +62,8 @@ export class GenerationPanelComponent {
   readonly coverBrand = input<string>('SCADÁ');
   /** Colore della copertina (qualsiasi CSS color/var). */
   readonly coverColor = input<string>('var(--tone-violet-fg, #6b3fb5)');
+  /** Mostra lo spinner di elaborazione al centro della copertina. */
+  readonly loading = input(false, { transform: booleanAttribute });
 
   // --- Testi ------------------------------------------------------------------
   readonly statusLabel = input<string>('');
@@ -95,18 +96,4 @@ export class GenerationPanelComponent {
   protected readonly clamped = computed(() =>
     Math.max(0, Math.min(100, Math.round(this.percent()))),
   );
-
-  /** Icona del pallino per uno step (override `icon` o default per stato). */
-  protected stepIcon(step: GenStep): string {
-    if (step.icon) {
-      return step.icon;
-    }
-    if (step.status === 'done') {
-      return 'check';
-    }
-    if (step.status === 'current') {
-      return 'progress_activity';
-    }
-    return '';
-  }
 }

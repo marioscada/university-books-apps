@@ -4,11 +4,10 @@
     @if (derivedGenerating() || publishing()) {
       <div class="studio-genpage">
         <app-generation-panel
+          loading
           [coverKicker]="derivedLabel()"
           [coverTitle]="project.title"
-          [statusLabel]="publishing() ? 'Pubblicazione…' : 'Elaborazione…'"
           [heading]="publishing() ? 'Sto pubblicando il derivato…' : 'Generazione ' + derivedLabel() + ' in corso…'"
-          [subtitle]="'Elaboro il derivato a partire dal documento sorgente.'"
           [percent]="publishing() ? pubProgress() : derivedProgress()" />
       </div>
     } @else if (project.status === 'published') {
@@ -84,48 +83,52 @@
       </div>
     }
   } @else if (isGenerating()) {
-    <!-- ATTESA/GENERAZIONE: SOLO il pannello, a tutta pagina (nessuna chrome) -->
-    <div class="studio-genpage">
-      @if (project.status === 'queued' || project.status === 'processing') {
-        <app-generation-panel
-          [coverKicker]="coverKicker()"
-          [coverTitle]="project.title"
-          statusLabel="In generazione…"
-          heading="Sto generando l’indice…"
-          [subtitle]="'Analizzo le fonti ed estraggo i temi per comporre l’indice del documento.'"
-          showSteps
-          [steps]="indexSteps()"
-          [percent]="progress()"
-          [detailLabel]="indexDetail()"
-          [etaLabel]="etaLabel()"
-          cancelLabel="Annulla"
-          (cancelled)="cancel()" />
-      } @else if (publishing()) {
-        <app-generation-panel
-          [coverKicker]="coverKicker()"
-          [coverTitle]="project.title"
-          statusLabel="Pubblicazione…"
-          heading="Sto pubblicando il documento…"
-          [subtitle]="'Impagino, eseguo il render e preparo i file da scaricare.'"
-          showSteps
-          [steps]="publishSteps()"
-          [percent]="pubProgress()"
-          [detailLabel]="publishDetail()" />
-      } @else {
-        <app-generation-panel
-          [coverKicker]="coverKicker()"
-          [coverTitle]="project.title"
-          statusLabel="Sviluppo capitoli…"
-          heading="Sto sviluppando i capitoli…"
-          [subtitle]="'Scrivo il contenuto di ogni capitolo a partire dall’indice approvato.'"
-          showSteps
-          [steps]="chapterSteps()"
-          [percent]="genProgress()"
-          [detailLabel]="chapterDetail()" />
-      }
+    <!-- GENERAZIONE: barra segmentata fissa in alto + pannello (cover con spinner) -->
+    <div class="studio">
+      <div class="studio-progress site-container">
+        <app-segmented-progress
+          [steps]="flowSteps()"
+          [activeIndex]="flowActive()"
+          [currentPercent]="flowFraction()" />
+      </div>
+      <div class="studio-genpage">
+        @if (project.status === 'queued' || project.status === 'processing') {
+          <app-generation-panel
+            loading
+            [coverKicker]="coverKicker()"
+            [coverTitle]="project.title"
+            heading="Sto generando l’indice…"
+            [percent]="progress()"
+            [detailLabel]="indexDetail()"
+            cancelLabel="Annulla"
+            (cancelled)="cancel()" />
+        } @else if (publishing()) {
+          <app-generation-panel
+            loading
+            [coverKicker]="coverKicker()"
+            [coverTitle]="project.title"
+            heading="Sto pubblicando il documento…"
+            [percent]="pubProgress()"
+            [detailLabel]="publishDetail()" />
+        } @else {
+          <app-generation-panel
+            loading
+            [coverKicker]="coverKicker()"
+            [coverTitle]="project.title"
+            heading="Sto sviluppando i capitoli…"
+            [percent]="genProgress()"
+            [detailLabel]="chapterDetail()" />
+        }
+      </div>
     </div>
   } @else {
     <div class="studio">
+      <div class="studio-progress site-container">
+        <app-segmented-progress
+          [steps]="flowSteps()"
+          [activeIndex]="flowActive()"
+          [currentPercent]="flowFraction()" />
+      </div>
       <div class="studio-stack site-container">
         @if (project.status === 'draft') {
           <section class="surface-card studio-panel">
@@ -285,7 +288,6 @@
            Il "torna indietro" (→ modelli) è previsto solo a pubblicazione conclusa. -->
       @if (project.status === 'draft') {
         <app-action-bar sticky placement="top">
-          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="generate()">
             {{ 'i18n.Workspace.Action.generateIndex' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
@@ -293,7 +295,6 @@
         </app-action-bar>
       } @else if (project.status === 'review' && !chaptersReady()) {
         <app-action-bar sticky placement="top">
-          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="generateChapters()">
             {{ 'i18n.Workspace.Action.generateChapters' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
@@ -301,7 +302,6 @@
         </app-action-bar>
       } @else if (project.status === 'review') {
         <app-action-bar sticky placement="top">
-          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="goToPublish()">
             {{ 'i18n.Workspace.Action.publish' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
@@ -310,7 +310,6 @@
       } @else if (project.status === 'published') {
         <app-action-bar sticky placement="top">
           <app-back-link start [label]="'i18n.Workspace.Action.back' | translate" (navigate)="back()" />
-          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="openDocument()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">menu_book</mat-icon>
             {{ 'i18n.Workspace.Action.openDocument' | translate }}
@@ -318,7 +317,6 @@
         </app-action-bar>
       } @else if (project.status === 'archived') {
         <app-action-bar sticky placement="top">
-          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-stroked-button type="button" (click)="reopen()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">unarchive</mat-icon>
             {{ 'i18n.Workspace.Action.reopen' | translate }}
@@ -326,7 +324,6 @@
         </app-action-bar>
       } @else if (project.status === 'failed') {
         <app-action-bar sticky placement="top">
-          <app-step-indicator center [steps]="flowSteps()" [activeIndex]="flowActive()" [completed]="flowCompleted()" />
           <button end mat-flat-button color="primary" type="button" (click)="generate()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">refresh</mat-icon>
             {{ 'i18n.Workspace.Action.retry' | translate }}

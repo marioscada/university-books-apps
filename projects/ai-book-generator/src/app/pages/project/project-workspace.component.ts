@@ -15,9 +15,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
 import {
-  StepIndicatorComponent,
-  type StepItem,
-} from '../../shared/ui/step-indicator/step-indicator.component';
+  SegmentedProgressComponent,
+  type SegStep,
+} from '../../shared/components-v2/segmented-progress/segmented-progress.component';
 import {
   GenerationPanelComponent,
   type GenStep,
@@ -71,7 +71,7 @@ import {
   imports: [
     BackLinkComponent,
     ActionBarComponent,
-    StepIndicatorComponent,
+    SegmentedProgressComponent,
     GenerationPanelComponent,
     DerivedResultComponent,
     ReviewShellComponent,
@@ -140,9 +140,9 @@ export class ProjectWorkspaceComponent {
     }
   }
 
-  // --- Stepper di percorso ----------------------------------------------------
-  /** Step tradotti per lo step-indicator (label risolte via i18n). */
-  readonly flowSteps = computed<StepItem[]>(() =>
+  // --- Stepper di percorso (barra segmentata) ---------------------------------
+  /** Step tradotti per la barra segmentata (label risolte via i18n). */
+  readonly flowSteps = computed<SegStep[]>(() =>
     FLOW_STEP_KEYS.map((key) => ({ label: this.t(key) })),
   );
   /** Indice dello step corrente (0=Configura … 4=Render). */
@@ -183,7 +183,26 @@ export class ProjectWorkspaceComponent {
     const i = this.flowIndex();
     return i >= FLOW_STEP_KEYS.length ? FLOW_STEP_KEYS.length : Math.min(i, FLOW_STEP_KEYS.length - 1);
   });
-  readonly flowCompleted = computed(() => FLOW_STEP_KEYS.map((_, i) => i < this.flowIndex()));
+  /**
+   * Riempimento del segmento corrente (0–100): durante la generazione riflette
+   * il % reale del job (indice / capitoli / pubblicazione); altrove pieno (100).
+   */
+  readonly flowFraction = computed<number>(() => {
+    const p = this.project();
+    if (!p) {
+      return 100;
+    }
+    if (p.status === 'queued' || p.status === 'processing') {
+      return this.progress();
+    }
+    if (this.workspace.publishing()) {
+      return this.pubProgress();
+    }
+    if (p.status === 'review' && this.workspace.generating()) {
+      return this.genProgress();
+    }
+    return 100;
+  });
 
   // --- Pannello di generazione (UNICO componente, data-driven) ----------------
   readonly genProgress = computed(() => this.workspace.genProgress());

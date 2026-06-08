@@ -48,6 +48,18 @@
   overflow-y: auto;
 }
 
+// Band della barra segmentata (in cima allo Studio, sotto la top bar). Card
+// bianca a larghezza contenuto (site-container = max-width + gutter interno).
+.studio-progress {
+  flex: 0 0 auto;
+  margin-top: 16px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  border-radius: 12px;
+}
+
 // L'area a colonne (capitoli/derivato) riempie lo spazio disponibile in modo
 // DETERMINISTICO (flex-basis 0, non dal contenuto); lo scroll è interno ai
 // pannelli (vedi review-shell).

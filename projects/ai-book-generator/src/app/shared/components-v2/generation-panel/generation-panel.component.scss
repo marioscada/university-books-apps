@@ -22,6 +22,7 @@
 
 // --- Copertina --------------------------------------------------------------
 .gen__cover {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 150px;
@@ -31,6 +32,32 @@
   border-radius: 6px 12px 12px 6px;
   color: var(--on-accent);
   box-shadow: var(--shadow-lift, 0 18px 40px -16px rgb(15 23 42 / 50%));
+}
+
+// Spinner di elaborazione centrato sulla copertina.
+.gen__cover-spin {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.gen__cover-spin .gen__spin {
+  font-size: 44px;
+  width: 44px;
+  height: 44px;
+  color: var(--on-accent);
+}
+
+// Riga di dettaglio (sostituisce la barra di progresso).
+.gen__detail-line {
+  margin: 4px 0 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--accent-700);
+  text-align: center;
+}
+.gen__pct {
+  font-weight: 800;
 }
 .gen__cover-kicker {
   font-size: 0.625rem;
