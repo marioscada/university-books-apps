@@ -37,8 +37,8 @@ export class AuthLayoutComponent {
   );
 
   private childData(): Record<string, unknown> {
-    let r = this.route;
-    while (r.firstChild) r = r.firstChild;
-    return r.snapshot.data;
+    let r: ActivatedRoute | null = this.route;
+    while (r?.firstChild) r = r.firstChild;
+    return r?.snapshot?.data ?? {};
   }
 }
