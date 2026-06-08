@@ -2,9 +2,6 @@
 // Ritmo verticale via margini espliciti; `is-flat` per l'uso dentro un dialog.
 :host {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   text-align: center;
   width: 100%;
   min-width: 0;
@@ -13,6 +10,15 @@
   border: 1px solid var(--card-border-color);
   border-radius: var(--card-radius, 16px);
   box-shadow: var(--card-shadow);
+}
+
+// Contenuto: centrato in ENTRAMBI gli assi nello spazio libero della card
+// estesa (margin:auto su flex item = centratura robusta).
+.gen__inner {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 :host(.is-flat) {
   padding: 0;

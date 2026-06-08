@@ -1,33 +1,35 @@
-@if (showCover() && coverTitle()) {
-  <div class="gen__cover" [style.background]="coverColor()">
-    @if (coverKicker()) {
-      <span class="gen__cover-kicker">{{ coverKicker() }}</span>
-    }
-    <span class="gen__cover-title">{{ coverTitle() }}</span>
-    @if (coverBrand()) {
-      <span class="gen__cover-brand">{{ coverBrand() }}</span>
-    }
-    @if (loading()) {
-      <span class="gen__cover-spin" aria-hidden="true">
-        <mat-icon class="gen__spin" fontSet="material-symbols-outlined">progress_activity</mat-icon>
-      </span>
-    }
-  </div>
-}
+<div class="gen__inner">
+  @if (showCover() && coverTitle()) {
+    <div class="gen__cover" [style.background]="coverColor()">
+      @if (coverKicker()) {
+        <span class="gen__cover-kicker">{{ coverKicker() }}</span>
+      }
+      <span class="gen__cover-title">{{ coverTitle() }}</span>
+      @if (coverBrand()) {
+        <span class="gen__cover-brand">{{ coverBrand() }}</span>
+      }
+      @if (loading()) {
+        <span class="gen__cover-spin" aria-hidden="true">
+          <mat-icon class="gen__spin" fontSet="material-symbols-outlined">progress_activity</mat-icon>
+        </span>
+      }
+    </div>
+  }
 
-@if (heading()) {
-  <h2 class="gen__heading">{{ heading() }}</h2>
-}
+  @if (heading()) {
+    <h2 class="gen__heading">{{ heading() }}</h2>
+  }
 
-@if (detailLabel()) {
-  <p class="gen__detail-line" aria-live="polite">
-    <span class="gen__pct">{{ clamped() }}%</span> — {{ detailLabel() }}
-  </p>
-}
+  @if (detailLabel()) {
+    <p class="gen__detail-line" aria-live="polite">
+      <span class="gen__pct">{{ clamped() }}%</span> — {{ detailLabel() }}
+    </p>
+  }
 
-@if (cancelLabel()) {
-  <button class="gen__cancel" type="button" (click)="cancelled.emit()">
-    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
-    {{ cancelLabel() }}
-  </button>
-}
+  @if (cancelLabel()) {
+    <button class="gen__cancel" type="button" (click)="cancelled.emit()">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+      {{ cancelLabel() }}
+    </button>
+  }
+</div>

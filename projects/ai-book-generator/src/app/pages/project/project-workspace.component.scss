@@ -116,11 +116,10 @@ app-review-shell {
 // Generazione/attesa (indice · capitoli · pubblicazione) — SOLO il pannello,
 // a tutta pagina, centrato; nessuna chrome dello Studio.
 .studio-genpage {
-  // Riempie lo spazio rimanente sotto la band e centra la card (a dimensione
-  // contenuto) sia in orizzontale sia in verticale → contenuto centro-centro,
-  // niente vuoto in alto.
+  // Riempie lo spazio rimanente sotto la band; la card si ESTENDE in altezza
+  // (stretch) e il suo contenuto è centrato internamente (gen__inner margin:auto).
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   flex: 1 1 auto;
   width: 100%;
