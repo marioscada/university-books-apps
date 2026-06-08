@@ -18,10 +18,7 @@ import {
   SegmentedProgressComponent,
   type SegStep,
 } from '../../shared/components-v2/segmented-progress/segmented-progress.component';
-import {
-  GenerationPanelComponent,
-  type GenStep,
-} from '../../shared/components-v2/generation-panel/generation-panel.component';
+import { GenerationPanelComponent } from '../../shared/components-v2/generation-panel/generation-panel.component';
 import { DerivedResultComponent } from '../../shared/components-v2/derived-result/derived-result.component';
 import { ReviewShellComponent } from '../../shared/components-v2/review-shell/review-shell.component';
 import { derivedKindLabel } from '../../core/data/derived-seed';
@@ -47,7 +44,6 @@ import {
   QUICK_OPS,
   DERIVED_OPTIONS,
   LANGUAGES,
-  buildPipeline,
   paginate,
   quickOpText,
   toChapterItems,
@@ -227,15 +223,9 @@ export class ProjectWorkspaceComponent {
     return p.status === 'review' && (this.workspace.generating() || this.workspace.publishing());
   });
 
-  // Generazione indice (queued/processing)
+  // Generazione indice (queued/processing) — il detail traduce la labelKey
+  // dello step corrente del job (es. job.step.analyze → "Analisi delle fonti").
   readonly progress = computed(() => this.job()?.progress ?? 0);
-  readonly etaLabel = computed(() => {
-    const eta = this.job()?.etaSeconds;
-    return eta ? this.t('i18n.Workspace.Live.eta', { seconds: eta }) : '';
-  });
-  readonly indexSteps = computed<GenStep[]>(() =>
-    buildPipeline(this.job()?.currentStepKey === 'outline' ? 'indice' : 'analisi'),
-  );
   readonly indexDetail = computed(() => {
     const job = this.job();
     const s = job?.steps.find((x) => x.key === job?.currentStepKey);
@@ -243,18 +233,17 @@ export class ProjectWorkspaceComponent {
   });
 
   // Generazione capitoli (review + generating)
-  readonly chapterSteps = computed<GenStep[]>(() => buildPipeline('capitoli'));
   readonly chapterDetail = computed(() => {
     const n = this.workspace.chapters().length || 1;
     const k = Math.min(n, Math.max(1, Math.ceil((this.genProgress() / 100) * n)));
-    return `Scrittura capitolo ${k} di ${n}`;
+    return this.t('i18n.Workspace.Detail.writingChapter', { k, n });
   });
 
   // Pubblicazione (review + publishing)
-  readonly publishSteps = computed<GenStep[]>(() => buildPipeline('render'));
   readonly publishDetail = computed(() => {
     const p = this.pubProgress();
-    return p < 40 ? 'Impaginazione' : p < 80 ? 'Render del PDF' : 'Esportazione';
+    const key = p < 40 ? 'layout' : p < 80 ? 'render' : 'export';
+    return this.t(`i18n.Workspace.Detail.${key}`);
   });
 
   // --- Capitoli (revisione) ---------------------------------------------------

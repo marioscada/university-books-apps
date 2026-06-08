@@ -612,6 +612,10 @@
   "i18n.Workspace.Archived.body": "This project is archived. Reopen it to keep working.",
   "i18n.Workspace.Archived.title": "Archived project",
   "i18n.Workspace.comingSoon": "Coming soon",
+  "i18n.Workspace.Detail.export": "Exporting",
+  "i18n.Workspace.Detail.layout": "Layout",
+  "i18n.Workspace.Detail.render": "Rendering the PDF",
+  "i18n.Workspace.Detail.writingChapter": "Writing chapter {{k}} of {{n}}",
   "i18n.Workspace.Draft.body": "This draft is ready to generate. Launch it to start the AI pipeline.",
   "i18n.Workspace.Draft.title": "Ready to generate",
   "i18n.Workspace.Failed.body": "Generation failed. Retry to run the pipeline again.",
@@ -632,5 +636,7 @@
   "i18n.Workspace.Review.chapters": "Chapters",
   "i18n.Workspace.Review.export": "Export",
   "i18n.Workspace.Review.outline": "Outline",
-  "i18n.Workspace.Review.preview": "Preview"
+  "i18n.Workspace.Review.preview": "Preview",
+  "job.step.analyze": "Analyzing sources",
+  "job.step.outline": "Composing the outline"
 }

@@ -3,7 +3,6 @@
  * `this`/DI: dati di presentazione + funzioni pure, isolati per snellire il
  * container e renderli testabili.
  */
-import type { GenStep } from '../../shared/components-v2/generation-panel/generation-panel.component';
 import type {
   ChatBubble,
   QuickOp,
@@ -57,26 +56,6 @@ export const DERIVED_OPTIONS: readonly { kind: DerivedKind; title: string; desc:
 
 /** Lingue selezionabili per la traduzione. */
 export const LANGUAGES = ['Inglese', 'Spagnolo', 'Francese', 'Tedesco', 'Portoghese', 'Cinese'];
-
-/**
- * Pipeline del pannello di generazione: "Configura" sempre completato (verde),
- * poi done prima dell'attivo, current sull'attivo, todo dopo.
- */
-export function buildPipeline(active: 'analisi' | 'indice' | 'capitoli' | 'render'): GenStep[] {
-  const order = ['configura', 'analisi', 'indice', 'capitoli', 'render'] as const;
-  const labels: Record<string, string> = {
-    configura: 'Configura',
-    analisi: 'Analisi',
-    indice: 'Indice',
-    capitoli: 'Capitoli',
-    render: 'Render',
-  };
-  const ai = order.indexOf(active);
-  return order.map((k, i) => {
-    const status: GenStep['status'] = i < ai ? 'done' : i === ai ? 'current' : 'todo';
-    return { label: labels[k], status };
-  });
-}
 
 /** Prompt corrispondente a un'operazione rapida della chat. */
 export function quickOpText(key: string): string {

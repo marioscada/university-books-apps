@@ -93,19 +93,6 @@
   opacity: 0.9;
 }
 
-// --- Stato ------------------------------------------------------------------
-.gen__status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  background: var(--accent-100);
-  color: var(--accent-700);
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-}
-
 // --- Testi ------------------------------------------------------------------
 .gen__heading {
   margin: 14px 0 0;
@@ -113,116 +100,6 @@
   font-weight: 800;
   color: var(--mat-sys-on-surface);
 }
-.gen__subtitle {
-  margin: 8px 0 0;
-  max-width: 46ch;
-  line-height: 1.5;
-  font-size: var(--site-body-small, 0.9375rem);
-  color: var(--mat-sys-on-surface-variant);
-}
-
-// --- Step pipeline ----------------------------------------------------------
-.gen__steps {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px 0;
-  margin-top: 24px;
-}
-.gen__step {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.gen__dot {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background: var(--card-bg);
-  border: 1.5px solid var(--card-border-color);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: var(--mat-sys-on-surface-variant);
-
-  mat-icon {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
-  }
-}
-.gen__step[data-status='done'] .gen__dot {
-  background: var(--site-success);
-  border-color: transparent;
-  color: var(--on-accent);
-}
-.gen__step[data-status='current'] .gen__dot {
-  background: var(--accent-500);
-  border-color: transparent;
-  color: var(--on-accent);
-
-  mat-icon {
-    animation: gen-spin 0.9s linear infinite;
-  }
-}
-.gen__step-label {
-  font-size: var(--site-body-small, 0.8125rem);
-  font-weight: 600;
-  color: var(--mat-sys-on-surface-variant);
-}
-.gen__step[data-status='done'] .gen__step-label {
-  color: var(--site-success);
-}
-.gen__step[data-status='current'] .gen__step-label {
-  color: var(--mat-sys-on-surface);
-}
-// Passi futuri (non ancora previsti in questa fase): attenuati.
-.gen__step[data-status='todo'] {
-  opacity: 0.45;
-}
-.gen__conn {
-  width: 28px;
-  height: 2px;
-  border-radius: 2px;
-  margin: 0 6px;
-  background: var(--card-border-color);
-}
-.gen__conn[data-done='true'] {
-  background: var(--site-success);
-}
-
-// --- Avanzamento ------------------------------------------------------------
-.gen__progress {
-  width: 100%;
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.gen__bar {
-  --mdc-linear-progress-track-height: 8px;
-  --mdc-linear-progress-active-indicator-height: 8px;
-  border-radius: 999px;
-}
-.gen__meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.gen__detail {
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  color: var(--accent-700);
-}
-.gen__eta {
-  font-size: 0.8125rem;
-  color: var(--mat-sys-on-surface-variant);
-}
-
 // --- Annulla ----------------------------------------------------------------
 .gen__cancel {
   display: inline-flex;
@@ -263,9 +140,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .gen__spin,
-  .gen__step[data-status='current'] .gen__dot mat-icon {
+  .gen__spin {
     animation: none;
-    transition: none;
   }
 }

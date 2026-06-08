@@ -9,36 +9,22 @@ import {
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
-/** Stato di uno step della pipeline mostrata nel pannello. */
-export type GenStepStatus = 'done' | 'current' | 'todo';
-
-/** Step della pipeline (view-model dumb, i18n-agnostico). */
-export interface GenStep {
-  /** Etichetta (già tradotta). */
-  label: string;
-  status: GenStepStatus;
-  /** Icona Material opzionale nel pallino (override del default per stato). */
-  icon?: string;
-}
-
 /**
  * GenerationPanelComponent — pannello UNICO di **elaborazione/attesa**
- * (dumb/presentational), riusabile ovunque: generazione indice, generazione
- * capitoli, **attesa di pubblicazione/render**, derivati… Tutto è iniettato dal
- * padre (cover, stato, heading, step, %, sotto-step, ETA, annulla): il componente
- * non conosce il dominio.
+ * (dumb/presentational): copertina con spinner, heading, riga di dettaglio
+ * (`% — testo`) e Annulla. L'avanzamento "a passi" è mostrato dalla barra
+ * segmentata sopra (vedi `segmented-progress`), non qui.
  *
- * `flat` rimuove la chrome di card per l'uso **dentro un dialog** o un altro
- * contenitore. `OnPush` + signals, token globali, a11y (progressbar, `aria-live`).
+ * `flat` rimuove la chrome di card per l'uso **dentro un dialog**. OnPush +
+ * signals, token globali.
  *
  * @example
  * ```html
  * <app-generation-panel
- *   [coverTitle]="title()" coverKicker="REPORT"
- *   statusLabel="In generazione…" heading="Sto generando il tuo report…"
- *   [subtitle]="'Analizzo le fonti, scrivo le sezioni e impagino il documento.'"
- *   [steps]="steps()" [percent]="64" [detailLabel]="'Scrittura capitolo 4 di 6'"
- *   etaLabel="~1 min rimanente" cancelLabel="Annulla" (cancel)="onCancel()" />
+ *   loading [coverTitle]="title()" coverKicker="REPORT"
+ *   heading="Sto generando il tuo report…"
+ *   [percent]="64" [detailLabel]="'Scrittura capitolo 4 di 6'"
+ *   cancelLabel="Annulla" (cancelled)="onCancel()" />
  * ```
  */
 @Component({
@@ -65,23 +51,11 @@ export class GenerationPanelComponent {
   /** Mostra lo spinner di elaborazione al centro della copertina. */
   readonly loading = input(false, { transform: booleanAttribute });
 
-  // --- Testi ------------------------------------------------------------------
-  readonly statusLabel = input<string>('');
+  // --- Testi + avanzamento ----------------------------------------------------
   readonly heading = input<string>('');
-  readonly subtitle = input<string>('');
-
-  // --- Pipeline + avanzamento -------------------------------------------------
-  /**
-   * Mostra lo stepper interno. **Opt-in**: è il PADRE a decidere se visualizzarlo
-   * (`showSteps`) e quali step passare (`steps`). Il figlio si limita a mostrarli;
-   * ogni aggiornamento arriva dal padre (signals → reattività massima).
-   */
-  readonly showSteps = input(false, { transform: booleanAttribute });
-  readonly steps = input<GenStep[]>([]);
   readonly percent = input(0, { transform: numberAttribute });
   /** Sotto-step corrente (es. "Scrittura capitolo 4 di 6"). */
   readonly detailLabel = input<string>('');
-  readonly etaLabel = input<string>('');
 
   // --- Azioni / layout --------------------------------------------------------
   /** Etichetta del bottone Annulla (vuoto = nascosto). */

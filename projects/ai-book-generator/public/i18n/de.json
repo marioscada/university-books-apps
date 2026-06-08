@@ -612,6 +612,10 @@
   "i18n.Workspace.Archived.body": "Dieses Projekt ist archiviert. Öffne es wieder, um weiterzuarbeiten.",
   "i18n.Workspace.Archived.title": "Archiviertes Projekt",
   "i18n.Workspace.comingSoon": "Demnächst verfügbar",
+  "i18n.Workspace.Detail.export": "Export",
+  "i18n.Workspace.Detail.layout": "Layout",
+  "i18n.Workspace.Detail.render": "PDF rendern",
+  "i18n.Workspace.Detail.writingChapter": "Kapitel {{k}} von {{n}} schreiben",
   "i18n.Workspace.Draft.body": "Dieser Entwurf ist bereit zur Generierung. Starte ihn, um die KI-Pipeline auszuführen.",
   "i18n.Workspace.Draft.title": "Bereit zur Generierung",
   "i18n.Workspace.Failed.body": "Generierung fehlgeschlagen. Versuche es erneut, um die Pipeline noch einmal auszuführen.",
@@ -632,5 +636,7 @@
   "i18n.Workspace.Review.chapters": "Kapitel",
   "i18n.Workspace.Review.export": "Export",
   "i18n.Workspace.Review.outline": "Struktur",
-  "i18n.Workspace.Review.preview": "Vorschau"
+  "i18n.Workspace.Review.preview": "Vorschau",
+  "job.step.analyze": "Quellen analysieren",
+  "job.step.outline": "Gliederung erstellen"
 }

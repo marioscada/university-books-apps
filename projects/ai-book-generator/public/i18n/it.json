@@ -612,6 +612,10 @@
   "i18n.Workspace.Archived.body": "Questo progetto è archiviato. Riaprilo per continuare a lavorarci.",
   "i18n.Workspace.Archived.title": "Progetto archiviato",
   "i18n.Workspace.comingSoon": "In arrivo",
+  "i18n.Workspace.Detail.export": "Esportazione",
+  "i18n.Workspace.Detail.layout": "Impaginazione",
+  "i18n.Workspace.Detail.render": "Render del PDF",
+  "i18n.Workspace.Detail.writingChapter": "Scrittura capitolo {{k}} di {{n}}",
   "i18n.Workspace.Draft.body": "Questa bozza è pronta per la generazione. Avviala per lanciare la pipeline AI.",
   "i18n.Workspace.Draft.title": "Pronto per la generazione",
   "i18n.Workspace.Failed.body": "Generazione non riuscita. Riprova per eseguire di nuovo la pipeline.",
@@ -632,5 +636,7 @@
   "i18n.Workspace.Review.chapters": "Capitoli",
   "i18n.Workspace.Review.export": "Esporta",
   "i18n.Workspace.Review.outline": "Struttura",
-  "i18n.Workspace.Review.preview": "Anteprima"
+  "i18n.Workspace.Review.preview": "Anteprima",
+  "job.step.analyze": "Analisi delle fonti",
+  "job.step.outline": "Composizione dell’indice"
 }
