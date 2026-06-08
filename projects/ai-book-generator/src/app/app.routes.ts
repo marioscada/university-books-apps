@@ -22,6 +22,7 @@ export const routes: Routes = [
     path: 'landing',
     loadComponent: () =>
       import('./pages/landing/landing.component').then((m) => m.LandingComponent),
+    canActivate: [guestGuard], // utente autenticato → redirect a /create (solo vetrina pubblica)
     title: 'AI Book Generator - Trasforma il tuo materiale in un libro',
   },
   {
