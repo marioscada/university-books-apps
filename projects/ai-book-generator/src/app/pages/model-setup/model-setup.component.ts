@@ -6,14 +6,12 @@ import {
   signal,
   type WritableSignal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { merge, map } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { CounterFieldComponent } from '../../shared/ui/counter-field/counter-field.component';
@@ -26,6 +24,7 @@ import { ActionBarComponent } from '../../shared/components-v2/action-bar/action
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { TemplatesStore } from '../../core/state/templates.store';
+import { injectI18nText } from '../../shared/services/i18n-text';
 import type { OutputFormat, ProjectSettings, ProjectTemplate } from '../../core/domain';
 
 /** Genere grammaticale del nome modello (per gli articoli IT). */
@@ -70,23 +69,10 @@ export class ModelSetupComponent {
   private readonly router = inject(Router);
   private readonly templatesStore = inject(TemplatesStore);
   private readonly projectsStore = inject(ProjectsStore);
-  private readonly translate = inject(TranslateService);
   private readonly snackBar = inject(MatSnackBar);
 
-  /** Tick i18n: ricomputa i view-model al cambio lingua / caricamento traduzioni. */
-  private readonly i18nTick = toSignal(
-    merge(
-      this.translate.onLangChange,
-      this.translate.onTranslationChange,
-      this.translate.onDefaultLangChange,
-    ).pipe(map(() => Symbol())),
-    { initialValue: Symbol() },
-  );
-
-  private t(key: string, params?: Record<string, unknown>): string {
-    this.i18nTick();
-    return this.translate.instant(key, params);
-  }
+  /** Risolutore i18n reattivo (ricomputa i view-model al cambio lingua). */
+  private readonly t = injectI18nText();
 
   private readonly templateId =
     this.route.snapshot.queryParamMap.get('template') ?? 'custom';

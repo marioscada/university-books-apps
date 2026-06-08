@@ -7,17 +7,14 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { merge, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
-import { StepIndicatorComponent } from '../../shared/ui/step-indicator/step-indicator.component';
 import {
   GenerationPanelComponent,
   type GenStep,
@@ -38,6 +35,7 @@ import {
 } from '../../shared/components-v2/ai-chat-panel/ai-chat-panel.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { WorkspaceStore } from '../../core/state/workspace.store';
+import { injectI18nText } from '../../shared/services/i18n-text';
 import type { Chapter, DerivedKind } from '../../core/domain';
 import {
   FLOW_STEPS,
@@ -71,7 +69,6 @@ import {
     AuthShellComponent,
     BackLinkComponent,
     ActionBarComponent,
-    StepIndicatorComponent,
     GenerationPanelComponent,
     DerivedResultComponent,
     ReviewShellComponent,
@@ -91,24 +88,12 @@ export class ProjectWorkspaceComponent {
   private readonly store = inject(ProjectsStore);
   protected readonly workspace = inject(WorkspaceStore);
   private readonly router = inject(Router);
-  private readonly translate = inject(TranslateService);
 
   /** Id del progetto dalla route (`withComponentInputBinding`). */
   readonly id = input.required<string>();
 
-  /** Tick i18n: ricomputa al cambio lingua/caricamento traduzioni. */
-  private readonly i18nTick = toSignal(
-    merge(
-      this.translate.onLangChange,
-      this.translate.onTranslationChange,
-      this.translate.onDefaultLangChange,
-    ).pipe(map(() => Symbol())),
-    { initialValue: Symbol() },
-  );
-  private t(key: string, params?: Record<string, unknown>): string {
-    this.i18nTick();
-    return this.translate.instant(key, params);
-  }
+  /** Risolutore i18n reattivo (ricomputa al cambio lingua/traduzioni). */
+  private readonly t = injectI18nText();
 
   readonly loading = this.store.loading;
   readonly project = computed(() => this.store.entities().find((p) => p.id === this.id()));
