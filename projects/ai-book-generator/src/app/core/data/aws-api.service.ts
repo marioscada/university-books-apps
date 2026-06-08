@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { TEMPLATE_CATALOG } from './templates-catalog';
 import type {
   ApiPort,
   ListProjectsFilter,
@@ -15,7 +14,6 @@ import type {
 } from './api-port';
 import type {
   Project,
-  ProjectTemplate,
   DerivedKind,
   Job,
   Source,
@@ -34,10 +32,10 @@ import type {
  * - **AI non ancora collegata** (chat + contenuti derivati): ritorna **vuoto**
  *   (no dati finti) finché Bedrock/Claude non sarà disponibile. È l'**unico** punto
  *   da collegare per completare la produzione.
- * - **Templates**: catalogo statico dell'app (definizioni immutabili dei modelli,
- *   i18n-keyed) — non sono entità "dato", non si mescolano col reale. In futuro
- *   potranno arrivare dal backend dietro la stessa firma.
  * - **Plan**: default `free` finché non c'è il servizio billing.
+ *
+ * I modelli di pubblicazione NON passano da qui: sono config statica dell'app
+ * (`TEMPLATE_CATALOG`), letta direttamente dal `TemplatesStore`.
  *
  * L'`authInterceptor` aggiunge il Bearer Cognito alle richieste `execute-api`.
  */
@@ -47,18 +45,6 @@ export class AwsApiService implements ApiPort {
   private readonly base = environment.api.baseUrl;
   private url(path: string): string {
     return `${this.base}${path}`;
-  }
-
-  // ===========================================================================
-  // Templates — catalogo statico (config app, non mock di entità)
-  // ===========================================================================
-  async listTemplates(): Promise<ProjectTemplate[]> {
-    return TEMPLATE_CATALOG.map((t) => structuredClone(t));
-  }
-  async getTemplate(id: string): Promise<ProjectTemplate> {
-    const tpl = TEMPLATE_CATALOG.find((t) => t.id === id);
-    if (!tpl) throw new Error(`Template not found: ${id}`);
-    return structuredClone(tpl);
   }
 
   // ===========================================================================

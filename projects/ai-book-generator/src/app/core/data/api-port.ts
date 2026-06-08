@@ -6,7 +6,6 @@ import type {
   ProjectKind,
   ProjectSettings,
   CoverTheme,
-  ProjectTemplate,
   DerivedKind,
   Job,
   Source,
@@ -24,11 +23,9 @@ import type {
  * dipendono solo da questa interfaccia, non dall'implementazione.
  */
 export interface ApiPort {
-  // --- Templates (modelli di pubblicazione) ---------------------------------
-  /** GET /templates — i modelli di partenza (immutabili). */
-  listTemplates(): Promise<ProjectTemplate[]>;
-  /** GET /templates/:id */
-  getTemplate(id: string): Promise<ProjectTemplate>;
+  // NB: i modelli di pubblicazione (ProjectTemplate) NON sono qui: sono config
+  // statica dell'app (catalogo `TEMPLATE_CATALOG`), letta direttamente dal
+  // TemplatesStore. Questo port espone solo ciò che è (o sarà) servito dal backend.
 
   // --- Projects -------------------------------------------------------------
   /** GET /projects?status=&kind=&q= */
