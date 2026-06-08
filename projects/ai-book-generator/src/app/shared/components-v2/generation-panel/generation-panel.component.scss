@@ -32,12 +32,14 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-self: center; // centrata a prescindere dal contesto flex del wrapper
+  align-self: center; // centratura nel caso flex
   align-items: center; // testo della cover centrato orizzontalmente
   text-align: center;
   width: 150px;
   height: 200px;
-  margin-bottom: 18px;
+  // Centratura del BOX robusta come il `text-align` per il testo: `margin-inline:
+  // auto` centra un box a larghezza fissa sia in contesto flex sia block.
+  margin: 0 auto 18px;
   padding: 16px;
   border-radius: 6px 12px 12px 6px;
   color: var(--on-accent);
