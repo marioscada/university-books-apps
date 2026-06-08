@@ -7,6 +7,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -86,6 +87,7 @@ export class ProjectWorkspaceComponent {
   private readonly store = inject(ProjectsStore);
   protected readonly workspace = inject(WorkspaceStore);
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
 
   /** Id del progetto dalla route (`withComponentInputBinding`). */
   readonly id = input.required<string>();
@@ -473,8 +475,17 @@ export class ProjectWorkspaceComponent {
       void this.router.navigate(['/project', child.id]);
     });
   }
+  /**
+   * Torna alla pagina appena lasciata (history back): setup se vieni dal flusso
+   * di creazione, Collection se hai aperto da lì. Fallback a `/collection` per i
+   * deep-link diretti (nessuna storia precedente in-app).
+   */
   back(): void {
-    void this.router.navigate(['/create']);
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      void this.router.navigate(['/collection']);
+    }
   }
   generate(): void {
     void this.store.generate(this.id());

@@ -72,7 +72,7 @@
           </app-review-shell>
         </div>
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
           <button end mat-flat-button color="primary" type="button" (click)="publishDerived()">
             Pubblica
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
@@ -285,7 +285,7 @@
       <!-- Bottom action bar: indietro (sx) + azione di stato (dx) — su ogni schermata -->
       @if (project.status === 'draft') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
           <button end mat-flat-button color="primary" type="button" (click)="generate()">
             Genera l’indice
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
@@ -293,7 +293,7 @@
         </app-action-bar>
       } @else if (project.status === 'review' && !chaptersReady()) {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
           <button end mat-flat-button color="primary" type="button" (click)="generateChapters()">
             Genera i capitoli
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
@@ -301,7 +301,7 @@
         </app-action-bar>
       } @else if (project.status === 'review') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
           <button end mat-flat-button color="primary" type="button" (click)="goToPublish()">
             Pubblica
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
@@ -309,7 +309,7 @@
         </app-action-bar>
       } @else if (project.status === 'published') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
           <button end mat-flat-button color="primary" type="button" (click)="openDocument()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">menu_book</mat-icon>
             Apri documento
@@ -317,7 +317,7 @@
         </app-action-bar>
       } @else if (project.status === 'archived') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
           <button end mat-stroked-button type="button" (click)="reopen()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">unarchive</mat-icon>
             Riapri
@@ -325,7 +325,7 @@
         </app-action-bar>
       } @else if (project.status === 'failed') {
         <app-action-bar sticky placement="top">
-          <app-back-link start [label]="'Torna ai progetti'" (navigate)="back()" />
+          <app-back-link start [label]="'Indietro'" (navigate)="back()" />
           <button end mat-flat-button color="primary" type="button" (click)="generate()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">refresh</mat-icon>
             Riprova
