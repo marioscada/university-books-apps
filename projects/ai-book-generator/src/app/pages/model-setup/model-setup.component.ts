@@ -3,10 +3,12 @@ import {
   Component,
   computed,
   inject,
+  input,
+  output,
   signal,
   type WritableSignal,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -37,7 +39,8 @@ const DESC_MAX = 300;
 const NOTES_MAX = 500;
 
 /**
- * ModelSetupComponent — pagina "Crea / Personalizza" (`/create/new`) ricomposta
+ * ModelSetupComponent — step "Personalizza" del flusso `/create` (componente di
+ * servizio, non più una rotta: riceve `templateId` dal flusso, emette `back`)
  * con i componenti dumb di `components-v2`. Sezioni: top bar (back + modello
  * scelto), **Definisci** (titolo + descrizione), **Istruzioni** (note a mano o
  * da file) e **Fonti** (upload via dialog `SourceDropzone`), con una `ActionBar`
@@ -63,7 +66,6 @@ const NOTES_MAX = 500;
   styleUrl: './model-setup.component.scss',
 })
 export class ModelSetupComponent {
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly templatesStore = inject(TemplatesStore);
   private readonly projectsStore = inject(ProjectsStore);
@@ -72,11 +74,13 @@ export class ModelSetupComponent {
   /** Risolutore i18n reattivo (ricomputa i view-model al cambio lingua). */
   private readonly t = injectI18nText();
 
-  private readonly templateId =
-    this.route.snapshot.queryParamMap.get('template') ?? 'custom';
+  /** Modello scelto (id) — passato dal flusso `/create` (step di servizio). */
+  readonly templateId = input<string>('custom');
+  /** Richiesta di tornare alla galleria (gestita dal flusso padre). */
+  readonly back = output<void>();
 
   readonly template = computed<ProjectTemplate | undefined>(
-    () => this.templatesStore.templateById()[this.templateId],
+    () => this.templatesStore.templateById()[this.templateId()],
   );
 
   // --- Stato modulo -----------------------------------------------------------
@@ -104,7 +108,7 @@ export class ModelSetupComponent {
     this.t(this.template()?.nameKey ?? 'i18n.Models.custom.name'),
   );
   private readonly nameLower = computed(() => this.modelName().toLowerCase());
-  private readonly gender = computed<'m' | 'f'>(() => MODEL_GENDER[this.templateId] ?? 'm');
+  private readonly gender = computed<'m' | 'f'>(() => MODEL_GENDER[this.templateId()] ?? 'm');
   private readonly possessive = computed(() =>
     this.t(this.gender() === 'f' ? 'i18n.Setup.S1.possF' : 'i18n.Setup.S1.possM'),
   );
@@ -263,9 +267,6 @@ export class ModelSetupComponent {
   }
 
   // --- Azioni -----------------------------------------------------------------
-  back(): void {
-    void this.router.navigate(['/create']);
-  }
 
   /** In invio al server (disabilita la CTA, evita doppi click). */
   readonly submitting = signal(false);

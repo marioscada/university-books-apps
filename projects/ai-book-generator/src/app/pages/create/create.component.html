@@ -1,26 +1,32 @@
-<div class="create site-container">
-  <header class="create__head">
-    <h1 class="page-title">{{ 'i18n.Create.gallery.title' | translate }}</h1>
-    <p class="create__lead">{{ 'i18n.Create.callout.title' | translate }}</p>
-    <p class="create__hint">
-      <mat-icon class="create__hint-icon" fontSet="material-symbols-outlined" aria-hidden="true">swap_horiz</mat-icon>
-      {{ 'i18n.Create.callout.desc' | translate }}
-    </p>
-  </header>
+@if (template(); as templateId) {
+  <!-- Step: personalizzazione del modello (componente di servizio, stesso URL) -->
+  <app-model-setup [templateId]="templateId" (back)="clearTemplate()" />
+} @else {
+  <!-- Step: galleria modelli -->
+  <div class="create site-container">
+    <header class="create__head">
+      <h1 class="page-title">{{ 'i18n.Create.gallery.title' | translate }}</h1>
+      <p class="create__lead">{{ 'i18n.Create.callout.title' | translate }}</p>
+      <p class="create__hint">
+        <mat-icon class="create__hint-icon" fontSet="material-symbols-outlined" aria-hidden="true">swap_horiz</mat-icon>
+        {{ 'i18n.Create.callout.desc' | translate }}
+      </p>
+    </header>
 
-  <div class="create__grid">
-    @for (card of cards(); track card.id) {
-      <app-choice-card
-        [icon]="card.icon"
-        [tone]="card.tone"
-        [heading]="card.heading"
-        [description]="card.description"
-        [meterValue]="card.meter"
-        [meterMax]="meterMax"
-        [meterStartLabel]="shortLabel()"
-        [meterEndLabel]="longLabel()"
-        [note]="card.note"
-        (activate)="chooseModel(card.id)" />
-    }
+    <div class="create__grid">
+      @for (card of cards(); track card.id) {
+        <app-choice-card
+          [icon]="card.icon"
+          [tone]="card.tone"
+          [heading]="card.heading"
+          [description]="card.description"
+          [meterValue]="card.meter"
+          [meterMax]="meterMax"
+          [meterStartLabel]="shortLabel()"
+          [meterEndLabel]="longLabel()"
+          [note]="card.note"
+          (activate)="chooseModel(card.id)" />
+      }
+    </div>
   </div>
-</div>
+}

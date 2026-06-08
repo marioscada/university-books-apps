@@ -1,7 +1,7 @@
 <div class="setup">
   <!-- Barra azioni in alto, subito sotto l'header -->
   <app-action-bar sticky placement="top">
-    <app-back-link start [label]="'i18n.Setup.backToModels' | translate" (navigate)="back()" />
+    <app-back-link start [label]="'i18n.Setup.backToModels' | translate" (navigate)="back.emit()" />
     <button end mat-flat-button color="primary" [disabled]="!canGenerate()" (click)="generate()">
       {{ 'i18n.Setup.generateIndex' | translate }}
       <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>

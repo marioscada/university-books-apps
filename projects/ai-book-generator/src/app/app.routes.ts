@@ -37,18 +37,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
-        // Home post-login: lavori in corso da continuare + avvio di nuovi.
+        // Flusso di creazione: galleria modelli → personalizzazione (step interni,
+        // URL fisso `/create`, `?template=id` per lo step di setup). Niente footer
+        // (flusso task-focused). Al "genera" si naviga al progetto creato.
         path: 'create',
         loadComponent: () =>
           import('./pages/create/create.component').then((m) => m.CreateComponent),
         title: 'Create - AI Book Generator',
-      },
-      {
-        // Personalizza il modello — struttura + impostazioni + anteprima (?template=:id).
-        path: 'create/new',
-        loadComponent: () =>
-          import('./pages/model-setup/model-setup.component').then((m) => m.ModelSetupComponent),
-        title: 'New project - AI Book Generator',
         data: { showFooter: false },
       },
       {
