@@ -1,17 +1,13 @@
 import { Routes } from '@angular/router';
-// import { authGuard } from './auth/guards/auth.guard'; // TEMPORANEO (dev): vedi sotto
+import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
 
 /**
  * Routing dell'app.
  * Pubblico: /landing (vetrina) + /auth.
  * Autenticato (area app): /create (home post-login: lavori in corso + nuovi) +
- * /collection + /pricing.
+ * /collection + /pricing — protette da `authGuard` (login obbligatorio).
  * NB: i Templates non sono una pagina ma un componente usato dentro /create.
- *
- * ⚠️ TEMPORANEO (dev): authGuard staccato sulle route autenticate per navigare
- * senza login mentre si recuperano le credenziali Cognito. RIPRISTINARE
- * `canActivate: [authGuard]` (e l'import) prima del rilascio.
  */
 export const routes: Routes = [
   {
@@ -34,7 +30,7 @@ export const routes: Routes = [
     // Home post-login: lavori in corso da continuare + avvio di nuovi.
     path: 'create',
     loadComponent: () => import('./pages/create/create.component').then((m) => m.CreateComponent),
-    // canActivate: [authGuard], // TODO ripristinare
+    canActivate: [authGuard],
     title: 'Create - AI Book Generator',
   },
   {
@@ -44,7 +40,7 @@ export const routes: Routes = [
       import('./pages/model-setup/model-setup.component').then(
         (m) => m.ModelSetupComponent,
       ),
-    // canActivate: [authGuard], // TODO ripristinare
+    canActivate: [authGuard],
     title: 'New project - AI Book Generator',
   },
   {
@@ -54,20 +50,20 @@ export const routes: Routes = [
       import('./pages/project/project-workspace.component').then(
         (m) => m.ProjectWorkspaceComponent,
       ),
-    // canActivate: [authGuard], // TODO ripristinare
+    canActivate: [authGuard],
     title: 'Project - AI Book Generator',
   },
   {
     // Collezione: archivio storico (solo completati) per categoria.
     path: 'collection',
     loadComponent: () => import('./pages/collection/collection.component').then((m) => m.CollectionComponent),
-    // canActivate: [authGuard], // TODO ripristinare
+    canActivate: [authGuard],
     title: 'Collection - AI Book Generator',
   },
   {
     path: 'pricing',
     loadComponent: () => import('./pages/pricing/pricing.component').then((m) => m.PricingComponent),
-    // canActivate: [authGuard], // TODO ripristinare
+    canActivate: [authGuard],
     title: 'Pricing - AI Book Generator',
   },
   {

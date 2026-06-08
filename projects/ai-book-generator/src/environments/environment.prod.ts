@@ -20,8 +20,6 @@ export const environment = {
 
   // Authentication
   auth: {
-    apiKey: '', // Injected via CI/CD (temporary until Cognito is fully implemented)
-
     // AWS Cognito Configuration
     cognito: {
       userPoolId: '', // TODO: Injected via CI/CD
