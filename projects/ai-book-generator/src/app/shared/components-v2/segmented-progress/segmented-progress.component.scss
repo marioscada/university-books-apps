@@ -19,19 +19,14 @@
   overflow: hidden;
 }
 
-// Segmento completato → accent pieno.
+// Segmento completato → verde chiaro.
 .seg__seg.is-done {
-  background: var(--accent-500);
+  background: var(--progress-done);
 }
 
-// Riempimento del segmento corrente (parziale durante la generazione).
-.seg__fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent-400), var(--accent-500));
-  transition: width 0.45s ease;
+// Segmento in corso → accent pieno.
+.seg__seg.is-current {
+  background: var(--accent-500);
 }
 
 .seg__labels {
@@ -52,6 +47,9 @@
   text-overflow: ellipsis;
 }
 
+.seg__label.is-done {
+  color: var(--tone-success-fg);
+}
 .seg__label.is-current {
   color: var(--accent-700);
   font-weight: 700;

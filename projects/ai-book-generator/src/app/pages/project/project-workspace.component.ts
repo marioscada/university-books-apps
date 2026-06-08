@@ -179,26 +179,6 @@ export class ProjectWorkspaceComponent {
     const i = this.flowIndex();
     return i >= FLOW_STEP_KEYS.length ? FLOW_STEP_KEYS.length : Math.min(i, FLOW_STEP_KEYS.length - 1);
   });
-  /**
-   * Riempimento del segmento corrente (0–100): durante la generazione riflette
-   * il % reale del job (indice / capitoli / pubblicazione); altrove pieno (100).
-   */
-  readonly flowFraction = computed<number>(() => {
-    const p = this.project();
-    if (!p) {
-      return 100;
-    }
-    if (p.status === 'queued' || p.status === 'processing') {
-      return this.progress();
-    }
-    if (this.workspace.publishing()) {
-      return this.pubProgress();
-    }
-    if (p.status === 'review' && this.workspace.generating()) {
-      return this.genProgress();
-    }
-    return 100;
-  });
 
   // --- Pannello di generazione (UNICO componente, data-driven) ----------------
   readonly genProgress = computed(() => this.workspace.genProgress());

@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   input,
   numberAttribute,
 } from '@angular/core';
@@ -15,10 +14,9 @@ export interface SegStep {
 
 /**
  * SegmentedProgressComponent — progress di flusso a **barra segmentata**
- * (stile Linear/Vercel): N segmenti che si riempiono avanzando, con i nomi
- * sotto. Dumb/presentational, token-only (un'unica scala accent + track neutro,
- * niente colori a contrasto). Il segmento corrente può riempirsi parzialmente
- * (`currentPercent`) per riflettere l'avanzamento reale durante la generazione.
+ * (stile Linear/Vercel): N segmenti con i nomi sotto. Dumb/presentational,
+ * token-only. Stato per segmento: **completato = verde chiaro**, **in corso =
+ * accent**, futuro = track neutro. Nessuna percentuale di avanzamento.
  * Self-responsive (le label collassano su viewport piccoli, le barre restano).
  */
 @Component({
@@ -33,16 +31,17 @@ export interface SegStep {
         <span
           class="seg__seg"
           [class.is-done]="i < activeIndex()"
-          [class.is-current]="i === activeIndex()">
-          @if (i === activeIndex()) {
-            <span class="seg__fill" [style.width.%]="fillPct()"></span>
-          }
-        </span>
+          [class.is-current]="i === activeIndex()"></span>
       }
     </div>
     <div class="seg__labels">
       @for (s of steps(); track $index; let i = $index) {
-        <span class="seg__label" [class.is-current]="i === activeIndex()">{{ s.label }}</span>
+        <span
+          class="seg__label"
+          [class.is-done]="i < activeIndex()"
+          [class.is-current]="i === activeIndex()"
+          >{{ s.label }}</span
+        >
       }
     </div>
   `,
@@ -54,11 +53,4 @@ export class SegmentedProgressComponent {
 
   /** Indice 0-based dello step corrente. */
   readonly activeIndex = input.required<number, number>({ transform: numberAttribute });
-
-  /** Riempimento del segmento corrente (0–100). Default 100 = pieno. */
-  readonly currentPercent = input(100, { transform: numberAttribute });
-
-  protected readonly fillPct = computed(() =>
-    Math.max(0, Math.min(100, this.currentPercent())),
-  );
 }

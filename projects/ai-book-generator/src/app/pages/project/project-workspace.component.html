@@ -88,8 +88,7 @@
       <div class="studio-progress site-container">
         <app-segmented-progress
           [steps]="flowSteps()"
-          [activeIndex]="flowActive()"
-          [currentPercent]="flowFraction()" />
+          [activeIndex]="flowActive()" />
       </div>
       <div class="studio-genpage">
         @if (project.status === 'queued' || project.status === 'processing') {
@@ -126,8 +125,7 @@
       <div class="studio-progress site-container">
         <app-segmented-progress
           [steps]="flowSteps()"
-          [activeIndex]="flowActive()"
-          [currentPercent]="flowFraction()" />
+          [activeIndex]="flowActive()" />
       </div>
       <div class="studio-stack site-container">
         @if (project.status === 'draft') {
