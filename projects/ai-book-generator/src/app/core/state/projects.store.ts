@@ -178,12 +178,21 @@ export const ProjectsStore = signalStore(
         return project;
       },
 
-      /** Lancia la generazione: draft→queued e avvia il polling del job. */
+      /**
+       * Lancia la generazione. Mette subito `queued` in **ottimistico** (così lo
+       * Studio mostra lo skeleton senza attendere la rete), poi avvia la POST e il
+       * polling del job in background. Se la POST fallisce → `failed`.
+       */
       async generate(id: string): Promise<void> {
-        await api.generate(id);
-        const project = await api.getProject(id);
-        patchState(store, updateEntity({ id, changes: project }));
-        pollJob(id);
+        patchState(store, updateEntity({ id, changes: { status: 'queued' as const } }));
+        try {
+          await api.generate(id);
+          const project = await api.getProject(id);
+          patchState(store, updateEntity({ id, changes: project }));
+          pollJob(id);
+        } catch {
+          patchState(store, updateEntity({ id, changes: { status: 'failed' as const } }));
+        }
       },
 
       /** Annulla il job in corso: torna a draft. */

@@ -308,6 +308,7 @@
   "i18n.Collection.delete.source.loading": "Eliminazione della fonte in corso…",
   "i18n.Collection.delete.source.success": "L'operazione di eliminazione della fonte è avvenuta con successo.",
   "i18n.Collection.delete.source.error": "Non è stato possibile eliminare la fonte. Riprova.",
+  "i18n.Collection.empty.message": "Non hai ancora progetti. Creane uno nuovo per iniziare.",
   "i18n.Common.dismiss": "Chiudi",
   "i18n.Common.done": "Fatto",
   "i18n.Common.error": "Errore",
@@ -370,6 +371,7 @@
   "i18n.Setup.font": "Font principale",
   "i18n.Setup.fontSize": "Dimensione carattere",
   "i18n.Setup.generateIndex": "Genera indice",
+  "i18n.Setup.generateError": "Generazione dell'indice non riuscita. Riprova.",
   "i18n.Setup.Goal.analyze": "Analizzare",
   "i18n.Setup.Goal.document": "Documentare",
   "i18n.Setup.Goal.inform": "Informare",
@@ -642,5 +644,6 @@
   "i18n.Workspace.Review.outline": "Struttura",
   "i18n.Workspace.Review.preview": "Anteprima",
   "job.step.analyze": "Analisi delle fonti",
-  "job.step.outline": "Composizione dell’indice"
+  "job.step.outline": "Composizione dell’indice",
+  "i18n.Workspace.indexGenerating": "Generazione dell'indice in corso…"
 }

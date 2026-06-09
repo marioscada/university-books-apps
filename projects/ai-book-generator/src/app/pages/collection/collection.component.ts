@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { ListRowComponent } from '../../shared/components-v2/list-row/list-row.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
+import { NoDataComponent } from '../../shared/components-v2/no-data/no-data.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { SourcesStore } from '../../core/state/sources.store';
 import { BillingService } from '../../core/services/billing.service';
@@ -40,6 +41,7 @@ const LIBRARY: readonly ProjectStatus[] = ['published', 'archived'];
   imports: [
     ListRowComponent,
     ModalShellComponent,
+    NoDataComponent,
     NgTemplateOutlet,
     FormsModule,
     MatIconModule,
@@ -64,6 +66,10 @@ export class CollectionComponent {
 
   readonly continua = computed<GroupVM[]>(() => this.build(IN_PROGRESS));
   readonly library = computed<GroupVM[]>(() => this.build(LIBRARY));
+
+  /** Nessun progetto in alcuna sezione → empty-state globale. */
+  readonly hasNoProjects = computed(() => !this.continua().length && !this.library().length);
+  readonly emptyMessage = computed(() => this.t('i18n.Collection.empty.message'));
 
   // --- Navigazione / azioni ---------------------------------------------------
   openProject(id: string): void {

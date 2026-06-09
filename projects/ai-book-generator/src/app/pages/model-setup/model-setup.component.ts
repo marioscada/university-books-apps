@@ -2,9 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
-  Injector,
   input,
   output,
   signal,
@@ -73,7 +71,6 @@ export class ModelSetupComponent {
   private readonly projectsStore = inject(ProjectsStore);
   private readonly snackBar = inject(MatSnackBar);
   private readonly uiPromise = inject(UiPromiseService);
-  private readonly injector = inject(Injector);
 
   /** Risolutore i18n reattivo (ricomputa i view-model al cambio lingua). */
   private readonly t = injectI18nText();
@@ -309,33 +306,23 @@ export class ModelSetupComponent {
     };
 
     this.submitting.set(true);
-    // Spinner OVERLAY (backdrop) qui su /create: resta finché lo Studio è pronto
-    // (indice generato → status review), poi naviga e l'overlay sparisce.
-    await this.uiPromise.run(
-      async () => {
-        const project = await this.projectsStore.createFromTemplate(payload);
-        await this.projectsStore.generate(project.id);
-        await this.waitUntilReady(project.id);
-        await this.router.navigate(['/project', project.id]);
+    // Standard ottimistico: aspetto SOLO la create (per l'id) — nessun overlay,
+    // solo lo spinner sul bottone. Poi avvio la generate in BACKGROUND (ottimistico
+    // → skeleton) e navigo SUBITO allo Studio. Errore della create → toast e resto
+    // sul form (dati preservati).
+    const { success: projectId } = await this.uiPromise.run(
+      () => this.projectsStore.createFromTemplate(payload).then((p) => p.id),
+      {
+        error: {
+          title: this.t('i18n.Common.error'),
+          message: this.t('i18n.Setup.generateError'),
+        },
       },
-      { loading: true, loadingMessage: this.t('i18n.Workspace.Live.title') },
     );
     this.submitting.set(false);
-  }
-
-  /** Risolve quando il progetto esce dall'elaborazione (review/failed/published). */
-  private waitUntilReady(id: string): Promise<void> {
-    return new Promise((resolve) => {
-      const ref = effect(
-        () => {
-          const p = this.projectsStore.entities().find((x) => x.id === id);
-          if (p && p.status !== 'queued' && p.status !== 'processing' && p.status !== 'draft') {
-            ref.destroy();
-            resolve();
-          }
-        },
-        { injector: this.injector },
-      );
-    });
+    if (projectId) {
+      void this.projectsStore.generate(projectId); // background (ottimistico → skeleton)
+      await this.router.navigate(['/project', projectId]);
+    }
   }
 }

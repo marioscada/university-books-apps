@@ -493,3 +493,72 @@ app-review-shell {
     max-height: 80vh;
   }
 }
+
+// --- Skeleton indice: stesse forme/posizioni del contenuto (responsive: riusa
+// studio-body--index / studio-index / studio-chat, che si impilano su mobile).
+.skel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+}
+.skel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.skel-head__title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.skel-chapter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.skel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.skel-row__pag {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+.skel-sub {
+  margin-left: 38px;
+}
+.skel-grow {
+  flex: 1 1 auto;
+  min-height: 24px;
+}
+.skel-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+// Skeleton + barra di stato in OVERLAY centrato (fuori dal flusso → nessun salto
+// quando sparisce e compare il contenuto reale).
+.studio-skel-wrap {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+}
+.studio-skel-wrap .studio-body {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+// Spinner "generazione indice in corso": centrato in overlay, bg TRASPARENTE.
+.studio-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}

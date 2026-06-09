@@ -1,0 +1,24 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--no-data-width, 100%);
+  min-height: var(--no-data-min-height, 100%);
+  padding: var(--no-data-padding, 40px 20px);
+  text-align: center;
+}
+
+.no-data__img {
+  width: var(--no-data-img-size, 120px);
+  height: auto;
+}
+
+// Messaggio: grassetto corsivo grigio, centrato (mirror customer-portal).
+.no-data__message {
+  margin-top: 1.25rem;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--text-muted, #94a3b8);
+  word-break: break-word;
+}

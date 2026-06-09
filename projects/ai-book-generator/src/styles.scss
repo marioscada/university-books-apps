@@ -175,4 +175,30 @@ section[id] {
   margin-right: 12px !important;
 }
 
+// --- Skeleton (SkeletonComponent) — shimmer globale, mirror ion-skeleton-text -
+.skeleton {
+  display: block;
+  background: linear-gradient(
+    100deg,
+    var(--skeleton-base, #e8edf3) 30%,
+    var(--skeleton-shine, #f4f7fb) 50%,
+    var(--skeleton-base, #e8edf3) 70%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.3s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
 @tailwind utilities;

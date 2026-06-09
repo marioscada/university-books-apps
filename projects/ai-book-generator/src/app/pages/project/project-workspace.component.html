@@ -85,10 +85,53 @@
               indice e capitoli prima di pubblicare.
             </p>
           </section>
-        } @else if (project.status === 'review' && workspace.loading()) {
-          <section class="surface-card studio-panel">
-            <p class="studio-panel__body">Carico lo Studio…</p>
-          </section>
+        } @else if (indexLoading()) {
+          <!-- Generazione indice (queued/processing) o caricamento versione:
+               barra di stato + skeleton con le stesse forme del contenuto reale -->
+          <div class="studio-skel-wrap">
+            <section class="studio-body studio-body--index">
+            <section class="surface-card studio-index studio-index--wide skel-card">
+              <div class="skel-head">
+                <div class="skel-head__title">
+                  <app-skeleton width="190px" height="20px" />
+                  <app-skeleton width="90px" height="13px" />
+                </div>
+                <app-skeleton width="150px" height="38px" radius="20px" />
+              </div>
+              @for (w of skeletonChapters; track $index) {
+                <div class="skel-chapter">
+                  <div class="skel-row">
+                    <app-skeleton width="28px" height="28px" radius="9px" />
+                    <app-skeleton [width]="w" height="15px" />
+                    <app-skeleton class="skel-row__pag" width="52px" height="12px" />
+                  </div>
+                  <app-skeleton class="skel-sub" width="40%" height="12px" />
+                  <app-skeleton class="skel-sub" width="32%" height="12px" />
+                </div>
+              }
+            </section>
+            <section class="surface-card studio-chat skel-card">
+              <div class="skel-head">
+                <app-skeleton width="30px" height="30px" radius="9px" />
+                <div class="skel-head__title">
+                  <app-skeleton width="120px" height="16px" />
+                  <app-skeleton width="180px" height="12px" />
+                </div>
+              </div>
+              <div class="skel-grow"></div>
+              <div class="skel-chips">
+                <app-skeleton width="70px" height="30px" radius="16px" />
+                <app-skeleton width="84px" height="30px" radius="16px" />
+                <app-skeleton width="112px" height="30px" radius="16px" />
+              </div>
+              <app-skeleton width="100%" height="44px" radius="22px" />
+            </section>
+            </section>
+            <!-- Spinner centrato (bg trasparente, fuori dal flusso → niente salto) -->
+            <app-spinner
+              class="studio-loader"
+              [message]="'i18n.Workspace.indexGenerating' | translate" />
+          </div>
         } @else if (project.status === 'review' && !chaptersReady()) {
           <!-- Revisione INDICE: solo outline, capitoli non ancora sviluppati -->
           <section class="studio-body studio-body--index">

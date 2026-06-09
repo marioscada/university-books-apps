@@ -23,6 +23,8 @@ import {
   type ChapterItem,
 } from '../../shared/components-v2/chapter-index/chapter-index.component';
 import { ChapterReaderComponent } from '../../shared/components-v2/chapter-reader/chapter-reader.component';
+import { SkeletonComponent } from '../../shared/components-v2/skeleton/skeleton.component';
+import { SpinnerComponent } from '../../shared/ui/spinner/spinner.component';
 import { StatCardComponent } from '../../shared/ui/stat-card/stat-card.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import {
@@ -33,6 +35,7 @@ import { ProjectsStore } from '../../core/state/projects.store';
 import { WorkspaceStore } from '../../core/state/workspace.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
 import { UiPromiseService } from '../../shared/services/ui-promise.service';
+import { ToastFacade } from '../../shared/services/toast/toast.facade';
 import type { Chapter, DerivedKind } from '../../core/domain';
 import {
   HAS_OUTPUT,
@@ -67,6 +70,8 @@ import {
     ReviewShellComponent,
     ChapterIndexComponent,
     ChapterReaderComponent,
+    SkeletonComponent,
+    SpinnerComponent,
     AiChatPanelComponent,
     StatCardComponent,
     ModalShellComponent,
@@ -82,6 +87,9 @@ export class ProjectWorkspaceComponent {
   protected readonly workspace = inject(WorkspaceStore);
   private readonly router = inject(Router);
   private readonly uiPromise = inject(UiPromiseService);
+  private readonly toast = inject(ToastFacade);
+  /** Id già notificati come falliti (un solo toast per fallimento). */
+  private readonly notifiedFailed = new Set<string>();
 
   /** Id del progetto dalla route (`withComponentInputBinding`). */
   readonly id = input.required<string>();
@@ -90,8 +98,9 @@ export class ProjectWorkspaceComponent {
   private readonly t = injectI18nText();
 
   readonly loading = this.store.loading;
+  /** Larghezze (variate) delle righe-capitolo dello skeleton indice. */
+  protected readonly skeletonChapters = ['55%', '46%', '60%', '42%', '52%'];
   readonly project = computed(() => this.store.entities().find((p) => p.id === this.id()));
-  readonly job = computed(() => this.store.jobsByProject()[this.id()] ?? null);
 
   constructor() {
     // Apre lo Studio quando il progetto ha un output; per i DERIVATI apre il
@@ -116,6 +125,28 @@ export class ProjectWorkspaceComponent {
       if (this.waiting()) {
         const ref = this.uiPromise.spinner(untracked(() => this.waitMessage()));
         onCleanup(() => ref.hide());
+      }
+    });
+
+    // Generazione fallita → toast d'errore (una volta per progetto). Lo stato di
+    // errore + "Riprova" sono in pagina (standard: recupero nel contesto, niente
+    // rimbalzo al form). Riazzero alla ripartenza per ri-notificare un nuovo KO.
+    effect(() => {
+      const p = this.project();
+      if (!p) {
+        return;
+      }
+      if (p.status === 'failed') {
+        if (!this.notifiedFailed.has(p.id)) {
+          this.notifiedFailed.add(p.id);
+          void this.toast.present(
+            untracked(() => this.t('i18n.Setup.generateError')),
+            untracked(() => this.t('i18n.Common.error')),
+            { severity: 'error' },
+          );
+        }
+      } else {
+        this.notifiedFailed.delete(p.id);
       }
     });
   }
@@ -158,9 +189,6 @@ export class ProjectWorkspaceComponent {
     if (p.derivedKind) {
       return this.derivedLabel();
     }
-    if (p.status === 'queued' || p.status === 'processing') {
-      return this.indexDetail();
-    }
     if (p.status === 'review' && this.workspace.generating()) {
       return this.chapterDetail();
     }
@@ -175,28 +203,32 @@ export class ProjectWorkspaceComponent {
   readonly coverKicker = computed(() => (this.project()?.documentType ?? '').toUpperCase());
 
   /**
-   * Stato di attesa/generazione → la pagina mostra SOLO il generation-panel a
-   * tutta pagina (nessuna chrome dello Studio): generazione indice, capitoli,
-   * pubblicazione.
+   * Generazione INDICE in corso → **skeleton in pagina** (navigazione ottimistica
+   * dallo step "Genera indice"): `queued`/`processing`, oppure `review` mentre si
+   * carica la versione appena pronta.
+   */
+  readonly indexLoading = computed(() => {
+    const p = this.project();
+    if (!p) {
+      return false;
+    }
+    return (
+      p.status === 'queued' ||
+      p.status === 'processing' ||
+      (p.status === 'review' && this.workspace.loading())
+    );
+  });
+
+  /**
+   * Attese che mostrano l'**overlay spinner** (capitoli/pubblicazione/derivato).
+   * L'indice NON è qui: usa lo skeleton in pagina (`indexLoading`).
    */
   readonly isGenerating = computed(() => {
     const p = this.project();
     if (!p) {
       return false;
     }
-    if (p.status === 'queued' || p.status === 'processing') {
-      return true;
-    }
     return p.status === 'review' && (this.workspace.generating() || this.workspace.publishing());
-  });
-
-  // Generazione indice (queued/processing) — il detail traduce la labelKey
-  // dello step corrente del job (es. job.step.analyze → "Analisi delle fonti").
-  readonly progress = computed(() => this.job()?.progress ?? 0);
-  readonly indexDetail = computed(() => {
-    const job = this.job();
-    const s = job?.steps.find((x) => x.key === job?.currentStepKey);
-    return s ? this.t(s.labelKey) : '';
   });
 
   // Generazione capitoli (review + generating)

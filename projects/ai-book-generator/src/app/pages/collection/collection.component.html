@@ -1,13 +1,16 @@
 <div class="coll site-container">
   <!-- Header -->
   <header class="coll__head">
-    <h1 class="page-title coll__title">Le tue collezioni</h1>
-    <label class="page-search coll__search">
+    @if (!hasNoProjects()) {
+      <h1 class="page-title coll__title">Le tue collezioni</h1>
+    }
+    <label class="page-search coll__search" [class.coll__search--right]="hasNoProjects()">
       <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">search</mat-icon>
       <input
         type="search"
         placeholder="Cerca…"
         aria-label="Cerca nelle collezioni"
+        [disabled]="hasNoProjects()"
         [ngModel]="query()"
         (ngModelChange)="query.set($event)" />
     </label>
@@ -17,30 +20,35 @@
     </button>
   </header>
 
-  <!-- Continua dove eri -->
-  @if (continua().length) {
+  @if (hasNoProjects()) {
+    <!-- Nessun progetto: empty-state con immagine centrale + messaggio dinamico -->
+    <app-no-data class="coll__empty" [message]="emptyMessage()" />
+  } @else {
+    <!-- Continua dove eri -->
+    @if (continua().length) {
+      <section class="coll__section">
+        <h2 class="section-title">
+          Continua dove eri
+          <span class="coll__count">{{ continua().length }} in corso</span>
+        </h2>
+        @for (g of continua(); track g.id) {
+          <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
+        }
+      </section>
+    }
+
+    <!-- La tua libreria -->
     <section class="coll__section">
-      <h2 class="section-title">
-        Continua dove eri
-        <span class="coll__count">{{ continua().length }} in corso</span>
-      </h2>
-      @for (g of continua(); track g.id) {
-        <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
+      <h2 class="section-title">La tua libreria</h2>
+      @if (library().length) {
+        @for (g of library(); track g.id) {
+          <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
+        }
+      } @else {
+        <p class="empty">Ancora nessun lavoro pubblicato.</p>
       }
     </section>
   }
-
-  <!-- La tua libreria -->
-  <section class="coll__section">
-    <h2 class="section-title">La tua libreria</h2>
-    @if (library().length) {
-      @for (g of library(); track g.id) {
-        <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
-      }
-    } @else {
-      <p class="empty">Ancora nessun lavoro pubblicato.</p>
-    }
-  </section>
 </div>
 
 <!-- Pannello progetto + fonti annidate -->

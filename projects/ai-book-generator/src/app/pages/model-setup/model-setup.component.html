@@ -9,7 +9,7 @@
           mat-flat-button
           color="primary"
           type="button"
-          [disabled]="!canGenerate()"
+          [disabled]="!canGenerate() || submitting()"
           (click)="generate()">
           {{ 'i18n.Setup.generateIndex' | translate }}
           <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
