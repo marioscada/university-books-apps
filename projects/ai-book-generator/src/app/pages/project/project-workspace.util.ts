@@ -103,6 +103,7 @@ export function toChapterItems(
 ): ChapterItem[] {
   const approved = new Set(approvedIds);
   return chapters.map((c) => {
+    const sections = (c.sections ?? []).map((s) => ({ key: s.id, title: s.title }));
     if (!ready) {
       return {
         key: c.id,
@@ -110,6 +111,7 @@ export function toChapterItems(
         title: c.title,
         status: 'todo' as const,
         statusLabel: `≈ ${pagesFromWords(c.wordCount)} pag.`,
+        sections,
       };
     }
     const status = approved.has(c.id)
@@ -119,7 +121,14 @@ export function toChapterItems(
         : c.id === selectedKey
           ? 'current'
           : 'review';
-    return { key: c.id, index: c.index, title: c.title, status, statusLabel: chapterStatusLabel(status) };
+    return {
+      key: c.id,
+      index: c.index,
+      title: c.title,
+      status,
+      statusLabel: chapterStatusLabel(status),
+      sections,
+    };
   });
 }
 

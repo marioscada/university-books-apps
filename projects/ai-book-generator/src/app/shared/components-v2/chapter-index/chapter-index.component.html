@@ -46,6 +46,18 @@
           }
           <mat-icon class="chapter-index__chevron" fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
         </button>
+        @if (c.sections?.length) {
+          <ul class="chapter-index__sublist">
+            @for (s of c.sections; track s.key) {
+              <li>
+                <button class="chapter-index__subrow" type="button" (click)="selected.emit(c.key)">
+                  <span class="chapter-index__subdot" aria-hidden="true"></span>
+                  <span class="chapter-index__sublabel">{{ s.title }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
       </li>
     }
   </ul>

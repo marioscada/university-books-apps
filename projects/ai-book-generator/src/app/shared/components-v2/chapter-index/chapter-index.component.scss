@@ -67,6 +67,51 @@
   overflow-y: auto;
 }
 
+// Sotto-elenco sezioni (indice completo): voci indentate sotto il capitolo.
+.chapter-index__sublist {
+  list-style: none;
+  margin: 2px 0 4px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.chapter-index__subrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 8px 5px 38px; // indentazione sotto il pallino del capitolo
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--mat-sys-on-surface-variant);
+  font: inherit;
+  text-align: left;
+
+  &:hover {
+    background: var(--surface-soft);
+    color: var(--mat-sys-on-surface);
+  }
+}
+.chapter-index__subdot {
+  flex: 0 0 auto;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+.chapter-index__sublabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
 .chapter-index__row {
   display: flex;
   align-items: center;

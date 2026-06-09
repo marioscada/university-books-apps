@@ -23,6 +23,8 @@ export interface ChapterItem {
   status: ChapterStatus;
   /** Etichetta di stato a destra (già tradotta, opzionale). */
   statusLabel?: string;
+  /** Sotto-sezioni (indice completo): voci annidate sotto il capitolo. */
+  sections?: { key: string; title: string }[];
 }
 
 /**
