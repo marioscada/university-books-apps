@@ -6,31 +6,22 @@ import {
   inject,
   input,
   signal,
+  untracked,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { merge, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
-import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
-import { StepIndicatorComponent } from '../../shared/ui/step-indicator/step-indicator.component';
-import {
-  GenerationPanelComponent,
-  type GenStep,
-} from '../../shared/components-v2/generation-panel/generation-panel.component';
-import { DerivedResultComponent } from '../../shared/components-v2/derived-result/derived-result.component';
 import { ReviewShellComponent } from '../../shared/components-v2/review-shell/review-shell.component';
-import { derivedKindLabel } from '../../core/data/derived-seed';
 import {
   ChapterIndexComponent,
   type ChapterItem,
 } from '../../shared/components-v2/chapter-index/chapter-index.component';
 import { ChapterReaderComponent } from '../../shared/components-v2/chapter-reader/chapter-reader.component';
-import { StatCardComponent } from '../../shared/ui/stat-card/stat-card.component';
+import { SkeletonComponent } from '../../shared/components-v2/skeleton/skeleton.component';
+import { SpinnerComponent } from '../../shared/ui/spinner/spinner.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import {
   AiChatPanelComponent,
@@ -38,20 +29,17 @@ import {
 } from '../../shared/components-v2/ai-chat-panel/ai-chat-panel.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { WorkspaceStore } from '../../core/state/workspace.store';
-import type { Chapter, DerivedKind } from '../../core/domain';
+import { injectI18nText } from '../../shared/services/i18n-text';
+import { ToastFacade } from '../../shared/services/toast/toast.facade';
+import type { Chapter } from '../../core/domain';
 import {
-  FLOW_STEPS,
   HAS_OUTPUT,
   READER_PAGE_SIZE,
   QUICK_OPS,
-  DERIVED_OPTIONS,
-  LANGUAGES,
-  buildPipeline,
   paginate,
   quickOpText,
   toChapterItems,
   toChatBubbles,
-  toOutcomeStats,
 } from './project-workspace.util';
 
 /**
@@ -68,17 +56,13 @@ import {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AuthShellComponent,
-    BackLinkComponent,
     ActionBarComponent,
-    StepIndicatorComponent,
-    GenerationPanelComponent,
-    DerivedResultComponent,
     ReviewShellComponent,
     ChapterIndexComponent,
     ChapterReaderComponent,
+    SkeletonComponent,
+    SpinnerComponent,
     AiChatPanelComponent,
-    StatCardComponent,
     ModalShellComponent,
     MatButtonModule,
     MatIconModule,
@@ -91,161 +75,93 @@ export class ProjectWorkspaceComponent {
   private readonly store = inject(ProjectsStore);
   protected readonly workspace = inject(WorkspaceStore);
   private readonly router = inject(Router);
-  private readonly translate = inject(TranslateService);
+  private readonly toast = inject(ToastFacade);
+  /** Id già notificati come falliti (un solo toast per fallimento). */
+  private readonly notifiedFailed = new Set<string>();
 
   /** Id del progetto dalla route (`withComponentInputBinding`). */
   readonly id = input.required<string>();
 
-  /** Tick i18n: ricomputa al cambio lingua/caricamento traduzioni. */
-  private readonly i18nTick = toSignal(
-    merge(
-      this.translate.onLangChange,
-      this.translate.onTranslationChange,
-      this.translate.onDefaultLangChange,
-    ).pipe(map(() => Symbol())),
-    { initialValue: Symbol() },
-  );
-  private t(key: string, params?: Record<string, unknown>): string {
-    this.i18nTick();
-    return this.translate.instant(key, params);
-  }
+  /** Risolutore i18n reattivo (ricomputa al cambio lingua/traduzioni). */
+  private readonly t = injectI18nText();
 
   readonly loading = this.store.loading;
+  /** Larghezze (variate) delle righe-capitolo dello skeleton indice. */
+  protected readonly skeletonChapters = ['55%', '46%', '60%', '42%', '52%'];
+  /** Larghezze (variate) delle righe-paragrafo dello skeleton lettura capitoli. */
+  protected readonly skeletonParas = ['100%', '96%', '92%', '98%', '88%', '100%', '94%', '90%'];
   readonly project = computed(() => this.store.entities().find((p) => p.id === this.id()));
-  readonly job = computed(() => this.store.jobsByProject()[this.id()] ?? null);
 
   constructor() {
-    // Apre lo Studio quando il progetto ha un output; per i DERIVATI apre il
-    // flusso dedicato (attesa elaborazione → risultato). Guard: una sola apertura
+    // Apre lo Studio quando il progetto ha un output. Guard: una sola apertura
     // per id (evita restart quando lo store ricarica le entità).
     effect(() => {
       const p = this.project();
       if (!p || this.workspace.projectId() === p.id) {
         return;
       }
-      if (p.derivedKind) {
-        void this.workspace.openDerived(p.id);
-      } else if (HAS_OUTPUT.has(p.status)) {
+      if (HAS_OUTPUT.has(p.status)) {
         void this.workspace.open(p.id);
+      }
+    });
+
+    // Generazione fallita → toast d'errore (una volta per progetto). Lo stato di
+    // errore + "Riprova" sono in pagina (standard: recupero nel contesto, niente
+    // rimbalzo al form). Riazzero alla ripartenza per ri-notificare un nuovo KO.
+    effect(() => {
+      const p = this.project();
+      if (!p) {
+        return;
+      }
+      if (p.status === 'failed') {
+        if (!this.notifiedFailed.has(p.id)) {
+          this.notifiedFailed.add(p.id);
+          void this.toast.present(
+            untracked(() => this.t('i18n.Setup.generateError')),
+            untracked(() => this.t('i18n.Common.error')),
+            { severity: 'error' },
+          );
+        }
+      } else {
+        this.notifiedFailed.delete(p.id);
       }
     });
   }
 
-  // --- Derivato (riassunto/slide/quiz/…) --------------------------------------
-  readonly isDerived = computed(() => !!this.project()?.derivedKind);
-  readonly derived = computed(() => this.workspace.derived());
-  readonly derivedGenerating = computed(() => this.workspace.derivedGenerating());
-  readonly derivedProgress = computed(() => this.workspace.derivedProgress());
-  readonly derivedLabel = computed(() => {
-    const k = this.project()?.derivedKind;
-    return k ? derivedKindLabel(k) : '';
-  });
-  /** Pubblica il derivato (riusa l'attesa di pubblicazione). */
-  publishDerived(): void {
-    void this.workspace.publish(this.id());
-  }
-  /** Apre il progetto sorgente (genitore) del derivato. */
-  openParent(): void {
-    const pid = this.project()?.parentProjectId;
-    if (pid) {
-      void this.router.navigate(['/project', pid]);
-    }
-  }
-
-  // --- Stepper di percorso ----------------------------------------------------
-  readonly flowSteps = FLOW_STEPS;
-  /** Indice dello step corrente (0=Configura … 4=Render). */
-  readonly flowIndex = computed<number>(() => {
-    const p = this.project();
-    if (!p) {
-      return 0;
-    }
-    switch (p.status) {
-      case 'draft':
-        return 0;
-      case 'queued':
-      case 'processing':
-        // Generazione dell'indice = step "Analisi" (coarse). I sotto-step
-        // analyze/outline sono mostrati nel generation-panel, non nello stepper.
-        return 1;
-      case 'review':
-        // Indice (outline) → Capitoli → (dialog Pubblica) → Render in pubblicazione.
-        if (this.workspace.publishing()) {
-          return 4;
-        }
-        if (this.workspace.generating()) {
-          return 3; // sviluppo capitoli
-        }
-        return this.workspace.chaptersReady() ? 3 : 2;
-      case 'failed':
-        return 1;
-      case 'published':
-      case 'archived':
-        return 5;
-      default:
-        return 0;
-    }
-  });
-  // Lo step attivo: clampa a Render salvo a flusso concluso (published=5),
-  // dove nessuno è "in corso" e tutti restano completati (verde).
-  readonly flowActive = computed(() => {
-    const i = this.flowIndex();
-    return i >= FLOW_STEPS.length ? FLOW_STEPS.length : Math.min(i, FLOW_STEPS.length - 1);
-  });
-  readonly flowCompleted = computed(() => FLOW_STEPS.map((_, i) => i < this.flowIndex()));
-
-  // --- Pannello di generazione (UNICO componente, data-driven) ----------------
-  readonly genProgress = computed(() => this.workspace.genProgress());
   readonly publishing = computed(() => this.workspace.publishing());
-  readonly pubProgress = computed(() => this.workspace.pubProgress());
-  /** Kicker della copertina (es. "REPORT"). */
-  readonly coverKicker = computed(() => (this.project()?.kind ?? '').toUpperCase());
 
   /**
-   * Stato di attesa/generazione → la pagina mostra SOLO il generation-panel a
-   * tutta pagina (nessuna chrome dello Studio): generazione indice, capitoli,
-   * pubblicazione.
+   * Generazione INDICE in corso → **skeleton in pagina** (navigazione ottimistica
+   * dallo step "Genera indice"): `queued`/`processing`, oppure `review` mentre si
+   * carica la versione appena pronta.
    */
-  readonly isGenerating = computed(() => {
+  readonly indexLoading = computed(() => {
     const p = this.project();
     if (!p) {
       return false;
     }
-    if (p.status === 'queued' || p.status === 'processing') {
-      return true;
-    }
-    return p.status === 'review' && (this.workspace.generating() || this.workspace.publishing());
+    return (
+      p.status === 'queued' ||
+      p.status === 'processing' ||
+      (p.status === 'review' && this.workspace.loading())
+    );
   });
 
-  // Generazione indice (queued/processing)
-  readonly progress = computed(() => this.job()?.progress ?? 0);
-  readonly etaLabel = computed(() => {
-    const eta = this.job()?.etaSeconds;
-    return eta ? this.t('i18n.Workspace.Live.eta', { seconds: eta }) : '';
-  });
-  readonly indexSteps = computed<GenStep[]>(() =>
-    buildPipeline(this.job()?.currentStepKey === 'outline' ? 'indice' : 'analisi'),
-  );
-  readonly indexDetail = computed(() => {
-    const job = this.job();
-    const s = job?.steps.find((x) => x.key === job?.currentStepKey);
-    return s ? this.t(s.labelKey) : '';
+  /**
+   * Generazione CAPITOLI in corso → **skeleton in pagina** + spinner centrato
+   * (stesso pattern dell'indice): navigazione ottimistica dallo step "Genera
+   * capitoli". Niente overlay.
+   */
+  readonly chaptersLoading = computed(() => {
+    const p = this.project();
+    return !!p && p.status === 'review' && this.workspace.generating();
   });
 
-  // Generazione capitoli (review + generating)
-  readonly chapterSteps = computed<GenStep[]>(() => buildPipeline('capitoli'));
-  readonly chapterDetail = computed(() => {
-    const n = this.workspace.chapters().length || 1;
-    const k = Math.min(n, Math.max(1, Math.ceil((this.genProgress() / 100) * n)));
-    return `Scrittura capitolo ${k} di ${n}`;
-  });
-
-  // Pubblicazione (review + publishing)
-  readonly publishSteps = computed<GenStep[]>(() => buildPipeline('render'));
-  readonly publishDetail = computed(() => {
-    const p = this.pubProgress();
-    return p < 40 ? 'Impaginazione' : p < 80 ? 'Render del PDF' : 'Esportazione';
-  });
+  /**
+   * Pubblicazione in corso → **skeleton in pagina** della schermata "Documento
+   * pubblicato" + spinner centrato (stesso pattern di indice e capitoli).
+   */
+  readonly publishLoading = computed(() => this.publishing());
 
   // --- Capitoli (revisione) ---------------------------------------------------
   private readonly pickedKey = signal('');
@@ -258,9 +174,6 @@ export class ProjectWorkspaceComponent {
   });
   readonly selectedParagraphs = computed(() =>
     (this.selectedChapter()?.body ?? '').split('\n\n').filter((p) => p.trim()),
-  );
-  readonly selectedApproved = computed(() =>
-    this.workspace.approvedChapterIds().includes(this.selectedKey()),
   );
 
   // --- Lettore paginato (dialog read-only): sfoglio a pagine, niente scroll ----
@@ -327,32 +240,9 @@ export class ProjectWorkspaceComponent {
   readonly chaptersReady = computed(() => this.workspace.chaptersReady());
 
   readonly chapterItems = computed<ChapterItem[]>(() =>
-    toChapterItems(
-      this.workspace.chapters(),
-      this.chaptersReady(),
-      this.workspace.approvedChapterIds(),
-      this.selectedKey(),
-    ),
-  );
-  readonly approvedCountLabel = computed(
-    () => `${this.workspace.approvedCount()} di ${this.workspace.chapters().length} approvati`,
+    toChapterItems(this.workspace.chapters(), this.chaptersReady(), this.selectedKey()),
   );
   readonly indexCountLabel = computed(() => `${this.workspace.chapters().length} capitoli`);
-
-  // --- Cosa otterrai (data view, revisione indice) ----------------------------
-  readonly outcomeStats = computed(() =>
-    toOutcomeStats(this.workspace.chapters(), this.project()?.sourceIds.length ?? 0),
-  );
-
-  /** Etichette prev/next dal capitolo adiacente (vuoto = bordo lista). */
-  readonly prevLabel = computed(() => this.adjacent(-1));
-  readonly nextLabel = computed(() => this.adjacent(1));
-  private adjacent(delta: number): string {
-    const list = this.workspace.chapters();
-    const i = list.findIndex((c) => c.id === this.selectedKey());
-    const n = list[i + delta];
-    return n ? `${n.index} · ${n.title}` : '';
-  }
 
   // --- Chat -------------------------------------------------------------------
   readonly chatDraft = signal('');
@@ -369,23 +259,12 @@ export class ProjectWorkspaceComponent {
   selectChapter(key: string): void {
     this.pickedKey.set(key);
   }
-  step(delta: number): void {
-    const list = this.workspace.chapters();
-    const i = list.findIndex((c) => c.id === this.selectedKey());
-    const next = list[i + delta];
-    if (next) {
-      this.pickedKey.set(next.id);
-    }
-  }
   sendChat(text: string): void {
     void this.workspace.send(this.id(), text);
     this.chatDraft.set('');
   }
   runQuickOp(key: string): void {
     void this.workspace.send(this.id(), quickOpText(key));
-  }
-  approveChapter(): void {
-    this.workspace.toggleApproved(this.selectedKey());
   }
   /** True mentre i capitoli vengono sviluppati. */
   readonly generating = computed(() => this.workspace.generating());
@@ -399,30 +278,13 @@ export class ProjectWorkspaceComponent {
   readonly showPublish = signal(false);
   /** In published: true = lettura documento; false = schermata di conferma. */
   readonly reading = signal(false);
-  /** Opzioni di output (mock locale, visuale). */
-  readonly includeCover = signal(true);
-  /** Formati di output selezionabili nel dialog (modificabili fino alla conferma). */
-  readonly allFormats = ['pdf', 'docx', 'epub'];
-  readonly pubFormats = signal<string[]>([]);
-  isFormatOn(f: string): boolean {
-    return this.pubFormats().includes(f);
-  }
-  toggleFormat(f: string): void {
-    this.pubFormats.update((list) =>
-      list.includes(f) ? list.filter((x) => x !== f) : [...list, f],
-    );
-  }
-  /** Formati pubblicati (per i download in Conferma), in maiuscolo. */
-  readonly publishFormats = computed(() => {
-    const fmts = this.pubFormats().length
-      ? this.pubFormats()
-      : (this.project()?.settings.outputFormats ?? ['pdf']);
-    return fmts.map((f) => f.toUpperCase());
-  });
+  /** Formati pubblicati (per i download in Conferma), dai settings di creazione. */
+  readonly publishFormats = computed(() =>
+    (this.project()?.generationOptions.outputFormats ?? ['pdf']).map((f) => f.toUpperCase()),
+  );
 
-  /** Apre il dialog di pubblicazione, inizializzando i formati dai settings. */
+  /** Apre il dialog di conferma pubblicazione. */
   goToPublish(): void {
-    this.pubFormats.set([...(this.project()?.settings.outputFormats ?? ['pdf'])]);
     this.showPublish.set(true);
   }
   /** Torna dalla Pubblica ai capitoli. */
@@ -440,69 +302,7 @@ export class ProjectWorkspaceComponent {
     this.readerPage.set(0);
     this.reading.set(true);
   }
-  /** Dialog informativo (costi) prima di creare una nuova versione. */
-  readonly showNewVersion = signal(false);
-  newVersion(): void {
-    this.showNewVersion.set(true);
-  }
-  /** Conferma: crea una nuova versione (mock: torna in revisione). */
-  confirmNewVersion(): void {
-    this.showNewVersion.set(false);
-    this.reading.set(false);
-    void this.store.reopen(this.id());
-  }
-  /** Genera un derivato: scelta del tipo via dialog, poi crea il progetto figlio. */
-  readonly derivedOptions = DERIVED_OPTIONS;
-  readonly showDerive = signal(false);
-  readonly derivedKind = signal<DerivedKind>('summary');
-  /** Scelta lingua (solo per la traduzione). */
-  readonly languages = LANGUAGES;
-  readonly showLang = signal(false);
-  readonly selectedLang = signal('Inglese');
-  derive(): void {
-    this.derivedKind.set('summary');
-    this.showDerive.set(true);
-  }
-  selectDerived(kind: DerivedKind): void {
-    this.derivedKind.set(kind);
-  }
-  selectLang(lang: string): void {
-    this.selectedLang.set(lang);
-  }
-  /** Conferma tipo: la traduzione apre prima la scelta lingua, gli altri partono. */
-  confirmDerive(): void {
-    if (this.derivedKind() === 'translation') {
-      this.showDerive.set(false);
-      this.selectedLang.set('Inglese');
-      this.showLang.set(true);
-      return;
-    }
-    this.runDerive();
-  }
-  /** Conferma lingua → avvia la traduzione. */
-  confirmLang(): void {
-    this.runDerive(this.selectedLang());
-  }
-  private runDerive(language?: string): void {
-    this.showDerive.set(false);
-    this.showLang.set(false);
-    void this.store.derive(this.id(), this.derivedKind(), language).then((child) => {
-      void this.router.navigate(['/project', child.id]);
-    });
-  }
-  back(): void {
-    void this.router.navigate(['/create']);
-  }
   generate(): void {
     void this.store.generate(this.id());
-  }
-  cancel(): void {
-    void this.store.cancel(this.id());
-  }
-  publish(): void {
-    void this.store.publish(this.id());
-  }
-  reopen(): void {
-    void this.store.reopen(this.id());
   }
 }

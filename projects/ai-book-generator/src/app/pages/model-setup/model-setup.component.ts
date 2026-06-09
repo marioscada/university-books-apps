@@ -3,30 +3,31 @@ import {
   Component,
   computed,
   inject,
+  input,
+  output,
   signal,
   type WritableSignal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { merge, map } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { CounterFieldComponent } from '../../shared/ui/counter-field/counter-field.component';
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import {
   SourceDropzoneComponent,
   type SourceItem,
 } from '../../shared/components-v2/source-dropzone/source-dropzone.component';
-import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { TemplatesStore } from '../../core/state/templates.store';
-import type { OutputFormat, ProjectSettings, ProjectTemplate } from '../../core/domain';
+import { injectI18nText } from '../../shared/services/i18n-text';
+import { UiPromiseService } from '../../shared/services/ui-promise.service';
+import type { OutputFormat, GenerationOptions, ProjectTemplate } from '../../core/domain';
+import type { CreateProjectInput } from '../../core/data/api-port';
 
 /** Genere grammaticale del nome modello (per gli articoli IT). */
 const MODEL_GENDER: Record<string, 'm' | 'f'> = {
@@ -39,7 +40,8 @@ const DESC_MAX = 300;
 const NOTES_MAX = 500;
 
 /**
- * ModelSetupComponent — pagina "Crea / Personalizza" (`/create/new`) ricomposta
+ * ModelSetupComponent — step "Personalizza" del flusso `/create` (componente di
+ * servizio, non più una rotta: riceve `templateId` dal flusso, emette `back`)
  * con i componenti dumb di `components-v2`. Sezioni: top bar (back + modello
  * scelto), **Definisci** (titolo + descrizione), **Istruzioni** (note a mano o
  * da file) e **Fonti** (upload via dialog `SourceDropzone`), con una `ActionBar`
@@ -51,11 +53,9 @@ const NOTES_MAX = 500;
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AuthShellComponent,
     CounterFieldComponent,
     BackLinkComponent,
     SourceDropzoneComponent,
-    ActionBarComponent,
     ModalShellComponent,
     MatIconModule,
     MatButtonModule,
@@ -66,39 +66,28 @@ const NOTES_MAX = 500;
   styleUrl: './model-setup.component.scss',
 })
 export class ModelSetupComponent {
-  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly templatesStore = inject(TemplatesStore);
   private readonly projectsStore = inject(ProjectsStore);
-  private readonly translate = inject(TranslateService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly uiPromise = inject(UiPromiseService);
 
-  /** Tick i18n: ricomputa i view-model al cambio lingua / caricamento traduzioni. */
-  private readonly i18nTick = toSignal(
-    merge(
-      this.translate.onLangChange,
-      this.translate.onTranslationChange,
-      this.translate.onDefaultLangChange,
-    ).pipe(map(() => Symbol())),
-    { initialValue: Symbol() },
-  );
+  /** Risolutore i18n reattivo (ricomputa i view-model al cambio lingua). */
+  private readonly t = injectI18nText();
 
-  private t(key: string, params?: Record<string, unknown>): string {
-    this.i18nTick();
-    return this.translate.instant(key, params);
-  }
-
-  private readonly templateId =
-    this.route.snapshot.queryParamMap.get('template') ?? 'custom';
+  /** Modello scelto (id) — passato dal flusso `/create` (step di servizio). */
+  readonly templateId = input<string>('custom');
+  /** Richiesta di tornare alla galleria (gestita dal flusso padre). */
+  readonly back = output<void>();
 
   readonly template = computed<ProjectTemplate | undefined>(
-    () => this.templatesStore.templateById()[this.templateId],
+    () => this.templatesStore.templateById()[this.templateId()],
   );
 
   // --- Stato modulo -----------------------------------------------------------
-  readonly title = signal('');
-  readonly description = signal('');
-  readonly notes = signal('');
+  readonly documentTitle = signal('');
+  readonly documentDescription = signal('');
+  readonly instructionsText = signal('');
   readonly titleMax = TITLE_MAX;
   readonly descMax = DESC_MAX;
   readonly notesMax = NOTES_MAX;
@@ -106,21 +95,21 @@ export class ModelSetupComponent {
   /** Validazione titolo (obbligatorio): errore solo dopo il primo blur. */
   readonly titleTouched = signal(false);
   readonly titleError = computed(() =>
-    this.titleTouched() && !this.title().trim() ? 'Il titolo è obbligatorio' : '',
+    this.titleTouched() && !this.documentTitle().trim() ? 'Il titolo è obbligatorio' : '',
   );
   /** Si può generare solo con un titolo valido. */
-  readonly canGenerate = computed(() => !!this.title().trim());
+  readonly canGenerate = computed(() => !!this.documentTitle().trim());
 
   readonly language = signal('it');
   readonly formats = signal<OutputFormat[]>(['pdf', 'docx']);
-  readonly sources = signal<SourceItem[]>([]);
+  readonly materialFiles = signal<SourceItem[]>([]);
 
   // --- Nome modello + grammatica ---------------------------------------------
   readonly modelName = computed(() =>
     this.t(this.template()?.nameKey ?? 'i18n.Models.custom.name'),
   );
   private readonly nameLower = computed(() => this.modelName().toLowerCase());
-  private readonly gender = computed<'m' | 'f'>(() => MODEL_GENDER[this.templateId] ?? 'm');
+  private readonly gender = computed<'m' | 'f'>(() => MODEL_GENDER[this.templateId()] ?? 'm');
   private readonly possessive = computed(() =>
     this.t(this.gender() === 'f' ? 'i18n.Setup.S1.possF' : 'i18n.Setup.S1.possM'),
   );
@@ -145,10 +134,10 @@ export class ModelSetupComponent {
   private uploadSeq = 0;
 
   addSources(files: File[]): void {
-    this.simulateUpload(this.sources, files);
+    this.simulateUpload(this.materialFiles, files);
   }
   removeSource(id: string): void {
-    this.sources.update((list) => list.filter((s) => s.id !== id));
+    this.materialFiles.update((list) => list.filter((s) => s.id !== id));
   }
 
   // --- Sidebar: File (upload da dispositivo / contenuto testuale, catalogati) --
@@ -165,13 +154,13 @@ export class ModelSetupComponent {
   }
   /** Lista mostrata nel dialog di upload, in base al bersaglio. */
   readonly attachItems = computed(() =>
-    this.attachTarget() === 'instr' ? this.instrFiles() : this.sources(),
+    this.attachTarget() === 'instr' ? this.instructionFiles() : this.materialFiles(),
   );
   addAttach(files: File[]): void {
-    this.simulateUpload(this.attachTarget() === 'instr' ? this.instrFiles : this.sources, files);
+    this.simulateUpload(this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles, files);
   }
   removeAttach(id: string): void {
-    const list = this.attachTarget() === 'instr' ? this.instrFiles : this.sources;
+    const list = this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles;
     list.update((l) => l.filter((s) => s.id !== id));
   }
 
@@ -191,12 +180,12 @@ export class ModelSetupComponent {
       return;
     }
     const name = `${text.split(/\s+/).slice(0, 5).join(' ').slice(0, 40)}.txt`;
-    this.sources.update((l) => [...l, { id: `${++this.uploadSeq}-${name}`, name, status: 'ready' as const }]);
+    this.materialFiles.update((l) => [...l, { id: `${++this.uploadSeq}-${name}`, name, status: 'ready' as const }]);
     this.textOpen.set(false);
   }
 
   /** Capacità progetto usata (mock): cresce coi file caricati. */
-  readonly capacityUsed = computed(() => Math.min(100, this.sources().length * 12));
+  readonly capacityUsed = computed(() => Math.min(100, this.materialFiles().length * 12));
   /** Categoria del file per icona/colore riconoscibili (PDF, Word, immagine…). */
   fileKind(name: string): 'pdf' | 'doc' | 'img' | 'sheet' | 'text' | 'file' {
     const ext = (name.split('.').pop() ?? '').toLowerCase();
@@ -222,7 +211,7 @@ export class ModelSetupComponent {
   // --- Istruzioni: a mano (note) oppure da file (PC) --------------------------
   readonly instrOpen = signal(false);
   /** File di istruzioni caricati dal dispositivo (catalogati "Istruzione"). */
-  readonly instrFiles = signal<SourceItem[]>([]);
+  readonly instructionFiles = signal<SourceItem[]>([]);
   openInstr(): void {
     this.instrOpen.set(true);
   }
@@ -231,10 +220,10 @@ export class ModelSetupComponent {
   }
   /** Elimina le istruzioni scritte a mano. */
   clearInstr(): void {
-    this.notes.set('');
+    this.instructionsText.set('');
   }
   removeInstrFile(id: string): void {
-    this.instrFiles.update((l) => l.filter((s) => s.id !== id));
+    this.instructionFiles.update((l) => l.filter((s) => s.id !== id));
   }
 
   /**
@@ -279,9 +268,6 @@ export class ModelSetupComponent {
   }
 
   // --- Azioni -----------------------------------------------------------------
-  back(): void {
-    void this.router.navigate(['/create']);
-  }
 
   /** In invio al server (disabilita la CTA, evita doppi click). */
   readonly submitting = signal(false);
@@ -300,30 +286,46 @@ export class ModelSetupComponent {
     if (!tpl || this.submitting()) {
       return;
     }
-    const settings: ProjectSettings = {
-      instructions: this.notes().trim(),
+    const generationOptions: GenerationOptions = {
+      aiInstructions: this.instructionsText().trim() || undefined,
       processingMode: tpl.defaults.processingMode,
-      structure: { ...tpl.defaults.structure },
+      documentStructure: { ...tpl.defaults.structure },
       outputFormats: this.formats().length ? this.formats() : ['pdf'],
-      language: this.language(),
+      outputLanguage: this.language(),
+    };
+
+    const payload: CreateProjectInput = {
+      title: this.documentTitle().trim() || this.modelName(),
+      description: this.documentDescription().trim() || undefined,
+      documentType: tpl.documentType,
       templateId: tpl.id,
+      coverTheme: tpl.coverTheme ?? 'ocean',
+      materialFileIds: this.materialFiles().map((f) => f.id),
+      instructionFileIds: this.instructionFiles().map((f) => f.id),
+      generationOptions,
     };
 
     this.submitting.set(true);
-    try {
-      // Invio + ATTESA della conferma del server (lo store risolve a buon fine).
-      const project = await this.projectsStore.createFromTemplate({
-        title: this.title().trim() || this.modelName(),
-        kind: tpl.kind,
-        settings,
-        coverTheme: tpl.coverTheme ?? 'ocean',
-      });
-      // Avvia SUBITO la generazione dell'indice (niente schermata "bozza"
-      // intermedia): l'utente ha già confermato qui → si va dritto all'Analisi.
-      await this.projectsStore.generate(project.id);
-      void this.router.navigate(['/project', project.id]);
-    } finally {
-      this.submitting.set(false);
+    // Attesa della create (per l'id) con OVERLAY bloccante (backdrop non
+    // cliccabile + scroll bloccato): l'utente non può ri-cliccare, modificare i
+    // campi o lasciare la pagina durante l'attesa. Poi avvio la generate in
+    // background (ottimistico → skeleton) e navigo allo Studio. Errore della
+    // create → toast e resto sul form (dati preservati).
+    const { success: projectId } = await this.uiPromise.run(
+      () => this.projectsStore.createFromTemplate(payload).then((p) => p.id),
+      {
+        loading: true,
+        loadingMessage: this.t('i18n.Setup.creating'),
+        error: {
+          title: this.t('i18n.Common.error'),
+          message: this.t('i18n.Setup.generateError'),
+        },
+      },
+    );
+    this.submitting.set(false);
+    if (projectId) {
+      void this.projectsStore.generate(projectId); // background (ottimistico → skeleton)
+      await this.router.navigate(['/project', projectId]);
     }
   }
 }

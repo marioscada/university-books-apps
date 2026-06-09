@@ -23,13 +23,25 @@
 }
 
 .review-shell__index {
-  flex: 0 0 248px;
+  flex: 0 0 288px;
 }
 .review-shell__body {
   flex: 1 1 0;
 }
 .review-shell__ai {
-  flex: 0 0 360px;
+  flex: 0 0 300px;
+}
+
+// Collasso LATERALE (desktop): quando il chapter-index proiettato è collassato,
+// l'aside indice si restringe a un rail; il corpo centrale assorbe lo spazio.
+// Su mobile il collasso è verticale (vedi sotto), quindi qui solo da desktop.
+@include bp.gte(bp.$studio) {
+  .review-shell__index {
+    transition: flex-basis 0.2s ease;
+  }
+  .review-shell__index:has(> .chapter-index.is-collapsed) {
+    flex-basis: 56px;
+  }
 }
 
 @include bp.lt(bp.$studio) {

@@ -1,4 +1,8 @@
-<app-auth-shell>
+@if (template(); as templateId) {
+  <!-- Step: personalizzazione del modello (componente di servizio, stesso URL) -->
+  <app-model-setup [templateId]="templateId" (back)="clearTemplate()" />
+} @else {
+  <!-- Step: galleria modelli -->
   <div class="create site-container">
     <header class="create__head">
       <h1 class="page-title">{{ 'i18n.Create.gallery.title' | translate }}</h1>
@@ -25,4 +29,4 @@
       }
     </div>
   </div>
-</app-auth-shell>
+}

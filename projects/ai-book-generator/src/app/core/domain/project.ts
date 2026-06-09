@@ -1,12 +1,12 @@
 /**
  * Project — il container "vivo" del dominio.
  *
- * Copia fedele di PRODUCT-ARCHITECTURE.md §1.2. Un Project attraversa la state
- * machine (§2), conserva versioni immutabili, è rigenerabile e può derivare
- * altri progetti. `coverTheme` riusa i temi cover-art globali.
+ * I nomi rispecchiano 1:1 il contratto backend (Zod → OpenAPI): vedi
+ * `core/data/api-types.generated.ts`. Tipi scritti a mano ma allineati al
+ * contratto; la create usa direttamente il tipo generato (`CreateProjectInput`).
  */
 
-export type ProjectKind =
+export type DocumentType =
   | 'book' | 'summary' | 'manual' | 'study_guide'
   | 'research_report' | 'training_course' | 'presentation'
   | 'documentation' | 'custom';
@@ -17,14 +17,19 @@ export type ProjectStatus =
   | 'processing'   // l'AI sta lavorando (job attivo)
   | 'review'       // versione pronta, l'utente deve controllare → "needs attention"
   | 'published'    // risultato approvato/esportato (aggiornabile con nuove versioni)
-  | 'archived'     // non attivo, consultabile/riapribile
   | 'failed';      // generazione fallita → retry
+
+/** Stati "vivi" (lavori in corso) mostrati nella Create hub. */
+export const ACTIVE_STATUSES: readonly ProjectStatus[] = [
+  'draft',
+  'queued',
+  'processing',
+  'review',
+  'failed',
+];
 
 /** Tema della copertina astratta — riusa i temi cover-art globali. */
 export type CoverTheme = 'aurora' | 'ocean' | 'ember' | 'rose' | 'mint' | 'gold';
-
-export type DerivedKind =
-  | 'summary' | 'slides' | 'quiz' | 'manual' | 'study_guide' | 'translation';
 
 export type ProcessingMode =
   | 'fast_draft' | 'balanced' | 'deep_research'
@@ -32,22 +37,25 @@ export type ProcessingMode =
 
 export type OutputFormat = 'pdf' | 'docx' | 'epub' | 'markdown' | 'html'; // slides: fase futura
 
-export interface StructureConfig {
-  chapters?: number;               // n° capitoli (o 'auto')
+/** Codice lingua ISO 639-1 (es. 'it', 'en'). */
+export type LanguageCode = string;
+
+export interface DocumentStructure {
+  chapterCount?: number;           // n° capitoli (assente = auto)
   length?: 'short' | 'medium' | 'long';
   tone?: 'neutral' | 'formal' | 'friendly' | 'technical' | 'academic';
   depth?: 'overview' | 'standard' | 'deep';
-  bibliography: boolean;
-  glossary: boolean;
-  quiz: boolean;
-  exercises: boolean;
-  appendices: boolean;
-  tables: boolean;
-  images: boolean;
+  includeAppendices: boolean;
+  includeBibliography: boolean;
+  includeExercises: boolean;
+  includeGlossary: boolean;
+  includeImages: boolean;
+  includeQuiz: boolean;
+  includeTables: boolean;
 }
 
 /** Impostazioni tipografiche/impaginazione (default per modello, override sul progetto). */
-export interface TypographySettings {
+export interface TypographyOptions {
   fontFamily: string;              // famiglia font del corpo testo
   fontSizePt: number;              // dimensione corpo testo in punti
   textColor: string;               // colore del testo (hex)
@@ -64,18 +72,16 @@ export interface PartOverride {
   wordCount?: number;              // parole target per la parte
 }
 
-export interface ProjectSettings {
-  instructions: string;            // prompt libero (Step 3 wizard)
-  processingMode: ProcessingMode;  // Step 4 — incide su costo/tempo/qualità
-  structure: StructureConfig;      // Step 5
-  outputFormats: OutputFormat[];   // Step 6
-  language: string;                // ISO (es. 'en')
-
-  // Flusso "scegli modello → personalizza struttura → genera" (modello immutabile)
-  templateId?: string;             // modello di partenza
-  parts?: PartOverride[];          // scostamenti per-parte rispetto al modello
-  typography?: TypographySettings; // override tipografia rispetto al modello
-  totalWords?: number;             // parole totali del manoscritto
+/** Configurazione di generazione del documento (ex "settings"). */
+export interface GenerationOptions {
+  aiInstructions?: string;            // istruzioni libere per l'AI
+  processingMode: ProcessingMode;     // incide su costo/tempo/qualità
+  outputLanguage: LanguageCode;       // lingua dell'output (ISO)
+  outputFormats: OutputFormat[];      // formati export
+  documentStructure: DocumentStructure;
+  partOverrides?: PartOverride[];     // scostamenti per-parte rispetto al modello
+  typography?: TypographyOptions;     // override tipografia rispetto al modello
+  targetWordCount?: number;           // parole totali del manoscritto
 }
 
 export interface Project {
@@ -84,24 +90,22 @@ export interface Project {
   ownerId: string;
 
   title: string;
-  kind: ProjectKind;
+  description?: string;            // breve descrizione del contenuto
+  documentType: DocumentType;
+  templateId?: string;            // modello di partenza
   status: ProjectStatus;
   /** Sotto-stadio della revisione: indice pronto vs capitoli sviluppati. */
   reviewStage?: 'index' | 'chapters';
   coverTheme: CoverTheme;          // riusa i temi cover-art (aurora|ocean|…)
 
-  settings: ProjectSettings;       // config di generazione (dal wizard)
+  generationOptions: GenerationOptions; // config di generazione
 
   currentJobId?: string;           // job attivo se status=processing/queued
   currentVersionId?: string;       // versione "attiva" mostrata di default
   versionIds: string[];            // ordinate per number crescente
 
-  // Lineage progetti derivati (summary/slides/quiz da un libro, ecc.)
-  parentProjectId?: string;
-  derivedKind?: DerivedKind;       // valorizzato se è un derivato
-  derivedProjectIds: string[];     // figli derivati da questo
-
-  sourceIds: string[];             // many-to-many (vedi ProjectSource)
+  materialFileIds: string[];       // file di materiale (contenuti da cui generare)
+  instructionFileIds: string[];    // file di istruzione (regole/tracce/vincoli)
 
   createdAt: string;
   updatedAt: string;

@@ -7,7 +7,7 @@ import {
   withState,
 } from '@ngrx/signals';
 
-import type { Chapter, ChatMessage, DerivedContent, Version } from '../domain';
+import type { Chapter, ChatMessage, Version } from '../domain';
 import { API_PORT } from '../data/api-port';
 import { ProjectsStore } from './projects.store';
 
@@ -30,14 +30,6 @@ interface WorkspaceState {
   publishing: boolean;
   /** Avanzamento 0–100 della pubblicazione. */
   pubProgress: number;
-  /** Capitoli approvati in revisione (stato locale finché non c'è il backend). */
-  approvedChapterIds: string[];
-  /** Contenuto del derivato (riassunto/slide/quiz/…) o null. */
-  derived: DerivedContent | null;
-  /** Elaborazione del derivato in corso. */
-  derivedGenerating: boolean;
-  /** Avanzamento 0–100 dell'elaborazione del derivato. */
-  derivedProgress: number;
 }
 
 const INITIAL: WorkspaceState = {
@@ -50,14 +42,7 @@ const INITIAL: WorkspaceState = {
   genProgress: 0,
   publishing: false,
   pubProgress: 0,
-  approvedChapterIds: [],
-  derived: null,
-  derivedGenerating: false,
-  derivedProgress: 0,
 };
-
-/** Attesa async semplice (mock; con AWS diventa il poll del job). */
-const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * WorkspaceStore — sessione di editing dello **Studio** per il progetto attivo:
@@ -71,8 +56,6 @@ export const WorkspaceStore = signalStore(
   withComputed((store) => ({
     /** Capitoli della versione corrente (vuoto se nessun output). */
     chapters: computed<Chapter[]>(() => store.version()?.chapters ?? []),
-    /** Numero di capitoli approvati. */
-    approvedCount: computed(() => store.approvedChapterIds().length),
     /**
      * I capitoli sono stati sviluppati (fase Capitoli). Se falso ma esiste una
      * versione → fase **revisione indice** (solo outline, capitoli non sviluppati).
@@ -119,100 +102,33 @@ export const WorkspaceStore = signalStore(
         }
       },
 
-      /**
-       * Sviluppa i capitoli dall'indice approvato (revisione indice → capitoli).
-       * Avanzamento progressivo (mock) per mostrare il componente di generazione;
-       * con AWS questo loop diventa il polling del job lato `ApiPort`.
-       */
+      /** Sviluppa i capitoli dall'indice approvato (review indice → capitoli). */
       async generateChapters(projectId: string): Promise<void> {
         if (store.generating()) {
           return;
         }
-        patchState(store, { generating: true, genProgress: 0 });
-        const total = store.version()?.chapters.length ?? 1;
-        for (let i = 1; i <= total; i++) {
-          await wait(260);
-          if (store.projectId() !== projectId) {
-            return;
+        patchState(store, { generating: true });
+        try {
+          const version = await api.generateChapters(projectId);
+          if (store.projectId() === projectId) {
+            patchState(store, { version });
           }
-          patchState(store, { genProgress: Math.round((i / total) * 100) });
+        } finally {
+          patchState(store, { generating: false });
         }
-        const version = await api.generateChapters(projectId);
-        patchState(store, { version, generating: false, genProgress: 0 });
       },
 
-      /**
-       * Pubblica con attesa progressiva (render/impaginazione/export), poi
-       * delega a `ProjectsStore.publish` (review → published). Mock: il loop
-       * simula il job di render; con AWS diventa il poll del job di pubblicazione.
-       */
+      /** Pubblica: delega a `ProjectsStore.publish` (review → published). */
       async publish(projectId: string): Promise<void> {
         if (store.publishing()) {
           return;
         }
-        patchState(store, { publishing: true, pubProgress: 0 });
-        for (let i = 1; i <= 10; i++) {
-          await wait(170);
-          if (store.projectId() !== projectId) {
-            return;
-          }
-          patchState(store, { pubProgress: i * 10 });
+        patchState(store, { publishing: true });
+        try {
+          await projects.publish(projectId);
+        } finally {
+          patchState(store, { publishing: false });
         }
-        await projects.publish(projectId);
-        patchState(store, { publishing: false, pubProgress: 0 });
-      },
-
-      /**
-       * Apre un progetto DERIVATO: mostra l'attesa (elaborazione) e poi carica il
-       * contenuto come se arrivasse dal server. Avanzamento progressivo (mock).
-       */
-      async openDerived(projectId: string): Promise<void> {
-        patchState(store, { ...INITIAL, projectId, derivedGenerating: true, derivedProgress: 0 });
-        for (let i = 1; i <= 10; i++) {
-          await wait(220);
-          if (store.projectId() !== projectId) {
-            return;
-          }
-          patchState(store, { derivedProgress: i * 10 });
-        }
-        const derived = await api.generateDerived(projectId);
-        if (store.projectId() !== projectId) {
-          return;
-        }
-        patchState(store, { derived, derivedGenerating: false, derivedProgress: 0 });
-      },
-
-      /** Rigenera il derivato applicando il feedback dell'utente all'AI. */
-      async regenerateDerived(projectId: string, feedback: string): Promise<void> {
-        if (store.derivedGenerating()) {
-          return;
-        }
-        patchState(store, { derivedGenerating: true, derivedProgress: 0 });
-        for (let i = 1; i <= 10; i++) {
-          await wait(180);
-          if (store.projectId() !== projectId) {
-            return;
-          }
-          patchState(store, { derivedProgress: i * 10 });
-        }
-        const derived = await api.regenerateDerived(projectId, feedback);
-        patchState(store, { derived, derivedGenerating: false, derivedProgress: 0 });
-      },
-
-      /** Marca/smarca un capitolo come approvato (revisione). */
-      toggleApproved(chapterId: string): void {
-        patchState(store, (s) => ({
-          approvedChapterIds: s.approvedChapterIds.includes(chapterId)
-            ? s.approvedChapterIds.filter((id) => id !== chapterId)
-            : [...s.approvedChapterIds, chapterId],
-        }));
-      },
-
-      /** Approva tutti i capitoli della versione. */
-      approveAll(): void {
-        patchState(store, (s) => ({
-          approvedChapterIds: (s.version?.chapters ?? []).map((c) => c.id),
-        }));
       },
     };
   }),

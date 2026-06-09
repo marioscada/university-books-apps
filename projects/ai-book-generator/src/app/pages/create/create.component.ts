@@ -1,84 +1,46 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { merge, map } from 'rxjs';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
-import {
-  ChoiceCardComponent,
-  type ChoiceTone,
-} from '../../shared/components-v2/choice-card/choice-card.component';
+import { ChoiceCardComponent } from '../../shared/components-v2/choice-card/choice-card.component';
+import { ModelSetupComponent } from '../model-setup/model-setup.component';
 import { TemplatesStore } from '../../core/state/templates.store';
-import type { ProjectTemplate } from '../../core/domain';
-
-/** Dati pronti per una card della galleria (i18n già risolto dal padre). */
-interface ModelChoice {
-  id: string;
-  icon: string;
-  tone: ChoiceTone;
-  heading: string;
-  description: string;
-  meter: number;
-  note: string;
-}
-
-/** Presentazione per modello: icona, tono, intensità del meter (0–3). */
-const MODEL_PRESENTATION: Record<string, { icon: string; tone: ChoiceTone; meter: number }> = {
-  book: { icon: 'menu_book', tone: 'info', meter: 3 },
-  summary: { icon: 'short_text', tone: 'success', meter: 1 },
-  study_guide: { icon: 'school', tone: 'amber', meter: 2 },
-  manual: { icon: 'build', tone: 'violet', meter: 3 },
-  report: { icon: 'analytics', tone: 'violet', meter: 2 },
-  presentation: { icon: 'slideshow', tone: 'warning', meter: 2 },
-  course: { icon: 'cast_for_education', tone: 'rose', meter: 3 },
-  thesis: { icon: 'history_edu', tone: 'success', meter: 2 },
-  custom: { icon: 'tune', tone: 'neutral', meter: 3 },
-};
-
-const FALLBACK = { icon: 'description', tone: 'neutral' as ChoiceTone, meter: 0 };
-const METER_MAX = 3;
+import { injectI18nText } from '../../shared/services/i18n-text';
+import { METER_MAX, toModelChoices, type ModelChoice } from './create.util';
 
 /**
- * Create — pagina "Crea un nuovo progetto": intestazione + callout informativo +
- * **galleria di modelli** resa iterando il componente dumb `ChoiceCard` dai dati
- * del `TemplatesStore`. Scegliere un modello apre la personalizzazione
- * (`/create/new?template=<id>`). Tutta la presentazione è preparata qui (i18n
- * risolto), il componente card resta agnostico dal dominio.
+ * Create — **host del flusso di creazione** (URL fisso `/create`).
+ * Due step interni guidati dal query param `?template=`:
+ *   • assente → **galleria modelli** (`ChoiceCard` dai dati del `TemplatesStore`);
+ *   • presente → **personalizzazione** (`ModelSetupComponent` come componente di
+ *     servizio, che al "genera" naviga al progetto creato `/project/:id`).
+ * La presentazione della galleria è preparata qui (i18n risolto); le card e il
+ * setup restano agnostici dal routing. Pattern customer-portal (wizard interno,
+ * URL stabile, naviga alla risorsa a fine flusso).
  */
 @Component({
   selector: 'app-create',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AuthShellComponent, ChoiceCardComponent, MatIconModule, TranslateModule],
+  imports: [ChoiceCardComponent, ModelSetupComponent, MatIconModule, TranslateModule],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
 })
 export class CreateComponent {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly templatesStore = inject(TemplatesStore);
-  private readonly translate = inject(TranslateService);
 
-  /** Tick i18n: ricalcola le card al cambio lingua / caricamento traduzioni. */
-  private readonly i18nTick = toSignal(
-    merge(
-      this.translate.onLangChange,
-      this.translate.onTranslationChange,
-      this.translate.onDefaultLangChange,
-    ).pipe(map(() => Symbol())),
-    { initialValue: Symbol() },
-  );
+  /**
+   * Step del flusso, guidato dal query param `?template=`: assente → galleria;
+   * presente → personalizzazione (model-setup come componente di servizio). URL
+   * fisso su `/create`; al "genera" model-setup naviga al progetto creato.
+   */
+  readonly template = input<string>();
 
-  private t(key: string): string {
-    this.i18nTick();
-    return this.translate.instant(key);
-  }
+  /** Risolutore i18n reattivo (ricalcola i computed al cambio lingua). */
+  private readonly t = injectI18nText();
 
   readonly meterMax = METER_MAX;
   readonly shortLabel = computed(() => this.t('i18n.Create.short'));
@@ -86,22 +48,16 @@ export class CreateComponent {
 
   /** Card della galleria, una per modello, con l'i18n già risolto. */
   readonly cards = computed<ModelChoice[]>(() =>
-    this.templatesStore.templates().map((tpl: ProjectTemplate) => {
-      const v = MODEL_PRESENTATION[tpl.id] ?? FALLBACK;
-      return {
-        id: tpl.id,
-        icon: v.icon,
-        tone: v.tone,
-        meter: v.meter,
-        heading: this.t(tpl.nameKey),
-        description: this.t(tpl.descKey),
-        note: this.t(`i18n.Models.${tpl.id}.note`),
-      };
-    }),
+    toModelChoices(this.templatesStore.templates(), this.t),
   );
 
-  /** Scelto un modello → pagina di personalizzazione. */
+  /** Scelto un modello → step di personalizzazione (stesso URL /create, param). */
   chooseModel(id: string): void {
-    void this.router.navigate(['/create/new'], { queryParams: { template: id } });
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { template: id } });
+  }
+
+  /** Torna alla galleria (rimuove il param). */
+  clearTemplate(): void {
+    void this.router.navigate([], { relativeTo: this.route, queryParams: { template: null } });
   }
 }

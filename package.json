@@ -21,7 +21,8 @@
     "check:subscriptions": "bash scripts/check-subscriptions.sh",
     "check:subscriptions:mobile": "bash scripts/check-subscriptions.sh ai-book-generator",
     "schema:check": "tsx scripts/check-breaking-changes.ts",
-    "prebuild": "npm run check:subscriptions"
+    "prebuild": "npm run check:subscriptions",
+    "gen:api": "openapi-typescript projects/ai-book-generator/openapi/v1.json -o projects/ai-book-generator/src/app/core/data/api-types.generated.ts"
   },
   "private": true,
   "dependencies": {
@@ -65,6 +66,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "ng-packagr": "^19.2.0",
+    "openapi-typescript": "^7.13.0",
     "openapi-typescript-codegen": "^0.27.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18",

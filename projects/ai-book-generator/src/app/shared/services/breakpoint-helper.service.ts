@@ -64,7 +64,7 @@ export class BreakpointHelperService {
         }
         return 'medium';
       }),
-      shareReplay({ bufferSize: 1, refCount: false })
+      shareReplay({ bufferSize: 1, refCount: false }),
     );
 
   // === Constructor (setup) ===

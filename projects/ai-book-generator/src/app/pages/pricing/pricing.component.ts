@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { PageHeaderComponent } from '../../shared/layout/page-header/page-header.component';
 import { PlanCardComponent, type CtaTone } from '../../shared/ui/plan-card/plan-card.component';
 
@@ -28,7 +27,7 @@ interface PricingPlan {
   selector: 'app-pricing',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AuthShellComponent, PageHeaderComponent, PlanCardComponent],
+  imports: [PageHeaderComponent, PlanCardComponent],
   templateUrl: './pricing.component.html',
   styleUrl: './pricing.component.scss',
 })

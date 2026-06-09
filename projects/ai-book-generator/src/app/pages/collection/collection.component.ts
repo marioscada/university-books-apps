@@ -6,12 +6,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
 import { ListRowComponent } from '../../shared/components-v2/list-row/list-row.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
+import { NoDataComponent } from '../../shared/components-v2/no-data/no-data.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { SourcesStore } from '../../core/state/sources.store';
 import { BillingService } from '../../core/services/billing.service';
+import { UiPromiseService } from '../../shared/services/ui-promise.service';
+import { injectI18nText } from '../../shared/services/i18n-text';
 import type { ProjectStatus } from '../../core/domain';
 import { type RowVM, projectRow, sourceRow } from './collection-row.mapper';
 
@@ -21,8 +23,7 @@ interface GroupVM {
   sources: RowVM[];
 }
 
-const IN_PROGRESS: readonly ProjectStatus[] = ['draft', 'queued', 'processing', 'review', 'failed'];
-const LIBRARY: readonly ProjectStatus[] = ['published', 'archived'];
+const LIBRARY: readonly ProjectStatus[] = ['published'];
 
 /**
  * Collezioni — pagina unica project-centrica (assorbe le ex "Fonti"): ogni
@@ -37,9 +38,9 @@ const LIBRARY: readonly ProjectStatus[] = ['published', 'archived'];
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AuthShellComponent,
     ListRowComponent,
     ModalShellComponent,
+    NoDataComponent,
     NgTemplateOutlet,
     FormsModule,
     MatIconModule,
@@ -54,14 +55,20 @@ export class CollectionComponent {
   private readonly sources = inject(SourcesStore);
   private readonly billing = inject(BillingService);
   private readonly router = inject(Router);
+  private readonly uiPromise = inject(UiPromiseService);
+  private readonly t = injectI18nText();
 
   /** Stato fatturazione → guida il dialog di rielaborazione. */
   readonly billingStatus = this.billing.status;
 
   readonly query = signal('');
 
-  readonly continua = computed<GroupVM[]>(() => this.build(IN_PROGRESS));
   readonly library = computed<GroupVM[]>(() => this.build(LIBRARY));
+
+  /** Nessun lavoro pubblicato → empty-state globale (i progetti in corso si
+   *  riprendono da "Crea", vincolo un-progetto-alla-volta). */
+  readonly hasNoProjects = computed(() => !this.library().length);
+  readonly emptyMessage = computed(() => this.t('i18n.Collection.empty.message'));
 
   // --- Navigazione / azioni ---------------------------------------------------
   openProject(id: string): void {
@@ -80,12 +87,6 @@ export class CollectionComponent {
         break;
       case 'reuse':
         this.openReuse(id);
-        break;
-      case 'archive':
-        void this.projects.archive(id);
-        break;
-      case 'reopen':
-        void this.projects.reopen(id);
         break;
       case 'delete':
         this.askDelete('project', id);
@@ -112,9 +113,26 @@ export class CollectionComponent {
   confirmDelete(): void {
     const d = this.pendingDelete();
     if (!d) return;
-    if (d.kind === 'project') void this.projects.delete(d.id);
-    else void this.sources.delete(d.id);
     this.pendingDelete.set(null);
+    // Spinner d'attesa + toast (esito) via uiPromise; il dialog di conferma è già stato mostrato.
+    void this.uiPromise.run(
+      async () => {
+        if (d.kind === 'project') await this.projects.delete(d.id);
+        else await this.sources.delete(d.id);
+      },
+      {
+        loading: true,
+        loadingMessage: this.t(`i18n.Collection.delete.${d.kind}.loading`),
+        success: {
+          title: this.t('i18n.Common.done'),
+          message: this.t(`i18n.Collection.delete.${d.kind}.success`),
+        },
+        error: {
+          title: this.t('i18n.Common.error'),
+          message: this.t(`i18n.Collection.delete.${d.kind}.error`),
+        },
+      },
+    );
   }
   cancelDelete(): void {
     this.pendingDelete.set(null);

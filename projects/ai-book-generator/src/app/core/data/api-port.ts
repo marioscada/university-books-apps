@@ -1,35 +1,28 @@
 import { InjectionToken } from '@angular/core';
 
+import type { components } from './api-types.generated';
 import type {
   Project,
   ProjectStatus,
-  ProjectKind,
-  ProjectSettings,
-  CoverTheme,
-  ProjectTemplate,
-  DerivedKind,
+  DocumentType,
   Job,
   Source,
   Plan,
   Version,
   ChatMessage,
-  DerivedContent,
 } from '../domain';
 
 /**
  * ApiPort — il "buco" per il backend.
  *
  * Mappa il contratto REST-ish di PRODUCT-ARCHITECTURE.md §7 in metodi tipizzati
- * `Promise`-based. In v1 è implementato da `MockApiService`; quando subentra il
- * backend reale, basterà fornire un'altra implementazione dietro lo stesso token,
- * senza toccare store né UI.
+ * `Promise`-based. Implementato da `AwsApiService` (backend reale); gli store/UI
+ * dipendono solo da questa interfaccia, non dall'implementazione.
  */
 export interface ApiPort {
-  // --- Templates (modelli di pubblicazione) ---------------------------------
-  /** GET /templates — i modelli di partenza (immutabili). */
-  listTemplates(): Promise<ProjectTemplate[]>;
-  /** GET /templates/:id */
-  getTemplate(id: string): Promise<ProjectTemplate>;
+  // NB: i modelli di pubblicazione (ProjectTemplate) NON sono qui: sono config
+  // statica dell'app (catalogo `TEMPLATE_CATALOG`), letta direttamente dal
+  // TemplatesStore. Questo port espone solo ciò che è (o sarà) servito dal backend.
 
   // --- Projects -------------------------------------------------------------
   /** GET /projects?status=&kind=&q= */
@@ -46,22 +39,10 @@ export interface ApiPort {
   cancel(id: string): Promise<Project>;
   /** POST /projects/:id/publish (review→published, congela Version) */
   publish(id: string): Promise<Project>;
-  /** POST /projects/:id/archive */
-  archive(id: string): Promise<Project>;
-  /** POST /projects/:id/reopen */
-  reopen(id: string): Promise<Project>;
   /** POST /projects/:id/duplicate */
   duplicate(id: string): Promise<Project>;
   /** DELETE /projects/:id */
   deleteProject(id: string): Promise<void>;
-  /** POST /projects/:id/derive ({ derivedKind, language? }) figlio collegato */
-  derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project>;
-
-  // --- Derivati (contenuto elaborato dal server) ----------------------------
-  /** POST /projects/:id/derived — elabora e restituisce il contenuto del derivato. */
-  generateDerived(projectId: string): Promise<DerivedContent>;
-  /** POST /projects/:id/derived/regenerate — rielabora dato il feedback dell'utente. */
-  regenerateDerived(projectId: string, feedback: string): Promise<DerivedContent>;
 
   // --- Jobs (polling live) --------------------------------------------------
   /** GET /projects/:id/job (polled ~2s) */
@@ -112,18 +93,12 @@ export interface ApiPort {
 
 export interface ListProjectsFilter {
   status?: ProjectStatus;
-  kind?: ProjectKind;
+  documentType?: DocumentType;
   q?: string;
 }
 
-export interface CreateProjectInput {
-  title: string;
-  kind: ProjectKind;
-  /** Settings completi (dalla pagina "Personalizza il modello"). Se assenti → default. */
-  settings?: ProjectSettings;
-  /** Tema cover (dall'anteprima del modello). Default `ocean`. */
-  coverTheme?: CoverTheme;
-}
+/** Input creazione progetto — generato 1:1 dallo schema backend (OpenAPI). */
+export type CreateProjectInput = components['schemas']['CreateProjectRequest'];
 
 export interface CreateUploadInput {
   name: string;
@@ -133,8 +108,10 @@ export interface CreateUploadInput {
 
 export interface PatchProjectInput {
   title?: string;
-  settings?: Project['settings'];
-  sourceIds?: string[];
+  description?: string;
+  generationOptions?: Project['generationOptions'];
+  materialFileIds?: string[];
+  instructionFileIds?: string[];
 }
 
 export interface ListSourcesFilter {
@@ -150,7 +127,7 @@ export interface PatchSourceInput {
 }
 
 /**
- * Token DI per `ApiPort`. In v1 è mappato a `MockApiService`
- * (`useExisting`), così gli store dipendono dall'interfaccia, non dal mock.
+ * Token DI per `ApiPort`. Mappato a `AwsApiService` (`useExisting`), così gli
+ * store dipendono dall'interfaccia, non dall'implementazione.
  */
 export const API_PORT = new InjectionToken<ApiPort>('ApiPort');

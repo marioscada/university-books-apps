@@ -93,4 +93,112 @@ section[id] {
   cursor: not-allowed;
 }
 
+// --- Overlay spinner (UiPromiseService) -------------------------------------
+.ui-spinner-backdrop {
+  background: rgb(15 23 42 / 50%);
+  backdrop-filter: blur(2px);
+}
+
+// --- Toast (ToastFacade → BrowserToastService → MatSnackBar) -----------------
+// Mirror degli stili di marioscadasite/customer-portal: TOP-RIGHT, riempito per
+// severity, icona SVG a sinistra, testo bianco. Self-contained (l'overlay vive
+// fuori dai componenti → stili globali).
+.mat-mdc-snack-bar-container.custom-toast {
+  // Surface: riquadro riempito per severity, icona SVG a sinistra (top), compatto.
+  .mdc-snackbar__surface {
+    position: relative;
+    min-width: 0 !important;
+    max-width: 360px !important;
+    width: auto !important;
+    padding: 13px 16px 13px 50px !important; // spazio a sx per l'icona
+    margin: 0;
+    border-radius: 10px;
+    color: #fff;
+    box-shadow: 0 10px 24px -8px rgb(15 23 42 / 28%);
+    background-repeat: no-repeat;
+    background-position: 15px 14px;
+    background-size: 24px;
+  }
+  .mat-mdc-snack-bar-container-content {
+    padding: 0 !important;
+  }
+  &.custom-toast--success .mdc-snackbar__surface {
+    background-color: #16a34a;
+    background-image: url('/icons/toast-success.svg');
+  }
+  &.custom-toast--error .mdc-snackbar__surface {
+    background-color: #dc2626;
+    background-image: url('/icons/toast-error.svg');
+  }
+  &.custom-toast--info .mdc-snackbar__surface {
+    background-color: var(--accent-500, #039fce);
+  }
+
+  // Contenuto (componente ToastComponent): testo + eventuale bottone "Chiudi".
+  .custom-toast__content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .custom-toast__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .custom-toast__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: normal;
+  }
+  .custom-toast__message {
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: normal;
+  }
+  .custom-toast__close {
+    flex: 0 0 auto;
+    background: rgb(255 255 255 / 24%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 0.8125rem;
+    cursor: pointer;
+  }
+}
+// Posizione top-right (mirror: 12px dal top, 12px da destra).
+.cdk-overlay-pane:has(.mat-mdc-snack-bar-container.custom-toast) {
+  margin-top: 12px !important;
+  margin-right: 12px !important;
+}
+
+// --- Skeleton (SkeletonComponent) — shimmer globale, mirror ion-skeleton-text -
+.skeleton {
+  display: block;
+  background: linear-gradient(
+    100deg,
+    var(--skeleton-base, #e8edf3) 30%,
+    var(--skeleton-shine, #f4f7fb) 50%,
+    var(--skeleton-base, #e8edf3) 70%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.3s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
 @tailwind utilities;

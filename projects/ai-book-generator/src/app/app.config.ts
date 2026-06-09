@@ -25,7 +25,7 @@ import { AuthService } from './auth/services/auth.service';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { LocaleService } from './shared/services/locale.service';
 import { API_PORT } from './core/data/api-port';
-import { MockApiService } from './core/data/mock-api.service';
+import { AwsApiService } from './core/data/aws-api.service';
 
 // =============================================================================
 // Amplify Configuration
@@ -38,7 +38,6 @@ import { MockApiService } from './core/data/mock-api.service';
  */
 try {
   Amplify.configure(amplifyConfig);
-  console.log('✅ Amplify configured');
 } catch (error) {
   console.error('❌ Failed to configure Amplify:', error);
   throw error;
@@ -73,9 +72,11 @@ export const appConfig: ApplicationConfig = {
     // Animations (for Angular animations like slide-in, fade-in, etc.)
     provideAnimations(),
 
-    // Data layer (mock v1): l'ApiPort è mappato al MockApiService. Quando arriva
-    // il backend reale basta cambiare questa riga, senza toccare store/UI.
-    { provide: API_PORT, useExisting: MockApiService },
+    // Data layer: l'ApiPort è mappato all'AwsApiService (backend reale via HTTP).
+    // Nessun mock: tutto reale (/v1/projects, /v1/documents, /auth/me); l'AI
+    // (chat) resta VUOTA finché non c'è Bedrock/Claude; i templates
+    // sono catalogo statico dell'app. Store/UI dipendono solo da ApiPort.
+    { provide: API_PORT, useExisting: AwsApiService },
 
     // Icone: il progetto carica SOLO "Material Symbols Outlined" (index.html).
     // Impostiamo il fontSet di default così anche le icone interne dei componenti

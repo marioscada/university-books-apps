@@ -14,7 +14,7 @@ import { fieldError } from '../../auth-form.util';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, CounterFieldComponent],
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
@@ -34,7 +34,7 @@ export class LoginComponent {
         map((result) => ({
           loading: false,
           error: null as string | null,
-          success: result.isSignedIn
+          success: result.isSignedIn,
         })),
         tap((state) => {
           // ✅ Navigation side effect (eseguito dall'async pipe)
@@ -49,20 +49,20 @@ export class LoginComponent {
           return of({
             loading: false,
             error: errorMessage,
-            success: false
+            success: false,
           });
         }),
-        startWith({ loading: true, error: null as string | null, success: false })
-      )
+        startWith({ loading: true, error: null as string | null, success: false }),
+      ),
     ),
     startWith({ loading: false, error: null as string | null, success: false }),
-    shareReplay(1) // ✅ Condivide stream per multiple async pipe
+    shareReplay(1), // ✅ Condivide stream per multiple async pipe
   );
 
   constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
+      password: ['', [Validators.required, Validators.minLength(8)]],
     });
 
     // Auto-redirect if already authenticated

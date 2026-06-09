@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, type QueryParamsHandling } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { SiteNavItem } from './site-header-nav.types';
+import { navQueryParamsHandling } from '../../navigation/site-navigation';
 import { ScreenTypeDirective } from '../../directives/screen-type.directive';
 import { LanguageSwitcherComponent } from '../language-switcher/language-switcher.component';
 import { LocaleService } from '../../services/locale.service';
@@ -55,6 +56,12 @@ export class SiteHeaderNavComponent {
   private readonly localeService = inject(LocaleService);
   readonly currentLocale = this.localeService.currentLocale;
   readonly locales = this.localeService.locales;
+
+  private readonly router = inject(Router);
+  /** Voce della sezione corrente → preserva il sotto-step (no reset del flusso). */
+  qph(item: SiteNavItem): QueryParamsHandling {
+    return navQueryParamsHandling(this.router.url, item.route);
+  }
 
   onLocaleChange(locale: string): void {
     this.localeService.setLocale(locale);

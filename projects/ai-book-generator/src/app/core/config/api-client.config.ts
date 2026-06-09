@@ -38,7 +38,7 @@ export function configureApiClient(authService: AuthService): void {
   if (!baseUrl) {
     throw new Error(
       'Missing API base URL in environment.ts.\n' +
-      'Please check src/environments/environment.ts'
+      'Please check src/environments/environment.ts',
     );
   }
 
@@ -57,21 +57,13 @@ export function configureApiClient(authService: AuthService): void {
         return ''; // Return empty string instead of undefined
       }
 
-      if (environment.features.enableDebugLogging) {
-        console.log('🔑 JWT token injected into request');
-      }
-
       return token;
     } catch (error) {
       console.error('❌ Failed to get access token:', error);
       return ''; // Return empty string instead of undefined
     }
   };
-
-  console.log('✅ API client configured');
-  console.log(`   Base URL: ${baseUrl}`);
 }
-
 
 // =============================================================================
 // Utility Functions

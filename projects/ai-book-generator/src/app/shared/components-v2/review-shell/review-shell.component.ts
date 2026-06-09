@@ -4,11 +4,10 @@ import { ChangeDetectionStrategy, Component, booleanAttribute, input } from '@an
  * ReviewShellComponent — layout UNICO di revisione/risultato (dumb, solo content
  * projection). Tre colonne: **indice** (opzionale) · **corpo** centrale ·
  * **AI** (opzionale). Il padre decide cosa mostrare (`showIndex`, `showAi`) e
- * proietta i contenuti reali (chapter-index, chapter-reader/derived-result,
- * ai-chat-panel). I bottoni vivono nell'`action-bar`, anch'essa decisa dal padre.
+ * proietta i contenuti reali (chapter-index, chapter-reader, ai-chat-panel). I
+ * bottoni vivono nell'`action-bar`, anch'essa decisa dal padre.
  *
- * Riusabile per i capitoli del libro, per i derivati (quiz/slide/manuale/…) e
- * per le traduzioni (dove l'indice serve): si attiva/disattiva ciò che serve.
+ * Riusabile per i capitoli del libro: si attiva/disattiva ciò che serve.
  *
  * @example
  * ```html

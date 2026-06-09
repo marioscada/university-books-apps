@@ -63,35 +63,7 @@ export function validateAmplifyConfig(): void {
   if (!userPoolId || !userPoolClientId) {
     throw new Error(
       'Missing Cognito configuration in environment.ts\n' +
-      'Please check src/environments/environment.ts'
+      'Please check src/environments/environment.ts',
     );
   }
-
-  console.log('✅ Amplify configuration validated');
-}
-
-/**
- * Debug: Print Amplify configuration (sanitized)
- *
- * Use this for debugging configuration issues.
- * Never log sensitive data in production!
- */
-export function debugAmplifyConfig(): void {
-  if (environment.production) {
-    console.warn('⚠️  Debug logging disabled in production');
-    return;
-  }
-
-  console.log('🔍 Amplify Configuration:');
-  console.log('   Region:', environment.auth.cognito.region);
-  console.log('   User Pool ID:', maskString(environment.auth.cognito.userPoolId));
-  console.log('   Client ID:', maskString(environment.auth.cognito.userPoolClientId));
-}
-
-/**
- * Mask sensitive string for logging
- */
-function maskString(str: string): string {
-  if (str.length <= 8) return '***';
-  return str.substring(0, 4) + '***' + str.substring(str.length - 4);
 }

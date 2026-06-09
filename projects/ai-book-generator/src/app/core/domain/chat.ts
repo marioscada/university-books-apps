@@ -3,10 +3,8 @@
  *
  * Copia fedele di PRODUCT-ARCHITECTURE.md §1.6. La chat NON è testo libero: ogni
  * messaggio utente può produrre una Operation tipizzata che agisce su
- * outline/capitoli/versioni/derivati. La chat è contestuale al progetto.
+ * outline/capitoli/versioni. La chat è contestuale al progetto.
  */
-
-import type { DerivedKind } from './project';
 
 export interface ChatThread {
   id: string;
@@ -26,7 +24,7 @@ export interface ChatMessage {
 export type OperationType =
   | 'refine_chapter' | 'reduce_length' | 'expand' | 'change_tone' | 'make_technical'
   | 'add_examples' | 'update_chapters' | 'add_sources' | 'change_format'
-  | 'translate' | 'derive';
+  | 'translate';
 
 export interface Operation {
   id: string;
@@ -34,10 +32,8 @@ export interface Operation {
   type: OperationType;
   params: Record<string, unknown>;   // es. { percent: 30 } | { tone: 'technical' }
   targetChapterIds?: string[];       // rigenerazione parziale
-  derivedKind?: DerivedKind;         // per type='derive'
   status: 'pending' | 'running' | 'done' | 'failed';
   resultingJobId?: string;
   resultingVersionId?: string;
-  resultingProjectId?: string;       // per derive → nuovo progetto figlio
   createdAt: string;
 }

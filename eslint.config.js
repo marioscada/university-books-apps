@@ -6,6 +6,11 @@ const angular = require("angular-eslint");
 
 module.exports = defineConfig([
   {
+    // File generati (codegen, es. OpenAPI → *.generated.ts): non si lintano né
+    // si correggono a mano (verrebbero rigenerati).
+    ignores: ["**/*.generated.ts"],
+  },
+  {
     files: ["**/*.ts"],
     extends: [
       eslint.configs.recommended,
@@ -39,6 +44,17 @@ module.exports = defineConfig([
           caughtErrorsIgnorePattern: "^_",
         },
       ],
+      // Allineate a customer-portal (.eslintrc.js): suffisso classe, readonly,
+      // niente non-null-assertion vietato, no-console, niente righe vuote
+      // multiple, trailing comma, arrow-parens.
+      "@angular-eslint/component-class-suffix": [
+        "error",
+        { suffixes: ["Component", "Page"] },
+      ],
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "no-console": ["error", { allow: ["warn", "error"] }],
+      "no-multiple-empty-lines": ["error", { max: 1 }],
+      "comma-dangle": ["error", "always-multiline"],
       "arrow-parens": ["error", "always"],
     },
   },

@@ -28,17 +28,17 @@ import {
   timer,
 } from 'rxjs';
 
-import type { DerivedKind, Job, Plan, Project, ProjectSettings } from '../domain';
-import { API_PORT } from '../data/api-port';
+import type { Job, Plan, Project, GenerationOptions } from '../domain';
+import { API_PORT, type CreateProjectInput } from '../data/api-port';
 import { RUNTIME_CONFIG } from '../config/runtime.config';
-import { ACTIVE_STATUSES } from '../data/mock-api.service';
+import { ACTIVE_STATUSES } from '../domain';
 
 /**
  * ProjectsStore — SignalStore (NgRx) per i progetti.
  *
  * `withEntities<Project>` per la collezione; `withComputed` per i derivati
  * (attivi/pubblicati/needs-attention); `withMethods` per la business logic
- * (load/create/generate/cancel/publish/archive/pollJob), che passa SEMPRE dal
+ * (load/create/generate/cancel/publish/pollJob), che passa SEMPRE dal
  * `ApiPort` (mai dal mock direttamente). Stato immutabile via `patchState`.
  */
 export const ProjectsStore = signalStore(
@@ -127,6 +127,12 @@ export const ProjectsStore = signalStore(
       }
     };
 
+    // Carica una sola volta (dedup tra self-init e chiamanti come i guard di
+    // rotta, che devono attendere i dati prima di decidere). Le ricariche
+    // esplicite restano su `loadAll` diretto.
+    let loadOnce: Promise<void> | null = null;
+    const ensureLoaded = (): Promise<void> => (loadOnce ??= loadAll());
+
     /** Carica il piano del workspace (gating soft del wizard). */
     const loadPlan = async (): Promise<void> => {
       const plan = await api.getPlan();
@@ -135,56 +141,65 @@ export const ProjectsStore = signalStore(
 
     return {
       loadAll,
+      ensureLoaded,
       loadPlan,
       pollJob,
 
-      /** Aggiorna i settings di un progetto (autosave del wizard). */
-      async updateSettings(id: string, settings: ProjectSettings): Promise<void> {
-        const project = await api.patchProject(id, { settings });
+      /** Aggiorna le opzioni di generazione di un progetto (autosave del wizard). */
+      async updateSettings(id: string, generationOptions: GenerationOptions): Promise<void> {
+        const project = await api.patchProject(id, { generationOptions });
         patchState(store, updateEntity({ id, changes: project }));
       },
 
       /**
-       * Aggiorna i metadati di una draft (titolo + fonti scelte nel wizard).
+       * Aggiorna i metadati di una draft (titolo + file scelti nel wizard).
        * Separato da `updateSettings` per non gonfiarne la firma di dominio.
        */
       async updateDraftMeta(
         id: string,
-        patch: { title?: string; sourceIds?: string[] },
+        patch: { title?: string; materialFileIds?: string[]; instructionFileIds?: string[] },
       ): Promise<void> {
         const project = await api.patchProject(id, patch);
         patchState(store, updateEntity({ id, changes: project }));
       },
 
       /** Crea un nuovo progetto (draft) e lo aggiunge allo store. */
-      async create(title: string, kind: Project['kind']): Promise<Project> {
-        const project = await api.createProject({ title, kind });
+      async create(title: string, documentType: Project['documentType']): Promise<Project> {
+        const project = await api.createProject({
+          title,
+          documentType,
+          materialFileIds: [],
+          instructionFileIds: [],
+        });
         patchState(store, addEntity(project));
         return project;
       },
 
       /**
-       * Crea un progetto draft dal flusso "Personalizza il modello": titolo +
-       * settings completi (default del modello + scostamenti) + tema cover.
-       * Il modello resta immutabile; il progetto porta solo gli override.
+       * Crea un progetto draft dal flusso "Personalizza il modello" passando il
+       * payload del contratto (titolo + opzioni di generazione + file + tema).
        */
-      async createFromTemplate(input: {
-        title: string;
-        kind: Project['kind'];
-        settings: ProjectSettings;
-        coverTheme: Project['coverTheme'];
-      }): Promise<Project> {
+      async createFromTemplate(input: CreateProjectInput): Promise<Project> {
         const project = await api.createProject(input);
         patchState(store, addEntity(project));
         return project;
       },
 
-      /** Lancia la generazione: draft→queued e avvia il polling del job. */
+      /**
+       * Lancia la generazione. Mette subito `queued` in **ottimistico** (così lo
+       * Studio mostra lo skeleton senza attendere la rete), poi avvia la POST e il
+       * polling del job in background. Se la POST fallisce → `failed`.
+       */
       async generate(id: string): Promise<void> {
-        await api.generate(id);
-        const project = await api.getProject(id);
-        patchState(store, updateEntity({ id, changes: project }));
-        pollJob(id);
+        patchState(store, updateEntity({ id, changes: { status: 'queued' as const } }));
+        try {
+          await api.generate(id);
+          const project = await api.getProject(id);
+          patchState(store, updateEntity({ id, changes: project }));
+          pollJob(id);
+        } catch {
+          patchState(store, updateEntity({ id, changes: { status: 'failed' as const } }));
+        }
       },
 
       /** Annulla il job in corso: torna a draft. */
@@ -201,29 +216,10 @@ export const ProjectsStore = signalStore(
         patchState(store, updateEntity({ id, changes: project }));
       },
 
-      /** Archivia un progetto. */
-      async archive(id: string): Promise<void> {
-        const project = await api.archive(id);
-        patchState(store, updateEntity({ id, changes: project }));
-      },
-
-      /** Riapre un progetto archiviato → review|draft (vedi mock). */
-      async reopen(id: string): Promise<void> {
-        const project = await api.reopen(id);
-        patchState(store, updateEntity({ id, changes: project }));
-      },
-
       /** Elimina definitivamente un progetto. */
       async delete(id: string): Promise<void> {
         await api.deleteProject(id);
         patchState(store, removeEntity(id));
-      },
-
-      /** Crea un progetto derivato collegato (lingua opzionale per traduzione). */
-      async derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project> {
-        const child = await api.derive(id, derivedKind, language);
-        await loadAll();
-        return child;
       },
     };
   }),
@@ -232,7 +228,7 @@ export const ProjectsStore = signalStore(
   // i signal — niente orchestrazione di `loadAll` nei componenti.
   withHooks({
     onInit(store) {
-      void store.loadAll();
+      void store.ensureLoaded();
       void store.loadPlan();
     },
   }),

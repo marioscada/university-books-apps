@@ -1,30 +1,23 @@
-import { computed, inject } from '@angular/core';
-import {
-  patchState,
-  signalStore,
-  withComputed,
-  withHooks,
-  withMethods,
-  withState,
-} from '@ngrx/signals';
+import { computed } from '@angular/core';
+import { patchState, signalStore, withComputed, withHooks } from '@ngrx/signals';
 import { withEntities, setAllEntities } from '@ngrx/signals/entities';
 
 import type { ProjectTemplate } from '../domain';
-import { API_PORT } from '../data/api-port';
+import { TEMPLATE_CATALOG } from '../data/templates-catalog';
 
 /**
  * TemplatesStore — SignalStore (NgRx) dei modelli di pubblicazione.
  *
- * I modelli sono immutabili (sola lettura): la collezione si auto-carica via
- * `ApiPort.listTemplates` alla prima injection. La galleria Create e la pagina
- * "Personalizza il modello" leggono solo i signal. Map id→template per il lookup.
+ * I modelli sono **definizioni statiche e immutabili dell'app** (catalogo, non
+ * dato di backend): la collezione si popola dal `TEMPLATE_CATALOG` alla prima
+ * injection. La galleria Create e la pagina "Personalizza il modello" leggono
+ * solo i signal. Map id→template per il lookup.
  */
 export const TemplatesStore = signalStore(
   { providedIn: 'root' },
-  withState<{ loading: boolean }>({ loading: false }),
   withEntities<ProjectTemplate>(),
   withComputed((store) => ({
-    /** Tutti i modelli, nell'ordine del seed (galleria). */
+    /** Tutti i modelli, nell'ordine del catalogo (galleria). */
     templates: computed(() => store.entities()),
     /** Lookup per id. */
     templateById: computed(() => {
@@ -35,19 +28,9 @@ export const TemplatesStore = signalStore(
       return map;
     }),
   })),
-  withMethods((store) => {
-    const api = inject(API_PORT);
-    return {
-      async loadAll(): Promise<void> {
-        patchState(store, { loading: true });
-        const templates = await api.listTemplates();
-        patchState(store, setAllEntities(templates), { loading: false });
-      },
-    };
-  }),
   withHooks({
     onInit(store) {
-      void store.loadAll();
+      patchState(store, setAllEntities(TEMPLATE_CATALOG.map((t) => structuredClone(t))));
     },
   }),
 );

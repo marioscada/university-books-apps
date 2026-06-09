@@ -1,37 +1,31 @@
-<app-auth-shell>
-  <div class="coll site-container">
-    <!-- Header -->
-    <header class="coll__head">
+<div class="coll site-container">
+  <!-- Header -->
+  <header class="coll__head">
+    @if (!hasNoProjects()) {
       <h1 class="page-title coll__title">Le tue collezioni</h1>
-      <label class="page-search coll__search">
-        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">search</mat-icon>
-        <input
-          type="search"
-          placeholder="Cerca…"
-          aria-label="Cerca nelle collezioni"
-          [ngModel]="query()"
-          (ngModelChange)="query.set($event)" />
-      </label>
-      <button mat-flat-button color="primary" type="button" (click)="newProject()">
-        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
-        Nuovo progetto
-      </button>
-    </header>
-
-    <!-- Continua dove eri -->
-    @if (continua().length) {
-      <section class="coll__section">
-        <h2 class="section-title">
-          Continua dove eri
-          <span class="coll__count">{{ continua().length }} in corso</span>
-        </h2>
-        @for (g of continua(); track g.id) {
-          <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
-        }
-      </section>
     }
+    <label class="page-search coll__search" [class.coll__search--right]="hasNoProjects()">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">search</mat-icon>
+      <input
+        type="search"
+        placeholder="Cerca…"
+        aria-label="Cerca nelle collezioni"
+        [disabled]="hasNoProjects()"
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)" />
+    </label>
+    <button mat-flat-button color="primary" type="button" (click)="newProject()">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+      Nuovo progetto
+    </button>
+  </header>
 
-    <!-- La tua libreria -->
+  @if (hasNoProjects()) {
+    <!-- Nessun progetto: empty-state con immagine centrale + messaggio dinamico -->
+    <app-no-data class="coll__empty" [message]="emptyMessage()" />
+  } @else {
+    <!-- Solo i lavori PUBBLICATI: i progetti in corso si riprendono da "Crea"
+         (vincolo un-progetto-alla-volta), non si elencano qui. -->
     <section class="coll__section">
       <h2 class="section-title">La tua libreria</h2>
       @if (library().length) {
@@ -42,92 +36,92 @@
         <p class="empty">Ancora nessun lavoro pubblicato.</p>
       }
     </section>
-  </div>
+  }
+</div>
 
-  <!-- Pannello progetto + fonti annidate -->
-  <ng-template #panel let-g>
-    <div class="coll__panel surface-card">
+<!-- Pannello progetto + fonti annidate -->
+<ng-template #panel let-g>
+  <div class="coll__panel surface-card">
+    <app-list-row
+      emphasis
+      [icon]="g.project.icon"
+      [cover]="g.project.cover"
+      [title]="g.project.title"
+      [meta]="g.project.meta"
+      [badge]="g.project.badge"
+      [badgeTone]="g.project.badgeTone"
+      [actions]="g.project.actions"
+      (open)="openProject(g.id)"
+      (action)="onProjectAction(g.id, $event)" />
+
+    <div class="coll__srchead">Fonti · {{ g.sources.length }}</div>
+    @for (r of g.sources; track r.id) {
       <app-list-row
-        emphasis
-        [icon]="g.project.icon"
-        [cover]="g.project.cover"
-        [title]="g.project.title"
-        [meta]="g.project.meta"
-        [badge]="g.project.badge"
-        [badgeTone]="g.project.badgeTone"
-        [actions]="g.project.actions"
-        (open)="openProject(g.id)"
-        (action)="onProjectAction(g.id, $event)" />
+        indent
+        [icon]="r.icon"
+        [iconTone]="r.iconTone"
+        [title]="r.title"
+        [meta]="r.meta"
+        [badge]="r.badge"
+        [badgeTone]="r.badgeTone"
+        [actions]="r.actions"
+        (open)="openSource(r.id)"
+        (action)="onSourceAction(r.id, $event)" />
+    } @empty {
+      <p class="coll__nosrc">Nessuna fonte collegata.</p>
+    }
+  </div>
+</ng-template>
 
-      <div class="coll__srchead">Fonti · {{ g.sources.length }}</div>
-      @for (r of g.sources; track r.id) {
-        <app-list-row
-          indent
-          [icon]="r.icon"
-          [iconTone]="r.iconTone"
-          [title]="r.title"
-          [meta]="r.meta"
-          [badge]="r.badge"
-          [badgeTone]="r.badgeTone"
-          [actions]="r.actions"
-          (open)="openSource(r.id)"
-          (action)="onSourceAction(r.id, $event)" />
-      } @empty {
-        <p class="coll__nosrc">Nessuna fonte collegata.</p>
-      }
-    </div>
-  </ng-template>
+<!-- Dialog: rielaborazione gated dall'abbonamento -->
+<app-modal-shell
+  [open]="reuseOpen()"
+  [title]="billingStatus() === 'past_due' ? 'Pagamento in sospeso' : 'Serve un abbonamento'"
+  [subtitle]="'Rielaborare un lavoro conta come un nuovo progetto.'"
+  [closeLabel]="'Chiudi'"
+  (closed)="reuseOpen.set(false)">
+  <div class="coll__gate">
+    <mat-icon class="coll__gate-icon" fontSet="material-symbols-outlined" aria-hidden="true">lock</mat-icon>
+    @if (billingStatus() === 'past_due') {
+      <p class="coll__upsell">
+        Il tuo abbonamento è attivo ma c'è un <strong>pagamento da regolarizzare</strong>.
+        Sistemalo per riprendere a rielaborare i tuoi lavori in collezione. Lettura e download
+        restano sempre disponibili.
+      </p>
+    } @else {
+      <p class="coll__upsell">
+        Per rielaborare un lavoro serve un <strong>abbonamento attivo</strong> (entro le chance
+        mensili) oppure puoi pagare il costo di <strong>questo singolo progetto</strong>. Lettura
+        e download restano sempre disponibili.
+      </p>
+    }
+  </div>
+  <div footer class="coll__dialogfoot">
+    @if (billingStatus() === 'past_due') {
+      <button mat-stroked-button type="button" (click)="reuseOpen.set(false)">Non ora</button>
+      <button mat-flat-button color="primary" type="button" (click)="goPricing()">
+        Regolarizza il pagamento
+      </button>
+    } @else {
+      <button mat-stroked-button type="button" (click)="paySingle()">Paga questo progetto</button>
+      <button mat-flat-button color="primary" type="button" (click)="goPricing()">Abbonati</button>
+    }
+  </div>
+</app-modal-shell>
 
-  <!-- Dialog: rielaborazione gated dall'abbonamento -->
-  <app-modal-shell
-    [open]="reuseOpen()"
-    [title]="billingStatus() === 'past_due' ? 'Pagamento in sospeso' : 'Serve un abbonamento'"
-    [subtitle]="'Rielaborare un lavoro conta come un nuovo progetto.'"
-    [closeLabel]="'Chiudi'"
-    (closed)="reuseOpen.set(false)">
-    <div class="coll__gate">
-      <mat-icon class="coll__gate-icon" fontSet="material-symbols-outlined" aria-hidden="true">lock</mat-icon>
-      @if (billingStatus() === 'past_due') {
-        <p class="coll__upsell">
-          Il tuo abbonamento è attivo ma c'è un <strong>pagamento da regolarizzare</strong>.
-          Sistemalo per riprendere a rielaborare i tuoi lavori in collezione. Lettura e download
-          restano sempre disponibili.
-        </p>
-      } @else {
-        <p class="coll__upsell">
-          Per rielaborare un lavoro serve un <strong>abbonamento attivo</strong> (entro le chance
-          mensili) oppure puoi pagare il costo di <strong>questo singolo progetto</strong>. Lettura
-          e download restano sempre disponibili.
-        </p>
-      }
-    </div>
-    <div footer class="coll__dialogfoot">
-      @if (billingStatus() === 'past_due') {
-        <button mat-stroked-button type="button" (click)="reuseOpen.set(false)">Non ora</button>
-        <button mat-flat-button color="primary" type="button" (click)="goPricing()">
-          Regolarizza il pagamento
-        </button>
-      } @else {
-        <button mat-stroked-button type="button" (click)="paySingle()">Paga questo progetto</button>
-        <button mat-flat-button color="primary" type="button" (click)="goPricing()">Abbonati</button>
-      }
-    </div>
-  </app-modal-shell>
-
-  <!-- Dialog: conferma eliminazione (irreversibile) -->
-  <app-modal-shell
-    [open]="!!pendingDelete()"
-    [title]="'Elimina definitivamente'"
-    [subtitle]="'Questa operazione è irreversibile.'"
-    [closeLabel]="'Chiudi'"
-    (closed)="cancelDelete()">
-    <p class="coll__upsell">
-      Stai per eliminare <strong>«{{ pendingDelete()?.title }}»</strong>. Non potrai annullare né
-      recuperare il contenuto.
-    </p>
-    <div footer class="coll__dialogfoot">
-      <button mat-stroked-button type="button" (click)="cancelDelete()">Annulla</button>
-      <button mat-flat-button color="warn" type="button" (click)="confirmDelete()">Elimina</button>
-    </div>
-  </app-modal-shell>
-</app-auth-shell>
+<!-- Dialog: conferma eliminazione (irreversibile) -->
+<app-modal-shell
+  [open]="!!pendingDelete()"
+  [title]="'Elimina definitivamente'"
+  [subtitle]="'Questa operazione è irreversibile.'"
+  [closeLabel]="'Chiudi'"
+  (closed)="cancelDelete()">
+  <p class="coll__upsell">
+    Stai per eliminare <strong>«{{ pendingDelete()?.title }}»</strong>. Non potrai annullare né
+    recuperare il contenuto.
+  </p>
+  <div footer class="coll__dialogfoot">
+    <button mat-stroked-button type="button" (click)="cancelDelete()">Annulla</button>
+    <button mat-flat-button color="warn" type="button" (click)="confirmDelete()">Elimina</button>
+  </div>
+</app-modal-shell>

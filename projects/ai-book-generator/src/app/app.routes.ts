@@ -1,12 +1,28 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
+import { singleActiveProjectGuard } from './core/guards/single-active-project.guard';
+import { AuthLayoutComponent } from './shared/layout/auth-layout/auth-layout.component';
+import type { LegalKey } from './pages/legal/legal.content';
+
+/** Pagine informative/legali del footer — pubbliche (ospite e loggato), una sola
+ *  `LegalPage` parametrizzata da `legalKey`. Evita il catch-all → niente più
+ *  "rimbalzo" nello Studio cliccando una voce del footer. */
+const LEGAL_ROUTES: Routes = (
+  ['about', 'contact', 'privacy', 'terms', 'cookie', 'imprint'] as readonly LegalKey[]
+).map((key) => ({
+  path: key,
+  data: { legalKey: key },
+  loadComponent: () => import('./pages/legal/legal.page').then((m) => m.LegalPage),
+}));
 
 /**
  * Routing dell'app.
- * Pubblico: /landing (vetrina) + /auth.
- * Autenticato (area app): /create (home post-login: lavori in corso + nuovi) +
- * /collection + /pricing — protette da `authGuard` (login obbligatorio).
+ * Pubblico: `/landing` (vetrina) + `/auth`.
+ * Autenticato: gruppo di rotte FIGLIE sotto `AuthLayout`, che monta lo shell
+ * (header/profilo/mobile menu/footer) UNA volta con `<router-outlet>` dentro;
+ * `authGuard` applicato una sola volta sul layout. Le schermate di flusso
+ * task-focused (create/new, Studio) impostano `data.showFooter:false`.
  * NB: i Templates non sono una pagina ma un componente usato dentro /create.
  */
 export const routes: Routes = [
@@ -19,6 +35,7 @@ export const routes: Routes = [
     path: 'landing',
     loadComponent: () =>
       import('./pages/landing/landing.component').then((m) => m.LandingComponent),
+    canActivate: [guestGuard], // utente autenticato → redirect a /create (solo vetrina pubblica)
     title: 'AI Book Generator - Trasforma il tuo materiale in un libro',
   },
   {
@@ -26,46 +43,51 @@ export const routes: Routes = [
     loadChildren: () => import('./auth/auth.routes').then((m) => m.authRoutes),
     canActivate: [guestGuard],
   },
+  // Area autenticata: AuthLayout = shell + <router-outlet>; guard una volta sola.
   {
-    // Home post-login: lavori in corso da continuare + avvio di nuovi.
-    path: 'create',
-    loadComponent: () => import('./pages/create/create.component').then((m) => m.CreateComponent),
+    path: '',
+    component: AuthLayoutComponent,
     canActivate: [authGuard],
-    title: 'Create - AI Book Generator',
+    children: [
+      {
+        // Flusso di creazione: galleria modelli → personalizzazione (step interni,
+        // URL fisso `/create`, `?template=id` per lo step di setup). Niente footer
+        // (flusso task-focused). Al "genera" si naviga al progetto creato.
+        path: 'create',
+        // Vincolo "un progetto alla volta fino alla pubblicazione": se ce n'è uno
+        // attivo, il guard reindirizza al suo Studio invece della galleria.
+        canActivate: [singleActiveProjectGuard],
+        loadComponent: () =>
+          import('./pages/create/create.component').then((m) => m.CreateComponent),
+        title: 'Create - AI Book Generator',
+        data: { showFooter: false },
+      },
+      {
+        // Project Workspace — shell dinamica per stato (state machine §2).
+        path: 'project/:id',
+        loadComponent: () =>
+          import('./pages/project/project-workspace.component').then(
+            (m) => m.ProjectWorkspaceComponent,
+          ),
+        title: 'Project - AI Book Generator',
+        data: { showFooter: false },
+      },
+      {
+        // Collezione: libreria dei lavori pubblicati.
+        path: 'collection',
+        loadComponent: () =>
+          import('./pages/collection/collection.component').then((m) => m.CollectionComponent),
+        title: 'Collection - AI Book Generator',
+      },
+      {
+        path: 'pricing',
+        loadComponent: () =>
+          import('./pages/pricing/pricing.component').then((m) => m.PricingComponent),
+        title: 'Pricing - AI Book Generator',
+      },
+    ],
   },
-  {
-    // Personalizza il modello — struttura + impostazioni + anteprima (?template=:id).
-    path: 'create/new',
-    loadComponent: () =>
-      import('./pages/model-setup/model-setup.component').then(
-        (m) => m.ModelSetupComponent,
-      ),
-    canActivate: [authGuard],
-    title: 'New project - AI Book Generator',
-  },
-  {
-    // Project Workspace — shell dinamica per stato (state machine §2).
-    path: 'project/:id',
-    loadComponent: () =>
-      import('./pages/project/project-workspace.component').then(
-        (m) => m.ProjectWorkspaceComponent,
-      ),
-    canActivate: [authGuard],
-    title: 'Project - AI Book Generator',
-  },
-  {
-    // Collezione: archivio storico (solo completati) per categoria.
-    path: 'collection',
-    loadComponent: () => import('./pages/collection/collection.component').then((m) => m.CollectionComponent),
-    canActivate: [authGuard],
-    title: 'Collection - AI Book Generator',
-  },
-  {
-    path: 'pricing',
-    loadComponent: () => import('./pages/pricing/pricing.component').then((m) => m.PricingComponent),
-    canActivate: [authGuard],
-    title: 'Pricing - AI Book Generator',
-  },
+  ...LEGAL_ROUTES,
   {
     // Catch-all: ogni path sconosciuto torna alla landing.
     path: '**',

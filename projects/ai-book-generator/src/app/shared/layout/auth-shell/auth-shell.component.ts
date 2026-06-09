@@ -59,7 +59,9 @@ export class AuthShellComponent {
   readonly showFooter = input(true, { transform: booleanAttribute });
 
   readonly brand = BRAND;
-  readonly navItems = APP_NAV_ITEMS;
+  // Da loggato "Home" (→ /landing, solo per ospiti) non serve: il logo porta già
+  // a /create (home dell'app). Resta nella vetrina pubblica.
+  readonly navItems = APP_NAV_ITEMS.filter((i) => i.id !== 'home');
   readonly footerColumns = APP_FOOTER_COLUMNS;
 
   readonly profileOpen = signal(false);

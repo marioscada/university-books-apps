@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, type QueryParamsHandling } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { SiteNavItem } from '../site-header-nav/site-header-nav.types';
+import { navQueryParamsHandling } from '../../navigation/site-navigation';
 
 /**
  * SiteMobileMenu — contenuto del drawer mobile (nav verticale su dark surface)
@@ -28,6 +29,12 @@ export class SiteMobileMenuComponent {
 
   /** Chiusura del drawer (collegata a site-shell.toggleSidebar). */
   readonly closeMenu = output<void>();
+
+  private readonly router = inject(Router);
+  /** Voce della sezione corrente → preserva il sotto-step (no reset del flusso). */
+  qph(item: SiteNavItem): QueryParamsHandling {
+    return navQueryParamsHandling(this.router.url, item.route);
+  }
 
   onClose(): void {
     this.closeMenu.emit();

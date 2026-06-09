@@ -89,3 +89,19 @@
   justify-content: flex-end;
   gap: 12px;
 }
+
+// Senza titolo (nessun progetto): search + bottone restano a destra come prima.
+.coll__search--right {
+  margin-left: auto;
+}
+// Search disabilitata (niente da cercare): attenuata e non interattiva.
+.coll__search:has(input:disabled) {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+// Empty-state globale (nessun progetto): riempie lo spazio; l'host del no-data
+// centra immagine + messaggio (via la sua CSS var min-height).
+.coll__empty {
+  --no-data-min-height: calc(100vh - 260px);
+}

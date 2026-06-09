@@ -1,0 +1,35 @@
+// Spinner token-only: anello accent che ruota + messaggio.
+:host {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.spinner__ring {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--accent-100);
+  border-top-color: var(--accent-500);
+  border-radius: 50%;
+  animation: spinner-rotate 0.8s linear infinite;
+}
+
+.spinner__message {
+  font-size: var(--site-body-small, 0.9375rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner__ring {
+    animation-duration: 1.6s;
+  }
+}

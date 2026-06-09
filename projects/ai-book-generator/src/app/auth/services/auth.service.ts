@@ -195,7 +195,7 @@ export class AuthService {
         this.setError(errorMessage);
         this.setLoading(false);
         throw error;
-      })
+      }),
     );
   }
 
@@ -221,7 +221,7 @@ export class AuthService {
         this.setError(errorMessage);
         this.setLoading(false);
         throw error;
-      })
+      }),
     );
   }
 
@@ -288,7 +288,7 @@ export class AuthService {
           idToken: session.tokens.idToken?.toString() || '',
         };
       }),
-      catchError(() => from([null]))
+      catchError(() => from([null])),
     );
   }
 

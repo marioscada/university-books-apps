@@ -1,11 +1,8 @@
-import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { SiteShellComponent } from '../../shared/layout/site-shell/site-shell.component';
 import { SiteHeaderNavComponent } from '../../shared/layout/site-header-nav/site-header-nav.component';
 import { SiteFooterBlockComponent } from '../../shared/layout/site-footer-block/site-footer-block.component';
-import { AuthShellComponent } from '../../shared/layout/auth-shell/auth-shell.component';
-import { AuthService } from '../../auth/services/auth.service';
 import { HeroSectionComponent } from '../../shared/sections/hero-section/hero-section.component';
 import { ContentSectionComponent } from '../../shared/sections/content-section/content-section.component';
 import { OutputTypesComponent, OutputType } from '../../shared/sections/output-types/output-types.component';
@@ -33,8 +30,6 @@ import { BRAND, APP_FOOTER_COLUMNS } from '../../shared/navigation/site-navigati
     SiteShellComponent,
     SiteHeaderNavComponent,
     SiteFooterBlockComponent,
-    AuthShellComponent,
-    NgTemplateOutlet,
     HeroSectionComponent,
     ContentSectionComponent,
     OutputTypesComponent,
@@ -45,11 +40,6 @@ import { BRAND, APP_FOOTER_COLUMNS } from '../../shared/navigation/site-navigati
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingComponent {
-  private readonly auth = inject(AuthService);
-
-  /** Loggato → header completo (auth-shell); ospite → header marketing. */
-  readonly isAuthed = computed(() => this.auth.state().isAuthenticated);
-
   /** Brand + footer condivisi (single source: shared/navigation/site-navigation). */
   readonly brand = BRAND;
   readonly footerColumns = APP_FOOTER_COLUMNS;

@@ -9,7 +9,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 
 /** Stato di un capitolo nell'indice (pilota icona + colore). */
-export type ChapterStatus = 'approved' | 'review' | 'current' | 'generating' | 'todo';
+export type ChapterStatus = 'review' | 'current' | 'generating' | 'todo';
 
 /** Voce dell'indice capitoli (view-model dumb, i18n-agnostico). */
 export interface ChapterItem {
@@ -23,11 +23,13 @@ export interface ChapterItem {
   status: ChapterStatus;
   /** Etichetta di stato a destra (già tradotta, opzionale). */
   statusLabel?: string;
+  /** Sotto-sezioni (indice completo): voci annidate sotto il capitolo. */
+  sections?: { key: string; title: string }[];
 }
 
 /**
  * ChapterIndexComponent — indice capitoli dumb/presentational: lista navigabile
- * con numero, titolo e **stato** (approvato = accent), voce selezionata
+ * con numero, titolo e **stato** (corrente = accent), voce selezionata
  * evidenziata. Opzionalmente **collassabile** (toggle nell'header) e con un link
  * "aggiungi".
  *
@@ -39,7 +41,7 @@ export interface ChapterItem {
  * @example
  * ```html
  * <app-chapter-index
- *   [heading]="'Indice'" [countLabel]="'5 di 8 approvati'"
+ *   [heading]="'Indice'" [countLabel]="'8 capitoli'"
  *   [chapters]="chapters()" [selectedKey]="openKey()"
  *   (select)="openKey.set($event)" />
  * ```
@@ -48,7 +50,7 @@ export interface ChapterItem {
   selector: 'app-chapter-index',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'chapter-index' },
+  host: { class: 'chapter-index', '[class.is-collapsed]': 'collapsed()' },
   imports: [MatIconModule],
   templateUrl: './chapter-index.component.html',
   styleUrl: './chapter-index.component.scss',
@@ -77,13 +79,6 @@ export class ChapterIndexComponent {
 
   /** Icona Material per stato (numero a parte). */
   protected icon(status: ChapterStatus): string {
-    switch (status) {
-      case 'approved':
-        return 'check';
-      case 'generating':
-        return 'progress_activity';
-      default:
-        return '';
-    }
+    return status === 'generating' ? 'progress_activity' : '';
   }
 }

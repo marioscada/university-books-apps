@@ -13,7 +13,7 @@ import { parsePasswordResetError } from './forgot-password.utils';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, CounterFieldComponent],
-  templateUrl: './forgot-password.component.html'
+  templateUrl: './forgot-password.component.html',
 })
 export class ForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);
@@ -31,15 +31,15 @@ export class ForgotPasswordComponent {
 
   constructor() {
     this.emailForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
     });
 
     this.resetForm = this.fb.group({
       code: ['', [Validators.required, Validators.minLength(6)]],
       newPassword: ['', [Validators.required, Validators.minLength(12)]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', [Validators.required]],
     }, {
-      validators: this.passwordMatchValidator
+      validators: this.passwordMatchValidator,
     });
   }
 
