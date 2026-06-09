@@ -24,20 +24,8 @@
     <!-- Nessun progetto: empty-state con immagine centrale + messaggio dinamico -->
     <app-no-data class="coll__empty" [message]="emptyMessage()" />
   } @else {
-    <!-- Continua dove eri -->
-    @if (continua().length) {
-      <section class="coll__section">
-        <h2 class="section-title">
-          Continua dove eri
-          <span class="coll__count">{{ continua().length }} in corso</span>
-        </h2>
-        @for (g of continua(); track g.id) {
-          <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
-        }
-      </section>
-    }
-
-    <!-- La tua libreria -->
+    <!-- Solo i lavori PUBBLICATI: i progetti in corso si riprendono da "Crea"
+         (vincolo un-progetto-alla-volta), non si elencano qui. -->
     <section class="coll__section">
       <h2 class="section-title">La tua libreria</h2>
       @if (library().length) {

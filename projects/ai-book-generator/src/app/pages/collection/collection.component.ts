@@ -23,7 +23,6 @@ interface GroupVM {
   sources: RowVM[];
 }
 
-const IN_PROGRESS: readonly ProjectStatus[] = ['draft', 'queued', 'processing', 'review', 'failed'];
 const LIBRARY: readonly ProjectStatus[] = ['published', 'archived'];
 
 /**
@@ -64,11 +63,11 @@ export class CollectionComponent {
 
   readonly query = signal('');
 
-  readonly continua = computed<GroupVM[]>(() => this.build(IN_PROGRESS));
   readonly library = computed<GroupVM[]>(() => this.build(LIBRARY));
 
-  /** Nessun progetto in alcuna sezione → empty-state globale. */
-  readonly hasNoProjects = computed(() => !this.continua().length && !this.library().length);
+  /** Nessun lavoro pubblicato → empty-state globale (i progetti in corso si
+   *  riprendono da "Crea", vincolo un-progetto-alla-volta). */
+  readonly hasNoProjects = computed(() => !this.library().length);
   readonly emptyMessage = computed(() => this.t('i18n.Collection.empty.message'));
 
   // --- Navigazione / azioni ---------------------------------------------------

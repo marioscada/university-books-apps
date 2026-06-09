@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
+import { singleActiveProjectGuard } from './core/guards/single-active-project.guard';
 import { AuthLayoutComponent } from './shared/layout/auth-layout/auth-layout.component';
 
 /**
@@ -41,6 +42,9 @@ export const routes: Routes = [
         // URL fisso `/create`, `?template=id` per lo step di setup). Niente footer
         // (flusso task-focused). Al "genera" si naviga al progetto creato.
         path: 'create',
+        // Vincolo "un progetto alla volta fino alla pubblicazione": se ce n'è uno
+        // attivo, il guard reindirizza al suo Studio invece della galleria.
+        canActivate: [singleActiveProjectGuard],
         loadComponent: () =>
           import('./pages/create/create.component').then((m) => m.CreateComponent),
         title: 'Create - AI Book Generator',
