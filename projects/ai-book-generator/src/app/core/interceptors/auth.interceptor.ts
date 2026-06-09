@@ -32,6 +32,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
       // No token available, proceed without auth header
       return next(req);
-    })
+    }),
   );
 };

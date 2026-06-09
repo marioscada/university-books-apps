@@ -38,7 +38,6 @@ import { AwsApiService } from './core/data/aws-api.service';
  */
 try {
   Amplify.configure(amplifyConfig);
-  console.log('✅ Amplify configured');
 } catch (error) {
   console.error('❌ Failed to configure Amplify:', error);
   throw error;
@@ -75,7 +74,7 @@ export const appConfig: ApplicationConfig = {
 
     // Data layer: l'ApiPort è mappato all'AwsApiService (backend reale via HTTP).
     // Nessun mock: tutto reale (/v1/projects, /v1/documents, /auth/me); l'AI
-    // (chat + derivati) resta VUOTA finché non c'è Bedrock/Claude; i templates
+    // (chat) resta VUOTA finché non c'è Bedrock/Claude; i templates
     // sono catalogo statico dell'app. Store/UI dipendono solo da ApiPort.
     { provide: API_PORT, useExisting: AwsApiService },
 

@@ -13,7 +13,7 @@ import { parseRegistrationError, parseConfirmationError } from './register.utils
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, CounterFieldComponent],
-  templateUrl: './register.component.html'
+  templateUrl: './register.component.html',
 })
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
@@ -37,15 +37,15 @@ export class RegisterComponent {
       password: ['', [
         Validators.required,
         Validators.minLength(12),
-        this.passwordStrengthValidator
+        this.passwordStrengthValidator,
       ]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', [Validators.required]],
     }, {
-      validators: this.passwordMatchValidator
+      validators: this.passwordMatchValidator,
     });
 
     this.confirmationForm = this.fb.group({
-      code: ['', [Validators.required, Validators.minLength(6)]]
+      code: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
 
