@@ -98,7 +98,17 @@
               [countLabel]="indexCountLabel()"
               [chapters]="chapterItems()"
               [selectedKey]="selectedKey()"
-              (selected)="selectChapter($event)" />
+              (selected)="selectChapter($event)">
+              <button
+                headerAction
+                mat-flat-button
+                color="primary"
+                type="button"
+                (click)="generateChapters()">
+                {{ 'i18n.Workspace.Action.generateChapters' | translate }}
+                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+              </button>
+            </app-chapter-index>
             <app-ai-chat-panel
               class="studio-chat"
               [title]="'Assistente AI'"
@@ -236,13 +246,6 @@
         <app-action-bar sticky placement="top">
           <button end mat-flat-button color="primary" type="button" (click)="generate()">
             {{ 'i18n.Workspace.Action.generateIndex' | translate }}
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
-          </button>
-        </app-action-bar>
-      } @else if (project.status === 'review' && !chaptersReady()) {
-        <app-action-bar sticky placement="top">
-          <button end mat-flat-button color="primary" type="button" (click)="generateChapters()">
-            {{ 'i18n.Workspace.Action.generateChapters' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
           </button>
         </app-action-bar>
