@@ -11,6 +11,8 @@ import { ModalShellComponent } from '../../shared/components-v2/modal-shell/moda
 import { ProjectsStore } from '../../core/state/projects.store';
 import { SourcesStore } from '../../core/state/sources.store';
 import { BillingService } from '../../core/services/billing.service';
+import { UiPromiseService } from '../../shared/services/ui-promise.service';
+import { injectI18nText } from '../../shared/services/i18n-text';
 import type { ProjectStatus } from '../../core/domain';
 import { type RowVM, projectRow, sourceRow } from './collection-row.mapper';
 
@@ -52,6 +54,8 @@ export class CollectionComponent {
   private readonly sources = inject(SourcesStore);
   private readonly billing = inject(BillingService);
   private readonly router = inject(Router);
+  private readonly uiPromise = inject(UiPromiseService);
+  private readonly t = injectI18nText();
 
   /** Stato fatturazione → guida il dialog di rielaborazione. */
   readonly billingStatus = this.billing.status;
@@ -110,9 +114,26 @@ export class CollectionComponent {
   confirmDelete(): void {
     const d = this.pendingDelete();
     if (!d) return;
-    if (d.kind === 'project') void this.projects.delete(d.id);
-    else void this.sources.delete(d.id);
     this.pendingDelete.set(null);
+    // Spinner d'attesa + toast (esito) via uiPromise; il dialog di conferma è già stato mostrato.
+    void this.uiPromise.run(
+      async () => {
+        if (d.kind === 'project') await this.projects.delete(d.id);
+        else await this.sources.delete(d.id);
+      },
+      {
+        loading: true,
+        loadingMessage: this.t(`i18n.Collection.delete.${d.kind}.loading`),
+        success: {
+          title: this.t('i18n.Common.done'),
+          message: this.t(`i18n.Collection.delete.${d.kind}.success`),
+        },
+        error: {
+          title: this.t('i18n.Common.error'),
+          message: this.t(`i18n.Collection.delete.${d.kind}.error`),
+        },
+      },
+    );
   }
   cancelDelete(): void {
     this.pendingDelete.set(null);

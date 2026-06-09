@@ -3,7 +3,7 @@ import { Overlay } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 
 import { SpinnerComponent } from '../ui/spinner/spinner.component';
-import { ToastFacade } from './toast.facade';
+import { ToastFacade } from './toast/toast.facade';
 
 export interface UiPromiseOptions {
   /** Mostra lo spinner overlay durante l'attesa. */
