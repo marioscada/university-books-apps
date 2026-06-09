@@ -327,3 +327,19 @@
   display: inline-flex;
   gap: 10px;
 }
+
+// Spinner sul bottone "Genera indice" durante la create (attesa dell'id dal
+// server): feedback onesto, niente bottone "congelato".
+.setup-genspin {
+  animation: setup-genspin 0.9s linear infinite;
+}
+@keyframes setup-genspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .setup-genspin {
+    animation: none;
+  }
+}

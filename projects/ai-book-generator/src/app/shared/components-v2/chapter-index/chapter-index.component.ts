@@ -50,7 +50,7 @@ export interface ChapterItem {
   selector: 'app-chapter-index',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'chapter-index' },
+  host: { class: 'chapter-index', '[class.is-collapsed]': 'collapsed()' },
   imports: [MatIconModule],
   templateUrl: './chapter-index.component.html',
   styleUrl: './chapter-index.component.scss',

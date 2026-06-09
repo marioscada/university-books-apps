@@ -100,6 +100,10 @@ export class ProjectWorkspaceComponent {
   readonly loading = this.store.loading;
   /** Larghezze (variate) delle righe-capitolo dello skeleton indice. */
   protected readonly skeletonChapters = ['55%', '46%', '60%', '42%', '52%'];
+  /** Larghezze (variate) delle righe-paragrafo dello skeleton lettura capitoli. */
+  protected readonly skeletonParas = ['100%', '96%', '92%', '98%', '88%', '100%', '94%', '90%'];
+  /** Placeholder dei tile "E adesso?" nello skeleton di pubblicazione. */
+  protected readonly skeletonTiles = [1, 2, 3, 4];
   readonly project = computed(() => this.store.entities().find((p) => p.id === this.id()));
 
   constructor() {
@@ -173,11 +177,15 @@ export class ProjectWorkspaceComponent {
   }
 
   // --- Attesa (spinner overlay) ----------------------------------------------
-  /** True durante qualsiasi elaborazione (indice/capitoli/pubblicazione/derivato). */
+  /**
+   * Attese che mostrano l'**overlay spinner** (pubblicazione/derivato). Indice e
+   * capitoli NON sono qui: usano lo skeleton in pagina (`indexLoading` /
+   * `chaptersLoading`).
+   */
   readonly waiting = computed(
-    () => this.isGenerating() || this.derivedGenerating() || this.publishing(),
+    () => this.derivedGenerating() || (this.isDerived() && this.publishing()),
   );
-  /** Messaggio sotto lo spinner, in base alla fase corrente. */
+  /** Messaggio sotto lo spinner overlay, in base alla fase corrente. */
   readonly waitMessage = computed(() => {
     const p = this.project();
     if (!p) {
@@ -188,9 +196,6 @@ export class ProjectWorkspaceComponent {
     }
     if (p.derivedKind) {
       return this.derivedLabel();
-    }
-    if (p.status === 'review' && this.workspace.generating()) {
-      return this.chapterDetail();
     }
     return '';
   });
@@ -220,16 +225,21 @@ export class ProjectWorkspaceComponent {
   });
 
   /**
-   * Attese che mostrano l'**overlay spinner** (capitoli/pubblicazione/derivato).
-   * L'indice NON è qui: usa lo skeleton in pagina (`indexLoading`).
+   * Generazione CAPITOLI in corso → **skeleton in pagina** + spinner centrato
+   * (stesso pattern dell'indice): navigazione ottimistica dallo step "Genera
+   * capitoli". Niente overlay.
    */
-  readonly isGenerating = computed(() => {
+  readonly chaptersLoading = computed(() => {
     const p = this.project();
-    if (!p) {
-      return false;
-    }
-    return p.status === 'review' && (this.workspace.generating() || this.workspace.publishing());
+    return !!p && p.status === 'review' && this.workspace.generating();
   });
+
+  /**
+   * Pubblicazione in corso (progetto NON derivato) → **skeleton in pagina** della
+   * schermata "Documento pubblicato" + spinner centrato (stesso pattern di indice
+   * e capitoli). I derivati conservano l'overlay (flusso dedicato).
+   */
+  readonly publishLoading = computed(() => !this.isDerived() && this.publishing());
 
   // Generazione capitoli (review + generating)
   readonly chapterDetail = computed(() => {
@@ -331,9 +341,6 @@ export class ProjectWorkspaceComponent {
       this.workspace.approvedChapterIds(),
       this.selectedKey(),
     ),
-  );
-  readonly approvedCountLabel = computed(
-    () => `${this.workspace.approvedCount()} di ${this.workspace.chapters().length} approvati`,
   );
   readonly indexCountLabel = computed(() => `${this.workspace.chapters().length} capitoli`);
 

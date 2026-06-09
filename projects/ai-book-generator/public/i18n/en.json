@@ -371,6 +371,7 @@
   "i18n.Setup.font": "Main font",
   "i18n.Setup.fontSize": "Font size",
   "i18n.Setup.generateIndex": "Generate outline",
+  "i18n.Setup.creating": "Creating…",
   "i18n.Setup.generateError": "Index generation failed. Please try again.",
   "i18n.Setup.Goal.analyze": "Analyze",
   "i18n.Setup.Goal.document": "Document",
@@ -645,5 +646,7 @@
   "i18n.Workspace.Review.preview": "Preview",
   "job.step.analyze": "Analyzing sources",
   "job.step.outline": "Composing the outline",
-  "i18n.Workspace.indexGenerating": "Generating the outline…"
+  "i18n.Workspace.indexGenerating": "Generating the outline…",
+  "i18n.Workspace.chaptersGenerating": "Writing the chapters…",
+  "i18n.Workspace.publishing": "Publishing…"
 }

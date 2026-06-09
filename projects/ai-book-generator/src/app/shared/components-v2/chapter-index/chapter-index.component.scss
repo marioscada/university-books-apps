@@ -1,3 +1,5 @@
+@use '../../../../theme/breakpoints' as bp;
+
 // ChapterIndex — indice capitoli dumb, self-contained sui token globali.
 :host {
   display: flex;
@@ -9,6 +11,24 @@
   border: 1px solid var(--card-border-color);
   border-radius: var(--card-radius, 16px);
   box-shadow: var(--card-shadow);
+}
+
+// Collasso LATERALE su desktop: l'aside si restringe (vedi review-shell) e qui
+// resta solo il toggle centrato (rail). Su mobile il collasso è verticale
+// (accordion): l'header con titolo resta a piena larghezza, sotto si nasconde
+// solo la lista — quindi questi override valgono SOLO da desktop in su.
+@include bp.gte(bp.$studio) {
+  :host.is-collapsed {
+    padding-inline: 8px;
+    align-items: center;
+  }
+  :host.is-collapsed .chapter-index__head {
+    justify-content: center;
+    margin-bottom: 0;
+  }
+  :host.is-collapsed .chapter-index__titlewrap {
+    display: none;
+  }
 }
 
 .chapter-index__head {

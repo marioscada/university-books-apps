@@ -371,6 +371,7 @@
   "i18n.Setup.font": "Font principale",
   "i18n.Setup.fontSize": "Dimensione carattere",
   "i18n.Setup.generateIndex": "Genera indice",
+  "i18n.Setup.creating": "Creazione…",
   "i18n.Setup.generateError": "Generazione dell'indice non riuscita. Riprova.",
   "i18n.Setup.Goal.analyze": "Analizzare",
   "i18n.Setup.Goal.document": "Documentare",
@@ -645,5 +646,7 @@
   "i18n.Workspace.Review.preview": "Anteprima",
   "job.step.analyze": "Analisi delle fonti",
   "job.step.outline": "Composizione dell’indice",
-  "i18n.Workspace.indexGenerating": "Generazione dell'indice in corso…"
+  "i18n.Workspace.indexGenerating": "Generazione dell'indice in corso…",
+  "i18n.Workspace.chaptersGenerating": "Sviluppo dei capitoli in corso…",
+  "i18n.Workspace.publishing": "Pubblicazione in corso…"
 }

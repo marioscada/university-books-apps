@@ -132,6 +132,79 @@
               class="studio-loader"
               [message]="'i18n.Workspace.indexGenerating' | translate" />
           </div>
+        } @else if (chaptersLoading()) {
+          <!-- Generazione capitoli: skeleton a 3 pannelli (indice · lettura ·
+               chat) con le forme del contenuto reale + spinner centrato. -->
+          <div class="studio-skel-wrap">
+            <section class="studio-body">
+              <section class="surface-card skel-pane skel-pane--index skel-card">
+                <div class="skel-head">
+                  <app-skeleton width="120px" height="18px" />
+                  <app-skeleton width="68px" height="13px" />
+                </div>
+                @for (w of skeletonChapters; track $index) {
+                  <div class="skel-row">
+                    <app-skeleton width="24px" height="24px" radius="8px" />
+                    <app-skeleton [width]="w" height="14px" />
+                  </div>
+                }
+              </section>
+              <section class="surface-card skel-pane skel-pane--reader skel-card">
+                <app-skeleton width="55%" height="26px" />
+                <app-skeleton width="30%" height="13px" />
+                <div class="skel-grow"></div>
+                @for (l of skeletonParas; track $index) {
+                  <app-skeleton [width]="l" height="13px" />
+                }
+              </section>
+              <section class="surface-card skel-pane skel-pane--chat skel-card">
+                <div class="skel-head">
+                  <app-skeleton width="30px" height="30px" radius="9px" />
+                  <div class="skel-head__title">
+                    <app-skeleton width="120px" height="16px" />
+                    <app-skeleton width="160px" height="12px" />
+                  </div>
+                </div>
+                <div class="skel-grow"></div>
+                <div class="skel-chips">
+                  <app-skeleton width="70px" height="30px" radius="16px" />
+                  <app-skeleton width="84px" height="30px" radius="16px" />
+                </div>
+                <app-skeleton width="100%" height="44px" radius="22px" />
+              </section>
+            </section>
+            <app-spinner
+              class="studio-loader"
+              [message]="'i18n.Workspace.chaptersGenerating' | translate" />
+          </div>
+        } @else if (publishLoading()) {
+          <!-- Pubblicazione: skeleton della schermata "Documento pubblicato" con le
+               stesse forme + spinner centrato (navigazione ottimistica, no overlay). -->
+          <div class="skel-confirm-wrap">
+            <section class="surface-card studio-confirm">
+              <app-skeleton class="skel-confirm__check" width="72px" height="72px" radius="999px" />
+              <app-skeleton width="240px" height="28px" />
+              <app-skeleton class="skel-confirm__sub" width="320px" height="15px" />
+              <div class="studio-confirm__downloads">
+                <app-skeleton width="130px" height="40px" radius="20px" />
+                <app-skeleton width="140px" height="40px" radius="20px" />
+                <app-skeleton width="110px" height="40px" radius="20px" />
+              </div>
+              <hr class="surface-rule" />
+              <app-skeleton class="skel-confirm__next" width="120px" height="18px" />
+              <div class="studio-confirm__tiles">
+                @for (t of skeletonTiles; track $index) {
+                  <div class="studio-tile skel-tile">
+                    <app-skeleton width="62%" height="15px" />
+                    <app-skeleton width="84%" height="12px" />
+                  </div>
+                }
+              </div>
+            </section>
+            <app-spinner
+              class="studio-loader"
+              [message]="'i18n.Workspace.publishing' | translate" />
+          </div>
         } @else if (project.status === 'review' && !chaptersReady()) {
           <!-- Revisione INDICE: solo outline, capitoli non ancora sviluppati -->
           <section class="studio-body studio-body--index">
@@ -171,21 +244,10 @@
               index
               class="fill-pane"
               [heading]="'Indice'"
-              [countLabel]="approvedCountLabel()"
               [chapters]="chapterItems()"
               [selectedKey]="selectedKey()"
               collapsible
-              (selected)="selectChapter($event)">
-              <button
-                headerAction
-                mat-flat-button
-                color="primary"
-                type="button"
-                (click)="goToPublish()">
-                {{ 'i18n.Workspace.Action.publish' | translate }}
-                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
-              </button>
-            </app-chapter-index>
+              (selected)="selectChapter($event)" />
             @if (selectedChapter(); as ch) {
               <app-chapter-reader
                 class="fill-pane"
@@ -309,6 +371,13 @@
           <button end mat-stroked-button type="button" (click)="reopen()">
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">unarchive</mat-icon>
             {{ 'i18n.Workspace.Action.reopen' | translate }}
+          </button>
+        </app-action-bar>
+      } @else if (project.status === 'review' && chaptersReady() && !publishLoading()) {
+        <app-action-bar sticky placement="top">
+          <button end mat-flat-button color="primary" type="button" (click)="goToPublish()">
+            {{ 'i18n.Workspace.Action.publish' | translate }}
+            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
           </button>
         </app-action-bar>
       } @else if (project.status === 'failed') {
