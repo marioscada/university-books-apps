@@ -17,7 +17,7 @@ import { BackLinkComponent } from '../../shared/components-v2/back-link/back-lin
 import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
 import { DerivedResultComponent } from '../../shared/components-v2/derived-result/derived-result.component';
 import { ReviewShellComponent } from '../../shared/components-v2/review-shell/review-shell.component';
-import { derivedKindLabel } from '../../core/data/derived-seed';
+import { derivedKindLabel } from '../../core/data/derived.util';
 import {
   ChapterIndexComponent,
   type ChapterItem,

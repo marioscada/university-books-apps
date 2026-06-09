@@ -56,9 +56,6 @@ const INITIAL: WorkspaceState = {
   derivedProgress: 0,
 };
 
-/** Attesa async semplice (mock; con AWS diventa il poll del job). */
-const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
-
 /**
  * WorkspaceStore — sessione di editing dello **Studio** per il progetto attivo:
  * versione corrente (indice + capitoli) e chat AI contestuale. Passa SEMPRE dal
@@ -119,67 +116,48 @@ export const WorkspaceStore = signalStore(
         }
       },
 
-      /**
-       * Sviluppa i capitoli dall'indice approvato (revisione indice → capitoli).
-       * Avanzamento progressivo (mock) per mostrare il componente di generazione;
-       * con AWS questo loop diventa il polling del job lato `ApiPort`.
-       */
+      /** Sviluppa i capitoli dall'indice approvato (review indice → capitoli). */
       async generateChapters(projectId: string): Promise<void> {
         if (store.generating()) {
           return;
         }
-        patchState(store, { generating: true, genProgress: 0 });
-        const total = store.version()?.chapters.length ?? 1;
-        for (let i = 1; i <= total; i++) {
-          await wait(260);
-          if (store.projectId() !== projectId) {
-            return;
+        patchState(store, { generating: true });
+        try {
+          const version = await api.generateChapters(projectId);
+          if (store.projectId() === projectId) {
+            patchState(store, { version });
           }
-          patchState(store, { genProgress: Math.round((i / total) * 100) });
+        } finally {
+          patchState(store, { generating: false });
         }
-        const version = await api.generateChapters(projectId);
-        patchState(store, { version, generating: false, genProgress: 0 });
       },
 
-      /**
-       * Pubblica con attesa progressiva (render/impaginazione/export), poi
-       * delega a `ProjectsStore.publish` (review → published). Mock: il loop
-       * simula il job di render; con AWS diventa il poll del job di pubblicazione.
-       */
+      /** Pubblica: delega a `ProjectsStore.publish` (review → published). */
       async publish(projectId: string): Promise<void> {
         if (store.publishing()) {
           return;
         }
-        patchState(store, { publishing: true, pubProgress: 0 });
-        for (let i = 1; i <= 10; i++) {
-          await wait(170);
-          if (store.projectId() !== projectId) {
-            return;
-          }
-          patchState(store, { pubProgress: i * 10 });
+        patchState(store, { publishing: true });
+        try {
+          await projects.publish(projectId);
+        } finally {
+          patchState(store, { publishing: false });
         }
-        await projects.publish(projectId);
-        patchState(store, { publishing: false, pubProgress: 0 });
       },
 
-      /**
-       * Apre un progetto DERIVATO: mostra l'attesa (elaborazione) e poi carica il
-       * contenuto come se arrivasse dal server. Avanzamento progressivo (mock).
-       */
+      /** Apre un progetto DERIVATO: elabora e carica il contenuto dal server. */
       async openDerived(projectId: string): Promise<void> {
-        patchState(store, { ...INITIAL, projectId, derivedGenerating: true, derivedProgress: 0 });
-        for (let i = 1; i <= 10; i++) {
-          await wait(220);
-          if (store.projectId() !== projectId) {
-            return;
+        patchState(store, { ...INITIAL, projectId, derivedGenerating: true });
+        try {
+          const derived = await api.generateDerived(projectId);
+          if (store.projectId() === projectId) {
+            patchState(store, { derived });
           }
-          patchState(store, { derivedProgress: i * 10 });
+        } finally {
+          if (store.projectId() === projectId) {
+            patchState(store, { derivedGenerating: false });
+          }
         }
-        const derived = await api.generateDerived(projectId);
-        if (store.projectId() !== projectId) {
-          return;
-        }
-        patchState(store, { derived, derivedGenerating: false, derivedProgress: 0 });
       },
 
       /** Rigenera il derivato applicando il feedback dell'utente all'AI. */
@@ -187,16 +165,13 @@ export const WorkspaceStore = signalStore(
         if (store.derivedGenerating()) {
           return;
         }
-        patchState(store, { derivedGenerating: true, derivedProgress: 0 });
-        for (let i = 1; i <= 10; i++) {
-          await wait(180);
-          if (store.projectId() !== projectId) {
-            return;
-          }
-          patchState(store, { derivedProgress: i * 10 });
+        patchState(store, { derivedGenerating: true });
+        try {
+          const derived = await api.regenerateDerived(projectId, feedback);
+          patchState(store, { derived });
+        } finally {
+          patchState(store, { derivedGenerating: false });
         }
-        const derived = await api.regenerateDerived(projectId, feedback);
-        patchState(store, { derived, derivedGenerating: false, derivedProgress: 0 });
       },
 
       /** Marca/smarca un capitolo come approvato (revisione). */

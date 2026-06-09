@@ -5,7 +5,7 @@
  */
 import type { Tone } from '../../shared/components-v2/tone';
 import type { RowAction } from '../../shared/components-v2/list-row/list-row.component';
-import { derivedKindLabel } from '../../core/data/derived-seed';
+import { derivedKindLabel } from '../../core/data/derived.util';
 import type { Project, ProjectKind, ProjectStatus, CoverTheme, Source, SourceType, IngestStatus } from '../../core/domain';
 import { relTime, humanSize } from './format.util';
 
