@@ -1,0 +1,31 @@
+<app-site-shell>
+  <ng-template #header>
+    <app-site-header-nav
+      [brand]="brand"
+      [logoRoute]="logoRoute()"
+      [navItems]="navItems()"
+      [showAuthLinks]="!isAuth()" />
+  </ng-template>
+
+  <ng-template #main>
+    <section class="legal site-container">
+      <h1 class="legal__title">{{ page.title }}</h1>
+      @if (page.draft) {
+        <p class="legal__draft">
+          Pagina in preparazione — il testo definitivo sarà disponibile a breve.
+        </p>
+      }
+      <p class="legal__intro">{{ page.intro }}</p>
+      @for (s of page.sections; track s.heading) {
+        <section class="legal__section">
+          <h2 class="legal__heading">{{ s.heading }}</h2>
+          <p class="legal__body">{{ s.body }}</p>
+        </section>
+      }
+    </section>
+  </ng-template>
+
+  <ng-template #footer>
+    <app-site-footer-block [brand]="brand" [columns]="footerColumns" [showAuthOnly]="isAuth()" />
+  </ng-template>
+</app-site-shell>

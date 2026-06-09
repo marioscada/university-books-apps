@@ -1,0 +1,51 @@
+:host {
+  display: block;
+}
+
+// Pagina informativa/legale: colonna di lettura centrata, ritmo verticale chiaro.
+.legal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 760px;
+  padding-block: clamp(40px, 6vw, 80px);
+}
+.legal__title {
+  margin: 0;
+  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--mat-sys-on-surface);
+}
+.legal__draft {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--accent-100);
+  color: var(--accent-700);
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+}
+.legal__intro {
+  margin: 0;
+  font-size: var(--site-body-large, 1.0625rem);
+  line-height: 1.6;
+  color: var(--mat-sys-on-surface-variant);
+}
+.legal__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+.legal__heading {
+  margin: 0;
+  font-size: clamp(1.125rem, 1.8vw, 1.375rem);
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.legal__body {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--mat-sys-on-surface-variant);
+}

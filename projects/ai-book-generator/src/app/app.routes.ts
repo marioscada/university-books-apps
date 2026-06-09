@@ -3,6 +3,18 @@ import { authGuard } from './auth/guards/auth.guard';
 import { guestGuard } from './auth/guards/guest.guard';
 import { singleActiveProjectGuard } from './core/guards/single-active-project.guard';
 import { AuthLayoutComponent } from './shared/layout/auth-layout/auth-layout.component';
+import type { LegalKey } from './pages/legal/legal.content';
+
+/** Pagine informative/legali del footer — pubbliche (ospite e loggato), una sola
+ *  `LegalPage` parametrizzata da `legalKey`. Evita il catch-all → niente più
+ *  "rimbalzo" nello Studio cliccando una voce del footer. */
+const LEGAL_ROUTES: Routes = (
+  ['about', 'contact', 'privacy', 'terms', 'cookie', 'imprint'] as readonly LegalKey[]
+).map((key) => ({
+  path: key,
+  data: { legalKey: key },
+  loadComponent: () => import('./pages/legal/legal.page').then((m) => m.LegalPage),
+}));
 
 /**
  * Routing dell'app.
@@ -75,6 +87,7 @@ export const routes: Routes = [
       },
     ],
   },
+  ...LEGAL_ROUTES,
   {
     // Catch-all: ogni path sconosciuto torna alla landing.
     path: '**',
