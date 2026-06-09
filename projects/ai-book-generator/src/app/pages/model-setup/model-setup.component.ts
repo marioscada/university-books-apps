@@ -2,7 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
+  Injector,
   input,
   output,
   signal,
@@ -26,6 +28,7 @@ import { ModalShellComponent } from '../../shared/components-v2/modal-shell/moda
 import { ProjectsStore } from '../../core/state/projects.store';
 import { TemplatesStore } from '../../core/state/templates.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
+import { UiPromiseService } from '../../shared/services/ui-promise.service';
 import type { OutputFormat, ProjectSettings, ProjectTemplate } from '../../core/domain';
 
 /** Genere grammaticale del nome modello (per gli articoli IT). */
@@ -70,6 +73,8 @@ export class ModelSetupComponent {
   private readonly templatesStore = inject(TemplatesStore);
   private readonly projectsStore = inject(ProjectsStore);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly uiPromise = inject(UiPromiseService);
+  private readonly injector = inject(Injector);
 
   /** Risolutore i18n reattivo (ricomputa i view-model al cambio lingua). */
   private readonly t = injectI18nText();
@@ -295,20 +300,38 @@ export class ModelSetupComponent {
     };
 
     this.submitting.set(true);
-    try {
-      // Invio + ATTESA della conferma del server (lo store risolve a buon fine).
-      const project = await this.projectsStore.createFromTemplate({
-        title: this.title().trim() || this.modelName(),
-        kind: tpl.kind,
-        settings,
-        coverTheme: tpl.coverTheme ?? 'ocean',
-      });
-      // Avvia SUBITO la generazione dell'indice (niente schermata "bozza"
-      // intermedia): l'utente ha già confermato qui → si va dritto all'Analisi.
-      await this.projectsStore.generate(project.id);
-      void this.router.navigate(['/project', project.id]);
-    } finally {
-      this.submitting.set(false);
-    }
+    // Spinner OVERLAY (backdrop) qui su /create: resta finché lo Studio è pronto
+    // (indice generato → status review), poi naviga e l'overlay sparisce.
+    await this.uiPromise.run(
+      async () => {
+        const project = await this.projectsStore.createFromTemplate({
+          title: this.title().trim() || this.modelName(),
+          kind: tpl.kind,
+          settings,
+          coverTheme: tpl.coverTheme ?? 'ocean',
+        });
+        await this.projectsStore.generate(project.id);
+        await this.waitUntilReady(project.id);
+        await this.router.navigate(['/project', project.id]);
+      },
+      { loading: true, loadingMessage: this.t('i18n.Workspace.Live.title') },
+    );
+    this.submitting.set(false);
+  }
+
+  /** Risolve quando il progetto esce dall'elaborazione (review/failed/published). */
+  private waitUntilReady(id: string): Promise<void> {
+    return new Promise((resolve) => {
+      const ref = effect(
+        () => {
+          const p = this.projectsStore.entities().find((x) => x.id === id);
+          if (p && p.status !== 'queued' && p.status !== 'processing' && p.status !== 'draft') {
+            ref.destroy();
+            resolve();
+          }
+        },
+        { injector: this.injector },
+      );
+    });
   }
 }
