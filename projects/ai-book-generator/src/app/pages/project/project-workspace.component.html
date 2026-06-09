@@ -132,22 +132,26 @@
               [chapters]="chapterItems()"
               [selectedKey]="selectedKey()"
               collapsible
-              (selected)="selectChapter($event)" />
+              (selected)="selectChapter($event)">
+              <button
+                headerAction
+                mat-flat-button
+                color="primary"
+                type="button"
+                (click)="goToPublish()">
+                {{ 'i18n.Workspace.Action.publish' | translate }}
+                <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+              </button>
+            </app-chapter-index>
             @if (selectedChapter(); as ch) {
               <app-chapter-reader
                 class="fill-pane"
                 [documentTitle]="project.title"
                 [title]="ch.index + ' · ' + ch.title"
                 [meta]="'≈ ' + ch.wordCount + ' parole'"
-                [statusLabel]="selectedApproved() ? 'Approvato' : 'Da rivedere'"
-                [statusTone]="selectedApproved() ? 'success' : 'warning'"
                 [paragraphs]="selectedParagraphs()"
                 [approveLabel]="selectedApproved() ? 'Approvato' : 'Approva capitolo'"
-                [prevLabel]="prevLabel()"
-                [nextLabel]="nextLabel()"
-                (approve)="approveChapter()"
-                (prev)="step(-1)"
-                (next)="step(1)" />
+                (approve)="approveChapter()" />
             }
             <app-ai-chat-panel
               ai
@@ -246,13 +250,6 @@
         <app-action-bar sticky placement="top">
           <button end mat-flat-button color="primary" type="button" (click)="generate()">
             {{ 'i18n.Workspace.Action.generateIndex' | translate }}
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
-          </button>
-        </app-action-bar>
-      } @else if (project.status === 'review' && chaptersReady()) {
-        <app-action-bar sticky placement="top">
-          <button end mat-flat-button color="primary" type="button" (click)="goToPublish()">
-            {{ 'i18n.Workspace.Action.publish' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
           </button>
         </app-action-bar>

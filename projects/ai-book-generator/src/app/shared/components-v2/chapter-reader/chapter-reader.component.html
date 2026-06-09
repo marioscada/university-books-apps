@@ -17,7 +17,11 @@
 
 <div class="chapter-reader__body">
   @for (p of paragraphs(); track $index) {
-    <p class="chapter-reader__p">{{ p }}</p>
+    @if (isHeading(p)) {
+      <p class="chapter-reader__h" [attr.data-level]="headingLevel(p)">{{ headingText(p) }}</p>
+    } @else {
+      <p class="chapter-reader__p">{{ p }}</p>
+    }
   }
   <ng-content />
 </div>

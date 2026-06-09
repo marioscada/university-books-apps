@@ -100,6 +100,26 @@
   color: var(--mat-sys-on-surface);
 }
 
+// Titoli/sotto-titoli dal markdown del body (indice completo).
+.chapter-reader__h {
+  margin: 18px 0 4px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--mat-sys-on-surface);
+}
+.chapter-reader__h:first-child {
+  margin-top: 0;
+}
+.chapter-reader__h[data-level='1'] {
+  font-size: 1.3125rem;
+}
+.chapter-reader__h[data-level='2'] {
+  font-size: 1.0625rem;
+}
+.chapter-reader__h[data-level='3'] {
+  font-size: 0.95rem;
+}
+
 .chapter-reader__foot {
   display: flex;
   align-items: center;

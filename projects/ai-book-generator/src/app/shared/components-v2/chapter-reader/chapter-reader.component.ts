@@ -68,4 +68,17 @@ export class ChapterReaderComponent {
   readonly prev = output<void>();
   /** Emesso al capitolo successivo. */
   readonly next = output<void>();
+
+  /** Un blocco è un heading markdown se inizia con 1–6 `#` seguiti da spazio. */
+  protected isHeading(block: string): boolean {
+    return /^#{1,6}\s/.test(block);
+  }
+  /** Livello del heading (1–6). */
+  protected headingLevel(block: string): number {
+    return block.match(/^(#{1,6})\s/)?.[1].length ?? 0;
+  }
+  /** Testo del heading senza i `#`. */
+  protected headingText(block: string): string {
+    return block.replace(/^#{1,6}\s+/, '');
+  }
 }
