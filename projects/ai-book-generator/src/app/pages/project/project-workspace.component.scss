@@ -108,21 +108,10 @@ app-review-shell {
   min-height: 0;
   overflow: auto;
 }
-.studio-reader {
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: 0;
-  overflow: auto;
-}
 .studio-chat {
   flex: 0 0 360px;
   min-height: 0;
   overflow: hidden; // il thread della chat scrolla internamente (composer fisso)
-}
-
-// Variante sola lettura (published/archived): indice + lettura.
-.studio-body--read .studio-reader {
-  flex: 1 1 auto;
 }
 
 // Revisione indice: indice largo + chat (niente lettura).
@@ -144,8 +133,12 @@ app-review-shell {
 }
 // --- Conferma (published) ---------------------------------------------------
 .studio-confirm {
-  // Ritmo verticale esplicito via margini (no gap uniforme) → spaziatura standard.
+  // Riempie l'altezza dello Studio come i pannelli di revisione (review-shell),
+  // con il contenuto centrato verticalmente (non una card corta in alto).
+  flex: 1 1 0;
+  min-height: 0;
   align-items: center;
+  justify-content: center;
   text-align: center;
   gap: 0;
   padding: clamp(40px, 5vw, 56px) clamp(24px, 5vw, 56px);
@@ -253,7 +246,6 @@ app-review-shell {
     flex-direction: column;
   }
   .studio-index,
-  .studio-reader,
   .studio-chat,
   .skel-pane--index,
   .skel-pane--reader,
@@ -328,11 +320,15 @@ app-review-shell {
   flex: 0 0 300px;
 }
 
-// Skeleton CONFERMA pubblicazione: stesse forme di "Documento pubblicato" (card
-// centrata) + spinner centrato. Wrapper relativo (la card resta ad altezza
-// naturale, non stirata) → lo spinner si centra sulla card.
+// Skeleton CONFERMA pubblicazione: identico a "Documento pubblicato" — la card
+// riempie l'altezza dello Studio (la `.studio-confirm` interna ha flex:1 1 0 e
+// contenuto centrato), lo spinner si centra in overlay.
 .skel-confirm-wrap {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
 }
 .skel-confirm__check {
   margin-bottom: 20px;

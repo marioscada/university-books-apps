@@ -17,7 +17,6 @@ export type ProjectStatus =
   | 'processing'   // l'AI sta lavorando (job attivo)
   | 'review'       // versione pronta, l'utente deve controllare → "needs attention"
   | 'published'    // risultato approvato/esportato (aggiornabile con nuove versioni)
-  | 'archived'     // non attivo, consultabile/riapribile
   | 'failed';      // generazione fallita → retry
 
 /** Stati "vivi" (lavori in corso) mostrati nella Create hub. */

@@ -23,7 +23,7 @@ interface GroupVM {
   sources: RowVM[];
 }
 
-const LIBRARY: readonly ProjectStatus[] = ['published', 'archived'];
+const LIBRARY: readonly ProjectStatus[] = ['published'];
 
 /**
  * Collezioni — pagina unica project-centrica (assorbe le ex "Fonti"): ogni
@@ -87,12 +87,6 @@ export class CollectionComponent {
         break;
       case 'reuse':
         this.openReuse(id);
-        break;
-      case 'archive':
-        void this.projects.archive(id);
-        break;
-      case 'reopen':
-        void this.projects.reopen(id);
         break;
       case 'delete':
         this.askDelete('project', id);

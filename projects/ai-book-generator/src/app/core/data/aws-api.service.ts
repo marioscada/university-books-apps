@@ -110,12 +110,6 @@ export class AwsApiService implements ApiPort {
   publish(id: string): Promise<Project> {
     return this.lifecycle(id, { action: 'publish' });
   }
-  archive(id: string): Promise<Project> {
-    return this.lifecycle(id, { action: 'archive' });
-  }
-  reopen(id: string): Promise<Project> {
-    return this.lifecycle(id, { action: 'reopen' });
-  }
   duplicate(id: string): Promise<Project> {
     return this.lifecycle(id, { action: 'duplicate' });
   }

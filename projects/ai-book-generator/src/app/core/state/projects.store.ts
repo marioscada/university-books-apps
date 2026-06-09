@@ -38,7 +38,7 @@ import { ACTIVE_STATUSES } from '../domain';
  *
  * `withEntities<Project>` per la collezione; `withComputed` per i derivati
  * (attivi/pubblicati/needs-attention); `withMethods` per la business logic
- * (load/create/generate/cancel/publish/archive/pollJob), che passa SEMPRE dal
+ * (load/create/generate/cancel/publish/pollJob), che passa SEMPRE dal
  * `ApiPort` (mai dal mock direttamente). Stato immutabile via `patchState`.
  */
 export const ProjectsStore = signalStore(
@@ -213,18 +213,6 @@ export const ProjectsStore = signalStore(
       /** Pubblica un progetto in review. */
       async publish(id: string): Promise<void> {
         const project = await api.publish(id);
-        patchState(store, updateEntity({ id, changes: project }));
-      },
-
-      /** Archivia un progetto. */
-      async archive(id: string): Promise<void> {
-        const project = await api.archive(id);
-        patchState(store, updateEntity({ id, changes: project }));
-      },
-
-      /** Riapre un progetto archiviato → review|draft (vedi mock). */
-      async reopen(id: string): Promise<void> {
-        const project = await api.reopen(id);
         patchState(store, updateEntity({ id, changes: project }));
       },
 

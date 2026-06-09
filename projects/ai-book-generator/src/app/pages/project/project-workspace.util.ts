@@ -11,7 +11,7 @@ import type { ChapterItem } from '../../shared/components-v2/chapter-index/chapt
 import type { Chapter, ChatMessage } from '../../core/domain';
 
 /** Stati con un output (versione + capitoli) disponibile. */
-export const HAS_OUTPUT = new Set(['review', 'published', 'archived']);
+export const HAS_OUTPUT = new Set(['review', 'published']);
 
 /** Paragrafi per "pagina" nel lettore paginato (niente scroll, sfoglio a pagine). */
 export const READER_PAGE_SIZE = 3;

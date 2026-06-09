@@ -57,7 +57,6 @@ const STATUS_INFO: Record<ProjectStatus, { label: string; tone: Tone }> = {
   processing: { label: 'In generazione', tone: 'info' },
   review: { label: 'In revisione', tone: 'amber' },
   published: { label: 'Pubblicato', tone: 'success' },
-  archived: { label: 'Archiviato', tone: 'neutral' },
   failed: { label: 'Errore', tone: 'danger' },
 };
 const TYPE_META: Record<SourceType, { icon: string; tone: Tone }> = {
@@ -82,10 +81,7 @@ export function projectActions(p: Project): RowAction[] {
   const reuse: RowAction = { id: 'reuse', label: 'Riutilizza', icon: 'autorenew' };
   const download: RowAction = { id: 'download', label: 'Scarica', icon: 'download' };
   if (p.status === 'published') {
-    return [download, reuse, { id: 'archive', label: 'Archivia', icon: 'archive' }, del];
-  }
-  if (p.status === 'archived') {
-    return [download, reuse, { id: 'reopen', label: 'Riapri', icon: 'unarchive' }, del];
+    return [download, reuse, del];
   }
   return [{ id: 'open', label: 'Apri', icon: 'open_in_new' }, del];
 }

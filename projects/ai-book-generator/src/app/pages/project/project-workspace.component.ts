@@ -244,16 +244,6 @@ export class ProjectWorkspaceComponent {
   );
   readonly indexCountLabel = computed(() => `${this.workspace.chapters().length} capitoli`);
 
-  /** Etichette prev/next dal capitolo adiacente (vuoto = bordo lista). */
-  readonly prevLabel = computed(() => this.adjacent(-1));
-  readonly nextLabel = computed(() => this.adjacent(1));
-  private adjacent(delta: number): string {
-    const list = this.workspace.chapters();
-    const i = list.findIndex((c) => c.id === this.selectedKey());
-    const n = list[i + delta];
-    return n ? `${n.index} · ${n.title}` : '';
-  }
-
   // --- Chat -------------------------------------------------------------------
   readonly chatDraft = signal('');
   readonly chatBubbles = computed<ChatBubble[]>(() =>
@@ -268,14 +258,6 @@ export class ProjectWorkspaceComponent {
   // --- Azioni -----------------------------------------------------------------
   selectChapter(key: string): void {
     this.pickedKey.set(key);
-  }
-  step(delta: number): void {
-    const list = this.workspace.chapters();
-    const i = list.findIndex((c) => c.id === this.selectedKey());
-    const next = list[i + delta];
-    if (next) {
-      this.pickedKey.set(next.id);
-    }
   }
   sendChat(text: string): void {
     void this.workspace.send(this.id(), text);
@@ -322,14 +304,5 @@ export class ProjectWorkspaceComponent {
   }
   generate(): void {
     void this.store.generate(this.id());
-  }
-  cancel(): void {
-    void this.store.cancel(this.id());
-  }
-  publish(): void {
-    void this.store.publish(this.id());
-  }
-  reopen(): void {
-    void this.store.reopen(this.id());
   }
 }

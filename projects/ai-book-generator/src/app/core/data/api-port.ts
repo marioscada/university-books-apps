@@ -39,10 +39,6 @@ export interface ApiPort {
   cancel(id: string): Promise<Project>;
   /** POST /projects/:id/publish (review→published, congela Version) */
   publish(id: string): Promise<Project>;
-  /** POST /projects/:id/archive */
-  archive(id: string): Promise<Project>;
-  /** POST /projects/:id/reopen */
-  reopen(id: string): Promise<Project>;
   /** POST /projects/:id/duplicate */
   duplicate(id: string): Promise<Project>;
   /** DELETE /projects/:id */

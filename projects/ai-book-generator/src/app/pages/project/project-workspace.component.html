@@ -108,11 +108,12 @@
           <div class="skel-confirm-wrap">
             <section class="surface-card studio-confirm">
               <app-skeleton class="skel-confirm__check" width="72px" height="72px" radius="999px" />
-              <app-skeleton width="240px" height="28px" />
+              <app-skeleton width="280px" height="30px" />
               <div class="studio-confirm__downloads">
-                <app-skeleton width="130px" height="40px" radius="20px" />
-                <app-skeleton width="140px" height="40px" radius="20px" />
-                <app-skeleton width="150px" height="40px" radius="20px" />
+                <app-skeleton width="132px" height="44px" radius="22px" />
+                <app-skeleton width="148px" height="44px" radius="22px" />
+                <app-skeleton width="124px" height="44px" radius="22px" />
+                <app-skeleton width="158px" height="44px" radius="22px" />
               </div>
             </section>
             <app-spinner
@@ -210,29 +211,6 @@
               </button>
             </div>
           </section>
-        } @else if (project.status === 'archived') {
-          <section class="studio-body studio-body--read">
-            <app-chapter-index
-              class="studio-index"
-              [heading]="'Indice'"
-              [countLabel]="workspace.chapters().length + ' capitoli'"
-              [chapters]="chapterItems()"
-              [selectedKey]="selectedKey()"
-              collapsible
-              (selected)="selectChapter($event)" />
-            @if (selectedChapter(); as ch) {
-              <app-chapter-reader
-                class="studio-reader"
-                [documentTitle]="project.title"
-                [title]="ch.index + ' · ' + ch.title"
-                [meta]="'≈ ' + ch.wordCount + ' parole'"
-                [paragraphs]="selectedParagraphs()"
-                [prevLabel]="prevLabel()"
-                [nextLabel]="nextLabel()"
-                (prev)="step(-1)"
-                (next)="step(1)" />
-            }
-          </section>
         } @else if (project.status === 'failed') {
           <section class="surface-card studio-panel">
             <span class="studio-eyebrow studio-eyebrow--danger">Errore</span>
@@ -251,13 +229,6 @@
           <button end mat-flat-button color="primary" type="button" (click)="generate()">
             {{ 'i18n.Workspace.Action.generateIndex' | translate }}
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
-          </button>
-        </app-action-bar>
-      } @else if (project.status === 'archived') {
-        <app-action-bar sticky placement="top">
-          <button end mat-stroked-button type="button" (click)="reopen()">
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">unarchive</mat-icon>
-            {{ 'i18n.Workspace.Action.reopen' | translate }}
           </button>
         </app-action-bar>
       } @else if (project.status === 'failed') {

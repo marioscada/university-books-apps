@@ -61,7 +61,7 @@ export const routes: Routes = [
         data: { showFooter: false },
       },
       {
-        // Collezione: archivio storico (solo completati) per categoria.
+        // Collezione: libreria dei lavori pubblicati.
         path: 'collection',
         loadComponent: () =>
           import('./pages/collection/collection.component').then((m) => m.CollectionComponent),
