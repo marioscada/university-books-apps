@@ -1,10 +1,10 @@
 import { InjectionToken } from '@angular/core';
 
+import type { components } from './api-types.generated';
 import type {
   Project,
   ProjectStatus,
-  ProjectKind,
-  ProjectSettings,
+  DocumentType,
   CoverTheme,
   DerivedKind,
   Job,
@@ -108,18 +108,12 @@ export interface ApiPort {
 
 export interface ListProjectsFilter {
   status?: ProjectStatus;
-  kind?: ProjectKind;
+  documentType?: DocumentType;
   q?: string;
 }
 
-export interface CreateProjectInput {
-  title: string;
-  kind: ProjectKind;
-  /** Settings completi (dalla pagina "Personalizza il modello"). Se assenti → default. */
-  settings?: ProjectSettings;
-  /** Tema cover (dall'anteprima del modello). Default `ocean`. */
-  coverTheme?: CoverTheme;
-}
+/** Input creazione progetto — generato 1:1 dallo schema backend (OpenAPI). */
+export type CreateProjectInput = components['schemas']['CreateProjectRequest'];
 
 export interface CreateUploadInput {
   name: string;
@@ -129,8 +123,10 @@ export interface CreateUploadInput {
 
 export interface PatchProjectInput {
   title?: string;
-  settings?: Project['settings'];
-  sourceIds?: string[];
+  description?: string;
+  generationOptions?: Project['generationOptions'];
+  materialFileIds?: string[];
+  instructionFileIds?: string[];
 }
 
 export interface ListSourcesFilter {

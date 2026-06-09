@@ -6,19 +6,28 @@
  * crescente. Gli edit minori (chat) lavorano su una draft della versione.
  */
 
-import type { ProjectSettings, OutputFormat } from './project';
+import type { GenerationOptions, OutputFormat } from './project';
 
 export interface OutlineNode {
   id: string;
   title: string;
-  level: number;                   // 1 = capitolo, 2 = sezione…
+  level: number;                   // 1 = capitolo, 2 = sezione, 3 = sotto-sezione
   childrenIds: string[];
 }
 
-/** Sotto-sezione di un capitolo (voce dell'indice completo). */
+/** Sotto-sezione (livello 3, foglia) dell'indice completo. */
+export interface IndexSubSection {
+  id: string;
+  title: string;
+  page?: number;                   // assente all'indice; presente a capitoli generati
+}
+
+/** Sezione (livello 2) dell'indice completo, con eventuali sotto-sezioni. */
 export interface ChapterSection {
   id: string;
   title: string;
+  page?: number;                   // assente all'indice; presente a capitoli generati
+  subsections?: IndexSubSection[];
 }
 
 export interface Chapter {
@@ -29,6 +38,7 @@ export interface Chapter {
   body: string;                    // markdown/HTML
   status: 'pending' | 'generating' | 'ready' | 'failed';
   wordCount: number;
+  page?: number;                   // pagina iniziale (a capitoli generati)
   sections?: ChapterSection[];     // sotto-sezioni titolate (indice completo)
 }
 
@@ -48,7 +58,7 @@ export interface Version {
   createdAt: string;
   createdBy: string;
 
-  settingsSnapshot: ProjectSettings; // settings con cui è stata generata
+  settingsSnapshot: GenerationOptions; // opzioni con cui è stata generata
   sourcesUsedIds: string[];          // snapshot delle fonti usate
   outline: OutlineNode[];            // struttura capitoli
   chapters: Chapter[];               // contenuto

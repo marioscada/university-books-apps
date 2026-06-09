@@ -21,13 +21,15 @@
           [label]="titleFieldLabel()" required [maxLength]="titleMax"
           [error]="titleError()"
           [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate"
-          [value]="title()" (valueChange)="title.set($event)"
+          [value]="documentTitle()"
+          (valueChange)="documentTitle.set($event)"
           (blurred)="titleTouched.set(true)" />
         <app-counter-field
           [label]="descFieldLabel" [optionalLabel]="'i18n.Setup.S1.optional' | translate"
           [maxLength]="descMax" multiline [rows]="4"
           [placeholder]="descPlaceholder()"
-          [value]="description()" (valueChange)="description.set($event)" />
+          [value]="documentDescription()"
+          (valueChange)="documentDescription.set($event)" />
       </div>
 
       <!-- Istruzioni + File estese sotto agli input -->
@@ -50,8 +52,8 @@
                   </button>
                 </mat-menu>
               </header>
-              @if (notes().trim()) {
-                <p class="setup-aside__snippet">{{ notes() }}</p>
+              @if (instructionsText().trim()) {
+                <p class="setup-aside__snippet">{{ instructionsText() }}</p>
                 <div class="setup-aside__actions">
                   <button class="setup-aside__link" type="button" (click)="openInstr()">
                     <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">edit</mat-icon>
@@ -63,9 +65,9 @@
                   </button>
                 </div>
               }
-              @if (instrFiles().length) {
+              @if (instructionFiles().length) {
                 <ul class="setup-files">
-                  @for (f of instrFiles(); track f.id) {
+                  @for (f of instructionFiles(); track f.id) {
                     <li class="setup-file" [attr.data-status]="f.status || 'ready'">
                       <button class="setup-file__remove" type="button" [attr.aria-label]="f.name" (click)="removeInstrFile(f.id)">
                         <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
@@ -83,7 +85,7 @@
                   }
                 </ul>
               }
-              @if (!notes().trim() && !instrFiles().length) {
+              @if (!instructionsText().trim() && !instructionFiles().length) {
                 <p class="setup-aside__hint">Aggiungi istruzioni per <strong>stile</strong>, <strong>lunghezza</strong> e contenuti — a mano o da file. Es. «interlinea 1,5, ~30 pagine, senza appendici».</p>
               }
             </section>
@@ -112,9 +114,9 @@
                 <span class="setup-cap__label">{{ capacityUsed() }}% della capacità del progetto usata</span>
               </div>
 
-              @if (sources().length) {
+              @if (materialFiles().length) {
                 <ul class="setup-files">
-                  @for (f of sources(); track f.id) {
+                  @for (f of materialFiles(); track f.id) {
                     <li class="setup-file" [attr.data-status]="f.status || 'ready'">
                       <button class="setup-file__remove" type="button" [attr.aria-label]="f.name" (click)="removeSource(f.id)">
                         <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
@@ -156,7 +158,7 @@
     <app-counter-field
       label="Istruzioni" multiline [rows]="8" [maxLength]="notesMax"
       placeholder="Es. enfatizza i dati del 2024, evita il gergo tecnico, includi raccomandazioni operative…"
-      [value]="notes()" (valueChange)="notes.set($event)" />
+      [value]="instructionsText()" (valueChange)="instructionsText.set($event)" />
     <div footer class="ed-footer">
       <span></span>
       <div class="ed-footer__actions">

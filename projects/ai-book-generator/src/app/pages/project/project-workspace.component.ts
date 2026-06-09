@@ -172,7 +172,7 @@ export class ProjectWorkspaceComponent {
   readonly publishing = computed(() => this.workspace.publishing());
   readonly pubProgress = computed(() => this.workspace.pubProgress());
   /** Kicker della copertina (es. "REPORT"). */
-  readonly coverKicker = computed(() => (this.project()?.kind ?? '').toUpperCase());
+  readonly coverKicker = computed(() => (this.project()?.documentType ?? '').toUpperCase());
 
   /**
    * Stato di attesa/generazione → la pagina mostra SOLO il generation-panel a
@@ -307,7 +307,7 @@ export class ProjectWorkspaceComponent {
 
   // --- Cosa otterrai (data view, revisione indice) ----------------------------
   readonly outcomeStats = computed(() =>
-    toOutcomeStats(this.workspace.chapters(), this.project()?.sourceIds.length ?? 0),
+    toOutcomeStats(this.workspace.chapters(), this.project()?.materialFileIds.length ?? 0),
   );
 
   /** Etichette prev/next dal capitolo adiacente (vuoto = bordo lista). */
@@ -382,13 +382,13 @@ export class ProjectWorkspaceComponent {
   readonly publishFormats = computed(() => {
     const fmts = this.pubFormats().length
       ? this.pubFormats()
-      : (this.project()?.settings.outputFormats ?? ['pdf']);
+      : (this.project()?.generationOptions.outputFormats ?? ['pdf']);
     return fmts.map((f) => f.toUpperCase());
   });
 
   /** Apre il dialog di pubblicazione, inizializzando i formati dai settings. */
   goToPublish(): void {
-    this.pubFormats.set([...(this.project()?.settings.outputFormats ?? ['pdf'])]);
+    this.pubFormats.set([...(this.project()?.generationOptions.outputFormats ?? ['pdf'])]);
     this.showPublish.set(true);
   }
   /** Torna dalla Pubblica ai capitoli. */

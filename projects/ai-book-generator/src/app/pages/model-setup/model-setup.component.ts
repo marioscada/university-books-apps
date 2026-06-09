@@ -28,7 +28,8 @@ import { ProjectsStore } from '../../core/state/projects.store';
 import { TemplatesStore } from '../../core/state/templates.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
 import { UiPromiseService } from '../../shared/services/ui-promise.service';
-import type { OutputFormat, ProjectSettings, ProjectTemplate } from '../../core/domain';
+import type { OutputFormat, GenerationOptions, ProjectTemplate } from '../../core/domain';
+import type { CreateProjectInput } from '../../core/data/api-port';
 
 /** Genere grammaticale del nome modello (per gli articoli IT). */
 const MODEL_GENDER: Record<string, 'm' | 'f'> = {
@@ -87,9 +88,9 @@ export class ModelSetupComponent {
   );
 
   // --- Stato modulo -----------------------------------------------------------
-  readonly title = signal('');
-  readonly description = signal('');
-  readonly notes = signal('');
+  readonly documentTitle = signal('');
+  readonly documentDescription = signal('');
+  readonly instructionsText = signal('');
   readonly titleMax = TITLE_MAX;
   readonly descMax = DESC_MAX;
   readonly notesMax = NOTES_MAX;
@@ -97,14 +98,14 @@ export class ModelSetupComponent {
   /** Validazione titolo (obbligatorio): errore solo dopo il primo blur. */
   readonly titleTouched = signal(false);
   readonly titleError = computed(() =>
-    this.titleTouched() && !this.title().trim() ? 'Il titolo è obbligatorio' : '',
+    this.titleTouched() && !this.documentTitle().trim() ? 'Il titolo è obbligatorio' : '',
   );
   /** Si può generare solo con un titolo valido. */
-  readonly canGenerate = computed(() => !!this.title().trim());
+  readonly canGenerate = computed(() => !!this.documentTitle().trim());
 
   readonly language = signal('it');
   readonly formats = signal<OutputFormat[]>(['pdf', 'docx']);
-  readonly sources = signal<SourceItem[]>([]);
+  readonly materialFiles = signal<SourceItem[]>([]);
 
   // --- Nome modello + grammatica ---------------------------------------------
   readonly modelName = computed(() =>
@@ -136,10 +137,10 @@ export class ModelSetupComponent {
   private uploadSeq = 0;
 
   addSources(files: File[]): void {
-    this.simulateUpload(this.sources, files);
+    this.simulateUpload(this.materialFiles, files);
   }
   removeSource(id: string): void {
-    this.sources.update((list) => list.filter((s) => s.id !== id));
+    this.materialFiles.update((list) => list.filter((s) => s.id !== id));
   }
 
   // --- Sidebar: File (upload da dispositivo / contenuto testuale, catalogati) --
@@ -156,13 +157,13 @@ export class ModelSetupComponent {
   }
   /** Lista mostrata nel dialog di upload, in base al bersaglio. */
   readonly attachItems = computed(() =>
-    this.attachTarget() === 'instr' ? this.instrFiles() : this.sources(),
+    this.attachTarget() === 'instr' ? this.instructionFiles() : this.materialFiles(),
   );
   addAttach(files: File[]): void {
-    this.simulateUpload(this.attachTarget() === 'instr' ? this.instrFiles : this.sources, files);
+    this.simulateUpload(this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles, files);
   }
   removeAttach(id: string): void {
-    const list = this.attachTarget() === 'instr' ? this.instrFiles : this.sources;
+    const list = this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles;
     list.update((l) => l.filter((s) => s.id !== id));
   }
 
@@ -182,12 +183,12 @@ export class ModelSetupComponent {
       return;
     }
     const name = `${text.split(/\s+/).slice(0, 5).join(' ').slice(0, 40)}.txt`;
-    this.sources.update((l) => [...l, { id: `${++this.uploadSeq}-${name}`, name, status: 'ready' as const }]);
+    this.materialFiles.update((l) => [...l, { id: `${++this.uploadSeq}-${name}`, name, status: 'ready' as const }]);
     this.textOpen.set(false);
   }
 
   /** Capacità progetto usata (mock): cresce coi file caricati. */
-  readonly capacityUsed = computed(() => Math.min(100, this.sources().length * 12));
+  readonly capacityUsed = computed(() => Math.min(100, this.materialFiles().length * 12));
   /** Categoria del file per icona/colore riconoscibili (PDF, Word, immagine…). */
   fileKind(name: string): 'pdf' | 'doc' | 'img' | 'sheet' | 'text' | 'file' {
     const ext = (name.split('.').pop() ?? '').toLowerCase();
@@ -213,7 +214,7 @@ export class ModelSetupComponent {
   // --- Istruzioni: a mano (note) oppure da file (PC) --------------------------
   readonly instrOpen = signal(false);
   /** File di istruzioni caricati dal dispositivo (catalogati "Istruzione"). */
-  readonly instrFiles = signal<SourceItem[]>([]);
+  readonly instructionFiles = signal<SourceItem[]>([]);
   openInstr(): void {
     this.instrOpen.set(true);
   }
@@ -222,10 +223,10 @@ export class ModelSetupComponent {
   }
   /** Elimina le istruzioni scritte a mano. */
   clearInstr(): void {
-    this.notes.set('');
+    this.instructionsText.set('');
   }
   removeInstrFile(id: string): void {
-    this.instrFiles.update((l) => l.filter((s) => s.id !== id));
+    this.instructionFiles.update((l) => l.filter((s) => s.id !== id));
   }
 
   /**
@@ -288,13 +289,23 @@ export class ModelSetupComponent {
     if (!tpl || this.submitting()) {
       return;
     }
-    const settings: ProjectSettings = {
-      instructions: this.notes().trim(),
+    const generationOptions: GenerationOptions = {
+      aiInstructions: this.instructionsText().trim() || undefined,
       processingMode: tpl.defaults.processingMode,
-      structure: { ...tpl.defaults.structure },
+      documentStructure: { ...tpl.defaults.structure },
       outputFormats: this.formats().length ? this.formats() : ['pdf'],
-      language: this.language(),
+      outputLanguage: this.language(),
+    };
+
+    const payload: CreateProjectInput = {
+      title: this.documentTitle().trim() || this.modelName(),
+      description: this.documentDescription().trim() || undefined,
+      documentType: tpl.documentType,
       templateId: tpl.id,
+      coverTheme: tpl.coverTheme ?? 'ocean',
+      materialFileIds: this.materialFiles().map((f) => f.id),
+      instructionFileIds: this.instructionFiles().map((f) => f.id),
+      generationOptions,
     };
 
     this.submitting.set(true);
@@ -302,12 +313,7 @@ export class ModelSetupComponent {
     // (indice generato → status review), poi naviga e l'overlay sparisce.
     await this.uiPromise.run(
       async () => {
-        const project = await this.projectsStore.createFromTemplate({
-          title: this.title().trim() || this.modelName(),
-          kind: tpl.kind,
-          settings,
-          coverTheme: tpl.coverTheme ?? 'ocean',
-        });
+        const project = await this.projectsStore.createFromTemplate(payload);
         await this.projectsStore.generate(project.id);
         await this.waitUntilReady(project.id);
         await this.router.navigate(['/project', project.id]);

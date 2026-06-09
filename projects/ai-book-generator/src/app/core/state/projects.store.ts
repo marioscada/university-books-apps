@@ -28,8 +28,8 @@ import {
   timer,
 } from 'rxjs';
 
-import type { DerivedKind, Job, Plan, Project, ProjectSettings } from '../domain';
-import { API_PORT } from '../data/api-port';
+import type { DerivedKind, Job, Plan, Project, GenerationOptions } from '../domain';
+import { API_PORT, type CreateProjectInput } from '../data/api-port';
 import { RUNTIME_CONFIG } from '../config/runtime.config';
 import { ACTIVE_STATUSES } from '../domain';
 
@@ -138,42 +138,41 @@ export const ProjectsStore = signalStore(
       loadPlan,
       pollJob,
 
-      /** Aggiorna i settings di un progetto (autosave del wizard). */
-      async updateSettings(id: string, settings: ProjectSettings): Promise<void> {
-        const project = await api.patchProject(id, { settings });
+      /** Aggiorna le opzioni di generazione di un progetto (autosave del wizard). */
+      async updateSettings(id: string, generationOptions: GenerationOptions): Promise<void> {
+        const project = await api.patchProject(id, { generationOptions });
         patchState(store, updateEntity({ id, changes: project }));
       },
 
       /**
-       * Aggiorna i metadati di una draft (titolo + fonti scelte nel wizard).
+       * Aggiorna i metadati di una draft (titolo + file scelti nel wizard).
        * Separato da `updateSettings` per non gonfiarne la firma di dominio.
        */
       async updateDraftMeta(
         id: string,
-        patch: { title?: string; sourceIds?: string[] },
+        patch: { title?: string; materialFileIds?: string[]; instructionFileIds?: string[] },
       ): Promise<void> {
         const project = await api.patchProject(id, patch);
         patchState(store, updateEntity({ id, changes: project }));
       },
 
       /** Crea un nuovo progetto (draft) e lo aggiunge allo store. */
-      async create(title: string, kind: Project['kind']): Promise<Project> {
-        const project = await api.createProject({ title, kind });
+      async create(title: string, documentType: Project['documentType']): Promise<Project> {
+        const project = await api.createProject({
+          title,
+          documentType,
+          materialFileIds: [],
+          instructionFileIds: [],
+        });
         patchState(store, addEntity(project));
         return project;
       },
 
       /**
-       * Crea un progetto draft dal flusso "Personalizza il modello": titolo +
-       * settings completi (default del modello + scostamenti) + tema cover.
-       * Il modello resta immutabile; il progetto porta solo gli override.
+       * Crea un progetto draft dal flusso "Personalizza il modello" passando il
+       * payload del contratto (titolo + opzioni di generazione + file + tema).
        */
-      async createFromTemplate(input: {
-        title: string;
-        kind: Project['kind'];
-        settings: ProjectSettings;
-        coverTheme: Project['coverTheme'];
-      }): Promise<Project> {
+      async createFromTemplate(input: CreateProjectInput): Promise<Project> {
         const project = await api.createProject(input);
         patchState(store, addEntity(project));
         return project;

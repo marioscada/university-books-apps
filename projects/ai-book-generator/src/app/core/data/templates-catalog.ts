@@ -14,12 +14,12 @@
 import type {
   ProjectTemplate,
   StructurePart,
-  TypographySettings,
+  TypographyOptions,
 } from '../domain';
-import type { StructureConfig } from '../domain';
+import type { DocumentStructure } from '../domain';
 
 /** Tipografia editoriale di default (saggistica). */
-const SERIF_TYPOGRAPHY: TypographySettings = {
+const SERIF_TYPOGRAPHY: TypographyOptions = {
   fontFamily: 'Times New Roman',
   fontSizePt: 12,
   textColor: '#1a1d21',
@@ -29,7 +29,7 @@ const SERIF_TYPOGRAPHY: TypographySettings = {
 };
 
 /** Tipografia "sans" per documenti tecnici/business/accademici scansionabili. */
-const SANS_TYPOGRAPHY: TypographySettings = {
+const SANS_TYPOGRAPHY: TypographyOptions = {
   fontFamily: 'Inter',
   fontSizePt: 11,
   textColor: '#1a1d21',
@@ -38,19 +38,19 @@ const SANS_TYPOGRAPHY: TypographySettings = {
   alignment: 'left',
 };
 
-/** StructureConfig completo a partire dai flag rilevanti (gli altri a false). */
-function structure(over: Partial<StructureConfig>): StructureConfig {
+/** DocumentStructure completo a partire dai flag rilevanti (gli altri a false). */
+function structure(over: Partial<DocumentStructure>): DocumentStructure {
   return {
     length: 'medium',
     tone: 'neutral',
     depth: 'standard',
-    bibliography: false,
-    glossary: false,
-    quiz: false,
-    exercises: false,
-    appendices: false,
-    tables: false,
-    images: false,
+    includeBibliography: false,
+    includeGlossary: false,
+    includeQuiz: false,
+    includeExercises: false,
+    includeAppendices: false,
+    includeTables: false,
+    includeImages: false,
     ...over,
   };
 }
@@ -79,7 +79,7 @@ function part(
 // ---------------------------------------------------------------------------
 const BOOK: ProjectTemplate = {
   id: 'book',
-  kind: 'book',
+  documentType: 'book',
   nameKey: 'i18n.Models.book.name',
   descKey: 'i18n.Models.book.desc',
   sourceKey: 'i18n.Models.book.source',
@@ -107,7 +107,7 @@ const BOOK: ProjectTemplate = {
     processingMode: 'balanced',
     outputFormats: ['pdf', 'epub'],
     language: 'it',
-    structure: structure({ bibliography: true, glossary: true, appendices: true, chapters: 12 }),
+    structure: structure({ includeBibliography: true, includeGlossary: true, includeAppendices: true, chapterCount: 12 }),
   },
   typography: SERIF_TYPOGRAPHY,
 };
@@ -117,7 +117,7 @@ const BOOK: ProjectTemplate = {
 // ---------------------------------------------------------------------------
 const SUMMARY: ProjectTemplate = {
   id: 'summary',
-  kind: 'summary',
+  documentType: 'summary',
   nameKey: 'i18n.Models.summary.name',
   descKey: 'i18n.Models.summary.desc',
   sourceKey: 'i18n.Models.summary.source',
@@ -143,7 +143,7 @@ const SUMMARY: ProjectTemplate = {
 // ---------------------------------------------------------------------------
 const STUDY_GUIDE: ProjectTemplate = {
   id: 'study_guide',
-  kind: 'study_guide',
+  documentType: 'study_guide',
   nameKey: 'i18n.Models.study_guide.name',
   descKey: 'i18n.Models.study_guide.desc',
   sourceKey: 'i18n.Models.study_guide.source',
@@ -171,7 +171,7 @@ const STUDY_GUIDE: ProjectTemplate = {
     processingMode: 'educational',
     outputFormats: ['pdf'],
     language: 'it',
-    structure: structure({ quiz: true, exercises: true, glossary: true, images: true }),
+    structure: structure({ includeQuiz: true, includeExercises: true, includeGlossary: true, includeImages: true }),
   },
   typography: SANS_TYPOGRAPHY,
 };
@@ -181,7 +181,7 @@ const STUDY_GUIDE: ProjectTemplate = {
 // ---------------------------------------------------------------------------
 const MANUAL: ProjectTemplate = {
   id: 'manual',
-  kind: 'manual',
+  documentType: 'manual',
   nameKey: 'i18n.Models.manual.name',
   descKey: 'i18n.Models.manual.desc',
   sourceKey: 'i18n.Models.manual.source',
@@ -205,7 +205,7 @@ const MANUAL: ProjectTemplate = {
     processingMode: 'technical',
     outputFormats: ['pdf', 'docx'],
     language: 'it',
-    structure: structure({ glossary: true, tables: true, depth: 'deep', tone: 'technical' }),
+    structure: structure({ includeGlossary: true, includeTables: true, depth: 'deep', tone: 'technical' }),
   },
   typography: SANS_TYPOGRAPHY,
 };
@@ -215,7 +215,7 @@ const MANUAL: ProjectTemplate = {
 // ---------------------------------------------------------------------------
 const REPORT: ProjectTemplate = {
   id: 'report',
-  kind: 'research_report',
+  documentType: 'research_report',
   nameKey: 'i18n.Models.report.name',
   descKey: 'i18n.Models.report.desc',
   sourceKey: 'i18n.Models.report.source',
@@ -236,7 +236,7 @@ const REPORT: ProjectTemplate = {
     processingMode: 'business',
     outputFormats: ['pdf', 'docx'],
     language: 'it',
-    structure: structure({ bibliography: true, tables: true, images: true, tone: 'formal' }),
+    structure: structure({ includeBibliography: true, includeTables: true, includeImages: true, tone: 'formal' }),
   },
   typography: SANS_TYPOGRAPHY,
 };
@@ -246,7 +246,7 @@ const REPORT: ProjectTemplate = {
 // ---------------------------------------------------------------------------
 const PRESENTATION: ProjectTemplate = {
   id: 'presentation',
-  kind: 'presentation',
+  documentType: 'presentation',
   nameKey: 'i18n.Models.presentation.name',
   descKey: 'i18n.Models.presentation.desc',
   sourceKey: 'i18n.Models.presentation.source',
@@ -269,7 +269,7 @@ const PRESENTATION: ProjectTemplate = {
     processingMode: 'balanced',
     outputFormats: ['pdf'],
     language: 'it',
-    structure: structure({ images: true, length: 'short', depth: 'overview' }),
+    structure: structure({ includeImages: true, length: 'short', depth: 'overview' }),
   },
   typography: SANS_TYPOGRAPHY,
 };
@@ -279,7 +279,7 @@ const PRESENTATION: ProjectTemplate = {
 // ---------------------------------------------------------------------------
 const COURSE: ProjectTemplate = {
   id: 'course',
-  kind: 'training_course',
+  documentType: 'training_course',
   nameKey: 'i18n.Models.course.name',
   descKey: 'i18n.Models.course.desc',
   sourceKey: 'i18n.Models.course.source',
@@ -300,7 +300,7 @@ const COURSE: ProjectTemplate = {
     processingMode: 'educational',
     outputFormats: ['pdf', 'docx'],
     language: 'it',
-    structure: structure({ quiz: true, exercises: true, images: true }),
+    structure: structure({ includeQuiz: true, includeExercises: true, includeImages: true }),
   },
   typography: SANS_TYPOGRAPHY,
 };
@@ -310,7 +310,7 @@ const COURSE: ProjectTemplate = {
 // ---------------------------------------------------------------------------
 const THESIS: ProjectTemplate = {
   id: 'thesis',
-  kind: 'research_report',
+  documentType: 'research_report',
   nameKey: 'i18n.Models.thesis.name',
   descKey: 'i18n.Models.thesis.desc',
   sourceKey: 'i18n.Models.thesis.source',
@@ -331,7 +331,7 @@ const THESIS: ProjectTemplate = {
     processingMode: 'academic',
     outputFormats: ['pdf', 'docx'],
     language: 'it',
-    structure: structure({ bibliography: true, appendices: true, tone: 'academic', depth: 'deep' }),
+    structure: structure({ includeBibliography: true, includeAppendices: true, tone: 'academic', depth: 'deep' }),
   },
   typography: SANS_TYPOGRAPHY,
 };
@@ -341,7 +341,7 @@ const THESIS: ProjectTemplate = {
 // ---------------------------------------------------------------------------
 const CUSTOM: ProjectTemplate = {
   id: 'custom',
-  kind: 'custom',
+  documentType: 'custom',
   nameKey: 'i18n.Models.custom.name',
   descKey: 'i18n.Models.custom.desc',
   sourceKey: 'i18n.Models.custom.source',

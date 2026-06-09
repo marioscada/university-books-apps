@@ -6,7 +6,7 @@
 import type { Tone } from '../../shared/components-v2/tone';
 import type { RowAction } from '../../shared/components-v2/list-row/list-row.component';
 import { derivedKindLabel } from '../../core/data/derived.util';
-import type { Project, ProjectKind, ProjectStatus, CoverTheme, Source, SourceType, IngestStatus } from '../../core/domain';
+import type { Project, DocumentType, ProjectStatus, CoverTheme, Source, SourceType, IngestStatus } from '../../core/domain';
 import { relTime, humanSize } from './format.util';
 
 /** View-model di una riga (progetto o fonte) per `list-row`. */
@@ -22,7 +22,7 @@ export interface RowVM {
   actions: RowAction[];
 }
 
-const KIND_LABEL: Record<ProjectKind, string> = {
+const KIND_LABEL: Record<DocumentType, string> = {
   book: 'Libro',
   summary: 'Riassunto',
   manual: 'Manuale',
@@ -33,7 +33,7 @@ const KIND_LABEL: Record<ProjectKind, string> = {
   documentation: 'Documentazione',
   custom: 'Documento',
 };
-const KIND_ICON: Record<ProjectKind, string> = {
+const KIND_ICON: Record<DocumentType, string> = {
   book: 'menu_book',
   summary: 'article',
   manual: 'description',
@@ -101,11 +101,11 @@ export function projectRow(p: Project, nSources: number): RowVM {
     badge = chapters ? 'Capitoli pronti' : 'Indice pronto';
     tone = chapters ? 'amber' : 'info';
   }
-  const kicker = p.derivedKind ? `Derivato · ${derivedKindLabel(p.derivedKind)}` : KIND_LABEL[p.kind];
+  const kicker = p.derivedKind ? `Derivato · ${derivedKindLabel(p.derivedKind)}` : KIND_LABEL[p.documentType];
   const fonti = `${nSources} ${nSources === 1 ? 'fonte' : 'fonti'}`;
   return {
     id: p.id,
-    icon: p.derivedKind ? 'auto_awesome' : KIND_ICON[p.kind],
+    icon: p.derivedKind ? 'auto_awesome' : KIND_ICON[p.documentType],
     iconTone: 'neutral',
     cover: COVER_COLOR[p.coverTheme],
     title: p.title,

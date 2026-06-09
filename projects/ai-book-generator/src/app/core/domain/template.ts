@@ -12,9 +12,9 @@ import type {
   CoverTheme,
   OutputFormat,
   ProcessingMode,
-  ProjectKind,
-  StructureConfig,
-  TypographySettings,
+  DocumentType,
+  DocumentStructure,
+  TypographyOptions,
 } from './project';
 
 /** Raggruppamento editoriale di una parte di struttura. */
@@ -53,13 +53,13 @@ export interface TemplateDefaults {
   outputFormats: OutputFormat[];
   language: string;
   /** Flag struttura (bibliografia/glossario/quiz/…) e parametri base. */
-  structure: StructureConfig;
+  structure: DocumentStructure;
 }
 
 /** Modello di pubblicazione (immutabile). */
 export interface ProjectTemplate {
   id: string;
-  kind: ProjectKind;
+  documentType: DocumentType;
   /** Chiavi i18n di nome/descrizione/fonte standard. */
   nameKey: string;
   descKey: string;
@@ -67,7 +67,7 @@ export interface ProjectTemplate {
   /** Struttura standard, ordinata. */
   parts: StructurePart[];
   defaults: TemplateDefaults;
-  typography: TypographySettings;
+  typography: TypographyOptions;
   /** Tema cover di default per l'anteprima. */
   coverTheme?: CoverTheme;
   /** Stima pagine (per la card galleria nella pagina Create). */

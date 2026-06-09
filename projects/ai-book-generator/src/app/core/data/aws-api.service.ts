@@ -21,7 +21,7 @@ import type {
   Version,
   ChatMessage,
   DerivedContent,
-  ProjectSettings,
+  GenerationOptions,
 } from '../domain';
 
 /**
@@ -53,7 +53,7 @@ export class AwsApiService implements ApiPort {
   async listProjects(filter?: ListProjectsFilter): Promise<Project[]> {
     let params = new HttpParams();
     if (filter?.status) params = params.set('status', filter.status);
-    if (filter?.kind) params = params.set('kind', filter.kind);
+    if (filter?.documentType) params = params.set('documentType', filter.documentType);
     if (filter?.q) params = params.set('q', filter.q);
     const res = await firstValueFrom(
       this.http.get<{ projects: Project[] }>(this.url('/v1/projects'), { params }),
@@ -271,7 +271,7 @@ export class AwsApiService implements ApiPort {
       status: (b.status as Version['status']) ?? 'draft',
       createdAt: b.createdAt as string,
       createdBy: (b.createdBy as string) ?? '',
-      settingsSnapshot: (b.settingsSnapshot as ProjectSettings) ?? ({} as ProjectSettings),
+      settingsSnapshot: (b.settingsSnapshot as GenerationOptions) ?? ({} as GenerationOptions),
       sourcesUsedIds: (b.sourcesUsedIds as string[]) ?? [],
       outline: (b.outline as Version['outline']) ?? [],
       chapters: (b.chapters as Version['chapters']) ?? [],
