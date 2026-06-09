@@ -11,15 +11,8 @@
           type="button"
           [disabled]="!canGenerate() || submitting()"
           (click)="generate()">
-          @if (submitting()) {
-            {{ 'i18n.Setup.creating' | translate }}
-            <mat-icon class="setup-genspin" fontSet="material-symbols-outlined" aria-hidden="true"
-              >progress_activity</mat-icon
-            >
-          } @else {
-            {{ 'i18n.Setup.generateIndex' | translate }}
-            <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
-          }
+          {{ 'i18n.Setup.generateIndex' | translate }}
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
         </button>
       </header>
       <h1 class="setup-pagetitle">{{ defTitle() }}</h1>

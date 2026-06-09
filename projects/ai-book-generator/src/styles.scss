@@ -95,8 +95,8 @@ section[id] {
 
 // --- Overlay spinner (UiPromiseService) -------------------------------------
 .ui-spinner-backdrop {
-  background: rgb(15 23 42 / 24%);
-  backdrop-filter: blur(1px);
+  background: rgb(15 23 42 / 50%);
+  backdrop-filter: blur(2px);
 }
 
 // --- Toast (ToastFacade → BrowserToastService → MatSnackBar) -----------------

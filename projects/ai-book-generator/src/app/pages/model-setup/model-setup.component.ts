@@ -306,13 +306,16 @@ export class ModelSetupComponent {
     };
 
     this.submitting.set(true);
-    // Standard ottimistico: aspetto SOLO la create (per l'id) — nessun overlay,
-    // solo lo spinner sul bottone. Poi avvio la generate in BACKGROUND (ottimistico
-    // → skeleton) e navigo SUBITO allo Studio. Errore della create → toast e resto
-    // sul form (dati preservati).
+    // Attesa della create (per l'id) con OVERLAY bloccante (backdrop non
+    // cliccabile + scroll bloccato): l'utente non può ri-cliccare, modificare i
+    // campi o lasciare la pagina durante l'attesa. Poi avvio la generate in
+    // background (ottimistico → skeleton) e navigo allo Studio. Errore della
+    // create → toast e resto sul form (dati preservati).
     const { success: projectId } = await this.uiPromise.run(
       () => this.projectsStore.createFromTemplate(payload).then((p) => p.id),
       {
+        loading: true,
+        loadingMessage: this.t('i18n.Setup.creating'),
         error: {
           title: this.t('i18n.Common.error'),
           message: this.t('i18n.Setup.generateError'),
