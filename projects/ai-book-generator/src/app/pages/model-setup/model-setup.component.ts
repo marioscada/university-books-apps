@@ -23,7 +23,6 @@ import {
   SourceDropzoneComponent,
   type SourceItem,
 } from '../../shared/components-v2/source-dropzone/source-dropzone.component';
-import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { TemplatesStore } from '../../core/state/templates.store';
@@ -58,7 +57,6 @@ const NOTES_MAX = 500;
     CounterFieldComponent,
     BackLinkComponent,
     SourceDropzoneComponent,
-    ActionBarComponent,
     ModalShellComponent,
     MatIconModule,
     MatButtonModule,

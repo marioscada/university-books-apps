@@ -249,7 +249,7 @@
             <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
           </button>
         </app-action-bar>
-      } @else if (project.status === 'review') {
+      } @else if (project.status === 'review' && chaptersReady()) {
         <app-action-bar sticky placement="top">
           <button end mat-flat-button color="primary" type="button" (click)="goToPublish()">
             {{ 'i18n.Workspace.Action.publish' | translate }}

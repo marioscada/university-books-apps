@@ -20,6 +20,15 @@
   padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px)) clamp(40px, 6vw, 72px);
 }
 
+// Header del riquadro: titolo a sinistra, azione "Genera" a destra.
+.setup-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 // Titolone di pagina, allineato col riquadro.
 .setup-pagetitle {
   margin: 0;

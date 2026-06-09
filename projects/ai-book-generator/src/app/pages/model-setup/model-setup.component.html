@@ -1,17 +1,21 @@
 <div class="setup">
-  <!-- Barra azioni in alto, subito sotto l'header -->
-  <app-action-bar sticky placement="top">
-    <app-back-link start [label]="'i18n.Setup.backToModels' | translate" (navigate)="back.emit()" />
-    <button end mat-flat-button color="primary" [disabled]="!canGenerate()" (click)="generate()">
-      {{ 'i18n.Setup.generateIndex' | translate }}
-      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
-    </button>
-  </app-action-bar>
-
   <div class="setup-stack site-container">
-    <!-- Riquadro centrato: titolo + input sopra, Istruzioni + File estese sotto -->
+    <!-- Riquadro a tutta larghezza: back-link + header (titolo + Genera) sopra, form sotto -->
     <section class="surface-card setup-card">
-      <h1 class="setup-pagetitle">{{ defTitle() }}</h1>
+      <!-- Back to templates: dentro il riquadro, sopra il titolo, a sinistra -->
+      <app-back-link [label]="'i18n.Setup.backToModels' | translate" (navigate)="back.emit()" />
+      <header class="setup-cardhead">
+        <h1 class="setup-pagetitle">{{ defTitle() }}</h1>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          [disabled]="!canGenerate()"
+          (click)="generate()">
+          {{ 'i18n.Setup.generateIndex' | translate }}
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+        </button>
+      </header>
       <div class="setup-brief__form">
         <app-counter-field
           [label]="titleFieldLabel()" required [maxLength]="titleMax"
