@@ -15,6 +15,7 @@
     @for (item of navItems(); track item.id) {
       <a
         [routerLink]="item.route"
+        [queryParamsHandling]="qph(item)"
         routerLinkActive="is-active"
         class="mobile-menu__link"
         (click)="onClose()">

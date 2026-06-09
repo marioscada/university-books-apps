@@ -1,5 +1,18 @@
+import type { QueryParamsHandling } from '@angular/router';
 import { SiteNavItem } from '../layout/site-header-nav/site-header-nav.types';
 import { FooterColumn } from '../layout/site-footer-block/site-footer-block.types';
+
+/**
+ * Se la voce di nav è la **sezione in cui sei già** (stesso path base), preserva
+ * i query param → il clic punta allo *stesso* URL, che Angular ignora di default
+ * (`onSameUrlNavigation: 'ignore'`): NON resetti il sotto-step (es. il flusso
+ * `/create?template=…` resta sul setup invece di tornare alla galleria).
+ * Da un'altra sezione torna a `''` (replace) → navigazione "fresca".
+ */
+export function navQueryParamsHandling(currentUrl: string, route: string): QueryParamsHandling {
+  const base = currentUrl.split('?')[0].split('#')[0];
+  return base === route ? 'preserve' : '';
+}
 
 /**
  * Navigazione del sito — SINGLE SOURCE OF TRUTH condivisa da landing (pubblica)
