@@ -6,6 +6,7 @@ import {
   inject,
   input,
   signal,
+  untracked,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,11 +15,6 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
-import {
-  SegmentedProgressComponent,
-  type SegStep,
-} from '../../shared/components-v2/segmented-progress/segmented-progress.component';
-import { SpinnerComponent } from '../../shared/ui/spinner/spinner.component';
 import { DerivedResultComponent } from '../../shared/components-v2/derived-result/derived-result.component';
 import { ReviewShellComponent } from '../../shared/components-v2/review-shell/review-shell.component';
 import { derivedKindLabel } from '../../core/data/derived-seed';
@@ -36,9 +32,9 @@ import {
 import { ProjectsStore } from '../../core/state/projects.store';
 import { WorkspaceStore } from '../../core/state/workspace.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
+import { UiPromiseService } from '../../shared/services/ui-promise.service';
 import type { Chapter, DerivedKind } from '../../core/domain';
 import {
-  FLOW_STEP_KEYS,
   HAS_OUTPUT,
   READER_PAGE_SIZE,
   QUICK_OPS,
@@ -67,8 +63,6 @@ import {
   imports: [
     BackLinkComponent,
     ActionBarComponent,
-    SegmentedProgressComponent,
-    SpinnerComponent,
     DerivedResultComponent,
     ReviewShellComponent,
     ChapterIndexComponent,
@@ -87,6 +81,7 @@ export class ProjectWorkspaceComponent {
   private readonly store = inject(ProjectsStore);
   protected readonly workspace = inject(WorkspaceStore);
   private readonly router = inject(Router);
+  private readonly uiPromise = inject(UiPromiseService);
 
   /** Id del progetto dalla route (`withComponentInputBinding`). */
   readonly id = input.required<string>();
@@ -113,6 +108,16 @@ export class ProjectWorkspaceComponent {
         void this.workspace.open(p.id);
       }
     });
+
+    // Attesa (generazione/pubblicazione) → spinner OVERLAY sopra lo Studio, non
+    // una schermata a sé. Appena i dati arrivano, l'overlay sparisce e compare
+    // il contenuto. `onCleanup` chiude lo spinner al cambio stato/destroy.
+    effect((onCleanup) => {
+      if (this.waiting()) {
+        const ref = this.uiPromise.spinner(untracked(() => this.waitMessage()));
+        onCleanup(() => ref.hide());
+      }
+    });
   }
 
   // --- Derivato (riassunto/slide/quiz/…) --------------------------------------
@@ -136,51 +141,33 @@ export class ProjectWorkspaceComponent {
     }
   }
 
-  // --- Stepper di percorso (barra segmentata) ---------------------------------
-  /** Step tradotti per la barra segmentata (label risolte via i18n). */
-  readonly flowSteps = computed<SegStep[]>(() =>
-    FLOW_STEP_KEYS.map((key) => ({ label: this.t(key) })),
+  // --- Attesa (spinner overlay) ----------------------------------------------
+  /** True durante qualsiasi elaborazione (indice/capitoli/pubblicazione/derivato). */
+  readonly waiting = computed(
+    () => this.isGenerating() || this.derivedGenerating() || this.publishing(),
   );
-  /** Indice dello step corrente (0=Configura … 4=Render). */
-  readonly flowIndex = computed<number>(() => {
+  /** Messaggio sotto lo spinner, in base alla fase corrente. */
+  readonly waitMessage = computed(() => {
     const p = this.project();
     if (!p) {
-      return 0;
+      return '';
     }
-    switch (p.status) {
-      case 'draft':
-        return 0;
-      case 'queued':
-      case 'processing':
-        // Generazione dell'indice = step "Analisi" (coarse). I sotto-step
-        // analyze/outline sono mostrati nel generation-panel, non nello stepper.
-        return 1;
-      case 'review':
-        // Indice (outline) → Capitoli → (dialog Pubblica) → Render in pubblicazione.
-        if (this.workspace.publishing()) {
-          return 4;
-        }
-        if (this.workspace.generating()) {
-          return 3; // sviluppo capitoli
-        }
-        return this.workspace.chaptersReady() ? 3 : 2;
-      case 'failed':
-        return 1;
-      case 'published':
-      case 'archived':
-        return 5;
-      default:
-        return 0;
+    if (this.publishing()) {
+      return this.publishDetail();
     }
-  });
-  // Lo step attivo: clampa a Render salvo a flusso concluso (published=5),
-  // dove nessuno è "in corso" e tutti restano completati (verde).
-  readonly flowActive = computed(() => {
-    const i = this.flowIndex();
-    return i >= FLOW_STEP_KEYS.length ? FLOW_STEP_KEYS.length : Math.min(i, FLOW_STEP_KEYS.length - 1);
+    if (p.derivedKind) {
+      return this.derivedLabel();
+    }
+    if (p.status === 'queued' || p.status === 'processing') {
+      return this.indexDetail();
+    }
+    if (p.status === 'review' && this.workspace.generating()) {
+      return this.chapterDetail();
+    }
+    return '';
   });
 
-  // --- Pannello di generazione (UNICO componente, data-driven) ----------------
+  // --- Avanzamento ------------------------------------------------------------
   readonly genProgress = computed(() => this.workspace.genProgress());
   readonly publishing = computed(() => this.workspace.publishing());
   readonly pubProgress = computed(() => this.workspace.pubProgress());

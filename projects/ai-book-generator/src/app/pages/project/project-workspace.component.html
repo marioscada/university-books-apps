@@ -1,11 +1,7 @@
 @if (project(); as project) {
   @if (project.derivedKind) {
     <!-- DERIVATO: attesa elaborazione → risultato (sola lettura) + feedback AI -->
-    @if (derivedGenerating() || publishing()) {
-      <div class="studio-genpage">
-        <app-spinner [message]="derivedLabel()" />
-      </div>
-    } @else if (project.status === 'published') {
+    @if (project.status === 'published') {
       <!-- CONFERMA derivato: punto finale (niente ripubblicazione) -->
       <div class="studio">
         <div class="studio-stack site-container">
@@ -77,37 +73,8 @@
         <div class="studio-stack site-container"><p class="empty">Carico il derivato…</p></div>
       </div>
     }
-  } @else if (isGenerating()) {
-    <!-- GENERAZIONE: barra segmentata fissa in alto + pannello (cover con spinner) -->
-    <div class="studio">
-      <div class="studio-progress site-container">
-        <app-segmented-progress
-          [steps]="flowSteps()"
-          [activeIndex]="flowActive()" />
-      </div>
-      <div class="studio-genpage">
-        @if (project.status === 'queued' || project.status === 'processing') {
-          <div class="studio-wait">
-            <app-spinner [message]="indexDetail()" />
-            <button mat-stroked-button type="button" (click)="cancel()">
-              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
-              {{ 'i18n.Workspace.Action.cancel' | translate }}
-            </button>
-          </div>
-        } @else if (publishing()) {
-          <app-spinner [message]="publishDetail()" />
-        } @else {
-          <app-spinner [message]="chapterDetail()" />
-        }
-      </div>
-    </div>
   } @else {
     <div class="studio">
-      <div class="studio-progress site-container">
-        <app-segmented-progress
-          [steps]="flowSteps()"
-          [activeIndex]="flowActive()" />
-      </div>
       <div class="studio-stack site-container">
         @if (project.status === 'draft') {
           <section class="surface-card studio-panel">

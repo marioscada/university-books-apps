@@ -48,18 +48,6 @@
   overflow-y: auto;
 }
 
-// Band della barra segmentata (in cima allo Studio, sotto la top bar). Card
-// bianca a larghezza contenuto (site-container = max-width + gutter interno).
-.studio-progress {
-  flex: 0 0 auto;
-  margin-top: 16px;
-  padding-top: 14px;
-  padding-bottom: 14px;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
-  border-radius: 12px;
-}
-
 // L'area a colonne (capitoli/derivato) riempie lo spazio disponibile in modo
 // DETERMINISTICO (flex-basis 0, non dal contenuto); lo scroll è interno ai
 // pannelli (vedi review-shell).
@@ -67,17 +55,6 @@ app-review-shell {
   flex: 1 1 0;
   min-height: 0;
   min-width: 0;
-}
-
-// Stepper (dentro una surface-card, padding più compatto)
-.studio-stepper {
-  gap: 14px;
-  padding-block: 20px;
-}
-.studio-stepper__label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--mat-sys-on-surface-variant);
 }
 
 // Pannello generico (draft/failed)
@@ -113,29 +90,6 @@ app-review-shell {
   margin-top: 6px;
 }
 
-// Generazione/attesa (indice · capitoli · pubblicazione) — SOLO il pannello,
-// a tutta pagina, centrato; nessuna chrome dello Studio.
-.studio-genpage {
-  // Riempie lo spazio rimanente sotto la band; la card si ESTENDE in altezza
-  // (stretch) e il suo contenuto è centrato internamente (gen__inner margin:auto).
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  flex: 1 1 auto;
-  width: 100%;
-  min-width: 0;
-  min-height: 0;
-  padding-block: clamp(16px, 2vw, 28px);
-  padding-inline: var(--page-padding-inline, 20px);
-}
-// Attesa/generazione: spinner (+ annulla) centrati nello spazio.
-.studio-wait {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  margin: auto;
-}
 
 // Body a 3 pannelli (Capitoli): indice · lettura · chat, pari altezza.
 // Altezza limitata al viewport: i pannelli scrollano internamente (stesso
