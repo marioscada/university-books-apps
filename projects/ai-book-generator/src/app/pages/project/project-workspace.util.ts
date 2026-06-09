@@ -8,13 +8,7 @@ import type {
   QuickOp,
 } from '../../shared/components-v2/ai-chat-panel/ai-chat-panel.component';
 import type { ChapterItem } from '../../shared/components-v2/chapter-index/chapter-index.component';
-import type { Chapter, ChatMessage, DerivedKind } from '../../core/domain';
-
-/** Statistica sintetica mostrata in "Cosa otterrai" (value + label). */
-export interface OutcomeStat {
-  value: string;
-  label: string;
-}
+import type { Chapter, ChatMessage } from '../../core/domain';
 
 /** Stati con un output (versione + capitoli) disponibile. */
 export const HAS_OUTPUT = new Set(['review', 'published', 'archived']);
@@ -30,19 +24,6 @@ export const QUICK_OPS: QuickOp[] = [
   { key: 'technical', label: 'Rendi tecnico' },
   { key: 'translate', label: 'Traduci' },
 ];
-
-/** Tipi di derivato generabili dal documento pubblicato. */
-export const DERIVED_OPTIONS: readonly { kind: DerivedKind; title: string; desc: string }[] = [
-  { kind: 'summary', title: 'Riassunto', desc: 'Sintesi esecutiva dei punti chiave.' },
-  { kind: 'slides', title: 'Presentazione', desc: 'Slide pronte da presentare.' },
-  { kind: 'quiz', title: 'Quiz', desc: 'Domande di verifica sul contenuto.' },
-  { kind: 'manual', title: 'Manuale', desc: 'Versione operativa, passo-passo.' },
-  { kind: 'study_guide', title: 'Guida allo studio', desc: 'Schede e ripasso per studiare.' },
-  { kind: 'translation', title: 'Traduzione', desc: 'Il documento in un’altra lingua.' },
-];
-
-/** Lingue selezionabili per la traduzione. */
-export const LANGUAGES = ['Inglese', 'Spagnolo', 'Francese', 'Tedesco', 'Portoghese', 'Cinese'];
 
 /** Prompt corrispondente a un'operazione rapida della chat. */
 export function quickOpText(key: string): string {
@@ -65,8 +46,6 @@ export function quickOpText(key: string): string {
 /** Etichetta dello stato di un capitolo nella lista indice. */
 export function chapterStatusLabel(status: ChapterItem['status']): string {
   switch (status) {
-    case 'approved':
-      return 'Approvato';
     case 'generating':
       return 'In generazione';
     case 'current':
@@ -93,15 +72,13 @@ export function pagesFromWords(words: number): number {
 /**
  * Mappa i capitoli nel view-model della lista indice. In revisione indice
  * (`ready=false`) lista neutra con stima lunghezza; a capitoli sviluppati lo
- * stato riflette approvato/in generazione/in lettura/da rivedere.
+ * stato riflette in generazione/in lettura/da rivedere.
  */
 export function toChapterItems(
   chapters: readonly Chapter[],
   ready: boolean,
-  approvedIds: readonly string[],
   selectedKey: string,
 ): ChapterItem[] {
-  const approved = new Set(approvedIds);
   return chapters.map((c) => {
     const sections = (c.sections ?? []).map((s) => ({ key: s.id, title: s.title }));
     if (!ready) {
@@ -114,13 +91,8 @@ export function toChapterItems(
         sections,
       };
     }
-    const status = approved.has(c.id)
-      ? 'approved'
-      : c.status === 'generating'
-        ? 'generating'
-        : c.id === selectedKey
-          ? 'current'
-          : 'review';
+    const status =
+      c.status === 'generating' ? 'generating' : c.id === selectedKey ? 'current' : 'review';
     return {
       key: c.id,
       index: c.index,
@@ -147,16 +119,4 @@ export function toChatBubbles(messages: readonly ChatMessage[], sending: boolean
     bubbles.push({ id: 'pending', role: 'assistant', text: 'Sto applicando la modifica…', pending: true });
   }
   return bubbles;
-}
-
-/** Statistiche "Cosa otterrai" da capitoli + numero di fonti. */
-export function toOutcomeStats(chapters: readonly Chapter[], sourcesCount: number): OutcomeStat[] {
-  const words = chapters.reduce((sum, c) => sum + c.wordCount, 0);
-  return [
-    { value: `≈ ${pagesFromWords(words)}`, label: 'Pagine' },
-    { value: `≈ ${words.toLocaleString('it-IT')}`, label: 'Parole' },
-    { value: String(chapters.length), label: 'Capitoli' },
-    { value: String(sourcesCount), label: 'Fonti' },
-    { value: `≈ ${Math.max(1, Math.round(words / 200))} min`, label: 'Lettura' },
-  ];
 }

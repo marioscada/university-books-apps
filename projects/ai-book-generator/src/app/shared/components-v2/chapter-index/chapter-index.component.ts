@@ -9,7 +9,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 
 /** Stato di un capitolo nell'indice (pilota icona + colore). */
-export type ChapterStatus = 'approved' | 'review' | 'current' | 'generating' | 'todo';
+export type ChapterStatus = 'review' | 'current' | 'generating' | 'todo';
 
 /** Voce dell'indice capitoli (view-model dumb, i18n-agnostico). */
 export interface ChapterItem {
@@ -29,7 +29,7 @@ export interface ChapterItem {
 
 /**
  * ChapterIndexComponent — indice capitoli dumb/presentational: lista navigabile
- * con numero, titolo e **stato** (approvato = accent), voce selezionata
+ * con numero, titolo e **stato** (corrente = accent), voce selezionata
  * evidenziata. Opzionalmente **collassabile** (toggle nell'header) e con un link
  * "aggiungi".
  *
@@ -41,7 +41,7 @@ export interface ChapterItem {
  * @example
  * ```html
  * <app-chapter-index
- *   [heading]="'Indice'" [countLabel]="'5 di 8 approvati'"
+ *   [heading]="'Indice'" [countLabel]="'8 capitoli'"
  *   [chapters]="chapters()" [selectedKey]="openKey()"
  *   (select)="openKey.set($event)" />
  * ```
@@ -79,13 +79,6 @@ export class ChapterIndexComponent {
 
   /** Icona Material per stato (numero a parte). */
   protected icon(status: ChapterStatus): string {
-    switch (status) {
-      case 'approved':
-        return 'check';
-      case 'generating':
-        return 'progress_activity';
-      default:
-        return '';
-    }
+    return status === 'generating' ? 'progress_activity' : '';
   }
 }

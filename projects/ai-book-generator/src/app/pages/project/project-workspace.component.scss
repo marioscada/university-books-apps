@@ -48,7 +48,7 @@
   overflow-y: auto;
 }
 
-// L'area a colonne (capitoli/derivato) riempie lo spazio disponibile in modo
+// L'area a colonne (capitoli) riempie lo spazio disponibile in modo
 // DETERMINISTICO (flex-basis 0, non dal contenuto); lo scroll è interno ai
 // pannelli (vedi review-shell).
 app-review-shell {
@@ -120,22 +120,6 @@ app-review-shell {
   overflow: hidden; // il thread della chat scrolla internamente (composer fisso)
 }
 
-// Risultato derivato dentro review-shell senza indice: deve comportarsi come
-// chapter-reader/index/chat, cioe' riempire la colonna e scrollare internamente.
-.studio-derived-panel {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-}
-.studio-derived-panel > app-derived-result {
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: 0;
-  overflow: auto;
-}
-
 // Variante sola lettura (published/archived): indice + lettura.
 .studio-body--read .studio-reader {
   flex: 1 1 auto;
@@ -144,74 +128,6 @@ app-review-shell {
 // Revisione indice: indice largo + chat (niente lettura).
 .studio-index--wide {
   flex: 1 1 auto;
-}
-
-// Cosa otterrai (data view, revisione indice)
-.studio-outcome {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.studio-outcome__title {
-  margin: 0;
-  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
-  font-weight: 800;
-  color: var(--mat-sys-on-surface);
-}
-.studio-outcome__sub {
-  margin: 0;
-  font-size: var(--site-body-small, 0.875rem);
-  color: var(--mat-sys-on-surface-variant);
-}
-.studio-outcome__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  margin-top: 8px;
-}
-
-// --- Pubblica (Render) ------------------------------------------------------
-.studio-publish {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.studio-publish__label {
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 700;
-  color: var(--mat-sys-on-surface);
-}
-.studio-formats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-// Chip formato = TOGGLE (off: neutro · on: accent). Modificabile fino alla conferma.
-.studio-format-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 9px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--field-border-color, var(--card-border-color));
-  background: var(--card-bg);
-  color: var(--mat-sys-on-surface);
-  font: inherit;
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
-
-  mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-  }
-  &.is-on {
-    background: var(--accent-500);
-    border-color: var(--accent-500);
-    color: var(--on-accent);
-  }
 }
 
 // Descrizione del dialog di pubblicazione — più grande e chiara (standard).
@@ -226,44 +142,6 @@ app-review-shell {
     font-weight: 700;
   }
 }
-.studio-toggle-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  font-size: var(--site-body-small, 0.9375rem);
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
-}
-.studio-toggle {
-  flex: 0 0 auto;
-  position: relative;
-  width: 40px;
-  height: 24px;
-  border: none;
-  border-radius: 999px;
-  background: var(--field-border-color, var(--card-border-color));
-  cursor: pointer;
-  transition: background 0.12s ease;
-
-  &.is-on {
-    background: var(--accent-500);
-  }
-}
-.studio-toggle__knob {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: var(--card-bg);
-  transition: transform 0.12s ease;
-}
-.studio-toggle.is-on .studio-toggle__knob {
-  transform: translateX(16px);
-}
-
 // --- Conferma (published) ---------------------------------------------------
 .studio-confirm {
   // Ritmo verticale esplicito via margini (no gap uniforme) → spaziatura standard.
@@ -295,12 +173,6 @@ app-review-shell {
   font-weight: 800;
   color: var(--mat-sys-on-surface);
 }
-.studio-confirm__sub {
-  margin: 10px 0 0;
-  max-width: 48ch;
-  line-height: 1.5;
-  color: var(--mat-sys-on-surface-variant);
-}
 .studio-confirm__downloads {
   display: flex;
   flex-wrap: wrap;
@@ -308,119 +180,14 @@ app-review-shell {
   justify-content: center;
   margin-top: 24px;
 }
-.studio-confirm .surface-rule {
-  width: 100%;
-  margin-top: 32px;
-}
-.studio-confirm__next {
-  margin: 28px 0 0;
-  align-self: flex-start;
-  font-size: var(--site-title-medium, 1rem);
-  font-weight: 800;
-  color: var(--mat-sys-on-surface);
-}
-.studio-confirm__tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-  width: 100%;
-  margin-top: 16px;
-}
-.studio-tile {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: left;
-  padding: 16px;
-  border-radius: 12px;
-  background: var(--surface-soft);
-  border: 1px solid var(--card-border-color);
-  cursor: pointer;
-  font: inherit;
-  transition: border-color 0.12s ease, background 0.12s ease;
-
-  &:hover {
-    border-color: var(--accent-400);
-    background: var(--accent-100);
-  }
-}
-.studio-tile__title {
-  font-weight: 700;
-  color: var(--mat-sys-on-surface);
-}
-.studio-tile__sub {
-  font-size: 0.8125rem;
-  color: var(--mat-sys-on-surface-variant);
-}
 
 // --- Dialog di pubblicazione ------------------------------------------------
-.studio-pub-group {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
 .studio-dialog-foot {
   display: flex;
   width: 100%;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-}
-
-// --- Dialog "Genera un derivato" --------------------------------------------
-.studio-derive-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-.studio-derive-opt {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: left;
-  padding: 14px 16px;
-  border-radius: 12px;
-  border: 1px solid var(--card-border-color);
-  background: var(--card-bg);
-  cursor: pointer;
-  font: inherit;
-  transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
-
-  &:hover {
-    border-color: var(--accent-400);
-  }
-  &.is-on {
-    border-color: var(--accent-500);
-    background: var(--accent-100);
-    box-shadow: inset 0 0 0 1px var(--accent-500);
-  }
-}
-.studio-derive-opt__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: var(--accent-700);
-  }
-}
-.studio-derive-opt__title {
-  font-weight: 700;
-  color: var(--mat-sys-on-surface);
-}
-.studio-derive-opt__desc {
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  color: var(--mat-sys-on-surface-variant);
-}
-@include bp.lt(bp.$sm) {
-  .studio-derive-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 // --- Lettore read-only (dialog) ---------------------------------------------
@@ -569,16 +336,6 @@ app-review-shell {
 }
 .skel-confirm__check {
   margin-bottom: 20px;
-}
-.skel-confirm__sub {
-  margin-top: 10px;
-}
-.skel-confirm__next {
-  margin-top: 28px;
-  align-self: flex-start;
-}
-.skel-tile {
-  pointer-events: none; // placeholder non interattivo (niente hover accent)
 }
 
 // Skeleton + barra di stato in OVERLAY centrato (fuori dal flusso → nessun salto

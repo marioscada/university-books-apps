@@ -176,8 +176,7 @@
     height: 14px;
   }
 }
-// Approvato / in generazione: tinta accent piena tenue.
-.chapter-index__row[data-status='approved'] .chapter-index__dot,
+// In generazione: tinta accent piena tenue.
 .chapter-index__row[data-status='generating'] .chapter-index__dot {
   background: var(--accent-100);
   border-color: transparent;
@@ -215,7 +214,6 @@
   font-weight: 600;
   color: var(--mat-sys-on-surface-variant);
 }
-.chapter-index__row[data-status='approved'] .chapter-index__status,
 .chapter-index__row[data-status='generating'] .chapter-index__status {
   color: var(--accent-700);
 }

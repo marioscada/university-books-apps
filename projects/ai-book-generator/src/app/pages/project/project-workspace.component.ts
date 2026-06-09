@@ -13,11 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
-import { BackLinkComponent } from '../../shared/components-v2/back-link/back-link.component';
 import { ActionBarComponent } from '../../shared/components-v2/action-bar/action-bar.component';
-import { DerivedResultComponent } from '../../shared/components-v2/derived-result/derived-result.component';
 import { ReviewShellComponent } from '../../shared/components-v2/review-shell/review-shell.component';
-import { derivedKindLabel } from '../../core/data/derived.util';
 import {
   ChapterIndexComponent,
   type ChapterItem,
@@ -25,7 +22,6 @@ import {
 import { ChapterReaderComponent } from '../../shared/components-v2/chapter-reader/chapter-reader.component';
 import { SkeletonComponent } from '../../shared/components-v2/skeleton/skeleton.component';
 import { SpinnerComponent } from '../../shared/ui/spinner/spinner.component';
-import { StatCardComponent } from '../../shared/ui/stat-card/stat-card.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import {
   AiChatPanelComponent,
@@ -34,20 +30,16 @@ import {
 import { ProjectsStore } from '../../core/state/projects.store';
 import { WorkspaceStore } from '../../core/state/workspace.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
-import { UiPromiseService } from '../../shared/services/ui-promise.service';
 import { ToastFacade } from '../../shared/services/toast/toast.facade';
-import type { Chapter, DerivedKind } from '../../core/domain';
+import type { Chapter } from '../../core/domain';
 import {
   HAS_OUTPUT,
   READER_PAGE_SIZE,
   QUICK_OPS,
-  DERIVED_OPTIONS,
-  LANGUAGES,
   paginate,
   quickOpText,
   toChapterItems,
   toChatBubbles,
-  toOutcomeStats,
 } from './project-workspace.util';
 
 /**
@@ -64,16 +56,13 @@ import {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    BackLinkComponent,
     ActionBarComponent,
-    DerivedResultComponent,
     ReviewShellComponent,
     ChapterIndexComponent,
     ChapterReaderComponent,
     SkeletonComponent,
     SpinnerComponent,
     AiChatPanelComponent,
-    StatCardComponent,
     ModalShellComponent,
     MatButtonModule,
     MatIconModule,
@@ -86,7 +75,6 @@ export class ProjectWorkspaceComponent {
   private readonly store = inject(ProjectsStore);
   protected readonly workspace = inject(WorkspaceStore);
   private readonly router = inject(Router);
-  private readonly uiPromise = inject(UiPromiseService);
   private readonly toast = inject(ToastFacade);
   /** Id già notificati come falliti (un solo toast per fallimento). */
   private readonly notifiedFailed = new Set<string>();
@@ -102,33 +90,18 @@ export class ProjectWorkspaceComponent {
   protected readonly skeletonChapters = ['55%', '46%', '60%', '42%', '52%'];
   /** Larghezze (variate) delle righe-paragrafo dello skeleton lettura capitoli. */
   protected readonly skeletonParas = ['100%', '96%', '92%', '98%', '88%', '100%', '94%', '90%'];
-  /** Placeholder dei tile "E adesso?" nello skeleton di pubblicazione. */
-  protected readonly skeletonTiles = [1, 2, 3, 4];
   readonly project = computed(() => this.store.entities().find((p) => p.id === this.id()));
 
   constructor() {
-    // Apre lo Studio quando il progetto ha un output; per i DERIVATI apre il
-    // flusso dedicato (attesa elaborazione → risultato). Guard: una sola apertura
+    // Apre lo Studio quando il progetto ha un output. Guard: una sola apertura
     // per id (evita restart quando lo store ricarica le entità).
     effect(() => {
       const p = this.project();
       if (!p || this.workspace.projectId() === p.id) {
         return;
       }
-      if (p.derivedKind) {
-        void this.workspace.openDerived(p.id);
-      } else if (HAS_OUTPUT.has(p.status)) {
+      if (HAS_OUTPUT.has(p.status)) {
         void this.workspace.open(p.id);
-      }
-    });
-
-    // Attesa (generazione/pubblicazione) → spinner OVERLAY sopra lo Studio, non
-    // una schermata a sé. Appena i dati arrivano, l'overlay sparisce e compare
-    // il contenuto. `onCleanup` chiude lo spinner al cambio stato/destroy.
-    effect((onCleanup) => {
-      if (this.waiting()) {
-        const ref = this.uiPromise.spinner(untracked(() => this.waitMessage()));
-        onCleanup(() => ref.hide());
       }
     });
 
@@ -155,57 +128,7 @@ export class ProjectWorkspaceComponent {
     });
   }
 
-  // --- Derivato (riassunto/slide/quiz/…) --------------------------------------
-  readonly isDerived = computed(() => !!this.project()?.derivedKind);
-  readonly derived = computed(() => this.workspace.derived());
-  readonly derivedGenerating = computed(() => this.workspace.derivedGenerating());
-  readonly derivedProgress = computed(() => this.workspace.derivedProgress());
-  readonly derivedLabel = computed(() => {
-    const k = this.project()?.derivedKind;
-    return k ? derivedKindLabel(k) : '';
-  });
-  /** Pubblica il derivato (riusa l'attesa di pubblicazione). */
-  publishDerived(): void {
-    void this.workspace.publish(this.id());
-  }
-  /** Apre il progetto sorgente (genitore) del derivato. */
-  openParent(): void {
-    const pid = this.project()?.parentProjectId;
-    if (pid) {
-      void this.router.navigate(['/project', pid]);
-    }
-  }
-
-  // --- Attesa (spinner overlay) ----------------------------------------------
-  /**
-   * Attese che mostrano l'**overlay spinner** (pubblicazione/derivato). Indice e
-   * capitoli NON sono qui: usano lo skeleton in pagina (`indexLoading` /
-   * `chaptersLoading`).
-   */
-  readonly waiting = computed(
-    () => this.derivedGenerating() || (this.isDerived() && this.publishing()),
-  );
-  /** Messaggio sotto lo spinner overlay, in base alla fase corrente. */
-  readonly waitMessage = computed(() => {
-    const p = this.project();
-    if (!p) {
-      return '';
-    }
-    if (this.publishing()) {
-      return this.publishDetail();
-    }
-    if (p.derivedKind) {
-      return this.derivedLabel();
-    }
-    return '';
-  });
-
-  // --- Avanzamento ------------------------------------------------------------
-  readonly genProgress = computed(() => this.workspace.genProgress());
   readonly publishing = computed(() => this.workspace.publishing());
-  readonly pubProgress = computed(() => this.workspace.pubProgress());
-  /** Kicker della copertina (es. "REPORT"). */
-  readonly coverKicker = computed(() => (this.project()?.documentType ?? '').toUpperCase());
 
   /**
    * Generazione INDICE in corso → **skeleton in pagina** (navigazione ottimistica
@@ -235,25 +158,10 @@ export class ProjectWorkspaceComponent {
   });
 
   /**
-   * Pubblicazione in corso (progetto NON derivato) → **skeleton in pagina** della
-   * schermata "Documento pubblicato" + spinner centrato (stesso pattern di indice
-   * e capitoli). I derivati conservano l'overlay (flusso dedicato).
+   * Pubblicazione in corso → **skeleton in pagina** della schermata "Documento
+   * pubblicato" + spinner centrato (stesso pattern di indice e capitoli).
    */
-  readonly publishLoading = computed(() => !this.isDerived() && this.publishing());
-
-  // Generazione capitoli (review + generating)
-  readonly chapterDetail = computed(() => {
-    const n = this.workspace.chapters().length || 1;
-    const k = Math.min(n, Math.max(1, Math.ceil((this.genProgress() / 100) * n)));
-    return this.t('i18n.Workspace.Detail.writingChapter', { k, n });
-  });
-
-  // Pubblicazione (review + publishing)
-  readonly publishDetail = computed(() => {
-    const p = this.pubProgress();
-    const key = p < 40 ? 'layout' : p < 80 ? 'render' : 'export';
-    return this.t(`i18n.Workspace.Detail.${key}`);
-  });
+  readonly publishLoading = computed(() => this.publishing());
 
   // --- Capitoli (revisione) ---------------------------------------------------
   private readonly pickedKey = signal('');
@@ -266,9 +174,6 @@ export class ProjectWorkspaceComponent {
   });
   readonly selectedParagraphs = computed(() =>
     (this.selectedChapter()?.body ?? '').split('\n\n').filter((p) => p.trim()),
-  );
-  readonly selectedApproved = computed(() =>
-    this.workspace.approvedChapterIds().includes(this.selectedKey()),
   );
 
   // --- Lettore paginato (dialog read-only): sfoglio a pagine, niente scroll ----
@@ -335,19 +240,9 @@ export class ProjectWorkspaceComponent {
   readonly chaptersReady = computed(() => this.workspace.chaptersReady());
 
   readonly chapterItems = computed<ChapterItem[]>(() =>
-    toChapterItems(
-      this.workspace.chapters(),
-      this.chaptersReady(),
-      this.workspace.approvedChapterIds(),
-      this.selectedKey(),
-    ),
+    toChapterItems(this.workspace.chapters(), this.chaptersReady(), this.selectedKey()),
   );
   readonly indexCountLabel = computed(() => `${this.workspace.chapters().length} capitoli`);
-
-  // --- Cosa otterrai (data view, revisione indice) ----------------------------
-  readonly outcomeStats = computed(() =>
-    toOutcomeStats(this.workspace.chapters(), this.project()?.materialFileIds.length ?? 0),
-  );
 
   /** Etichette prev/next dal capitolo adiacente (vuoto = bordo lista). */
   readonly prevLabel = computed(() => this.adjacent(-1));
@@ -389,9 +284,6 @@ export class ProjectWorkspaceComponent {
   runQuickOp(key: string): void {
     void this.workspace.send(this.id(), quickOpText(key));
   }
-  approveChapter(): void {
-    this.workspace.toggleApproved(this.selectedKey());
-  }
   /** True mentre i capitoli vengono sviluppati. */
   readonly generating = computed(() => this.workspace.generating());
   /** Dalla revisione indice: sviluppa i capitoli. */
@@ -404,30 +296,13 @@ export class ProjectWorkspaceComponent {
   readonly showPublish = signal(false);
   /** In published: true = lettura documento; false = schermata di conferma. */
   readonly reading = signal(false);
-  /** Opzioni di output (mock locale, visuale). */
-  readonly includeCover = signal(true);
-  /** Formati di output selezionabili nel dialog (modificabili fino alla conferma). */
-  readonly allFormats = ['pdf', 'docx', 'epub'];
-  readonly pubFormats = signal<string[]>([]);
-  isFormatOn(f: string): boolean {
-    return this.pubFormats().includes(f);
-  }
-  toggleFormat(f: string): void {
-    this.pubFormats.update((list) =>
-      list.includes(f) ? list.filter((x) => x !== f) : [...list, f],
-    );
-  }
-  /** Formati pubblicati (per i download in Conferma), in maiuscolo. */
-  readonly publishFormats = computed(() => {
-    const fmts = this.pubFormats().length
-      ? this.pubFormats()
-      : (this.project()?.generationOptions.outputFormats ?? ['pdf']);
-    return fmts.map((f) => f.toUpperCase());
-  });
+  /** Formati pubblicati (per i download in Conferma), dai settings di creazione. */
+  readonly publishFormats = computed(() =>
+    (this.project()?.generationOptions.outputFormats ?? ['pdf']).map((f) => f.toUpperCase()),
+  );
 
-  /** Apre il dialog di pubblicazione, inizializzando i formati dai settings. */
+  /** Apre il dialog di conferma pubblicazione. */
   goToPublish(): void {
-    this.pubFormats.set([...(this.project()?.generationOptions.outputFormats ?? ['pdf'])]);
     this.showPublish.set(true);
   }
   /** Torna dalla Pubblica ai capitoli. */
@@ -444,60 +319,6 @@ export class ProjectWorkspaceComponent {
     this.pickedKey.set(this.workspace.chapters()[0]?.id ?? '');
     this.readerPage.set(0);
     this.reading.set(true);
-  }
-  /** Dialog informativo (costi) prima di creare una nuova versione. */
-  readonly showNewVersion = signal(false);
-  newVersion(): void {
-    this.showNewVersion.set(true);
-  }
-  /** Conferma: crea una nuova versione (mock: torna in revisione). */
-  confirmNewVersion(): void {
-    this.showNewVersion.set(false);
-    this.reading.set(false);
-    void this.store.reopen(this.id());
-  }
-  /** Genera un derivato: scelta del tipo via dialog, poi crea il progetto figlio. */
-  readonly derivedOptions = DERIVED_OPTIONS;
-  readonly showDerive = signal(false);
-  readonly derivedKind = signal<DerivedKind>('summary');
-  /** Scelta lingua (solo per la traduzione). */
-  readonly languages = LANGUAGES;
-  readonly showLang = signal(false);
-  readonly selectedLang = signal('Inglese');
-  derive(): void {
-    this.derivedKind.set('summary');
-    this.showDerive.set(true);
-  }
-  selectDerived(kind: DerivedKind): void {
-    this.derivedKind.set(kind);
-  }
-  selectLang(lang: string): void {
-    this.selectedLang.set(lang);
-  }
-  /** Conferma tipo: la traduzione apre prima la scelta lingua, gli altri partono. */
-  confirmDerive(): void {
-    if (this.derivedKind() === 'translation') {
-      this.showDerive.set(false);
-      this.selectedLang.set('Inglese');
-      this.showLang.set(true);
-      return;
-    }
-    this.runDerive();
-  }
-  /** Conferma lingua → avvia la traduzione. */
-  confirmLang(): void {
-    this.runDerive(this.selectedLang());
-  }
-  private runDerive(language?: string): void {
-    this.showDerive.set(false);
-    this.showLang.set(false);
-    void this.store.derive(this.id(), this.derivedKind(), language).then((child) => {
-      void this.router.navigate(['/project', child.id]);
-    });
-  }
-  /** Esce dal flusso → galleria modelli. Previsto solo da Setup e Pubblicato. */
-  back(): void {
-    void this.router.navigate(['/create']);
   }
   generate(): void {
     void this.store.generate(this.id());

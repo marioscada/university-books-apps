@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  booleanAttribute,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 /** Tono del chip di stato del capitolo (mappa sui token globali dei toni). */
@@ -13,8 +7,7 @@ export type ChapterReaderTone = 'neutral' | 'accent' | 'success' | 'warning';
 /**
  * ChapterReaderComponent — lettura di un capitolo, dumb/presentational: titolo,
  * chip di stato, meta (es. n° parole), corpo (paragrafi via input o contenuto
- * proiettato), navigazione prev/successivo e — se non in sola lettura — azione
- * **Approva**.
+ * proiettato) e navigazione prev/successivo.
  *
  * Le modifiche al testo NON avvengono qui (si fanno via `app-ai-chat-panel`):
  * questo componente mostra e basta. i18n-agnostico (label/paragrafi via input),
@@ -26,9 +19,8 @@ export type ChapterReaderTone = 'neutral' | 'accent' | 'success' | 'warning';
  *   [title]="'6 · Opportunità e rischi'" [meta]="'≈ 1.240 parole'"
  *   [statusLabel]="'Da rivedere'" statusTone="warning"
  *   [paragraphs]="chapter().paragraphs"
- *   [approveLabel]="'Approva capitolo'"
  *   [prevLabel]="'5 · Trend e scenari 2024'" [nextLabel]="'7 · Raccomandazioni'"
- *   (approve)="approve()" (prev)="goPrev()" (next)="goNext()" />
+ *   (prev)="goPrev()" (next)="goNext()" />
  * ```
  */
 @Component({
@@ -53,17 +45,17 @@ export class ChapterReaderComponent {
   readonly statusTone = input<ChapterReaderTone>('neutral');
   /** Paragrafi del corpo (in alternativa/aggiunta al contenuto proiettato). */
   readonly paragraphs = input<string[]>([]);
-  /** Etichetta del bottone Approva (vuoto o `readOnly` = nascosto). */
-  readonly approveLabel = input<string>('');
-  /** Sola lettura: nasconde l'azione Approva. */
-  readonly readOnly = input(false, { transform: booleanAttribute });
+  /** Azione primaria in basso a destra del footer (vuoto = nascosta), es. "Pubblica". */
+  readonly actionLabel = input<string>('');
+  /** Icona (Material Symbols) dell'azione primaria, dopo l'etichetta. */
+  readonly actionIcon = input<string>('');
   /** Etichetta del capitolo precedente (vuoto = disabilitato). */
   readonly prevLabel = input<string>('');
   /** Etichetta del capitolo successivo (vuoto = disabilitato). */
   readonly nextLabel = input<string>('');
 
-  /** Emesso all'Approva. */
-  readonly approve = output<void>();
+  /** Emesso al click sull'azione primaria del footer. */
+  readonly action = output<void>();
   /** Emesso al capitolo precedente. */
   readonly prev = output<void>();
   /** Emesso al capitolo successivo. */

@@ -32,9 +32,6 @@ export const ACTIVE_STATUSES: readonly ProjectStatus[] = [
 /** Tema della copertina astratta — riusa i temi cover-art globali. */
 export type CoverTheme = 'aurora' | 'ocean' | 'ember' | 'rose' | 'mint' | 'gold';
 
-export type DerivedKind =
-  | 'summary' | 'slides' | 'quiz' | 'manual' | 'study_guide' | 'translation';
-
 export type ProcessingMode =
   | 'fast_draft' | 'balanced' | 'deep_research'
   | 'academic' | 'business' | 'educational' | 'technical';
@@ -107,11 +104,6 @@ export interface Project {
   currentJobId?: string;           // job attivo se status=processing/queued
   currentVersionId?: string;       // versione "attiva" mostrata di default
   versionIds: string[];            // ordinate per number crescente
-
-  // Lineage progetti derivati (summary/slides/quiz da un libro, ecc.)
-  parentProjectId?: string;
-  derivedKind?: DerivedKind;       // valorizzato se è un derivato
-  derivedProjectIds: string[];     // figli derivati da questo
 
   materialFileIds: string[];       // file di materiale (contenuti da cui generare)
   instructionFileIds: string[];    // file di istruzione (regole/tracce/vincoli)

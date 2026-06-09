@@ -7,7 +7,7 @@ import {
   withState,
 } from '@ngrx/signals';
 
-import type { Chapter, ChatMessage, DerivedContent, Version } from '../domain';
+import type { Chapter, ChatMessage, Version } from '../domain';
 import { API_PORT } from '../data/api-port';
 import { ProjectsStore } from './projects.store';
 
@@ -30,14 +30,6 @@ interface WorkspaceState {
   publishing: boolean;
   /** Avanzamento 0–100 della pubblicazione. */
   pubProgress: number;
-  /** Capitoli approvati in revisione (stato locale finché non c'è il backend). */
-  approvedChapterIds: string[];
-  /** Contenuto del derivato (riassunto/slide/quiz/…) o null. */
-  derived: DerivedContent | null;
-  /** Elaborazione del derivato in corso. */
-  derivedGenerating: boolean;
-  /** Avanzamento 0–100 dell'elaborazione del derivato. */
-  derivedProgress: number;
 }
 
 const INITIAL: WorkspaceState = {
@@ -50,10 +42,6 @@ const INITIAL: WorkspaceState = {
   genProgress: 0,
   publishing: false,
   pubProgress: 0,
-  approvedChapterIds: [],
-  derived: null,
-  derivedGenerating: false,
-  derivedProgress: 0,
 };
 
 /**
@@ -68,8 +56,6 @@ export const WorkspaceStore = signalStore(
   withComputed((store) => ({
     /** Capitoli della versione corrente (vuoto se nessun output). */
     chapters: computed<Chapter[]>(() => store.version()?.chapters ?? []),
-    /** Numero di capitoli approvati. */
-    approvedCount: computed(() => store.approvedChapterIds().length),
     /**
      * I capitoli sono stati sviluppati (fase Capitoli). Se falso ma esiste una
      * versione → fase **revisione indice** (solo outline, capitoli non sviluppati).
@@ -143,51 +129,6 @@ export const WorkspaceStore = signalStore(
         } finally {
           patchState(store, { publishing: false });
         }
-      },
-
-      /** Apre un progetto DERIVATO: elabora e carica il contenuto dal server. */
-      async openDerived(projectId: string): Promise<void> {
-        patchState(store, { ...INITIAL, projectId, derivedGenerating: true });
-        try {
-          const derived = await api.generateDerived(projectId);
-          if (store.projectId() === projectId) {
-            patchState(store, { derived });
-          }
-        } finally {
-          if (store.projectId() === projectId) {
-            patchState(store, { derivedGenerating: false });
-          }
-        }
-      },
-
-      /** Rigenera il derivato applicando il feedback dell'utente all'AI. */
-      async regenerateDerived(projectId: string, feedback: string): Promise<void> {
-        if (store.derivedGenerating()) {
-          return;
-        }
-        patchState(store, { derivedGenerating: true });
-        try {
-          const derived = await api.regenerateDerived(projectId, feedback);
-          patchState(store, { derived });
-        } finally {
-          patchState(store, { derivedGenerating: false });
-        }
-      },
-
-      /** Marca/smarca un capitolo come approvato (revisione). */
-      toggleApproved(chapterId: string): void {
-        patchState(store, (s) => ({
-          approvedChapterIds: s.approvedChapterIds.includes(chapterId)
-            ? s.approvedChapterIds.filter((id) => id !== chapterId)
-            : [...s.approvedChapterIds, chapterId],
-        }));
-      },
-
-      /** Approva tutti i capitoli della versione. */
-      approveAll(): void {
-        patchState(store, (s) => ({
-          approvedChapterIds: (s.version?.chapters ?? []).map((c) => c.id),
-        }));
       },
     };
   }),

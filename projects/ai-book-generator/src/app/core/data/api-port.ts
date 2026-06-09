@@ -5,14 +5,11 @@ import type {
   Project,
   ProjectStatus,
   DocumentType,
-  CoverTheme,
-  DerivedKind,
   Job,
   Source,
   Plan,
   Version,
   ChatMessage,
-  DerivedContent,
 } from '../domain';
 
 /**
@@ -50,14 +47,6 @@ export interface ApiPort {
   duplicate(id: string): Promise<Project>;
   /** DELETE /projects/:id */
   deleteProject(id: string): Promise<void>;
-  /** POST /projects/:id/derive ({ derivedKind, language? }) figlio collegato */
-  derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project>;
-
-  // --- Derivati (contenuto elaborato dal server) ----------------------------
-  /** POST /projects/:id/derived — elabora e restituisce il contenuto del derivato. */
-  generateDerived(projectId: string): Promise<DerivedContent>;
-  /** POST /projects/:id/derived/regenerate — rielabora dato il feedback dell'utente. */
-  regenerateDerived(projectId: string, feedback: string): Promise<DerivedContent>;
 
   // --- Jobs (polling live) --------------------------------------------------
   /** GET /projects/:id/job (polled ~2s) */

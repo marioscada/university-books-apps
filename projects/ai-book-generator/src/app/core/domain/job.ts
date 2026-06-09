@@ -6,7 +6,7 @@
  * la coda delle fonti aggiunte durante l'elaborazione.
  */
 
-export type JobType = 'generate' | 'regenerate_partial' | 'derive' | 'ingest';
+export type JobType = 'generate' | 'regenerate_partial' | 'ingest';
 export type JobStatus = 'queued' | 'running' | 'succeeded' | 'failed' | 'cancelled';
 
 export interface JobStep {

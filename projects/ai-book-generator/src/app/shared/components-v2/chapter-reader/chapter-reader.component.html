@@ -26,7 +26,7 @@
   <ng-content />
 </div>
 
-@if ((!readOnly() && approveLabel()) || prevLabel() || nextLabel()) {
+@if (prevLabel() || nextLabel() || actionLabel()) {
   <div class="chapter-reader__divider" role="presentation"></div>
   <footer class="chapter-reader__foot">
     <nav class="chapter-reader__nav">
@@ -43,10 +43,12 @@
         </button>
       }
     </nav>
-    @if (!readOnly() && approveLabel()) {
-      <button class="chapter-reader__approve" type="button" (click)="approve.emit()">
-        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
-        {{ approveLabel() }}
+    @if (actionLabel()) {
+      <button class="chapter-reader__action" type="button" (click)="action.emit()">
+        {{ actionLabel() }}
+        @if (actionIcon()) {
+          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ actionIcon() }}</mat-icon>
+        }
       </button>
     }
   </footer>

@@ -14,13 +14,11 @@ import type {
 } from './api-port';
 import type {
   Project,
-  DerivedKind,
   Job,
   Source,
   Plan,
   Version,
   ChatMessage,
-  DerivedContent,
   GenerationOptions,
 } from '../domain';
 
@@ -29,7 +27,7 @@ import type {
  * `ai-platform-university-books` (API Gateway + Cognito). NESSUN dato mock:
  *
  * - Tutto ciò che il backend espone → HTTP reale (`/v1/projects`, `/v1/documents`).
- * - **AI non ancora collegata** (chat + contenuti derivati): ritorna **vuoto**
+ * - **AI non ancora collegata** (chat): ritorna **vuoto**
  *   (no dati finti) finché Bedrock/Claude non sarà disponibile. È l'**unico** punto
  *   da collegare per completare la produzione.
  * - **Plan**: default `free` finché non c'è il servizio billing.
@@ -121,12 +119,9 @@ export class AwsApiService implements ApiPort {
   duplicate(id: string): Promise<Project> {
     return this.lifecycle(id, { action: 'duplicate' });
   }
-  derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project> {
-    return this.lifecycle(id, { action: 'derive', derivedKind, language });
-  }
 
   // ===========================================================================
-  // AI (chat + derivati) — NON collegata: ritorna VUOTO (no dati finti).
+  // AI (chat) — NON collegata: ritorna VUOTO (no dati finti).
   // Unico punto da implementare quando Bedrock/Claude sarà disponibile.
   // ===========================================================================
   async listChatMessages(_projectId: string): Promise<ChatMessage[]> {
@@ -135,13 +130,6 @@ export class AwsApiService implements ApiPort {
   async sendChatMessage(_projectId: string, _text: string): Promise<ChatMessage[]> {
     // AI non collegata: nessuna risposta finché non c'è il servizio AI.
     return [];
-  }
-  async generateDerived(projectId: string): Promise<DerivedContent> {
-    const project = await this.getProject(projectId);
-    return { kind: project.derivedKind ?? 'summary', title: project.title };
-  }
-  async regenerateDerived(projectId: string, _feedback: string): Promise<DerivedContent> {
-    return this.generateDerived(projectId);
   }
 
   // ===========================================================================

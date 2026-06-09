@@ -28,7 +28,7 @@ import {
   timer,
 } from 'rxjs';
 
-import type { DerivedKind, Job, Plan, Project, GenerationOptions } from '../domain';
+import type { Job, Plan, Project, GenerationOptions } from '../domain';
 import { API_PORT, type CreateProjectInput } from '../data/api-port';
 import { RUNTIME_CONFIG } from '../config/runtime.config';
 import { ACTIVE_STATUSES } from '../domain';
@@ -127,6 +127,12 @@ export const ProjectsStore = signalStore(
       }
     };
 
+    // Carica una sola volta (dedup tra self-init e chiamanti come i guard di
+    // rotta, che devono attendere i dati prima di decidere). Le ricariche
+    // esplicite restano su `loadAll` diretto.
+    let loadOnce: Promise<void> | null = null;
+    const ensureLoaded = (): Promise<void> => (loadOnce ??= loadAll());
+
     /** Carica il piano del workspace (gating soft del wizard). */
     const loadPlan = async (): Promise<void> => {
       const plan = await api.getPlan();
@@ -135,6 +141,7 @@ export const ProjectsStore = signalStore(
 
     return {
       loadAll,
+      ensureLoaded,
       loadPlan,
       pollJob,
 
@@ -226,13 +233,6 @@ export const ProjectsStore = signalStore(
         await api.deleteProject(id);
         patchState(store, removeEntity(id));
       },
-
-      /** Crea un progetto derivato collegato (lingua opzionale per traduzione). */
-      async derive(id: string, derivedKind: DerivedKind, language?: string): Promise<Project> {
-        const child = await api.derive(id, derivedKind, language);
-        await loadAll();
-        return child;
-      },
     };
   }),
   // Self-init: lo store si popola alla prima injection (pattern ufficiale
@@ -240,7 +240,7 @@ export const ProjectsStore = signalStore(
   // i signal — niente orchestrazione di `loadAll` nei componenti.
   withHooks({
     onInit(store) {
-      void store.loadAll();
+      void store.ensureLoaded();
       void store.loadPlan();
     },
   }),

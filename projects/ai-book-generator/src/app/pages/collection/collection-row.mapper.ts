@@ -5,7 +5,6 @@
  */
 import type { Tone } from '../../shared/components-v2/tone';
 import type { RowAction } from '../../shared/components-v2/list-row/list-row.component';
-import { derivedKindLabel } from '../../core/data/derived.util';
 import type { Project, DocumentType, ProjectStatus, CoverTheme, Source, SourceType, IngestStatus } from '../../core/domain';
 import { relTime, humanSize } from './format.util';
 
@@ -101,11 +100,11 @@ export function projectRow(p: Project, nSources: number): RowVM {
     badge = chapters ? 'Capitoli pronti' : 'Indice pronto';
     tone = chapters ? 'amber' : 'info';
   }
-  const kicker = p.derivedKind ? `Derivato · ${derivedKindLabel(p.derivedKind)}` : KIND_LABEL[p.documentType];
+  const kicker = KIND_LABEL[p.documentType];
   const fonti = `${nSources} ${nSources === 1 ? 'fonte' : 'fonti'}`;
   return {
     id: p.id,
-    icon: p.derivedKind ? 'auto_awesome' : KIND_ICON[p.documentType],
+    icon: KIND_ICON[p.documentType],
     iconTone: 'neutral',
     cover: COVER_COLOR[p.coverTheme],
     title: p.title,

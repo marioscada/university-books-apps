@@ -162,7 +162,9 @@
   max-width: 28ch;
 }
 
-.chapter-reader__approve {
+// Azione primaria del footer (es. "Pubblica"), in basso a destra.
+.chapter-reader__action {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   gap: 7px;
