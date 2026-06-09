@@ -15,6 +15,12 @@ export interface OutlineNode {
   childrenIds: string[];
 }
 
+/** Sotto-sezione di un capitolo (voce dell'indice completo). */
+export interface ChapterSection {
+  id: string;
+  title: string;
+}
+
 export interface Chapter {
   id: string;
   versionId: string;
@@ -23,6 +29,7 @@ export interface Chapter {
   body: string;                    // markdown/HTML
   status: 'pending' | 'generating' | 'ready' | 'failed';
   wordCount: number;
+  sections?: ChapterSection[];     // sotto-sezioni titolate (indice completo)
 }
 
 export interface RenderedOutput {

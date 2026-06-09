@@ -2,10 +2,9 @@
   <div class="setup-stack site-container">
     <!-- Riquadro a tutta larghezza: back-link + header (titolo + Genera) sopra, form sotto -->
     <section class="surface-card setup-card">
-      <!-- Back to templates: dentro il riquadro, sopra il titolo, a sinistra -->
-      <app-back-link [label]="'i18n.Setup.backToModels' | translate" (navigate)="back.emit()" />
+      <!-- Riga azioni: "Torna ai modelli" a sinistra, "Genera indice" a destra -->
       <header class="setup-cardhead">
-        <h1 class="setup-pagetitle">{{ defTitle() }}</h1>
+        <app-back-link [label]="'i18n.Setup.backToModels' | translate" (navigate)="back.emit()" />
         <button
           mat-flat-button
           color="primary"
@@ -16,6 +15,7 @@
           <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
         </button>
       </header>
+      <h1 class="setup-pagetitle">{{ defTitle() }}</h1>
       <div class="setup-brief__form">
         <app-counter-field
           [label]="titleFieldLabel()" required [maxLength]="titleMax"

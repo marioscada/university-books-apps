@@ -20,13 +20,7 @@
   padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px)) clamp(40px, 6vw, 72px);
 }
 
-// Back-link dentro la card: solo la sua larghezza, in alto a sinistra
-// (altrimenti lo stretch del flex column lo allarga a tutta la card).
-.setup-card > app-back-link {
-  align-self: flex-start;
-}
-
-// Header del riquadro: titolo a sinistra, azione "Genera" a destra.
+// Riga azioni in cima alla card: back-link a sinistra, "Genera" a destra.
 .setup-cardhead {
   display: flex;
   align-items: center;
