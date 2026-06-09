@@ -93,4 +93,29 @@ section[id] {
   cursor: not-allowed;
 }
 
+// --- Overlay spinner (UiPromiseService) -------------------------------------
+.ui-spinner-backdrop {
+  background: rgb(15 23 42 / 24%);
+  backdrop-filter: blur(1px);
+}
+
+// --- Toast (ToastFacade su MatSnackBar) -------------------------------------
+// Il pannello snackbar vive nell'overlay (fuori dai componenti) → stili globali.
+.toast .mdc-snackbar__surface {
+  border-radius: 12px;
+  border-left: 4px solid var(--mat-sys-on-surface, #1a1d21);
+}
+.toast--success .mdc-snackbar__surface {
+  border-left-color: var(--tone-success-fg, #1a8754);
+}
+.toast--error .mdc-snackbar__surface {
+  border-left-color: var(--mat-sys-error, #b3261e);
+}
+.toast--warning .mdc-snackbar__surface {
+  border-left-color: var(--tone-amber-fg, #b45309);
+}
+.toast--info .mdc-snackbar__surface {
+  border-left-color: var(--accent-500, #039fce);
+}
+
 @tailwind utilities;

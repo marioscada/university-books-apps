@@ -128,11 +128,13 @@ app-review-shell {
   padding-block: clamp(16px, 2vw, 28px);
   padding-inline: var(--page-padding-inline, 20px);
 }
-.studio-genpage > app-generation-panel {
-  // Tutta la larghezza consentita, entro il max del contenitore di pagina.
-  width: 100%;
-  min-width: 0;
-  max-width: var(--page-max-width, 1200px);
+// Attesa/generazione: spinner (+ annulla) centrati nello spazio.
+.studio-wait {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  margin: auto;
 }
 
 // Body a 3 pannelli (Capitoli): indice · lettura · chat, pari altezza.

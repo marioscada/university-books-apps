@@ -18,7 +18,7 @@ import {
   SegmentedProgressComponent,
   type SegStep,
 } from '../../shared/components-v2/segmented-progress/segmented-progress.component';
-import { GenerationPanelComponent } from '../../shared/components-v2/generation-panel/generation-panel.component';
+import { SpinnerComponent } from '../../shared/ui/spinner/spinner.component';
 import { DerivedResultComponent } from '../../shared/components-v2/derived-result/derived-result.component';
 import { ReviewShellComponent } from '../../shared/components-v2/review-shell/review-shell.component';
 import { derivedKindLabel } from '../../core/data/derived-seed';
@@ -68,7 +68,7 @@ import {
     BackLinkComponent,
     ActionBarComponent,
     SegmentedProgressComponent,
-    GenerationPanelComponent,
+    SpinnerComponent,
     DerivedResultComponent,
     ReviewShellComponent,
     ChapterIndexComponent,

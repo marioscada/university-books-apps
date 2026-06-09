@@ -3,12 +3,7 @@
     <!-- DERIVATO: attesa elaborazione → risultato (sola lettura) + feedback AI -->
     @if (derivedGenerating() || publishing()) {
       <div class="studio-genpage">
-        <app-generation-panel
-          loading
-          [coverKicker]="derivedLabel()"
-          [coverTitle]="project.title"
-          [heading]="publishing() ? 'Sto pubblicando il derivato…' : 'Generazione ' + derivedLabel() + ' in corso…'"
-          [percent]="publishing() ? pubProgress() : derivedProgress()" />
+        <app-spinner [message]="derivedLabel()" />
       </div>
     } @else if (project.status === 'published') {
       <!-- CONFERMA derivato: punto finale (niente ripubblicazione) -->
@@ -92,31 +87,17 @@
       </div>
       <div class="studio-genpage">
         @if (project.status === 'queued' || project.status === 'processing') {
-          <app-generation-panel
-            loading
-            [coverKicker]="coverKicker()"
-            [coverTitle]="project.title"
-            heading="Sto generando l’indice…"
-            [percent]="progress()"
-            [detailLabel]="indexDetail()"
-            cancelLabel="Annulla"
-            (cancelled)="cancel()" />
+          <div class="studio-wait">
+            <app-spinner [message]="indexDetail()" />
+            <button mat-stroked-button type="button" (click)="cancel()">
+              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">close</mat-icon>
+              {{ 'i18n.Workspace.Action.cancel' | translate }}
+            </button>
+          </div>
         } @else if (publishing()) {
-          <app-generation-panel
-            loading
-            [coverKicker]="coverKicker()"
-            [coverTitle]="project.title"
-            heading="Sto pubblicando il documento…"
-            [percent]="pubProgress()"
-            [detailLabel]="publishDetail()" />
+          <app-spinner [message]="publishDetail()" />
         } @else {
-          <app-generation-panel
-            loading
-            [coverKicker]="coverKicker()"
-            [coverTitle]="project.title"
-            heading="Sto sviluppando i capitoli…"
-            [percent]="genProgress()"
-            [detailLabel]="chapterDetail()" />
+          <app-spinner [message]="chapterDetail()" />
         }
       </div>
     </div>
