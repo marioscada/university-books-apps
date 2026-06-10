@@ -18,12 +18,12 @@ export const READER_PAGE_SIZE = 3;
 
 /** Operazioni rapide della chat in revisione **INDICE** (pertinenti all'indice). */
 export const QUICK_OPS_INDEX: QuickOp[] = [
-  { key: 'add_chapter', label: 'Aggiungi capitolo' },
-  { key: 'remove_chapter', label: 'Rimuovi capitolo' },
   { key: 'more_detail', label: 'Più dettagliato' },
   { key: 'concise', label: 'Più sintetico' },
   { key: 'reorder', label: 'Riordina' },
   { key: 'rename', label: 'Migliora i titoli' },
+  { key: 'add_topic', label: 'Aggiungi un argomento' },
+  { key: 'angle', label: 'Cambia taglio' },
 ];
 
 /** Operazioni rapide della chat in revisione **CAPITOLI** (pertinenti al testo). */
@@ -38,19 +38,19 @@ export const QUICK_OPS_CHAPTERS: QuickOp[] = [
 /** Prompt corrispondente a un'operazione rapida della chat (indice o capitoli). */
 export function quickOpText(key: string): string {
   switch (key) {
-    // Indice
-    case 'add_chapter':
-      return 'Aggiungi un nuovo capitolo all’indice.';
-    case 'remove_chapter':
-      return 'Rimuovi un capitolo dall’indice.';
+    // Indice (struttura/piano — i capitoli si generano dopo)
     case 'more_detail':
-      return 'Rendi l’indice più dettagliato, con più sezioni.';
+      return 'Rendi l’indice più dettagliato, con più sezioni e sottosezioni.';
     case 'concise':
-      return 'Rendi l’indice più sintetico, con meno capitoli.';
+      return 'Rendi l’indice più sintetico, con una struttura più snella.';
     case 'reorder':
-      return 'Riordina i capitoli in una sequenza più logica.';
+      return 'Riordina le sezioni dell’indice in una sequenza più logica.';
     case 'rename':
-      return 'Migliora i titoli dei capitoli dell’indice.';
+      return 'Migliora i titoli delle sezioni dell’indice, più chiari ed efficaci.';
+    case 'add_topic':
+      return 'Aggiungi all’indice una sezione su un argomento finora non coperto.';
+    case 'angle':
+      return 'Cambia il taglio dell’indice: tono e angolazione del contenuto.';
     // Capitoli
     case 'reduce':
       return 'Riduci questo capitolo del 20%.';

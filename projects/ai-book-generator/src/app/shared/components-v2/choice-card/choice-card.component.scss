@@ -85,9 +85,24 @@
 }
 .cc__tags {
   display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+// Una sola riga di chip: le eccedenti (riga 2+) sono nascoste dal max-height,
+// l'indicatore "…" segnala che ce ne sono altre.
+.cc__tags-list {
+  display: flex;
   flex-wrap: wrap;
   gap: 8px;
   min-width: 0;
+  flex: 1 1 auto;
+  max-height: 28px;
+  overflow: hidden;
+}
+.cc__tag--more {
+  flex: 0 0 auto;
 }
 // Chip a tono: stessi token del cerchio (bg tenue + testo a tono).
 .cc__tag {

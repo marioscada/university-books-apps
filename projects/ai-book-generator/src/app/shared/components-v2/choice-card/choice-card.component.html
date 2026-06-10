@@ -15,8 +15,13 @@
 <span class="cc__bottom">
   @if (tags().length) {
     <span class="cc__tags">
-      @for (tag of tags(); track $index) {
-        <span class="cc__tag">{{ tag }}</span>
+      <span class="cc__tags-list">
+        @for (tag of tags(); track $index) {
+          <span class="cc__tag">{{ tag }}</span>
+        }
+      </span>
+      @if (tags().length > 3) {
+        <span class="cc__tag cc__tag--more" aria-hidden="true">…</span>
       }
     </span>
   }
