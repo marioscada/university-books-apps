@@ -7,7 +7,7 @@ import { ChoiceCardComponent } from '../../shared/components-v2/choice-card/choi
 import { ModelSetupComponent } from '../model-setup/model-setup.component';
 import { TemplatesStore } from '../../core/state/templates.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
-import { METER_MAX, toModelChoices, type ModelChoice } from './create.util';
+import { toModelChoices, type ModelChoice } from './create.util';
 
 /**
  * Create — **host del flusso di creazione** (URL fisso `/create`).
@@ -41,10 +41,6 @@ export class CreateComponent {
 
   /** Risolutore i18n reattivo (ricalcola i computed al cambio lingua). */
   private readonly t = injectI18nText();
-
-  readonly meterMax = METER_MAX;
-  readonly shortLabel = computed(() => this.t('i18n.Create.short'));
-  readonly longLabel = computed(() => this.t('i18n.Create.long'));
 
   /** Card della galleria, una per modello, con l'i18n già risolto. */
   readonly cards = computed<ModelChoice[]>(() =>

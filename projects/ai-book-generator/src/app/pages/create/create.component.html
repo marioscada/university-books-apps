@@ -16,15 +16,12 @@
     <div class="create__grid">
       @for (card of cards(); track card.id) {
         <app-choice-card
+          [imageSrc]="card.imageSrc"
           [icon]="card.icon"
           [tone]="card.tone"
           [heading]="card.heading"
           [description]="card.description"
-          [meterValue]="card.meter"
-          [meterMax]="meterMax"
-          [meterStartLabel]="shortLabel()"
-          [meterEndLabel]="longLabel()"
-          [note]="card.note"
+          [tags]="card.tags"
           (activate)="chooseModel(card.id)" />
       }
     </div>

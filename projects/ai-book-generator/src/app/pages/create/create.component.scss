@@ -51,7 +51,7 @@
 // --- Galleria ---------------------------------------------------------------
 .create__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--space-2, 16px);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
   align-items: stretch;
 }
