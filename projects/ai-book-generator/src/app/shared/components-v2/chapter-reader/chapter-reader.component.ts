@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, booleanAttribute, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 /** Tono del chip di stato del capitolo (mappa sui token globali dei toni). */
@@ -53,7 +53,11 @@ export class ChapterReaderComponent {
   readonly prevLabel = input<string>('');
   /** Etichetta del capitolo successivo (vuoto = disabilitato). */
   readonly nextLabel = input<string>('');
+  /** Mostra l'icona "apri a schermo intero" (stacca nel lettore immersivo). */
+  readonly expandable = input(false, { transform: booleanAttribute });
 
+  /** Emesso al click su "apri a schermo intero". */
+  readonly expand = output<void>();
   /** Emesso al click sull'azione primaria del footer. */
   readonly action = output<void>();
   /** Emesso al capitolo precedente. */

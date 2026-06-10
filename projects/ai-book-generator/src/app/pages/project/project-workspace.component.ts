@@ -306,6 +306,11 @@ export class ProjectWorkspaceComponent {
     this.readerPage.set(0);
     this.reading.set(true);
   }
+  /** Dal pannello di lettura: stacca il capitolo CORRENTE nel lettore immersivo. */
+  openReader(): void {
+    this.readerPage.set(0);
+    this.reading.set(true);
+  }
   generate(): void {
     void this.store.generate(this.id());
   }

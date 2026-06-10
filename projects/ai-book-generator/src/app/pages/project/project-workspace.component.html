@@ -166,12 +166,14 @@
             @if (selectedChapter(); as ch) {
               <app-chapter-reader
                 class="fill-pane"
+                expandable
                 [documentTitle]="project.title"
                 [title]="ch.index + ' · ' + ch.title"
                 [meta]="'≈ ' + ch.wordCount + ' parole'"
                 [paragraphs]="selectedParagraphs()"
                 [actionLabel]="'i18n.Workspace.Action.publish' | translate"
                 actionIcon="arrow_forward"
+                (expand)="openReader()"
                 (action)="goToPublish()" />
             }
             <app-ai-chat-panel
@@ -262,6 +264,7 @@
       <app-modal-shell
         [open]="reading()"
         size="lg"
+        expandable
         [title]="project.title"
         [subtitle]="'Sola lettura'"
         [closeLabel]="'Chiudi'"

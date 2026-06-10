@@ -7,6 +7,7 @@ import {
   inject,
   input,
   output,
+  signal,
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { A11yModule } from '@angular/cdk/a11y';
@@ -43,6 +44,7 @@ import { ScrollStrategyOptions } from '@angular/cdk/overlay';
       <div
         class="modal-shell__panel"
         [class.modal-shell__panel--lg]="size() === 'lg'"
+        [class.modal-shell__panel--full]="expandable() && fullscreen()"
         role="dialog"
         aria-modal="true"
         tabindex="-1"
@@ -56,9 +58,22 @@ import { ScrollStrategyOptions } from '@angular/cdk/overlay';
               <p class="modal-shell__subtitle">{{ subtitle() }}</p>
             }
           </div>
-          <button class="modal-shell__close" type="button" [attr.aria-label]="closeLabel()" (click)="closed.emit()">
-            <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
-          </button>
+          <div class="modal-shell__actions">
+            @if (expandable()) {
+              <button
+                class="modal-shell__close"
+                type="button"
+                [attr.aria-label]="fullscreen() ? 'Riduci' : 'Schermo intero'"
+                (click)="fullscreen.set(!fullscreen())">
+                <mat-icon fontSet="material-symbols-outlined">{{
+                  fullscreen() ? 'fullscreen_exit' : 'fullscreen'
+                }}</mat-icon>
+              </button>
+            }
+            <button class="modal-shell__close" type="button" [attr.aria-label]="closeLabel()" (click)="closed.emit()">
+              <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+            </button>
+          </div>
         </header>
 
         <div class="modal-shell__body">
@@ -84,6 +99,11 @@ export class ModalShellComponent implements OnDestroy {
   readonly closeLabel = input<string>('');
   /** Larghezza del pannello: `md` (default, form) o `lg` (lettura/contenuti ampi). */
   readonly size = input<'md' | 'lg'>('md');
+  /** Mostra il toggle "schermo intero" nell'header (lettore/contenuti immersivi). */
+  readonly expandable = input(false, { transform: booleanAttribute });
+
+  /** Stato schermo intero (interno: toggle dall'header, reset alla chiusura). */
+  readonly fullscreen = signal(false);
 
   /** Emesso quando si richiede la chiusura (backdrop / Esc / "×"). */
   readonly closed = output<void>();
@@ -102,6 +122,7 @@ export class ModalShellComponent implements OnDestroy {
       this.scrollBlock.disable();
       this.lastFocused?.focus?.();
       this.lastFocused = null;
+      this.fullscreen.set(false); // riapertura sempre in dimensione normale
     }
   });
 
