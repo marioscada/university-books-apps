@@ -1,16 +1,16 @@
 <div class="coll site-container">
   <!-- Header -->
   <header class="coll__head">
-    @if (!hasNoProjects()) {
+    @if (!showEmpty()) {
       <h1 class="page-title coll__title">Le tue collezioni</h1>
     }
-    <label class="page-search coll__search" [class.coll__search--right]="hasNoProjects()">
+    <label class="page-search coll__search" [class.coll__search--right]="showEmpty()">
       <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">search</mat-icon>
       <input
         type="search"
         placeholder="Cerca…"
         aria-label="Cerca nelle collezioni"
-        [disabled]="hasNoProjects()"
+        [disabled]="showEmpty()"
         [ngModel]="query()"
         (ngModelChange)="query.set($event)" />
     </label>
@@ -20,20 +20,45 @@
     </button>
   </header>
 
-  @if (hasNoProjects()) {
-    <!-- Nessun progetto: empty-state con immagine centrale + messaggio dinamico -->
+  @if (!loaded()) {
+    <!-- In attesa dei progetti dal server: skeleton (NON l'empty-state, che
+         sarebbe una falsa interpretazione dell'attesa). -->
+    <section class="coll__section">
+      <h2 class="section-title">La tua libreria</h2>
+      @for (s of skeletonRows; track $index) {
+        <div class="coll__panel surface-card">
+          <!-- Riga progetto (mirror list-row emphasis: icona · 2 linee · badge · azioni) -->
+          <div class="coll__skel-row">
+            <app-skeleton width="40px" height="40px" radius="10px" />
+            <div class="coll__skel-text">
+              <app-skeleton width="190px" height="17px" />
+              <app-skeleton width="150px" height="13px" />
+            </div>
+            <app-skeleton class="coll__skel-badge" width="96px" height="28px" radius="14px" />
+            <span class="coll__skel-actions">
+              <app-skeleton width="22px" height="22px" radius="6px" />
+              <app-skeleton width="22px" height="22px" radius="6px" />
+              <app-skeleton width="22px" height="22px" radius="6px" />
+            </span>
+          </div>
+          <!-- Banda "Fonti · N" (mirror coll__srchead) -->
+          <div class="coll__srchead"><app-skeleton width="64px" height="11px" /></div>
+          <!-- Riga area fonti (mirror coll__nosrc) -->
+          <p class="coll__nosrc"><app-skeleton width="170px" height="13px" /></p>
+        </div>
+      }
+    </section>
+  } @else if (hasNoProjects()) {
+    <!-- Nessun progetto: empty-state con immagine centrale + messaggio dinamico
+         (solo dopo il caricamento). -->
     <app-no-data class="coll__empty" [message]="emptyMessage()" />
   } @else {
     <!-- Solo i lavori PUBBLICATI: i progetti in corso si riprendono da "Crea"
          (vincolo un-progetto-alla-volta), non si elencano qui. -->
     <section class="coll__section">
       <h2 class="section-title">La tua libreria</h2>
-      @if (library().length) {
-        @for (g of library(); track g.id) {
-          <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
-        }
-      } @else {
-        <p class="empty">Ancora nessun lavoro pubblicato.</p>
+      @for (g of library(); track g.id) {
+        <ng-container [ngTemplateOutlet]="panel" [ngTemplateOutletContext]="{ $implicit: g }" />
       }
     </section>
   }

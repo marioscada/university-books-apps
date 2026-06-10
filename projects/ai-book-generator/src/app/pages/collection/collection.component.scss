@@ -105,3 +105,29 @@
 .coll__empty {
   --no-data-min-height: calc(100vh - 260px);
 }
+
+// Skeleton: pannello IDENTICO a quello reale (riga progetto + banda fonti + area
+// fonti) finché i progetti non arrivano dal server. La riga rispecchia la
+// list-row emphasis (padding 15px 18px, gap 14px, icona 40px).
+.coll__skel-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 18px;
+}
+.coll__skel-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.coll__skel-badge {
+  flex: 0 0 auto;
+}
+.coll__skel-actions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
