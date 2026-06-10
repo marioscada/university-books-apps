@@ -53,9 +53,9 @@
             </section>
             </section>
             <!-- Spinner centrato (bg trasparente, fuori dal flusso → niente salto) -->
-            <app-spinner
-              class="studio-loader"
-              [message]="'i18n.Workspace.indexGenerating' | translate" />
+            <p class="studio-thinking" aria-live="polite">
+              {{ 'i18n.Workspace.indexGenerating' | translate }}
+            </p>
           </div>
         } @else if (chaptersLoading()) {
           <!-- Generazione capitoli: skeleton a 3 pannelli (indice · lettura ·
@@ -98,9 +98,9 @@
                 <app-skeleton width="100%" height="44px" radius="22px" />
               </section>
             </section>
-            <app-spinner
-              class="studio-loader"
-              [message]="'i18n.Workspace.chaptersGenerating' | translate" />
+            <p class="studio-thinking" aria-live="polite">
+              {{ 'i18n.Workspace.chaptersGenerating' | translate }}
+            </p>
           </div>
         } @else if (publishLoading()) {
           <!-- Pubblicazione: skeleton della schermata "Documento pubblicato" con le
@@ -145,7 +145,7 @@
               [title]="'Assistente AI'"
               [subtitle]="'Rivedi l’indice prima di sviluppare i capitoli'"
               [messages]="chatBubbles()"
-              [quickOps]="quickOps"
+              [quickOps]="quickOps()"
               [placeholder]="'Scrivi un’istruzione…'"
               [sendLabel]="'Invia'"
               [(value)]="chatDraft"
@@ -180,7 +180,7 @@
               [title]="'Assistente AI'"
               [subtitle]="chatSubtitle()"
               [messages]="chatBubbles()"
-              [quickOps]="quickOps"
+              [quickOps]="quickOps()"
               [placeholder]="'Scrivi un’istruzione…'"
               [sendLabel]="'Invia'"
               [(value)]="chatDraft"

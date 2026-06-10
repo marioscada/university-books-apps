@@ -327,3 +327,16 @@
   display: inline-flex;
   gap: 10px;
 }
+
+// Messaggio del dialog di conferma generazione (parole chiave in grassetto).
+.setup-confirm {
+  margin: 0;
+  font-size: var(--site-body-large, 1.0625rem);
+  line-height: 1.55;
+  color: var(--mat-sys-on-surface-variant);
+
+  strong {
+    color: var(--mat-sys-on-surface);
+    font-weight: 700;
+  }
+}

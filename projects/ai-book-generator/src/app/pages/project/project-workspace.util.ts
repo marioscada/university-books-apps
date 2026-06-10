@@ -16,8 +16,18 @@ export const HAS_OUTPUT = new Set(['review', 'published']);
 /** Paragrafi per "pagina" nel lettore paginato (niente scroll, sfoglio a pagine). */
 export const READER_PAGE_SIZE = 3;
 
-/** Operazioni rapide della chat di modifica. */
-export const QUICK_OPS: QuickOp[] = [
+/** Operazioni rapide della chat in revisione **INDICE** (pertinenti all'indice). */
+export const QUICK_OPS_INDEX: QuickOp[] = [
+  { key: 'add_chapter', label: 'Aggiungi capitolo' },
+  { key: 'remove_chapter', label: 'Rimuovi capitolo' },
+  { key: 'more_detail', label: 'Più dettagliato' },
+  { key: 'concise', label: 'Più sintetico' },
+  { key: 'reorder', label: 'Riordina' },
+  { key: 'rename', label: 'Migliora i titoli' },
+];
+
+/** Operazioni rapide della chat in revisione **CAPITOLI** (pertinenti al testo). */
+export const QUICK_OPS_CHAPTERS: QuickOp[] = [
   { key: 'reduce', label: 'Riduci' },
   { key: 'expand', label: 'Espandi' },
   { key: 'examples', label: 'Aggiungi esempi' },
@@ -25,9 +35,23 @@ export const QUICK_OPS: QuickOp[] = [
   { key: 'translate', label: 'Traduci' },
 ];
 
-/** Prompt corrispondente a un'operazione rapida della chat. */
+/** Prompt corrispondente a un'operazione rapida della chat (indice o capitoli). */
 export function quickOpText(key: string): string {
   switch (key) {
+    // Indice
+    case 'add_chapter':
+      return 'Aggiungi un nuovo capitolo all’indice.';
+    case 'remove_chapter':
+      return 'Rimuovi un capitolo dall’indice.';
+    case 'more_detail':
+      return 'Rendi l’indice più dettagliato, con più sezioni.';
+    case 'concise':
+      return 'Rendi l’indice più sintetico, con meno capitoli.';
+    case 'reorder':
+      return 'Riordina i capitoli in una sequenza più logica.';
+    case 'rename':
+      return 'Migliora i titoli dei capitoli dell’indice.';
+    // Capitoli
     case 'reduce':
       return 'Riduci questo capitolo del 20%.';
     case 'expand':

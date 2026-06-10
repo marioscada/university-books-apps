@@ -10,7 +10,7 @@
           color="primary"
           type="button"
           [disabled]="!canGenerate() || submitting()"
-          (click)="generate()">
+          (click)="askGenerate()">
           {{ 'i18n.Setup.generateIndex' | translate }}
           <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
         </button>
@@ -206,6 +206,24 @@
         <button mat-stroked-button type="button" (click)="closeText()">Annulla</button>
         <button mat-flat-button color="primary" type="button" (click)="addTextSource()">Aggiungi</button>
       </div>
+    </div>
+  </app-modal-shell>
+
+  <!-- Conferma avvio generazione (dopo non si cambia modello) -->
+  <app-modal-shell
+    [open]="showConfirm()"
+    [title]="'i18n.Setup.confirm.title' | translate"
+    [closeLabel]="'i18n.Common.dismiss' | translate"
+    (closed)="showConfirm.set(false)">
+    <p class="setup-confirm" [innerHTML]="'i18n.Setup.confirm.message' | translate"></p>
+    <div footer class="ed-footer">
+      <button mat-stroked-button type="button" (click)="showConfirm.set(false)">
+        {{ 'i18n.Setup.confirm.cancel' | translate }}
+      </button>
+      <button mat-flat-button color="primary" type="button" (click)="generate()">
+        {{ 'i18n.Setup.confirm.start' | translate }}
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">arrow_forward</mat-icon>
+      </button>
     </div>
   </app-modal-shell>
 </div>
