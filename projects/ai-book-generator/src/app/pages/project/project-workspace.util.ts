@@ -16,8 +16,18 @@ export const HAS_OUTPUT = new Set(['review', 'published']);
 /** Paragrafi per "pagina" nel lettore paginato (niente scroll, sfoglio a pagine). */
 export const READER_PAGE_SIZE = 3;
 
-/** Operazioni rapide della chat di modifica. */
-export const QUICK_OPS: QuickOp[] = [
+/** Operazioni rapide della chat in revisione **INDICE** (pertinenti all'indice). */
+export const QUICK_OPS_INDEX: QuickOp[] = [
+  { key: 'more_detail', label: 'Più dettagliato' },
+  { key: 'concise', label: 'Più sintetico' },
+  { key: 'reorder', label: 'Riordina' },
+  { key: 'rename', label: 'Migliora i titoli' },
+  { key: 'add_topic', label: 'Aggiungi un argomento' },
+  { key: 'angle', label: 'Cambia taglio' },
+];
+
+/** Operazioni rapide della chat in revisione **CAPITOLI** (pertinenti al testo). */
+export const QUICK_OPS_CHAPTERS: QuickOp[] = [
   { key: 'reduce', label: 'Riduci' },
   { key: 'expand', label: 'Espandi' },
   { key: 'examples', label: 'Aggiungi esempi' },
@@ -25,9 +35,23 @@ export const QUICK_OPS: QuickOp[] = [
   { key: 'translate', label: 'Traduci' },
 ];
 
-/** Prompt corrispondente a un'operazione rapida della chat. */
+/** Prompt corrispondente a un'operazione rapida della chat (indice o capitoli). */
 export function quickOpText(key: string): string {
   switch (key) {
+    // Indice (struttura/piano — i capitoli si generano dopo)
+    case 'more_detail':
+      return 'Rendi l’indice più dettagliato, con più sezioni e sottosezioni.';
+    case 'concise':
+      return 'Rendi l’indice più sintetico, con una struttura più snella.';
+    case 'reorder':
+      return 'Riordina le sezioni dell’indice in una sequenza più logica.';
+    case 'rename':
+      return 'Migliora i titoli delle sezioni dell’indice, più chiari ed efficaci.';
+    case 'add_topic':
+      return 'Aggiungi all’indice una sezione su un argomento finora non coperto.';
+    case 'angle':
+      return 'Cambia il taglio dell’indice: tono e angolazione del contenuto.';
+    // Capitoli
     case 'reduce':
       return 'Riduci questo capitolo del 20%.';
     case 'expand':
@@ -64,15 +88,11 @@ export function paginate<T>(items: readonly T[], size: number): T[][] {
   return pages.length ? pages : [[]];
 }
 
-/** Stima pagine da un conteggio parole (≈ 350 parole/pagina). */
-export function pagesFromWords(words: number): number {
-  return Math.max(1, Math.round(words / 350));
-}
-
 /**
  * Mappa i capitoli nel view-model della lista indice. In revisione indice
- * (`ready=false`) lista neutra con stima lunghezza; a capitoli sviluppati lo
- * stato riflette in generazione/in lettura/da rivedere.
+ * (`ready=false`) lista neutra SENZA stima pagine (i capitoli non sono ancora
+ * generati); a capitoli sviluppati lo stato riflette in generazione/in lettura/
+ * da rivedere.
  */
 export function toChapterItems(
   chapters: readonly Chapter[],
@@ -87,7 +107,6 @@ export function toChapterItems(
         index: c.index,
         title: c.title,
         status: 'todo' as const,
-        statusLabel: `≈ ${pagesFromWords(c.wordCount)} pag.`,
         sections,
       };
     }

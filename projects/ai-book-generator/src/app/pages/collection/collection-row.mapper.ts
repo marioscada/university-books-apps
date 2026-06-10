@@ -14,12 +14,27 @@ export interface RowVM {
   icon: string;
   iconTone: Tone;
   cover: string;
+  /** Immagine 3D del modello (se disponibile): sostituisce icona/cover. */
+  imageSrc: string;
   title: string;
   meta: string;
   badge: string;
   badgeTone: Tone;
   actions: RowAction[];
 }
+
+/** Modelli con immagine 3D in `public/images/models/<id>.png`. */
+const MODEL_IMG_IDS = new Set([
+  'book',
+  'summary',
+  'thesis',
+  'manual',
+  'report',
+  'presentation',
+  'study_guide',
+  'course',
+  'custom',
+]);
 
 const KIND_LABEL: Record<DocumentType, string> = {
   book: 'Libro',
@@ -98,11 +113,14 @@ export function projectRow(p: Project, nSources: number): RowVM {
   }
   const kicker = KIND_LABEL[p.documentType];
   const fonti = `${nSources} ${nSources === 1 ? 'fonte' : 'fonti'}`;
+  const imageSrc =
+    p.templateId && MODEL_IMG_IDS.has(p.templateId) ? `images/models/${p.templateId}.png` : '';
   return {
     id: p.id,
     icon: KIND_ICON[p.documentType],
     iconTone: 'neutral',
     cover: COVER_COLOR[p.coverTheme],
+    imageSrc,
     title: p.title,
     meta: `${kicker} · ${fonti} · ${relTime(p.updatedAt)}`,
     badge,
@@ -126,6 +144,7 @@ export function sourceRow(s: Source): RowVM {
     icon: tm.icon,
     iconTone: tm.tone,
     cover: '',
+    imageSrc: '',
     title: s.name,
     meta: `${head} · aggiunta ${relTime(s.uploadedAt)}`,
     badge: im.label,

@@ -356,15 +356,18 @@ const CUSTOM: ProjectTemplate = {
   typography: SANS_TYPOGRAPHY,
 };
 
-/** Tutti i modelli, nell'ordine della galleria Create (Personalizzato per ultimo). */
+/** Tutti i modelli, nell'ordine della galleria Create.
+ *  NB: `study_guide` → "Materia scientifica", `course` → "Materia letteraria",
+ *  `custom` → "Lingua straniera", `thesis` → "Tesina" (ridenominati via i18n;
+ *  id/struttura invariati per non toccare il contratto backend). */
 export const TEMPLATE_CATALOG: readonly ProjectTemplate[] = [
   BOOK,
   SUMMARY,
-  STUDY_GUIDE,
+  STUDY_GUIDE, // Materia scientifica
+  COURSE, // Materia letteraria
+  CUSTOM, // Lingua straniera
+  THESIS, // Tesina
   MANUAL,
   REPORT,
   PRESENTATION,
-  COURSE,
-  THESIS,
-  CUSTOM,
 ];

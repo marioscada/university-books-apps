@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ListRowComponent } from '../../shared/components-v2/list-row/list-row.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import { NoDataComponent } from '../../shared/components-v2/no-data/no-data.component';
+import { SkeletonComponent } from '../../shared/components-v2/skeleton/skeleton.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { SourcesStore } from '../../core/state/sources.store';
 import { BillingService } from '../../core/services/billing.service';
@@ -41,6 +42,7 @@ const LIBRARY: readonly ProjectStatus[] = ['published'];
     ListRowComponent,
     ModalShellComponent,
     NoDataComponent,
+    SkeletonComponent,
     NgTemplateOutlet,
     FormsModule,
     MatIconModule,
@@ -68,6 +70,12 @@ export class CollectionComponent {
   /** Nessun lavoro pubblicato → empty-state globale (i progetti in corso si
    *  riprendono da "Crea", vincolo un-progetto-alla-volta). */
   readonly hasNoProjects = computed(() => !this.library().length);
+  /** True dopo il primo caricamento: l'empty-state appare solo se è DAVVERO
+   *  vuoto, non come falsa interpretazione dell'attesa dei dati. */
+  readonly loaded = this.projects.loaded;
+  readonly showEmpty = computed(() => this.loaded() && this.hasNoProjects());
+  /** Placeholder dello skeleton mostrato durante l'attesa dei dati. */
+  protected readonly skeletonRows = [1, 2, 3];
   readonly emptyMessage = computed(() => this.t('i18n.Collection.empty.message'));
 
   // --- Navigazione / azioni ---------------------------------------------------

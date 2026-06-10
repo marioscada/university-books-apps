@@ -35,7 +35,8 @@ import type { Chapter } from '../../core/domain';
 import {
   HAS_OUTPUT,
   READER_PAGE_SIZE,
-  QUICK_OPS,
+  QUICK_OPS_INDEX,
+  QUICK_OPS_CHAPTERS,
   paginate,
   quickOpText,
   toChapterItems,
@@ -253,7 +254,10 @@ export class ProjectWorkspaceComponent {
     const ch = this.selectedChapter();
     return ch ? `Modifica: ${ch.index} · ${ch.title}` : 'Chiedi una modifica al documento';
   });
-  readonly quickOps = QUICK_OPS;
+  /** Suggerimenti rapidi contestuali: indice in revisione indice, capitoli dopo. */
+  readonly quickOps = computed(() =>
+    this.chaptersReady() ? QUICK_OPS_CHAPTERS : QUICK_OPS_INDEX,
+  );
 
   // --- Azioni -----------------------------------------------------------------
   selectChapter(key: string): void {
@@ -299,6 +303,11 @@ export class ProjectWorkspaceComponent {
   /** Dalla Conferma: apri il documento in sola lettura (dal capitolo 1, pagina 1). */
   openDocument(): void {
     this.pickedKey.set(this.workspace.chapters()[0]?.id ?? '');
+    this.readerPage.set(0);
+    this.reading.set(true);
+  }
+  /** Dal pannello di lettura: stacca il capitolo CORRENTE nel lettore immersivo. */
+  openReader(): void {
     this.readerPage.set(0);
     this.reading.set(true);
   }

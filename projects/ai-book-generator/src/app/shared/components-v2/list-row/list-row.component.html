@@ -1,4 +1,8 @@
-@if (icon()) {
+@if (imageSrc()) {
+  <span class="lr__icon lr__icon--img" aria-hidden="true">
+    <img class="lr__img" [src]="imageSrc()" alt="" loading="lazy" />
+  </span>
+} @else if (icon()) {
   <span
     class="lr__icon"
     aria-hidden="true"

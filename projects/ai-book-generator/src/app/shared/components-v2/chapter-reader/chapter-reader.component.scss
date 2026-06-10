@@ -46,6 +46,33 @@
   color: var(--mat-sys-on-surface-variant);
 }
 
+// Icona "apri a schermo intero" (stacca il capitolo nel lettore immersivo).
+.chapter-reader__expand {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--card-border-color);
+  border-radius: 9px;
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+
+  &:hover {
+    background: var(--surface-soft);
+    color: var(--accent-700);
+  }
+}
+
 // Chip di stato — tinte dai token globali dei toni.
 .chapter-reader__status {
   flex: 0 0 auto;

@@ -43,7 +43,7 @@
             <mat-icon matChipAvatar class="source-dropzone__state--ready" fontSet="material-symbols-outlined">check_circle</mat-icon>
           }
         }
-        {{ item.name }}
+        <span class="source-dropzone__name" [title]="item.name">{{ item.name }}</span>
         @if (removable()) {
           <button matChipRemove [attr.aria-label]="'Rimuovi ' + item.name">
             <mat-icon fontSet="material-symbols-outlined">close</mat-icon>

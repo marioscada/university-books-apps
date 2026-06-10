@@ -29,6 +29,26 @@
   &.modal-shell__panel--lg {
     width: min(880px, calc(100vw - 32px));
   }
+  // Schermo intero: riempie il viewport (toggle dall'header). Responsive: su
+  // mobile coincide quasi col normale, qui occupa tutto.
+  &.modal-shell__panel--full {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    top: 0;
+    left: 0;
+    transform: none;
+    border-radius: 0;
+
+    // Contenuti SEMPRE entro un'area centrata (mai a filo bordo), come il resto
+    // dell'app: header, corpo e footer rientrano in una colonna max-width.
+    .modal-shell__head,
+    .modal-shell__body,
+    .modal-shell__footer {
+      padding-inline: max(24px, calc((100% - 1000px) / 2));
+    }
+  }
   display: flex;
   flex-direction: column;
   background: var(--card-bg);
@@ -63,6 +83,12 @@
   margin: 0;
   font-size: var(--site-body-small, 0.875rem);
   color: var(--mat-sys-on-surface-variant);
+}
+.modal-shell__actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .modal-shell__close {
   flex: 0 0 auto;

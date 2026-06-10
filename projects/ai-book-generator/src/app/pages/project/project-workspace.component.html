@@ -53,9 +53,9 @@
             </section>
             </section>
             <!-- Spinner centrato (bg trasparente, fuori dal flusso → niente salto) -->
-            <app-spinner
-              class="studio-loader"
-              [message]="'i18n.Workspace.indexGenerating' | translate" />
+            <p class="studio-thinking" aria-live="polite">
+              {{ 'i18n.Workspace.indexGenerating' | translate }}
+            </p>
           </div>
         } @else if (chaptersLoading()) {
           <!-- Generazione capitoli: skeleton a 3 pannelli (indice · lettura ·
@@ -98,9 +98,9 @@
                 <app-skeleton width="100%" height="44px" radius="22px" />
               </section>
             </section>
-            <app-spinner
-              class="studio-loader"
-              [message]="'i18n.Workspace.chaptersGenerating' | translate" />
+            <p class="studio-thinking" aria-live="polite">
+              {{ 'i18n.Workspace.chaptersGenerating' | translate }}
+            </p>
           </div>
         } @else if (publishLoading()) {
           <!-- Pubblicazione: skeleton della schermata "Documento pubblicato" con le
@@ -145,7 +145,7 @@
               [title]="'Assistente AI'"
               [subtitle]="'Rivedi l’indice prima di sviluppare i capitoli'"
               [messages]="chatBubbles()"
-              [quickOps]="quickOps"
+              [quickOps]="quickOps()"
               [placeholder]="'Scrivi un’istruzione…'"
               [sendLabel]="'Invia'"
               [(value)]="chatDraft"
@@ -166,12 +166,14 @@
             @if (selectedChapter(); as ch) {
               <app-chapter-reader
                 class="fill-pane"
+                expandable
                 [documentTitle]="project.title"
                 [title]="ch.index + ' · ' + ch.title"
                 [meta]="'≈ ' + ch.wordCount + ' parole'"
                 [paragraphs]="selectedParagraphs()"
                 [actionLabel]="'i18n.Workspace.Action.publish' | translate"
                 actionIcon="arrow_forward"
+                (expand)="openReader()"
                 (action)="goToPublish()" />
             }
             <app-ai-chat-panel
@@ -180,7 +182,7 @@
               [title]="'Assistente AI'"
               [subtitle]="chatSubtitle()"
               [messages]="chatBubbles()"
-              [quickOps]="quickOps"
+              [quickOps]="quickOps()"
               [placeholder]="'Scrivi un’istruzione…'"
               [sendLabel]="'Invia'"
               [(value)]="chatDraft"
@@ -243,7 +245,6 @@
       <!-- Dialog di conferma pubblicazione (conferma / annulla) -->
       <app-modal-shell
         [open]="showPublish()"
-        size="lg"
         [title]="'Pubblica il documento'"
         [closeLabel]="'Chiudi'"
         (closed)="backToChapters()">
@@ -263,6 +264,7 @@
       <app-modal-shell
         [open]="reading()"
         size="lg"
+        expandable
         [title]="project.title"
         [subtitle]="'Sola lettura'"
         [closeLabel]="'Chiudi'"

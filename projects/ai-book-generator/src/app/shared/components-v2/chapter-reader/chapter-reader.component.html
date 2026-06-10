@@ -7,6 +7,15 @@
     @if (statusLabel()) {
       <span class="chapter-reader__status" [attr.data-tone]="statusTone()">{{ statusLabel() }}</span>
     }
+    @if (expandable()) {
+      <button
+        class="chapter-reader__expand"
+        type="button"
+        aria-label="Apri a schermo intero"
+        (click)="expand.emit()">
+        <mat-icon fontSet="material-symbols-outlined">open_in_full</mat-icon>
+      </button>
+    }
   </div>
   @if (meta()) {
     <p class="chapter-reader__meta">{{ meta() }}</p>

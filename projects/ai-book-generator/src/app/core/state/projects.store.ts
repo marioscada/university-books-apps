@@ -45,10 +45,14 @@ export const ProjectsStore = signalStore(
   { providedIn: 'root' },
   withState<{
     loading: boolean;
+    /** True dopo il PRIMO caricamento: distingue "in attesa" da "davvero vuoto"
+     *  (così l'empty-state non appare come falsa interpretazione dell'attesa). */
+    loaded: boolean;
     jobsByProject: Record<string, Job | null>;
     plan: Plan;
   }>({
     loading: false,
+    loaded: false,
     jobsByProject: {},
     plan: 'free',
   }),
@@ -118,7 +122,7 @@ export const ProjectsStore = signalStore(
     const loadAll = async (): Promise<void> => {
       patchState(store, { loading: true });
       const projects = await api.listProjects();
-      patchState(store, setAllEntities(projects), { loading: false });
+      patchState(store, setAllEntities(projects), { loading: false, loaded: true });
       // Avvia il polling per i progetti in elaborazione.
       for (const project of projects) {
         if (isLive(project.status)) {

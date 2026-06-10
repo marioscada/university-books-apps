@@ -56,6 +56,16 @@
   margin-top: 6px;
 }
 
+// Nome file: troncato con ellissi così i nomi lunghi non sbordano dal chip.
+.source-dropzone__name {
+  display: inline-block;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
 // Colore dell'avatar di stato dentro la chip Material (ready/errore).
 .source-dropzone__state--ready {
   color: var(--accent-700);

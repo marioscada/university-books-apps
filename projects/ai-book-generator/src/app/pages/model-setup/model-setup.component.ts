@@ -272,12 +272,25 @@ export class ModelSetupComponent {
   /** In invio al server (disabilita la CTA, evita doppi click). */
   readonly submitting = signal(false);
 
+  /** Dialog di conferma prima di avviare la generazione (modello non più cambiabile). */
+  readonly showConfirm = signal(false);
+
+  /** "Genera indice" → valida e apre la conferma (l'avvio vero è in `generate`). */
+  askGenerate(): void {
+    if (!this.canGenerate()) {
+      this.titleTouched.set(true);
+      return;
+    }
+    this.showConfirm.set(true);
+  }
+
   /**
    * Genera indice: impacchetta titolo + brief + **modifiche** + fonti e li manda
    * al server (in v1 lo store mock). Si **attende la conferma** (la creazione che
    * risolve) prima di navigare: è il server a confermare gli aggiornamenti.
    */
   async generate(): Promise<void> {
+    this.showConfirm.set(false);
     const tpl = this.template();
     if (!this.canGenerate()) {
       this.titleTouched.set(true);

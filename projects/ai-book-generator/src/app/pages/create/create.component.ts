@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ChoiceCardComponent } from '../../shared/components-v2/choice-card/choice-card.component';
 import { ModelSetupComponent } from '../model-setup/model-setup.component';
 import { TemplatesStore } from '../../core/state/templates.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
-import { METER_MAX, toModelChoices, type ModelChoice } from './create.util';
+import { toModelChoices, type ModelChoice } from './create.util';
 
 /**
  * Create — **host del flusso di creazione** (URL fisso `/create`).
@@ -23,7 +22,7 @@ import { METER_MAX, toModelChoices, type ModelChoice } from './create.util';
   selector: 'app-create',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ChoiceCardComponent, ModelSetupComponent, MatIconModule, TranslateModule],
+  imports: [ChoiceCardComponent, ModelSetupComponent, TranslateModule],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
 })
@@ -41,10 +40,6 @@ export class CreateComponent {
 
   /** Risolutore i18n reattivo (ricalcola i computed al cambio lingua). */
   private readonly t = injectI18nText();
-
-  readonly meterMax = METER_MAX;
-  readonly shortLabel = computed(() => this.t('i18n.Create.short'));
-  readonly longLabel = computed(() => this.t('i18n.Create.long'));
 
   /** Card della galleria, una per modello, con l'i18n già risolto. */
   readonly cards = computed<ModelChoice[]>(() =>
