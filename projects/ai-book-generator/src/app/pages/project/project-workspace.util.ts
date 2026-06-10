@@ -88,15 +88,11 @@ export function paginate<T>(items: readonly T[], size: number): T[][] {
   return pages.length ? pages : [[]];
 }
 
-/** Stima pagine da un conteggio parole (≈ 350 parole/pagina). */
-export function pagesFromWords(words: number): number {
-  return Math.max(1, Math.round(words / 350));
-}
-
 /**
  * Mappa i capitoli nel view-model della lista indice. In revisione indice
- * (`ready=false`) lista neutra con stima lunghezza; a capitoli sviluppati lo
- * stato riflette in generazione/in lettura/da rivedere.
+ * (`ready=false`) lista neutra SENZA stima pagine (i capitoli non sono ancora
+ * generati); a capitoli sviluppati lo stato riflette in generazione/in lettura/
+ * da rivedere.
  */
 export function toChapterItems(
   chapters: readonly Chapter[],
@@ -111,7 +107,6 @@ export function toChapterItems(
         index: c.index,
         title: c.title,
         status: 'todo' as const,
-        statusLabel: `≈ ${pagesFromWords(c.wordCount)} pag.`,
         sections,
       };
     }
