@@ -81,6 +81,17 @@
   }
 }
 
+// Variante immagine (icona 3D del modello): nessun tile colorato, solo l'immagine.
+.lr__icon--img {
+  background: transparent;
+  overflow: visible;
+}
+.lr__img {
+  width: 118%;
+  height: 118%;
+  object-fit: contain;
+}
+
 .lr__body {
   flex: 1 1 auto;
   min-width: 0;

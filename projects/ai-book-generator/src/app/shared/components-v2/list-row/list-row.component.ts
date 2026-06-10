@@ -43,6 +43,8 @@ export interface RowAction {
 export class ListRowComponent {
   readonly icon = input<string>('');
   readonly iconTone = input<Tone>('neutral');
+  /** Immagine icona (es. 3D del modello): se presente sostituisce icona/cover. */
+  readonly imageSrc = input<string>('');
   readonly title = input.required<string>();
   readonly meta = input<string>('');
   readonly badge = input<string>('');
