@@ -472,6 +472,7 @@
   "i18n.Setup.sources.duplicate": "“{{name}}” is already attached — skipped.",
   "i18n.Setup.sources.duplicateMany": "{{count}} files were already attached — skipped.",
   "i18n.Setup.sources.duplicateOk": "OK",
+  "i18n.Setup.sources.pendingWarn": "Please wait: some sources are still uploading or processing.",
   "i18n.Setup.sources.hint": "PDF · DOCX · PPTX · TXT · images — optional",
   "i18n.Setup.sources.placeholder": "Source management will appear here.",
   "i18n.Setup.sources.prompt": "Drag files here, or browse",

@@ -12,7 +12,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-/** Stato di un allegato (deciso dal padre dopo l'upload, non dal componente). */
+/**
+ * Stato di un allegato (deciso dal padre): `uploading` (PUT su S3, con %),
+ * `ready` (caricato), `error`.
+ */
 export type SourceStatus = 'uploading' | 'ready' | 'error';
 
 /** Allegato mostrato come chip. `status`/`progress` arrivano dal padre. */

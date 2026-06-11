@@ -26,18 +26,31 @@ export const SourcesStore = signalStore(
         patchState(store, setAllEntities(sources), { loading: false });
       },
 
-      /** Crea una nota inline (Step 2 wizard) e la aggiunge allo store. */
-      async createNote(name: string): Promise<Source> {
-        const note = await api.createNote(name);
+      /** Crea una nota inline (col `content`) e la aggiunge allo store. */
+      async createNote(name: string, content?: string): Promise<Source> {
+        const note = await api.createNote(name, content);
         patchState(store, addEntity(note));
         return note;
       },
 
-      /** Crea una fonte da upload (mock) e la aggiunge allo store. */
-      async createUpload(input: CreateUploadInput): Promise<Source> {
-        const source = await api.createUpload(input);
+      /**
+       * Upload reale: presigned-url → PUT su S3 (byte del `file`, `onProgress`
+       * 0–1) → record `processing`. Lo aggiunge allo store; l'ingest si conferma
+       * via `ingestStatus`.
+       */
+      async createUpload(
+        input: CreateUploadInput,
+        file: Blob,
+        onProgress?: (fraction: number) => void,
+      ): Promise<Source> {
+        const source = await api.createUpload(input, file, onProgress);
         patchState(store, addEntity(source));
         return source;
+      },
+
+      /** Presigned URL per SCARICARE il file. */
+      downloadUrl(id: string): Promise<string> {
+        return api.getDownloadUrl(id);
       },
 
       /** Elimina una fonte. */

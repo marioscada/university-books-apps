@@ -143,8 +143,9 @@
   [closeLabel]="'Chiudi'"
   (closed)="cancelDelete()">
   <p class="coll__upsell">
-    Stai per eliminare <strong>«{{ pendingDelete()?.title }}»</strong>. Non potrai annullare né
-    recuperare il contenuto.
+    Stai per eliminare <strong>«{{ pendingDelete()?.title }}»</strong>@if (
+      pendingDelete()?.kind === 'project'
+    ) {<strong> e tutte le sue fonti</strong>}. Non potrai annullare né recuperare il contenuto.
   </p>
   <div footer class="coll__dialogfoot">
     <button mat-stroked-button type="button" (click)="cancelDelete()">Annulla</button>

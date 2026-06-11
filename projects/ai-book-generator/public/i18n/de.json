@@ -472,6 +472,7 @@
   "i18n.Setup.sources.duplicate": "„{{name}}“ ist bereits angehängt — übersprungen.",
   "i18n.Setup.sources.duplicateMany": "{{count}} Dateien waren bereits angehängt — übersprungen.",
   "i18n.Setup.sources.duplicateOk": "OK",
+  "i18n.Setup.sources.pendingWarn": "Bitte warten: Einige Quellen werden noch hochgeladen oder verarbeitet.",
   "i18n.Setup.sources.hint": "PDF · DOCX · PPTX · TXT · Bilder — optional",
   "i18n.Setup.sources.placeholder": "Die Quellenverwaltung erscheint hier.",
   "i18n.Setup.sources.prompt": "Dateien hierher ziehen oder durchsuchen",
