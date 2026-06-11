@@ -60,18 +60,26 @@
 }
 
 // Variante per CTA su immagine/scrim scuro (hero). Combinare con
-// `.site-cta-pill`. Eredita tutto e diverge solo dove serve sul fondo scuro:
-// niente outline visibile, e RESTA chiaro su mobile (il backdrop è scuro lì).
+// `.site-cta-pill`. Sul fondo immagine il pill è SEMPRE NERO pieno (più
+// visibile/leggibile a riposo); l'hover inverte (bianco) per il feedback.
 .site-cta-pill--on-image {
+  background: var(--mat-sys-on-surface);
+  color: var(--mat-sys-surface-container-lowest);
   border-color: transparent;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--mat-sys-surface-container-lowest);
+    color: var(--mat-sys-on-surface);
+  }
 
   &:focus-visible {
     outline-color: var(--mat-sys-surface-container-lowest);
   }
 
   @include bp.lt(bp.$md) {
-    background: var(--mat-sys-surface-container-lowest);
-    color: var(--mat-sys-on-surface);
+    background: var(--mat-sys-on-surface);
+    color: var(--mat-sys-surface-container-lowest);
   }
 }
 
