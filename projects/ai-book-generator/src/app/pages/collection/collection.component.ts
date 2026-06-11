@@ -104,7 +104,22 @@ export class CollectionComponent {
   }
   onSourceAction(id: string, action: string): void {
     if (action === 'delete') this.askDelete('source', id);
-    // 'download': placeholder col backend.
+    else if (action === 'download') this.downloadSource(id);
+  }
+
+  /** Scarica il file della fonte via presigned URL (Content-Disposition: attachment). */
+  downloadSource(id: string): void {
+    void this.uiPromise.run(
+      async () => {
+        window.location.href = await this.sources.downloadUrl(id);
+      },
+      {
+        error: {
+          title: this.t('i18n.Common.error'),
+          message: 'Impossibile scaricare il file.',
+        },
+      },
+    );
   }
 
   // --- Conferma eliminazione (operazione irreversibile) -----------------------
@@ -125,8 +140,18 @@ export class CollectionComponent {
     // Spinner d'attesa + toast (esito) via uiPromise; il dialog di conferma è già stato mostrato.
     void this.uiPromise.run(
       async () => {
-        if (d.kind === 'project') await this.projects.delete(d.id);
-        else await this.sources.delete(d.id);
+        if (d.kind === 'project') {
+          // Elimina il progetto E tutte le sue fonti (material + instruction).
+          const project = this.projects.entities().find((p) => p.id === d.id);
+          const sourceIds = [
+            ...(project?.materialFileIds ?? []),
+            ...(project?.instructionFileIds ?? []),
+          ];
+          await Promise.allSettled(sourceIds.map((sid) => this.sources.delete(sid)));
+          await this.projects.delete(d.id);
+        } else {
+          await this.sources.delete(d.id);
+        }
       },
       {
         loading: true,
@@ -177,7 +202,11 @@ export class CollectionComponent {
       .filter((p) => !q || p.title.toLowerCase().includes(q))
       .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
       .map((p) => {
-        const srcs = all.filter((s) => s.usedInProjectIds.includes(p.id));
+        // Le fonti del progetto sono la sua lista (forward-reference, popolata da
+        // createProject): material + instruction file. NON usiamo `usedInProjectIds`
+        // dei documenti (back-reference che il backend non mantiene → "0 fonti").
+        const ids = new Set([...(p.materialFileIds ?? []), ...(p.instructionFileIds ?? [])]);
+        const srcs = all.filter((s) => ids.has(s.id));
         return {
           id: p.id,
           project: projectRow(p, srcs.length),

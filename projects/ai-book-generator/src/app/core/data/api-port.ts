@@ -71,20 +71,25 @@ export interface ApiPort {
   listSources(filter?: ListSourcesFilter): Promise<Source[]>;
   /** GET /sources/:id */
   getSource(id: string): Promise<Source>;
-  /** POST /sources — crea una nota inline (mock, ingest immediato `ready`). */
-  createNote(name: string): Promise<Source>;
+  /** POST /v1/documents — crea una nota inline col `content` (ingest immediato). */
+  createNote(name: string, content?: string): Promise<Source>;
   /**
-   * POST /sources (upload). Mock: crea una Source dal file (tipo dedotto da
-   * estensione/mime), ingest immediato `ready`. Con backend AWS diventerà un PUT
-   * presigned su S3 + record via API Gateway, dietro questa stessa firma.
+   * Upload di una fonte file: presigned-url → **PUT reale dei byte su S3** →
+   * record. Il `File` arriva fino al PUT (il content-type firmato deve coincidere
+   * con quello inviato). `onProgress` riceve l'avanzamento reale (0–1). La Source
+   * torna in stato `processing` (ingest in corso): diventa `ready` via polling.
    */
-  createUpload(input: CreateUploadInput): Promise<Source>;
+  createUpload(
+    input: CreateUploadInput,
+    file: Blob,
+    onProgress?: (fraction: number) => void,
+  ): Promise<Source>;
   /** PATCH /sources/:id (tags/folder/category) */
   patchSource(id: string, patch: PatchSourceInput): Promise<Source>;
   /** DELETE /sources/:id */
   deleteSource(id: string): Promise<void>;
-  /** GET /sources/:id/ingest (stato estrazione) */
-  getIngestJob(sourceId: string): Promise<Job>;
+  /** GET /documents/:id/download — presigned URL per SCARICARE il file. */
+  getDownloadUrl(id: string): Promise<string>;
 
   // --- Workspace / plan (gating) -------------------------------------------
   /** Piano del workspace corrente (v1 mock: `free`) — usato per il gating soft. */

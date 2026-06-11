@@ -23,6 +23,7 @@ import {
 } from '../../shared/components-v2/source-dropzone/source-dropzone.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import { ProjectsStore } from '../../core/state/projects.store';
+import { SourcesStore } from '../../core/state/sources.store';
 import { TemplatesStore } from '../../core/state/templates.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
 import { UiPromiseService } from '../../shared/services/ui-promise.service';
@@ -69,6 +70,8 @@ export class ModelSetupComponent {
   private readonly router = inject(Router);
   private readonly templatesStore = inject(TemplatesStore);
   private readonly projectsStore = inject(ProjectsStore);
+  private readonly sourcesStore = inject(SourcesStore);
+
   private readonly snackBar = inject(MatSnackBar);
   private readonly uiPromise = inject(UiPromiseService);
 
@@ -100,6 +103,11 @@ export class ModelSetupComponent {
   /** Si può generare solo con un titolo valido. */
   readonly canGenerate = computed(() => !!this.documentTitle().trim());
 
+  /** True se almeno una fonte è ancora in upload (non finita di salire su S3). */
+  readonly sourcesPending = computed(() =>
+    [...this.materialFiles(), ...this.instructionFiles()].some((s) => s.status === 'uploading'),
+  );
+
   readonly language = signal('it');
   readonly formats = signal<OutputFormat[]>(['pdf', 'docx']);
   readonly materialFiles = signal<SourceItem[]>([]);
@@ -127,14 +135,14 @@ export class ModelSetupComponent {
   readonly titleFieldLabel = computed(() => `Scegli un nome per ${this.possessive()} ${this.nameLower()}`);
   readonly descFieldLabel = 'Descrivi brevemente cosa conterrà.';
 
-  // --- Fonti & allegati alle note --------------------------------------------
-  // In v1 NON c'è ancora il server: il padre SIMULA l'upload (uploading→ready)
-  // così i componenti dumb mostrano lo stato in azione. In produzione qui andrà
-  // la presigned PUT su S3 (vedi docs/ARCHITECTURE-CREATE-NEW.md §2).
+  // --- Fonti & allegati: UPLOAD REALE su AWS S3 ------------------------------
+  // I byte vanno davvero su S3 via presigned PUT (progress reale), poi l'ingest
+  // backend porta la fonte a `ready` (disponibile all'AI). Vedi
+  // docs/AWS-S3-UPLOAD.md per il contratto presigned + i prerequisiti CORS.
   private uploadSeq = 0;
 
   addSources(files: File[]): void {
-    this.simulateUpload(this.materialFiles, files);
+    this.realUpload(this.materialFiles, files);
   }
   removeSource(id: string): void {
     this.materialFiles.update((list) => list.filter((s) => s.id !== id));
@@ -157,7 +165,7 @@ export class ModelSetupComponent {
     this.attachTarget() === 'instr' ? this.instructionFiles() : this.materialFiles(),
   );
   addAttach(files: File[]): void {
-    this.simulateUpload(this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles, files);
+    this.realUpload(this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles, files);
   }
   removeAttach(id: string): void {
     const list = this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles;
@@ -174,14 +182,25 @@ export class ModelSetupComponent {
   closeText(): void {
     this.textOpen.set(false);
   }
-  addTextSource(): void {
+  async addTextSource(): Promise<void> {
     const text = this.textContent().trim();
     if (!text) {
       return;
     }
     const name = `${text.split(/\s+/).slice(0, 5).join(' ').slice(0, 40)}.txt`;
-    this.materialFiles.update((l) => [...l, { id: `${++this.uploadSeq}-${name}`, name, status: 'ready' as const }]);
     this.textOpen.set(false);
+    // Nota REALE su backend (POST /v1/documents col content), poi id reale →
+    // pronta appena la response arriva (l'ingest prosegue in background).
+    const tmpId = `tmp-${++this.uploadSeq}`;
+    this.materialFiles.update((l) => [...l, { id: tmpId, name, status: 'uploading' as const }]);
+    try {
+      const note = await this.sourcesStore.createNote(name, text);
+      this.materialFiles.update((l) =>
+        l.map((s) => (s.id === tmpId ? { ...s, id: note.id, status: 'ready' as const } : s)),
+      );
+    } catch {
+      this.materialFiles.update((l) => l.map((s) => (s.id === tmpId ? { ...s, status: 'error' as const } : s)));
+    }
   }
 
   /** Capacità progetto usata (mock): cresce coi file caricati. */
@@ -227,11 +246,11 @@ export class ModelSetupComponent {
   }
 
   /**
-   * Simula l'upload su staging. Il componente dump emette TUTTI i file scelti; è
-   * il **padre** che confronta col già presente, **scarta i duplicati** (stesso
-   * nome) e **avvisa l'utente** (snackbar). Solo i nuovi avanzano in upload.
+   * Upload REALE su S3. Il componente dumb emette TUTTI i file scelti; è il
+   * **padre** che confronta col già presente, **scarta i duplicati** (stesso
+   * nome) e **avvisa** (snackbar). Solo i nuovi avanzano nell'upload reale.
    */
-  private simulateUpload(target: WritableSignal<SourceItem[]>, files: File[]): void {
+  private realUpload(target: WritableSignal<SourceItem[]>, files: File[]): void {
     const existing = new Set(target().map((s) => s.name));
     const fresh: File[] = [];
     const duplicates: string[] = [];
@@ -251,19 +270,35 @@ export class ModelSetupComponent {
       this.snackBar.open(message, this.t('i18n.Setup.sources.duplicateOk'), { duration: 4000 });
     }
     for (const file of fresh) {
-      const id = `${++this.uploadSeq}-${file.name}`;
-      target.update((list) => [...list, { id, name: file.name, status: 'uploading' as const, progress: 0 }]);
-      const patch = (changes: Partial<SourceItem>) =>
-        target.update((list) => list.map((s) => (s.id === id ? { ...s, ...changes } : s)));
-      let pct = 0;
-      const timer = setInterval(() => {
-        pct = Math.min(100, pct + 20);
-        patch({ progress: pct });
-        if (pct >= 100) {
-          clearInterval(timer);
-          patch({ status: 'ready' });
-        }
-      }, 180);
+      void this.uploadOne(target, file);
+    }
+  }
+
+  /**
+   * Ciclo di vita di una fonte: `uploading` (PUT su S3, % REALE) → `processing`
+   * (ingest backend) → `ready` (id reale = `documentId`, disponibile all'AI) o
+   * `error`. L'id passa da temporaneo al `documentId` reale appena il PUT finisce.
+   */
+  private async uploadOne(target: WritableSignal<SourceItem[]>, file: File): Promise<void> {
+    const currentId = `tmp-${++this.uploadSeq}`;
+    target.update((list) => [
+      ...list,
+      { id: currentId, name: file.name, status: 'uploading' as const, progress: 0 },
+    ]);
+    const patch = (changes: Partial<SourceItem>) =>
+      target.update((list) => list.map((s) => (s.id === currentId ? { ...s, ...changes } : s)));
+    try {
+      const source = await this.sourcesStore.createUpload(
+        { name: file.name, sizeBytes: file.size, mime: file.type || undefined },
+        file,
+        (fraction) => patch({ progress: Math.round(fraction * 100) }),
+      );
+      // Presigned + PUT su S3 completati (response ricevute) → fonte PRONTA: lo
+      // spinner finisce qui. L'estrazione testo (ingest) prosegue in background
+      // lato backend (evento S3), senza bloccare l'utente.
+      patch({ id: source.id, status: 'ready', progress: 100 });
+    } catch {
+      patch({ status: 'error' });
     }
   }
 
@@ -279,6 +314,16 @@ export class ModelSetupComponent {
   askGenerate(): void {
     if (!this.canGenerate()) {
       this.titleTouched.set(true);
+      return;
+    }
+    // Niente generazione mentre una fonte è ancora in upload/ingest: andrebbe
+    // persa (solo le fonti `ready` finiscono all'AI). Avvisa e blocca.
+    if (this.sourcesPending()) {
+      this.snackBar.open(
+        this.t('i18n.Setup.sources.pendingWarn'),
+        this.t('i18n.Setup.sources.duplicateOk'),
+        { duration: 4000 },
+      );
       return;
     }
     this.showConfirm.set(true);
@@ -313,8 +358,11 @@ export class ModelSetupComponent {
       documentType: tpl.documentType,
       templateId: tpl.id,
       coverTheme: tpl.coverTheme ?? 'ocean',
-      materialFileIds: this.materialFiles().map((f) => f.id),
-      instructionFileIds: this.instructionFiles().map((f) => f.id),
+      // Solo fonti `ready` (id reali su S3/backend): le pending non vanno all'AI.
+      materialFileIds: this.materialFiles().filter((f) => f.status === 'ready').map((f) => f.id),
+      instructionFileIds: this.instructionFiles()
+        .filter((f) => f.status === 'ready')
+        .map((f) => f.id),
       generationOptions,
     };
 
