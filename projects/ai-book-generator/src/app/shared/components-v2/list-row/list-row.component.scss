@@ -162,6 +162,10 @@
     background: var(--surface-soft);
     color: var(--accent-700);
   }
+  // Azione distruttiva (elimina): rosso "warning" muto già a riposo (#c0362c).
+  &.is-danger {
+    color: var(--tone-danger-fg);
+  }
   &.is-danger:hover {
     background: var(--tone-danger-bg);
     color: var(--tone-danger-fg);

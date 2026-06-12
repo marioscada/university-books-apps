@@ -149,8 +149,17 @@
     ) {<strong> e tutte le sue fonti</strong>}. Non potrai annullare né recuperare il contenuto.
   </p>
   <div footer class="coll__dialogfoot">
-    <button mat-stroked-button type="button" (click)="cancelDelete()">Annulla</button>
-    <button mat-flat-button color="warn" type="button" (click)="confirmDelete()">Elimina</button>
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="cancelDelete()">Annulla</button>
+    <button
+      mat-flat-button
+      class="coll__delete-btn"
+      type="button"
+      (click)="confirmDelete()">
+      Elimina
+    </button>
   </div>
 </app-modal-shell>
 

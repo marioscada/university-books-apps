@@ -152,3 +152,9 @@
   font-size: 0.8125rem;
   color: var(--mat-sys-on-surface-variant);
 }
+
+// Bottone Elimina del dialog: rosso "warning" muto (#c0362c), non il warn acceso.
+.coll__delete-btn {
+  --mdc-filled-button-container-color: var(--tone-danger-fg);
+  --mdc-filled-button-label-text-color: #fff;
+}
