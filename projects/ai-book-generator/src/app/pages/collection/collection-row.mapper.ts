@@ -95,8 +95,9 @@ export function projectActions(p: Project): RowAction[] {
   const del: RowAction = { id: 'delete', label: 'Elimina', icon: 'delete', danger: true };
   const reuse: RowAction = { id: 'reuse', label: 'Riutilizza', icon: 'autorenew' };
   const download: RowAction = { id: 'download', label: 'Scarica', icon: 'download' };
+  const read: RowAction = { id: 'read', label: 'Leggi', icon: 'menu_book' };
   if (p.status === 'published') {
-    return [download, reuse, del];
+    return [read, download, reuse, del];
   }
   return [{ id: 'open', label: 'Apri', icon: 'open_in_new' }, del];
 }

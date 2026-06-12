@@ -14,7 +14,17 @@
 }
 
 <span class="lr__body">
-  <span class="lr__title">{{ title() }}</span>
+  @if (titleClickable()) {
+    <button
+      class="lr__title lr__title--link"
+      type="button"
+      (click)="open.emit()"
+    >
+      {{ title() }}
+    </button>
+  } @else {
+    <span class="lr__title">{{ title() }}</span>
+  }
   @if (meta()) {
     <span class="lr__meta">{{ meta() }}</span>
   }

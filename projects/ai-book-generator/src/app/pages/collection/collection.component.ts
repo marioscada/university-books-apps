@@ -126,7 +126,8 @@ export class CollectionComponent {
   onProjectAction(id: string, action: string): void {
     switch (action) {
       case 'open':
-        this.openProject(id);
+      case 'read':
+        void this.openProject(id);
         break;
       case 'reuse':
         this.openReuse(id);

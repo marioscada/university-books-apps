@@ -28,13 +28,8 @@ export interface RowAction {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'list-row',
-    role: 'button',
-    '[attr.tabindex]': '0',
     '[class.is-emphasis]': 'emphasis()',
     '[class.is-indent]': 'indent()',
-    '(click)': 'open.emit()',
-    '(keydown.enter)': 'onKey($event)',
-    '(keydown.space)': 'onKey($event)',
   },
   imports: [MatIconModule, MatMenuModule],
   templateUrl: './list-row.component.html',
@@ -57,12 +52,9 @@ export class ListRowComponent {
   readonly emphasis = input(false, { transform: booleanAttribute });
   /** Riga annidata (es. fonte sotto il progetto): rientro a sinistra. */
   readonly indent = input(false, { transform: booleanAttribute });
+  /** Se true, il TITOLO è cliccabile (emette `open`); la riga NON lo è. */
+  readonly titleClickable = input(false, { transform: booleanAttribute });
 
   readonly open = output<void>();
   readonly action = output<string>();
-
-  protected onKey(event: Event): void {
-    event.preventDefault();
-    this.open.emit();
-  }
 }
