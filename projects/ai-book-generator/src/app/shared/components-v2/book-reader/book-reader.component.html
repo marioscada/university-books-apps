@@ -1,14 +1,17 @@
 <app-modal-shell
-  [open]="open()"
   size="lg"
   expandable
+  [open]="open()"
   [title]="title()"
   [subtitle]="subtitle()"
   [closeLabel]="closeLabel()"
   (closed)="closed.emit()">
   @if (loading()) {
     <div class="book-reader__loading">
-      <mat-progress-spinner mode="indeterminate" [diameter]="40" aria-label="Caricamento" />
+      <mat-progress-spinner
+        mode="indeterminate"
+        aria-label="Caricamento"
+        [diameter]="40" />
     </div>
   } @else {
     @if (selectedChapter(); as ch) {
@@ -21,15 +24,33 @@
       </article>
     }
   }
-  <div footer class="book-reader__nav">
-    <button mat-button type="button" [disabled]="!canPrev()" (click)="prev()">
-      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_left</mat-icon>
+  <div
+    footer
+    class="book-reader__nav">
+    <button
+      mat-button
+      type="button"
+      [disabled]="!canPrev()"
+      (click)="prev()">
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        aria-hidden="true"
+        >chevron_left</mat-icon
+      >
       {{ prevLabel() }}
     </button>
     <span class="book-reader__pos">{{ posLabel() }}</span>
-    <button mat-button type="button" [disabled]="!canNext()" (click)="next()">
+    <button
+      mat-button
+      type="button"
+      [disabled]="!canNext()"
+      (click)="next()">
       {{ nextLabel() }}
-      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        aria-hidden="true"
+        >chevron_right</mat-icon
+      >
     </button>
   </div>
 </app-modal-shell>

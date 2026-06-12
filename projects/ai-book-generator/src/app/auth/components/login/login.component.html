@@ -4,16 +4,19 @@
     <p class="auth-subtitle">Sign in to continue</p>
 
     @if (loginState$ | async; as state) {
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <form
+        class="auth-form"
+        [formGroup]="loginForm"
+        (ngSubmit)="onSubmit()">
         <app-counter-field
           label="Email"
           type="email"
           required
           placeholder="you@example.com"
           [value]="email?.value ?? ''"
+          [error]="emailError"
           (valueChange)="email?.setValue($event)"
-          (blurred)="email?.markAsTouched()"
-          [error]="emailError" />
+          (blurred)="email?.markAsTouched()" />
 
         <app-counter-field
           label="Password"
@@ -21,9 +24,9 @@
           required
           placeholder="Enter your password"
           [value]="password?.value ?? ''"
+          [error]="passwordError"
           (valueChange)="password?.setValue($event)"
-          (blurred)="password?.markAsTouched()"
-          [error]="passwordError" />
+          (blurred)="password?.markAsTouched()" />
 
         <!-- Error Message -->
         @if (state.error) {
@@ -36,8 +39,7 @@
         <button
           type="submit"
           class="auth-btn auth-btn--primary"
-          [disabled]="state.loading || loginForm.invalid"
-        >
+          [disabled]="state.loading || loginForm.invalid">
           @if (state.loading) {
             <span class="auth-spinner"></span>
             <span>Signing in...</span>

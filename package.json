@@ -22,7 +22,9 @@
     "check:subscriptions:mobile": "bash scripts/check-subscriptions.sh ai-book-generator",
     "schema:check": "tsx scripts/check-breaking-changes.ts",
     "prebuild": "npm run check:subscriptions",
-    "gen:api": "openapi-typescript projects/ai-book-generator/openapi/v1.json -o projects/ai-book-generator/src/app/core/data/api-types.generated.ts"
+    "gen:api": "openapi-typescript projects/ai-book-generator/openapi/v1.json -o projects/ai-book-generator/src/app/core/data/api-types.generated.ts",
+    "format": "prettier --write \"projects/ai-book-generator/src/**/*.html\"",
+    "format:check": "prettier --check \"projects/ai-book-generator/src/**/*.html\""
   },
   "private": true,
   "dependencies": {
@@ -69,6 +71,7 @@
     "openapi-typescript": "^7.13.0",
     "openapi-typescript-codegen": "^0.27.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.4.2",
     "tailwindcss": "^3.4.18",
     "tsx": "^4.7.0",
     "typescript": "~5.6.2",

@@ -4,128 +4,144 @@
     <p class="auth-subtitle">Sign up to get started</p>
 
     @if (step() === 'register') {
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
-      <app-counter-field
-        label="First Name" required placeholder="Mario"
-        [value]="givenName?.value ?? ''"
-        (valueChange)="givenName?.setValue($event)"
-        (blurred)="givenName?.markAsTouched()"
-        [error]="givenNameError" />
+      <form
+        class="auth-form"
+        [formGroup]="registerForm"
+        (ngSubmit)="onSubmit()">
+        <app-counter-field
+          label="First Name"
+          required
+          placeholder="Mario"
+          [value]="givenName?.value ?? ''"
+          [error]="givenNameError"
+          (valueChange)="givenName?.setValue($event)"
+          (blurred)="givenName?.markAsTouched()" />
 
-      <app-counter-field
-        label="Last Name" required placeholder="Scada"
-        [value]="familyName?.value ?? ''"
-        (valueChange)="familyName?.setValue($event)"
-        (blurred)="familyName?.markAsTouched()"
-        [error]="familyNameError" />
+        <app-counter-field
+          label="Last Name"
+          required
+          placeholder="Scada"
+          [value]="familyName?.value ?? ''"
+          [error]="familyNameError"
+          (valueChange)="familyName?.setValue($event)"
+          (blurred)="familyName?.markAsTouched()" />
 
-      <app-counter-field
-        label="Email" type="email" required placeholder="you@example.com"
-        [value]="email?.value ?? ''"
-        (valueChange)="email?.setValue($event)"
-        (blurred)="email?.markAsTouched()"
-        [error]="emailError" />
+        <app-counter-field
+          label="Email"
+          type="email"
+          required
+          placeholder="you@example.com"
+          [value]="email?.value ?? ''"
+          [error]="emailError"
+          (valueChange)="email?.setValue($event)"
+          (blurred)="email?.markAsTouched()" />
 
-      <app-counter-field
-        label="Password" type="password" required
-        placeholder="Create a strong password"
-        hint="Min 12 caratteri: maiuscola, minuscola, numero e carattere speciale."
-        [value]="password?.value ?? ''"
-        (valueChange)="password?.setValue($event)"
-        (blurred)="password?.markAsTouched()"
-        [error]="passwordError" />
+        <app-counter-field
+          label="Password"
+          type="password"
+          required
+          placeholder="Create a strong password"
+          hint="Min 12 caratteri: maiuscola, minuscola, numero e carattere speciale."
+          [value]="password?.value ?? ''"
+          [error]="passwordError"
+          (valueChange)="password?.setValue($event)"
+          (blurred)="password?.markAsTouched()" />
 
-      <app-counter-field
-        label="Confirm Password" type="password" required
-        placeholder="Re-enter your password"
-        [value]="confirmPassword?.value ?? ''"
-        (valueChange)="confirmPassword?.setValue($event)"
-        (blurred)="confirmPassword?.markAsTouched()"
-        [error]="confirmPasswordError" />
+        <app-counter-field
+          label="Confirm Password"
+          type="password"
+          required
+          placeholder="Re-enter your password"
+          [value]="confirmPassword?.value ?? ''"
+          [error]="confirmPasswordError"
+          (valueChange)="confirmPassword?.setValue($event)"
+          (blurred)="confirmPassword?.markAsTouched()" />
 
-      <!-- Success Message -->
-      @if (successMessage()) {
-        <div class="auth-alert auth-alert--success">
-          {{ successMessage() }}
-        </div>
-      }
-
-      <!-- Error Message -->
-      @if (errorMessage()) {
-        <div class="auth-alert auth-alert--error">
-          {{ errorMessage() }}
-        </div>
-      }
-
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        class="auth-btn auth-btn--primary"
-        [disabled]="loading() || registerForm.invalid"
-      >
-        @if (loading()) {
-          <span class="auth-spinner"></span>
-          <span>Creating account...</span>
-        } @else {
-          <span>Sign Up</span>
+        <!-- Success Message -->
+        @if (successMessage()) {
+          <div class="auth-alert auth-alert--success">
+            {{ successMessage() }}
+          </div>
         }
-      </button>
-    </form>
+
+        <!-- Error Message -->
+        @if (errorMessage()) {
+          <div class="auth-alert auth-alert--error">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="auth-btn auth-btn--primary"
+          [disabled]="loading() || registerForm.invalid">
+          @if (loading()) {
+            <span class="auth-spinner"></span>
+            <span>Creating account...</span>
+          } @else {
+            <span>Sign Up</span>
+          }
+        </button>
+      </form>
     }
 
     @if (step() === 'verify') {
-    <form [formGroup]="confirmationForm" (ngSubmit)="onConfirm()" class="auth-form">
-      <p class="auth-verify">
-        We've sent a verification code to <strong>{{ userEmail }}</strong>.
-        Please check your email and enter the code below.
-      </p>
+      <form
+        class="auth-form"
+        [formGroup]="confirmationForm"
+        (ngSubmit)="onConfirm()">
+        <p class="auth-verify">
+          We've sent a verification code to <strong>{{ userEmail }}</strong
+          >. Please check your email and enter the code below.
+        </p>
 
-      <app-counter-field
-        label="Verification Code" required placeholder="Enter 6-digit code"
-        [maxLength]="6"
-        [value]="code?.value ?? ''"
-        (valueChange)="code?.setValue($event)"
-        (blurred)="code?.markAsTouched()"
-        [error]="codeError" />
+        <app-counter-field
+          label="Verification Code"
+          required
+          placeholder="Enter 6-digit code"
+          [maxLength]="6"
+          [value]="code?.value ?? ''"
+          [error]="codeError"
+          (valueChange)="code?.setValue($event)"
+          (blurred)="code?.markAsTouched()" />
 
-      <!-- Success Message -->
-      @if (successMessage()) {
-        <div class="auth-alert auth-alert--success">
-          {{ successMessage() }}
-        </div>
-      }
-
-      <!-- Error Message -->
-      @if (errorMessage()) {
-        <div class="auth-alert auth-alert--error">
-          {{ errorMessage() }}
-        </div>
-      }
-
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        class="auth-btn auth-btn--primary"
-        [disabled]="loading() || confirmationForm.invalid"
-      >
-        @if (loading()) {
-          <span class="auth-spinner"></span>
-          <span>Verifying...</span>
-        } @else {
-          <span>Verify Email</span>
+        <!-- Success Message -->
+        @if (successMessage()) {
+          <div class="auth-alert auth-alert--success">
+            {{ successMessage() }}
+          </div>
         }
-      </button>
 
-      <!-- Back to Register -->
-      <button
-        type="button"
-        class="auth-btn auth-btn--secondary"
-        (click)="step.set('register')"
-        [disabled]="loading()"
-      >
-        Back to Registration
-      </button>
-    </form>
+        <!-- Error Message -->
+        @if (errorMessage()) {
+          <div class="auth-alert auth-alert--error">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="auth-btn auth-btn--primary"
+          [disabled]="loading() || confirmationForm.invalid">
+          @if (loading()) {
+            <span class="auth-spinner"></span>
+            <span>Verifying...</span>
+          } @else {
+            <span>Verify Email</span>
+          }
+        </button>
+
+        <!-- Back to Register -->
+        <button
+          type="button"
+          class="auth-btn auth-btn--secondary"
+          [disabled]="loading()"
+          (click)="step.set('register')">
+          Back to Registration
+        </button>
+      </form>
     }
 
     <!-- Footer -->

@@ -1,23 +1,37 @@
 <div class="mobile-menu">
   <!-- Riga in alto: solo la X (a destra), come mariosite. -->
   <header class="mobile-menu__header">
-    <button type="button" class="mobile-menu__close" aria-label="Chiudi menu" (click)="onClose()">
+    <button
+      type="button"
+      class="mobile-menu__close"
+      aria-label="Chiudi menu"
+      (click)="onClose()">
       <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
     </button>
   </header>
 
   <!-- Logo centrato (stessa posizione/dimensione di mariosite), senza testo brand. -->
-  <a class="mobile-menu__logo-link" routerLink="/" [attr.aria-label]="brand()" (click)="onClose()">
-    <img class="mobile-menu__logo" src="images/logo.webp" [alt]="brand()" decoding="async" />
+  <a
+    class="mobile-menu__logo-link"
+    routerLink="/"
+    [attr.aria-label]="brand()"
+    (click)="onClose()">
+    <img
+      class="mobile-menu__logo"
+      src="images/logo.webp"
+      decoding="async"
+      [alt]="brand()" />
   </a>
 
-  <nav class="mobile-menu__nav" aria-label="Mobile">
+  <nav
+    class="mobile-menu__nav"
+    aria-label="Mobile">
     @for (item of navItems(); track item.id) {
       <a
-        [routerLink]="item.route"
-        [queryParamsHandling]="qph(item)"
         routerLinkActive="is-active"
         class="mobile-menu__link"
+        [routerLink]="item.route"
+        [queryParamsHandling]="qph(item)"
         (click)="onClose()">
         @if (item.icon) {
           <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
@@ -29,8 +43,18 @@
 
   @if (showAuthLinks()) {
     <div class="mobile-menu__actions">
-      <a routerLink="/auth/login" class="mobile-menu__signin" (click)="onClose()">Sign In</a>
-      <a routerLink="/auth/register" class="mobile-menu__cta" (click)="onClose()">Get Started</a>
+      <a
+        routerLink="/auth/login"
+        class="mobile-menu__signin"
+        (click)="onClose()"
+        >Sign In</a
+      >
+      <a
+        routerLink="/auth/register"
+        class="mobile-menu__cta"
+        (click)="onClose()"
+        >Get Started</a
+      >
     </div>
   }
 </div>

@@ -59,7 +59,7 @@ import { ScreenTypeDirective } from '../../directives/screen-type.directive';
           </label>
         }
         @if (maxLength() > 0) {
-          <span class="cf__counter" [class.is-full]="isFull()" aria-live="polite">
+          <span class="cf__counter" aria-live="polite" [class.is-full]="isFull()">
             {{ value().length }}/{{ maxLength() }}
           </span>
         }

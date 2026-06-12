@@ -1,6 +1,12 @@
-<span class="cc__tile" aria-hidden="true">
+<span
+  class="cc__tile"
+  aria-hidden="true">
   @if (imageSrc()) {
-    <img class="cc__img" [src]="imageSrc()" alt="" loading="lazy" />
+    <img
+      class="cc__img"
+      alt=""
+      loading="lazy"
+      [src]="imageSrc()" />
   } @else {
     <mat-icon fontSet="material-symbols-outlined">{{ icon() }}</mat-icon>
   }
@@ -21,11 +27,17 @@
         }
       </span>
       @if (tags().length > 3) {
-        <span class="cc__tag cc__tag--more" aria-hidden="true">…</span>
+        <span
+          class="cc__tag cc__tag--more"
+          aria-hidden="true"
+          >…</span
+        >
       }
     </span>
   }
-  <span class="cc__arrow" aria-hidden="true">
+  <span
+    class="cc__arrow"
+    aria-hidden="true">
     <mat-icon fontSet="material-symbols-outlined">arrow_forward</mat-icon>
   </span>
 </span>

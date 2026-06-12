@@ -5,7 +5,11 @@
   <div class="chapter-reader__titlerow">
     <h2 class="chapter-reader__title">{{ title() }}</h2>
     @if (statusLabel()) {
-      <span class="chapter-reader__status" [attr.data-tone]="statusTone()">{{ statusLabel() }}</span>
+      <span
+        class="chapter-reader__status"
+        [attr.data-tone]="statusTone()"
+        >{{ statusLabel() }}</span
+      >
     }
     @if (expandable()) {
       <button
@@ -22,12 +26,18 @@
   }
 </header>
 
-<div class="chapter-reader__divider" role="presentation"></div>
+<div
+  class="chapter-reader__divider"
+  role="presentation"></div>
 
 <div class="chapter-reader__body">
   @for (p of paragraphs(); track $index) {
     @if (isHeading(p)) {
-      <p class="chapter-reader__h" [attr.data-level]="headingLevel(p)">{{ headingText(p) }}</p>
+      <p
+        class="chapter-reader__h"
+        [attr.data-level]="headingLevel(p)">
+        {{ headingText(p) }}
+      </p>
     } @else {
       <p class="chapter-reader__p">{{ p }}</p>
     }
@@ -36,27 +46,50 @@
 </div>
 
 @if (prevLabel() || nextLabel() || actionLabel()) {
-  <div class="chapter-reader__divider" role="presentation"></div>
+  <div
+    class="chapter-reader__divider"
+    role="presentation"></div>
   <footer class="chapter-reader__foot">
     <nav class="chapter-reader__nav">
       @if (prevLabel()) {
-        <button class="chapter-reader__navlink" type="button" (click)="prev.emit()">
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_left</mat-icon>
+        <button
+          class="chapter-reader__navlink"
+          type="button"
+          (click)="prev.emit()">
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            aria-hidden="true"
+            >chevron_left</mat-icon
+          >
           <span class="chapter-reader__navlabel">{{ prevLabel() }}</span>
         </button>
       }
       @if (nextLabel()) {
-        <button class="chapter-reader__navlink chapter-reader__navlink--next" type="button" (click)="next.emit()">
+        <button
+          class="chapter-reader__navlink chapter-reader__navlink--next"
+          type="button"
+          (click)="next.emit()">
           <span class="chapter-reader__navlabel">{{ nextLabel() }}</span>
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            aria-hidden="true"
+            >chevron_right</mat-icon
+          >
         </button>
       }
     </nav>
     @if (actionLabel()) {
-      <button class="chapter-reader__action" type="button" (click)="action.emit()">
+      <button
+        class="chapter-reader__action"
+        type="button"
+        (click)="action.emit()">
         {{ actionLabel() }}
         @if (actionIcon()) {
-          <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ actionIcon() }}</mat-icon>
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            aria-hidden="true"
+            >{{ actionIcon() }}</mat-icon
+          >
         }
       </button>
     }

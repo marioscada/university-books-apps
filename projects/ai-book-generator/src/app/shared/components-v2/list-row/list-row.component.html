@@ -1,6 +1,12 @@
 @if (imageSrc()) {
-  <span class="lr__icon lr__icon--img" aria-hidden="true">
-    <img class="lr__img" [src]="imageSrc()" alt="" loading="lazy" />
+  <span
+    class="lr__icon lr__icon--img"
+    aria-hidden="true">
+    <img
+      class="lr__img"
+      alt=""
+      loading="lazy"
+      [src]="imageSrc()" />
   </span>
 } @else if (icon()) {
   <span
@@ -18,8 +24,7 @@
     <button
       class="lr__title lr__title--link"
       type="button"
-      (click)="open.emit()"
-    >
+      (click)="open.emit()">
       {{ title() }}
     </button>
   } @else {
@@ -50,7 +55,11 @@
         [attr.aria-label]="a.label"
         [attr.title]="a.label"
         (click)="$event.stopPropagation(); action.emit(a.id)">
-        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ a.icon }}</mat-icon>
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          aria-hidden="true"
+          >{{ a.icon }}</mat-icon
+        >
       </button>
     }
   </span>
@@ -62,7 +71,11 @@
     aria-label="Altre azioni"
     [matMenuTriggerFor]="menu"
     (click)="$event.stopPropagation()">
-    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">more_horiz</mat-icon>
+    <mat-icon
+      fontSet="material-symbols-outlined"
+      aria-hidden="true"
+      >more_horiz</mat-icon
+    >
   </button>
   <mat-menu #menu="matMenu">
     @for (a of actions(); track a.id) {
