@@ -1,0 +1,65 @@
+:host {
+  display: block;
+}
+
+.il__title {
+  margin: 0 0 14px;
+  font-size: var(--site-title-medium, 1rem);
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+
+.il__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.il__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+// Badge col tono passato via input (icona o numero); tinta dai token globali.
+.il__badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--il-bg, var(--surface-soft));
+  color: var(--il-fg, var(--accent-700));
+  font-size: 0.8125rem;
+  font-weight: 800;
+
+  &--round {
+    border-radius: 999px;
+  }
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.il__body {
+  min-width: 0;
+}
+.il__heading {
+  margin: 0 0 2px;
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.il__text {
+  margin: 0;
+  font-size: var(--site-body-small, 0.875rem);
+  line-height: 1.5;
+  color: var(--mat-sys-on-surface-variant);
+}

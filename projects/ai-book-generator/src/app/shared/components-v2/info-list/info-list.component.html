@@ -1,0 +1,27 @@
+@if (title()) {
+  <h2 class="il__title">{{ title() }}</h2>
+}
+<ul class="il__list">
+  @for (it of items(); track it.heading; let i = $index) {
+    <li class="il__item">
+      <span
+        class="il__badge"
+        aria-hidden="true"
+        [class.il__badge--round]="variant() === 'numbered'">
+        @if (variant() === 'numbered') {
+          {{ i + 1 }}
+        } @else {
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            aria-hidden="true"
+            >{{ it.icon }}</mat-icon
+          >
+        }
+      </span>
+      <div class="il__body">
+        <p class="il__heading">{{ it.heading }}</p>
+        <p class="il__text">{{ it.text }}</p>
+      </div>
+    </li>
+  }
+</ul>

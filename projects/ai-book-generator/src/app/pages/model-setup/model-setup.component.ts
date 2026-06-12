@@ -8,6 +8,7 @@ import {
   signal,
   type WritableSignal,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,23 +23,34 @@ import {
   type SourceItem,
 } from '../../shared/components-v2/source-dropzone/source-dropzone.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
+import {
+  InfoListComponent,
+  type InfoListItem,
+} from '../../shared/components-v2/info-list/info-list.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { SourcesStore } from '../../core/state/sources.store';
 import { TemplatesStore } from '../../core/state/templates.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
 import { UiPromiseService } from '../../shared/services/ui-promise.service';
+import { modelPresentation } from '../create/create.util';
 import type { OutputFormat, GenerationOptions, ProjectTemplate } from '../../core/domain';
 import type { CreateProjectInput } from '../../core/data/api-port';
 
 /** Genere grammaticale del nome modello (per gli articoli IT). */
 const MODEL_GENDER: Record<string, 'm' | 'f'> = {
-  book: 'm', summary: 'm', study_guide: 'f', manual: 'm', report: 'm',
-  presentation: 'f', course: 'm', thesis: 'f', custom: 'm',
+  book: 'm', summary: 'm', manual: 'm', presentation: 'f', course: 'f', thesis: 'f',
 };
 
 const TITLE_MAX = 80;
 const DESC_MAX = 300;
 const NOTES_MAX = 500;
+
+/**
+ * Quota di capacità del progetto per le fonti (File + Istruzioni). PUNTO UNICO:
+ * cambia qui il limite riflesso dalla barra di capacità.
+ */
+const PROJECT_CAPACITY_MB = 50;
+const BYTES_PER_MB = 1024 * 1024;
 
 /**
  * ModelSetupComponent — step "Personalizza" del flusso `/create` (componente di
@@ -53,11 +65,19 @@ const NOTES_MAX = 500;
   selector: 'app-model-setup',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // Colori del modello scelto iniettati una volta sull'host: badge, icone e box
+  // li ereditano via `var(--model-*)`. Cambi modello → cambia tutto da qui.
+  host: {
+    '[style.--model-bg]': 'modelBg()',
+    '[style.--model-fg]': 'modelFg()',
+  },
   imports: [
+    NgTemplateOutlet,
     CounterFieldComponent,
     BackLinkComponent,
     SourceDropzoneComponent,
     ModalShellComponent,
+    InfoListComponent,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
@@ -79,12 +99,28 @@ export class ModelSetupComponent {
   private readonly t = injectI18nText();
 
   /** Modello scelto (id) — passato dal flusso `/create` (step di servizio). */
-  readonly templateId = input<string>('custom');
+  readonly templateId = input<string>('book');
   /** Richiesta di tornare alla galleria (gestita dal flusso padre). */
   readonly back = output<void>();
 
   readonly template = computed<ProjectTemplate | undefined>(
     () => this.templatesStore.templateById()[this.templateId()],
+  );
+
+  // --- Presentazione del modello scelto (immagine 3D + colori) ----------------
+  private readonly presentation = computed(() => modelPresentation(this.templateId()));
+  /** Immagine 3D del modello (vuota → si usa l'icona di fallback). */
+  readonly modelImage = computed(() => this.presentation().imageSrc);
+  /** Icona Material di fallback del modello. */
+  readonly modelIcon = computed(() => this.presentation().icon);
+  /** Tono cromatico del modello (per i badge della sidebar). */
+  readonly modelTone = computed(() => this.presentation().tone);
+  /** Sfondo/foreground del tono del modello (token globali, con fallback neutro). */
+  protected readonly modelBg = computed(
+    () => `var(--tone-${this.presentation().tone}-bg, var(--surface-soft))`,
+  );
+  protected readonly modelFg = computed(
+    () => `var(--tone-${this.presentation().tone}-fg, var(--accent-700))`,
   );
 
   // --- Stato modulo -----------------------------------------------------------
@@ -114,7 +150,7 @@ export class ModelSetupComponent {
 
   // --- Nome modello + grammatica ---------------------------------------------
   readonly modelName = computed(() =>
-    this.t(this.template()?.nameKey ?? 'i18n.Models.custom.name'),
+    this.t(this.template()?.nameKey ?? 'i18n.Models.book.name'),
   );
   private readonly nameLower = computed(() => this.modelName().toLowerCase());
   private readonly gender = computed<'m' | 'f'>(() => MODEL_GENDER[this.templateId()] ?? 'm');
@@ -134,6 +170,21 @@ export class ModelSetupComponent {
   /** Label brevi dei campi (richiesta UX). */
   readonly titleFieldLabel = computed(() => `Scegli un nome per ${this.possessive()} ${this.nameLower()}`);
   readonly descFieldLabel = 'Descrivi brevemente cosa conterrà.';
+
+  // --- Consigli sotto Istruzioni/File (contenuti IT temporanei) ---------------
+  /** Due consigli: come riempire le Istruzioni e cosa caricare nei File. */
+  readonly sideHints: InfoListItem[] = [
+    {
+      icon: 'edit_note',
+      heading: 'Come scrivere le istruzioni',
+      text: 'Es. «Tono divulgativo, circa 30 pagine, niente gergo, con esempi pratici».',
+    },
+    {
+      icon: 'folder_open',
+      heading: 'Cosa mettere nei file',
+      text: 'Dispense, PDF, slide o appunti: l’AI li usa come fonti.',
+    },
+  ];
 
   // --- Fonti & allegati: UPLOAD REALE su AWS S3 ------------------------------
   // I byte vanno davvero su S3 via presigned PUT (progress reale), poi l'ingest
@@ -192,7 +243,11 @@ export class ModelSetupComponent {
     // Nota REALE su backend (POST /v1/documents col content), poi id reale →
     // pronta appena la response arriva (l'ingest prosegue in background).
     const tmpId = `tmp-${++this.uploadSeq}`;
-    this.materialFiles.update((l) => [...l, { id: tmpId, name, status: 'uploading' as const }]);
+    const sizeBytes = new Blob([text]).size;
+    this.materialFiles.update((l) => [
+      ...l,
+      { id: tmpId, name, status: 'uploading' as const, sizeBytes },
+    ]);
     try {
       const note = await this.sourcesStore.createNote(name, text);
       this.materialFiles.update((l) =>
@@ -203,8 +258,23 @@ export class ModelSetupComponent {
     }
   }
 
-  /** Capacità progetto usata (mock): cresce coi file caricati. */
-  readonly capacityUsed = computed(() => Math.min(100, this.materialFiles().length * 12));
+  /** Byte totali delle fonti caricate (File + Istruzioni), dimensione reale. */
+  private readonly usedBytes = computed(() =>
+    [...this.materialFiles(), ...this.instructionFiles()].reduce(
+      (sum, f) => sum + (f.sizeBytes ?? 0),
+      0,
+    ),
+  );
+  /** Capacità del progetto usata (%) sulla quota globale `PROJECT_CAPACITY_MB`. */
+  readonly capacityUsed = computed(() =>
+    Math.min(100, Math.round((this.usedBytes() / (PROJECT_CAPACITY_MB * BYTES_PER_MB)) * 100)),
+  );
+  /** Etichetta capacità reale: "X,X di YY MB". */
+  readonly capacityLabel = computed(() => {
+    const usedMb = this.usedBytes() / BYTES_PER_MB;
+    const used = usedMb > 0 && usedMb < 10 ? usedMb.toFixed(1) : Math.round(usedMb).toString();
+    return `${used} di ${PROJECT_CAPACITY_MB} MB`;
+  });
   /** Categoria del file per icona/colore riconoscibili (PDF, Word, immagine…). */
   fileKind(name: string): 'pdf' | 'doc' | 'img' | 'sheet' | 'text' | 'file' {
     const ext = (name.split('.').pop() ?? '').toLowerCase();
@@ -283,7 +353,7 @@ export class ModelSetupComponent {
     const currentId = `tmp-${++this.uploadSeq}`;
     target.update((list) => [
       ...list,
-      { id: currentId, name: file.name, status: 'uploading' as const, progress: 0 },
+      { id: currentId, name: file.name, status: 'uploading' as const, progress: 0, sizeBytes: file.size },
     ]);
     const patch = (changes: Partial<SourceItem>) =>
       target.update((list) => list.map((s) => (s.id === currentId ? { ...s, ...changes } : s)));

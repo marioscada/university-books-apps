@@ -5,6 +5,16 @@
   display: block;
 }
 
+// Tassello quadrato centrato col colore del modello scelto (badge, icone, hero):
+// un solo punto per il pattern "tinta del modello" condiviso in pagina.
+%model-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--model-bg, var(--surface-soft));
+  color: var(--model-fg, var(--accent-700));
+}
+
 .setup {
   display: flex;
   flex-direction: column;
@@ -38,29 +48,127 @@
   color: var(--mat-sys-on-surface);
 }
 
-// Riquadro Definisci a tutta larghezza entro l'area consentita (site-container).
+// Layout a 2 colonne: form (campi) a sinistra, Istruzioni/File a destra.
+// Gutter tra i riquadri = 24px (griglia 8dp Material), orizzontale e verticale.
+.setup-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 30%, 360px);
+  gap: var(--space-3);
+  align-items: start;
+}
+// Sotto a `lg` la colonna destra va sotto al form (colonna singola).
+@include bp.lt(bp.$lg) {
+  .setup-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// Riquadro bianco del form (colonna sinistra): header + hero + passi.
 .setup-card {
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 3vw, 28px);
+  gap: var(--space-3);
 }
-.setup-brief__form {
+
+// Colonna destra: Istruzioni + File + consigli impilati (gutter verticale 24px).
+.setup-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+// --- Hero: icona del modello + titolo + sottotitolo -------------------------
+.setup-hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.setup-hero__icon {
+  @extend %model-tile;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  overflow: hidden;
+
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+  }
+}
+.setup-hero__img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+.setup-hero__text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.setup-hero__subtitle {
+  margin: 0;
+  max-width: 62ch;
+  font-size: var(--site-body-large, 1.0625rem);
+  line-height: 1.5;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// --- Passi 1·2: rail con badge (immagine modello) uniti da una linea --------
+.setup-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2, 16px);
 }
-
-// Riga Istruzioni + File estesa sotto agli input (pari larghezza/altezza).
-.setup-aside-row {
+.setup-step {
+  position: relative;
   display: flex;
+  align-items: flex-start;
   gap: 16px;
-  align-items: stretch;
 }
-.setup-aside-row > .setup-aside--inner {
-  flex: 1 1 0;
+// Linea tratteggiata che collega i badge consecutivi (col colore del modello).
+.setup-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 46px;
+  bottom: -16px;
+  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--model-fg, var(--accent-700)) 45%, transparent) 0 4px,
+    transparent 4px 9px
+  );
+}
+.setup-step__badge {
+  @extend %model-tile;
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  margin-top: 2px;
+  border-radius: 999px;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+.setup-step__body {
+  flex: 1 1 auto;
   min-width: 0;
 }
+
+// Riquadri Istruzioni / File (impilati nella colonna destra).
 .setup-aside--inner {
   display: flex;
   flex-direction: column;
@@ -72,13 +180,8 @@
   border: 1px solid var(--field-border-color);
   box-shadow: var(--card-shadow);
 }
-@include bp.lt(bp.$sm) {
-  .setup-aside-row {
-    flex-direction: column;
-  }
-}
 
-// --- Card sidebar (Istruzioni / File) ---------------------------------------
+// --- Card Istruzioni / File -------------------------------------------------
 .setup-aside {
   gap: 12px;
 }
@@ -88,7 +191,7 @@
   gap: 8px;
 }
 .setup-aside__title {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   font-size: var(--site-title-medium, 1rem);
   font-weight: 700;
   color: var(--mat-sys-on-surface);
@@ -131,6 +234,25 @@
   strong {
     color: var(--mat-sys-on-surface);
     font-weight: 700;
+  }
+}
+// Stato vuoto: icona tematica del modello affiancata al suggerimento.
+.setup-aside__empty {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.setup-aside__emoji {
+  @extend %model-tile;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
   }
 }
 .setup-aside__actions {
@@ -178,11 +300,29 @@
   }
 }
 
-// --- Capacità progetto ------------------------------------------------------
+// --- Capacità progetto (barra MB inline nell'header delle card) --------------
 .setup-cap {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+// Variante inline: tra il titolo e il "+", la traccia cresce e il label resta.
+.setup-cap--inline {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+
+  .setup-cap__track {
+    flex: 1 1 auto;
+    min-width: 32px;
+  }
+  .setup-cap__label {
+    flex: 0 0 auto;
+    font-size: 0.6875rem;
+    white-space: nowrap;
+  }
 }
 .setup-cap__track {
   height: 6px;
@@ -195,7 +335,7 @@
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: var(--accent-500);
+  background: var(--model-fg, var(--accent-500));
   transition: width 0.2s ease;
 }
 .setup-cap__label {

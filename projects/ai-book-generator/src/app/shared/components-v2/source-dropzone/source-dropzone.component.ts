@@ -25,6 +25,8 @@ export interface SourceItem {
   status?: SourceStatus;
   /** Avanzamento 0–100 (solo se `status === 'uploading'`). */
   progress?: number;
+  /** Dimensione reale del file in byte (per la capacità del progetto). */
+  sizeBytes?: number;
 }
 
 /**

@@ -28,12 +28,9 @@ const MODEL_IMG_IDS = new Set([
   'book',
   'summary',
   'thesis',
-  'manual',
-  'report',
-  'presentation',
-  'study_guide',
   'course',
-  'custom',
+  'manual',
+  'presentation',
 ]);
 
 const KIND_LABEL: Record<DocumentType, string> = {

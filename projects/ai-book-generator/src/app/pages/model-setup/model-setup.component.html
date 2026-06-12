@@ -1,54 +1,118 @@
 <div class="setup">
   <div class="setup-stack site-container">
-    <!-- Riquadro a tutta larghezza: back-link + header (titolo + Genera) sopra, form sotto -->
-    <section class="surface-card setup-card">
-      <!-- Riga azioni: "Torna ai modelli" a sinistra, "Genera indice" a destra -->
-      <header class="setup-cardhead">
-        <app-back-link
-          [label]="'i18n.Setup.backToModels' | translate"
-          (navigate)="back.emit()" />
-        <button
-          mat-flat-button
-          color="primary"
-          type="button"
-          [disabled]="!canGenerate() || submitting()"
-          (click)="askGenerate()">
-          {{ 'i18n.Setup.generateIndex' | translate }}
-          <mat-icon
-            fontSet="material-symbols-outlined"
-            aria-hidden="true"
-            >arrow_forward</mat-icon
-          >
-        </button>
-      </header>
-      <h1 class="setup-pagetitle">{{ defTitle() }}</h1>
-      <div class="setup-brief__form">
-        <app-counter-field
-          required
-          [label]="titleFieldLabel()"
-          [maxLength]="titleMax"
-          [error]="titleError()"
-          [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate"
-          [value]="documentTitle()"
-          (valueChange)="documentTitle.set($event)"
-          (blurred)="titleTouched.set(true)" />
-        <app-counter-field
-          multiline
-          [label]="descFieldLabel"
-          [optionalLabel]="'i18n.Setup.S1.optional' | translate"
-          [maxLength]="descMax"
-          [rows]="4"
-          [placeholder]="descPlaceholder()"
-          [value]="documentDescription()"
-          (valueChange)="documentDescription.set($event)" />
-      </div>
+    <!-- Layout a 2 colonne: form e sidebar, ognuno nel proprio riquadro bianco -->
+    <div class="setup-layout">
+      <section class="surface-card setup-card">
+        <!-- Riga azioni dentro il riquadro, sopra il titolo: back a sx, Genera a dx -->
+        <header class="setup-cardhead">
+          <app-back-link
+            [label]="'i18n.Setup.backToModels' | translate"
+            (navigate)="back.emit()" />
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            [disabled]="!canGenerate() || submitting()"
+            (click)="askGenerate()">
+            {{ 'i18n.Setup.generateIndex' | translate }}
+            <mat-icon
+              fontSet="material-symbols-outlined"
+              aria-hidden="true"
+              >arrow_forward</mat-icon
+            >
+          </button>
+        </header>
 
-      <!-- Istruzioni + File estese sotto agli input -->
-      <div class="setup-aside-row">
+        <!-- Hero: icona del modello scelto (immagine 3D) + titolo + sottotitolo -->
+        <div class="setup-hero">
+          <span class="setup-hero__icon">
+            @if (modelImage()) {
+              <img
+                class="setup-hero__img"
+                [src]="modelImage()"
+                [alt]="modelName()" />
+            } @else {
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                aria-hidden="true"
+                >{{ modelIcon() }}</mat-icon
+              >
+            }
+          </span>
+          <div class="setup-hero__text">
+            <h1 class="setup-pagetitle">{{ defTitle() }}</h1>
+            <p class="setup-hero__subtitle">{{ 'i18n.Setup.S1.heroSubtitle' | translate }}</p>
+          </div>
+        </div>
+
+        <!-- Passi 1·2: rail con badge = immagine del modello, uniti da una linea -->
+        <ol class="setup-steps">
+          <li class="setup-step">
+            <span
+              class="setup-step__badge"
+              aria-hidden="true">
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                aria-hidden="true"
+                >title</mat-icon
+              >
+            </span>
+            <div class="setup-step__body">
+              <app-counter-field
+                required
+                [label]="titleFieldLabel()"
+                [maxLength]="titleMax"
+                [error]="titleError()"
+                [placeholder]="'i18n.Setup.S1.titlePlaceholder' | translate"
+                [value]="documentTitle()"
+                (valueChange)="documentTitle.set($event)"
+                (blurred)="titleTouched.set(true)" />
+            </div>
+          </li>
+          <li class="setup-step">
+            <span
+              class="setup-step__badge"
+              aria-hidden="true">
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                aria-hidden="true"
+                >notes</mat-icon
+              >
+            </span>
+            <div class="setup-step__body">
+              <app-counter-field
+                multiline
+                [label]="descFieldLabel"
+                [optionalLabel]="'i18n.Setup.S1.optional' | translate"
+                [maxLength]="descMax"
+                [rows]="4"
+                [placeholder]="descPlaceholder()"
+                [value]="documentDescription()"
+                (valueChange)="documentDescription.set($event)" />
+            </div>
+          </li>
+        </ol>
+
+        <!-- Barra capacità del progetto (MB reali), riusata negli header delle card -->
+        <ng-template #capBar>
+          <span class="setup-cap setup-cap--inline">
+            <span class="setup-cap__track">
+              <span
+                class="setup-cap__fill"
+                [style.width.%]="capacityUsed()"></span>
+            </span>
+            <span class="setup-cap__label">{{ capacityLabel() }}</span>
+          </span>
+        </ng-template>
+      </section>
+
+      <!-- Colonna destra: Istruzioni + File impilati -->
+      <aside class="setup-side">
         <!-- Istruzioni -->
         <section class="setup-aside setup-aside--inner">
           <header class="setup-aside__head">
             <span class="setup-aside__title">Istruzioni</span>
+            <ng-container [ngTemplateOutlet]="capBar" />
             <button
               class="setup-aside__add"
               type="button"
@@ -145,10 +209,18 @@
             </ul>
           }
           @if (!instructionsText().trim() && !instructionFiles().length) {
-            <p class="setup-aside__hint">
-              Aggiungi istruzioni per <strong>stile</strong>, <strong>lunghezza</strong> e contenuti
-              — a mano o da file. Es. «interlinea 1,5, ~30 pagine, senza appendici».
-            </p>
+            <div class="setup-aside__empty">
+              <span
+                class="setup-aside__emoji"
+                aria-hidden="true">
+                <mat-icon
+                  fontSet="material-symbols-outlined"
+                  aria-hidden="true"
+                  >edit</mat-icon
+                >
+              </span>
+              <p class="setup-aside__hint">Valgono per tutto il documento.</p>
+            </div>
           }
         </section>
 
@@ -156,6 +228,7 @@
         <section class="setup-aside setup-aside--inner">
           <header class="setup-aside__head">
             <span class="setup-aside__title">File</span>
+            <ng-container [ngTemplateOutlet]="capBar" />
             <button
               class="setup-aside__add"
               type="button"
@@ -184,17 +257,6 @@
               </button>
             </mat-menu>
           </header>
-
-          <div class="setup-cap">
-            <div class="setup-cap__track">
-              <span
-                class="setup-cap__fill"
-                [style.width.%]="capacityUsed()"></span>
-            </div>
-            <span class="setup-cap__label"
-              >{{ capacityUsed() }}% della capacità del progetto usata</span
-            >
-          </div>
 
           @if (materialFiles().length) {
             <ul class="setup-files">
@@ -236,13 +298,32 @@
               }
             </ul>
           } @else {
-            <p class="setup-aside__hint">
-              Nessun file. Aggiungine dal dispositivo o incolla del testo.
-            </p>
+            <div class="setup-aside__empty">
+              <span
+                class="setup-aside__emoji"
+                aria-hidden="true">
+                <mat-icon
+                  fontSet="material-symbols-outlined"
+                  aria-hidden="true"
+                  >upload_file</mat-icon
+                >
+              </span>
+              <p class="setup-aside__hint">
+                Nessun file. Aggiungine dal dispositivo o incolla del testo.
+              </p>
+            </div>
           }
         </section>
-      </div>
-    </section>
+
+        <!-- Consigli (riquadro bianco): come riempire Istruzioni e File -->
+        <section class="surface-card">
+          <app-info-list
+            variant="icon"
+            [tone]="modelTone()"
+            [items]="sideHints" />
+        </section>
+      </aside>
+    </div>
   </div>
 
   <!-- Dialog: Istruzioni per l'AI -->

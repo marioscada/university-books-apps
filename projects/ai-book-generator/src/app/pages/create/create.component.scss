@@ -11,19 +11,41 @@
   padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px));
 }
 
-// --- Header -----------------------------------------------------------------
+// --- Header (icona + titolo/sottotitolo) ------------------------------------
 .create__head {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
+  align-items: center;
+  gap: 18px;
   // Respiro generoso tra header e griglia (nessuna linea separatrice).
   margin-bottom: clamp(32px, 5vw, 56px);
+}
+.create__icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--tone-violet-bg);
+  color: var(--tone-violet-fg);
+
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+  }
+}
+.create__headtext {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
 // Lead (sottotitolo forte).
 .create__lead {
-  margin: 2px 0 0;
+  margin: 0;
   font-size: var(--site-body-large, 1.0625rem);
   font-weight: 500;
   color: var(--mat-sys-on-surface);

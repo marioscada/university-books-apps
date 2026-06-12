@@ -7,8 +7,19 @@
   <!-- Step: galleria modelli -->
   <div class="create site-container">
     <header class="create__head">
-      <h1 class="page-title">{{ 'i18n.Create.gallery.title' | translate }}</h1>
-      <p class="create__lead">{{ 'i18n.Create.callout.title' | translate }}</p>
+      <span
+        class="create__icon"
+        aria-hidden="true">
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          aria-hidden="true"
+          >auto_awesome</mat-icon
+        >
+      </span>
+      <div class="create__headtext">
+        <h1 class="page-title">{{ 'i18n.Create.gallery.title' | translate }}</h1>
+        <p class="create__lead">{{ 'i18n.Create.callout.title' | translate }}</p>
+      </div>
     </header>
 
     <div class="create__grid">

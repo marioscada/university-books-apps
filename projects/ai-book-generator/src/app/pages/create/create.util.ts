@@ -20,19 +20,38 @@ export interface ModelChoice {
  * icona Material di fallback e tono cromatico (dai token globali). I testi e i tag
  * sono i18n (`i18n.Models.<id>.{name,desc,tags}`), risolti in `toModelChoices`.
  */
+// Ogni modello ha un pastello DISTINTO (nessun tono ripetuto): il colore
+// distingue il modello in galleria e nella pagina di setup.
 const MODEL_PRESENTATION: Record<string, { img: string; icon: string; tone: ChoiceTone }> = {
   book: { img: 'book', icon: 'menu_book', tone: 'violet' },
   summary: { img: 'summary', icon: 'short_text', tone: 'success' },
   thesis: { img: 'thesis', icon: 'school', tone: 'amber' },
-  manual: { img: 'manual', icon: 'menu_book', tone: 'neutral' },
-  report: { img: 'report', icon: 'analytics', tone: 'violet' },
+  course: { img: 'course', icon: 'history_edu', tone: 'indigo' },
+  manual: { img: 'manual', icon: 'menu_book', tone: 'teal' },
   presentation: { img: 'presentation', icon: 'slideshow', tone: 'warning' },
-  study_guide: { img: 'study_guide', icon: 'science', tone: 'rose' },
-  course: { img: 'course', icon: 'history_edu', tone: 'amber' },
-  custom: { img: 'custom', icon: 'translate', tone: 'info' },
 };
 
 const FALLBACK = { img: '', icon: 'description', tone: 'neutral' as ChoiceTone };
+
+/** Presentazione del modello (immagine 3D, icona di fallback, tono cromatico). */
+export interface ModelPresentation {
+  /** Path dell'immagine 3D (vuoto = nessuna immagine, usa `icon`). */
+  imageSrc: string;
+  /** Icona Material di fallback. */
+  icon: string;
+  /** Tono cromatico (dai token globali `--tone-*`). */
+  tone: ChoiceTone;
+}
+
+/**
+ * Sorgente UNICA della presentazione di un modello (immagine + icona + tono):
+ * la usano sia la galleria (`toModelChoices`) sia la pagina di setup, così
+ * immagine e colori del modello si aggiornano da un solo punto.
+ */
+export function modelPresentation(id: string): ModelPresentation {
+  const v = MODEL_PRESENTATION[id] ?? FALLBACK;
+  return { imageSrc: v.img ? `images/models/${v.img}.png` : '', icon: v.icon, tone: v.tone };
+}
 
 /**
  * Mappa i modelli (template immutabili) nelle card della galleria, risolvendo
@@ -44,7 +63,7 @@ export function toModelChoices(
   t: (key: string) => string,
 ): ModelChoice[] {
   return templates.map((tpl) => {
-    const v = MODEL_PRESENTATION[tpl.id] ?? FALLBACK;
+    const v = modelPresentation(tpl.id);
     const tags = t(`i18n.Models.${tpl.id}.tags`)
       .split('|')
       .map((s) => s.trim())
@@ -52,7 +71,7 @@ export function toModelChoices(
     return {
       id: tpl.id,
       icon: v.icon,
-      imageSrc: v.img ? `images/models/${v.img}.png` : '',
+      imageSrc: v.imageSrc,
       tone: v.tone,
       heading: t(tpl.nameKey),
       description: t(tpl.descKey),
