@@ -131,3 +131,24 @@
   align-items: center;
   gap: 10px;
 }
+
+// --- Modale "Scarica output" -------------------------------------------------
+.coll__downloadmsg {
+  margin: 0 0 16px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.coll__downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.coll__downloadhint {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}

@@ -15,7 +15,10 @@ import { SourcesStore } from '../../core/state/sources.store';
 import { BillingService } from '../../core/services/billing.service';
 import { UiPromiseService } from '../../shared/services/ui-promise.service';
 import { injectI18nText } from '../../shared/services/i18n-text';
-import type { ProjectStatus } from '../../core/domain';
+import { ToastFacade } from '../../shared/services/toast/toast.facade';
+import { BookReaderComponent } from '../../shared/components-v2/book-reader/book-reader.component';
+import { API_PORT } from '../../core/data/api-port';
+import type { ProjectStatus, Chapter } from '../../core/domain';
 import { type RowVM, projectRow, sourceRow } from './collection-row.mapper';
 
 interface GroupVM {
@@ -43,6 +46,7 @@ const LIBRARY: readonly ProjectStatus[] = ['published'];
     ModalShellComponent,
     NoDataComponent,
     SkeletonComponent,
+    BookReaderComponent,
     NgTemplateOutlet,
     FormsModule,
     MatIconModule,
@@ -58,7 +62,21 @@ export class CollectionComponent {
   private readonly billing = inject(BillingService);
   private readonly router = inject(Router);
   private readonly uiPromise = inject(UiPromiseService);
+  private readonly api = inject(API_PORT);
+  private readonly toast = inject(ToastFacade);
   private readonly t = injectI18nText();
+
+  // --- Lettore del libro (click sul progetto) ---------------------------------
+  readonly readerOpen = signal(false);
+  readonly readerLoading = signal(false);
+  readonly readerTitle = signal('');
+  readonly readerChapters = signal<readonly Chapter[]>([]);
+
+  // --- Scarica output (icona download sul progetto) ---------------------------
+  readonly downloadOpen = signal(false);
+  readonly downloadTitle = signal('');
+  readonly downloadFormats = signal<readonly string[]>([]);
+  private readonly downloadProjectId = signal('');
 
   /** Stato fatturazione → guida il dialog di rielaborazione. */
   readonly billingStatus = this.billing.status;
@@ -79,8 +97,25 @@ export class CollectionComponent {
   readonly emptyMessage = computed(() => this.t('i18n.Collection.empty.message'));
 
   // --- Navigazione / azioni ---------------------------------------------------
-  openProject(id: string): void {
-    void this.router.navigate(['/project', id]);
+  /** Click sul progetto → apre il LIBRO nel lettore read-only (capitoli dalla
+   *  versione corrente). Se non c'è contenuto leggibile (bozza) → Studio. */
+  async openProject(id: string): Promise<void> {
+    // Apertura OTTIMISTICA: il dialog (col titolo) appare subito con lo spinner,
+    // poi si popola coi capitoli. Niente attesa di rete prima dell'apertura.
+    this.readerTitle.set(this.projects.entities().find((p) => p.id === id)?.title ?? '');
+    this.readerChapters.set([]);
+    this.readerLoading.set(true);
+    this.readerOpen.set(true);
+    const version = await this.api.getCurrentVersion(id);
+    const chapters = version?.chapters ?? [];
+    this.readerLoading.set(false);
+    if (chapters.length) {
+      this.readerChapters.set(chapters);
+    } else {
+      // Nessun contenuto leggibile (bozza) → Studio per continuare.
+      this.readerOpen.set(false);
+      void this.router.navigate(['/project', id]);
+    }
   }
   newProject(): void {
     void this.router.navigate(['/create']);
@@ -99,7 +134,35 @@ export class CollectionComponent {
       case 'delete':
         this.askDelete('project', id);
         break;
-      // 'download': placeholder col backend.
+      case 'download':
+        this.openDownload(id);
+        break;
+    }
+  }
+
+  /** Icona download sul progetto → modale con i formati di output scaricabili. */
+  openDownload(id: string): void {
+    const project = this.projects.entities().find((p) => p.id === id);
+    const formats = project?.generationOptions.outputFormats ?? ['pdf'];
+    this.downloadTitle.set(project?.title ?? '');
+    this.downloadFormats.set(formats.map((f) => f.toUpperCase()));
+    this.downloadProjectId.set(id);
+    this.downloadOpen.set(true);
+  }
+
+  /** Copia negli appunti il link al documento + toast di conferma. */
+  async copyProjectLink(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/project/${this.downloadProjectId()}`,
+      );
+      void this.toast.present(this.t('i18n.Workspace.linkCopied'), this.t('i18n.Common.done'), {
+        severity: 'success',
+      });
+    } catch {
+      void this.toast.present(this.t('i18n.Common.error'), this.t('i18n.Common.error'), {
+        severity: 'error',
+      });
     }
   }
   onSourceAction(id: string, action: string): void {

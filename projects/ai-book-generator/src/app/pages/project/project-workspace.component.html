@@ -198,12 +198,12 @@
             <h2 class="studio-confirm__title">Documento pubblicato</h2>
             <div class="studio-confirm__downloads">
               @for (f of publishFormats(); track f) {
-                <button mat-stroked-button type="button">
+                <button mat-stroked-button type="button" disabled>
                   <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">download</mat-icon>
                   Scarica {{ f }}
                 </button>
               }
-              <button mat-stroked-button type="button">
+              <button mat-stroked-button type="button" (click)="copyLink()">
                 <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">link</mat-icon>
                 Copia link
               </button>
@@ -212,6 +212,11 @@
                 Apri documento
               </button>
             </div>
+            @if (publishFormats().length) {
+              <p class="studio-confirm__hint">
+                {{ 'i18n.Workspace.comingSoon' | translate }} · download
+              </p>
+            }
           </section>
         } @else if (project.status === 'failed') {
           <section class="surface-card studio-panel">

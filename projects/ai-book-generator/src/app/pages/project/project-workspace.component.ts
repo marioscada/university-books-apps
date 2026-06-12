@@ -306,6 +306,19 @@ export class ProjectWorkspaceComponent {
     this.readerPage.set(0);
     this.reading.set(true);
   }
+  /** Copia negli appunti il link al documento pubblicato + toast di conferma. */
+  async copyLink(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      void this.toast.present(this.t('i18n.Workspace.linkCopied'), this.t('i18n.Common.done'), {
+        severity: 'success',
+      });
+    } catch {
+      void this.toast.present(this.t('i18n.Common.error'), this.t('i18n.Common.error'), {
+        severity: 'error',
+      });
+    }
+  }
   /** Dal pannello di lettura: stacca il capitolo CORRENTE nel lettore immersivo. */
   openReader(): void {
     this.readerPage.set(0);

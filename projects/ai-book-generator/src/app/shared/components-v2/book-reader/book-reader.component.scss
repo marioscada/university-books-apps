@@ -1,0 +1,52 @@
+.book-reader__body {
+  max-width: 68ch;
+  // Altezza stabile: le pagine non fanno "saltare" il dialog; niente scroll.
+  min-height: clamp(300px, 48vh, 460px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+// Stessa altezza del corpo: l'apertura ottimistica non fa "saltare" il dialog.
+.book-reader__loading {
+  min-height: clamp(300px, 48vh, 460px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-reader__title {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 800;
+  color: var(--mat-sys-on-surface);
+}
+
+.book-reader__meta {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.book-reader__p {
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--mat-sys-on-surface);
+}
+
+.book-reader__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.book-reader__pos {
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}

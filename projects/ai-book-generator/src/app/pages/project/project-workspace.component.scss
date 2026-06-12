@@ -176,6 +176,13 @@ app-review-shell {
   margin-top: 24px;
 }
 
+.studio-confirm__hint {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
 // --- Dialog di pubblicazione ------------------------------------------------
 .studio-dialog-foot {
   display: flex;
