@@ -1,0 +1,35 @@
+<app-modal-shell
+  [open]="open()"
+  size="lg"
+  expandable
+  [title]="title()"
+  [subtitle]="subtitle()"
+  [closeLabel]="closeLabel()"
+  (closed)="closed.emit()">
+  @if (loading()) {
+    <div class="book-reader__loading">
+      <mat-progress-spinner mode="indeterminate" [diameter]="40" aria-label="Caricamento" />
+    </div>
+  } @else {
+    @if (selectedChapter(); as ch) {
+      <article class="book-reader__body">
+        <h3 class="book-reader__title">{{ ch.index }} · {{ ch.title }}</h3>
+        <p class="book-reader__meta">≈ {{ ch.wordCount }} parole</p>
+        @for (p of pageParagraphs(); track $index) {
+          <p class="book-reader__p">{{ p }}</p>
+        }
+      </article>
+    }
+  }
+  <div footer class="book-reader__nav">
+    <button mat-button type="button" [disabled]="!canPrev()" (click)="prev()">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_left</mat-icon>
+      {{ prevLabel() }}
+    </button>
+    <span class="book-reader__pos">{{ posLabel() }}</span>
+    <button mat-button type="button" [disabled]="!canNext()" (click)="next()">
+      {{ nextLabel() }}
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
+    </button>
+  </div>
+</app-modal-shell>

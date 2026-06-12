@@ -69,6 +69,7 @@
   <div class="coll__panel surface-card">
     <app-list-row
       emphasis
+      titleClickable
       [icon]="g.project.icon"
       [cover]="g.project.cover"
       [imageSrc]="g.project.imageSrc"
@@ -148,7 +149,49 @@
     ) {<strong> e tutte le sue fonti</strong>}. Non potrai annullare né recuperare il contenuto.
   </p>
   <div footer class="coll__dialogfoot">
-    <button mat-stroked-button type="button" (click)="cancelDelete()">Annulla</button>
-    <button mat-flat-button color="warn" type="button" (click)="confirmDelete()">Elimina</button>
+    <button
+      mat-stroked-button
+      type="button"
+      (click)="cancelDelete()">Annulla</button>
+    <button
+      mat-flat-button
+      class="coll__delete-btn"
+      type="button"
+      (click)="confirmDelete()">
+      Elimina
+    </button>
   </div>
+</app-modal-shell>
+
+<!-- Lettore del libro: click sul progetto apre la lettura read-only -->
+<app-book-reader
+  [open]="readerOpen()"
+  [loading]="readerLoading()"
+  [title]="readerTitle()"
+  [chapters]="readerChapters()"
+  (closed)="readerOpen.set(false)" />
+
+<!-- Scarica output: icona download sul progetto (formati del modello, no lettura) -->
+<app-modal-shell
+  [open]="downloadOpen()"
+  [title]="downloadTitle()"
+  [subtitle]="'Scarica il documento'"
+  [closeLabel]="'Chiudi'"
+  (closed)="downloadOpen.set(false)">
+  <p class="coll__downloadmsg">
+    Scegli il formato che preferisci tra quelli disponibili per questo modello.
+  </p>
+  <div class="coll__downloads">
+    @for (f of downloadFormats(); track f) {
+      <button mat-stroked-button type="button" disabled>
+        <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">download</mat-icon>
+        Scarica {{ f }}
+      </button>
+    }
+    <button mat-stroked-button type="button" (click)="copyProjectLink()">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">link</mat-icon>
+      Copia link
+    </button>
+  </div>
+  <p class="coll__downloadhint">In arrivo · download</p>
 </app-modal-shell>
