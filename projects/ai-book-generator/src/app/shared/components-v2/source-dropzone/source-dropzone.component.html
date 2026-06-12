@@ -1,15 +1,17 @@
 <div
   class="source-dropzone__area"
-  [class.is-dragging]="dragging()"
   role="button"
   tabindex="0"
+  [class.is-dragging]="dragging()"
   (click)="browse()"
   (keydown.enter)="onKey($event)"
   (keydown.space)="onKey($event)"
   (dragover)="onDragOver($event)"
   (dragleave)="onDragLeave()"
   (drop)="onDrop($event)">
-  <span class="source-dropzone__icon" aria-hidden="true">
+  <span
+    class="source-dropzone__icon"
+    aria-hidden="true">
     <mat-icon fontSet="material-symbols-outlined">cloud_upload</mat-icon>
   </span>
   <span class="source-dropzone__prompt">{{ promptLabel() }}</span>
@@ -26,7 +28,9 @@
 </div>
 
 @if (items().length) {
-  <mat-chip-set class="source-dropzone__chips" aria-label="Allegati">
+  <mat-chip-set
+    class="source-dropzone__chips"
+    aria-label="Allegati">
     @for (item of items(); track item.id) {
       <mat-chip-row
         [attr.data-status]="item.status || 'ready'"
@@ -34,18 +38,37 @@
         (removed)="itemRemove.emit(item.id)">
         @switch (item.status) {
           @case ('uploading') {
-            <mat-progress-spinner matChipAvatar mode="indeterminate" [diameter]="18" />
+            <mat-progress-spinner
+              matChipAvatar
+              mode="indeterminate"
+              [diameter]="18" />
           }
           @case ('error') {
-            <mat-icon matChipAvatar class="source-dropzone__state--error" fontSet="material-symbols-outlined">error</mat-icon>
+            <mat-icon
+              matChipAvatar
+              class="source-dropzone__state--error"
+              fontSet="material-symbols-outlined"
+              >error</mat-icon
+            >
           }
           @default {
-            <mat-icon matChipAvatar class="source-dropzone__state--ready" fontSet="material-symbols-outlined">check_circle</mat-icon>
+            <mat-icon
+              matChipAvatar
+              class="source-dropzone__state--ready"
+              fontSet="material-symbols-outlined"
+              >check_circle</mat-icon
+            >
           }
         }
-        <span class="source-dropzone__name" [title]="item.name">{{ item.name }}</span>
+        <span
+          class="source-dropzone__name"
+          [title]="item.name"
+          >{{ item.name }}</span
+        >
         @if (removable()) {
-          <button matChipRemove [attr.aria-label]="'Rimuovi ' + item.name">
+          <button
+            matChipRemove
+            [attr.aria-label]="'Rimuovi ' + item.name">
             <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
           </button>
         }

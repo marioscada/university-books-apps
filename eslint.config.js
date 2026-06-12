@@ -64,6 +64,11 @@ module.exports = defineConfig([
       angular.configs.templateRecommended,
       angular.configs.templateAccessibility,
     ],
-    rules: {},
+    rules: {
+      // Ordine standard degli attributi (struttura → ref → attributo → input →
+      // two-way → output): pulito, prevedibile, e il lint indica la riga in errore.
+      // Il "una proprietà per riga" è applicato da prettier (singleAttributePerLine).
+      "@angular-eslint/template/attributes-order": "error",
+    },
   }
 ]);

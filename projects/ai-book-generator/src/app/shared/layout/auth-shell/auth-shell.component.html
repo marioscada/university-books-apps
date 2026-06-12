@@ -3,17 +3,21 @@
   del corpo centrale tramite <ng-content>.
 -->
 <app-site-shell>
-  <ng-template #header let-toggleSidebar="toggleSidebar">
+  <ng-template
+    #header
+    let-toggleSidebar="toggleSidebar">
     <app-site-header-nav
-      [brand]="brand"
       logoRoute="/create"
+      [brand]="brand"
       [navItems]="navItems"
       [showProfile]="true"
       (toggleSidebar)="toggleSidebar()"
       (profile)="onProfile()" />
   </ng-template>
 
-  <ng-template #sidebar let-closeMenu="closeMenu">
+  <ng-template
+    #sidebar
+    let-closeMenu="closeMenu">
     <app-site-mobile-menu
       [brand]="brand"
       [navItems]="navItems"

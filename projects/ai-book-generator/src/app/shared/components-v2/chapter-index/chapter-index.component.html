@@ -15,7 +15,9 @@
       type="button"
       [attr.aria-pressed]="collapsed()"
       (click)="collapsed.set(!collapsed())">
-      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        aria-hidden="true">
         {{ collapsed() ? 'chevron_right' : 'chevron_left' }}
       </mat-icon>
     </button>
@@ -35,7 +37,11 @@
           (click)="selected.emit(c.key)">
           <span class="chapter-index__dot">
             @if (icon(c.status); as ic) {
-              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ ic }}</mat-icon>
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                aria-hidden="true"
+                >{{ ic }}</mat-icon
+              >
             } @else {
               {{ c.index }}
             }
@@ -44,14 +50,24 @@
           @if (c.statusLabel) {
             <span class="chapter-index__status">{{ c.statusLabel }}</span>
           }
-          <mat-icon class="chapter-index__chevron" fontSet="material-symbols-outlined" aria-hidden="true">chevron_right</mat-icon>
+          <mat-icon
+            class="chapter-index__chevron"
+            fontSet="material-symbols-outlined"
+            aria-hidden="true"
+            >chevron_right</mat-icon
+          >
         </button>
         @if (c.sections?.length) {
           <ul class="chapter-index__sublist">
             @for (s of c.sections; track s.key) {
               <li>
-                <button class="chapter-index__subrow" type="button" (click)="selected.emit(c.key)">
-                  <span class="chapter-index__subdot" aria-hidden="true"></span>
+                <button
+                  class="chapter-index__subrow"
+                  type="button"
+                  (click)="selected.emit(c.key)">
+                  <span
+                    class="chapter-index__subdot"
+                    aria-hidden="true"></span>
                   <span class="chapter-index__sublabel">{{ s.title }}</span>
                 </button>
               </li>
@@ -63,8 +79,15 @@
   </ul>
 
   @if (addLabel()) {
-    <button class="chapter-index__add" type="button" (click)="add.emit()">
-      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">add</mat-icon>
+    <button
+      class="chapter-index__add"
+      type="button"
+      (click)="add.emit()">
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        aria-hidden="true"
+        >add</mat-icon
+      >
       {{ addLabel() }}
     </button>
   }

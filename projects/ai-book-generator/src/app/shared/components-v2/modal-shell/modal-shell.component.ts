@@ -43,12 +43,12 @@ import { ScrollStrategyOptions } from '@angular/cdk/overlay';
       <button class="modal-shell__backdrop" type="button" [attr.aria-label]="closeLabel()" (click)="closed.emit()"></button>
       <div
         class="modal-shell__panel"
-        [class.modal-shell__panel--lg]="size() === 'lg'"
-        [class.modal-shell__panel--full]="expandable() && fullscreen()"
         role="dialog"
         aria-modal="true"
         tabindex="-1"
         cdkTrapFocus
+        [class.modal-shell__panel--lg]="size() === 'lg'"
+        [class.modal-shell__panel--full]="expandable() && fullscreen()"
         [cdkTrapFocusAutoCapture]="true"
       >
         <header class="modal-shell__head">

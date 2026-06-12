@@ -5,7 +5,9 @@
 -->
 <app-site-shell>
   <ng-template #header>
-    <app-site-header-nav [brand]="brand" [showAuthLinks]="true" />
+    <app-site-header-nav
+      [brand]="brand"
+      [showAuthLinks]="true" />
   </ng-template>
 
   <ng-template #main>
@@ -30,10 +32,14 @@
       [items]="showcase" />
 
     <!-- 5. CTA finale (banda scura) -->
-    <app-content-section class="cta-band" [data]="finalCta" />
+    <app-content-section
+      class="cta-band"
+      [data]="finalCta" />
   </ng-template>
 
   <ng-template #footer>
-    <app-site-footer-block [brand]="brand" [columns]="footerColumns" />
+    <app-site-footer-block
+      [brand]="brand"
+      [columns]="footerColumns" />
   </ng-template>
 </app-site-shell>

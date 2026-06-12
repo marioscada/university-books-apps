@@ -11,12 +11,14 @@
     @if (hero.imageSrc) {
       <img
         class="hero-section__image hero-section__image--loaded"
-        [src]="hero.imageSrc"
-        [alt]="hero.imageAlt ?? ''"
         fetchpriority="high"
-        decoding="async" />
+        decoding="async"
+        [src]="hero.imageSrc"
+        [alt]="hero.imageAlt ?? ''" />
     }
-    <div class="hero-section__scrim" aria-hidden="true"></div>
+    <div
+      class="hero-section__scrim"
+      aria-hidden="true"></div>
     <div class="hero-section__content">
       <div class="site-container hero-section__inner">
         @if (hero.eyebrow) {
@@ -29,7 +31,9 @@
         @if (hero.cta; as cta) {
           <a
             class="hero-section__cta site-cta-pill site-cta-pill--on-image"
-            [routerLink]="cta.route">{{ cta.label }}</a>
+            [routerLink]="cta.route"
+            >{{ cta.label }}</a
+          >
         }
       </div>
     </div>

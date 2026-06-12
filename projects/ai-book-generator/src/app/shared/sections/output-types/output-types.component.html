@@ -10,7 +10,9 @@
     <div class="output-types__grid">
       @for (item of items(); track item.label) {
         <article class="output-card">
-          <span class="output-card__icon" aria-hidden="true">
+          <span
+            class="output-card__icon"
+            aria-hidden="true">
             <mat-icon fontSet="material-symbols-outlined">{{ item.icon }}</mat-icon>
           </span>
           <h3 class="output-card__title">{{ item.label }}</h3>

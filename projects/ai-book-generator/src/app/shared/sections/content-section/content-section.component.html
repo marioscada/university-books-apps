@@ -19,7 +19,11 @@
           <p class="content-section__body">{{ section.body }}</p>
         }
         @if (section.cta; as cta) {
-          <a class="content-section__cta site-cta-pill" [routerLink]="cta.route">{{ cta.label }}</a>
+          <a
+            class="content-section__cta site-cta-pill"
+            [routerLink]="cta.route"
+            >{{ cta.label }}</a
+          >
         }
       </div>
 
@@ -27,7 +31,12 @@
         <div
           class="content-section__media content-section__media--image"
           [class.content-section__media--grayscale]="media.grayscale">
-          <img class="content-section__image" [src]="media.src" [alt]="media.alt" loading="lazy" decoding="async" />
+          <img
+            class="content-section__image"
+            loading="lazy"
+            decoding="async"
+            [src]="media.src"
+            [alt]="media.alt" />
         </div>
       }
     </div>

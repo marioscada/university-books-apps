@@ -6,7 +6,10 @@
   <div class="site-shell">
     @if (headerTemplate(); as header) {
       <ng-container
-        *ngTemplateOutlet="header; context: { toggleSidebar: toggleSidebar, screenType: screenType }"></ng-container>
+        *ngTemplateOutlet="
+          header;
+          context: { toggleSidebar: toggleSidebar, screenType: screenType }
+        "></ng-container>
     }
 
     <main class="site-shell__main">
@@ -35,7 +38,10 @@
           cdkTrapFocus
           [cdkTrapFocusAutoCapture]="true">
           <ng-container
-            *ngTemplateOutlet="sidebar; context: { closeMenu: closeSidebar, screenType: screenType }"></ng-container>
+            *ngTemplateOutlet="
+              sidebar;
+              context: { closeMenu: closeSidebar, screenType: screenType }
+            "></ng-container>
         </aside>
       }
     }

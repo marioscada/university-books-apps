@@ -10,7 +10,12 @@
     <div class="output-showcase__grid">
       @for (item of items(); track item.caption) {
         <figure class="showcase-card">
-          <img class="showcase-card__img" [src]="item.src" [alt]="item.alt" loading="lazy" decoding="async" />
+          <img
+            class="showcase-card__img"
+            loading="lazy"
+            decoding="async"
+            [src]="item.src"
+            [alt]="item.alt" />
           <figcaption class="showcase-card__caption">{{ item.caption }}</figcaption>
         </figure>
       }

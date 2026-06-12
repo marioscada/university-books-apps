@@ -6,13 +6,15 @@
   [attr.aria-label]="ariaLabel()">
   <mat-icon
     class="language-switcher__flag"
-    [svgIcon]="currentLocale()"
-    aria-hidden="true"></mat-icon>
+    aria-hidden="true"
+    [svgIcon]="currentLocale()"></mat-icon>
   <span class="language-switcher__label">{{ displayLabel() }}</span>
   <mat-icon
     class="language-switcher__chevron"
     fontSet="material-symbols-outlined"
-    aria-hidden="true">expand_more</mat-icon>
+    aria-hidden="true"
+    >expand_more</mat-icon
+  >
 </button>
 
 <mat-menu #menu="matMenu">
@@ -22,7 +24,9 @@
       type="button"
       [class.is-active]="item.id === currentLocale()"
       (click)="onSelect(item.id)">
-      <mat-icon [svgIcon]="item.id" aria-hidden="true"></mat-icon>
+      <mat-icon
+        aria-hidden="true"
+        [svgIcon]="item.id"></mat-icon>
       <span>{{ item.name | translate }}</span>
     </button>
   }

@@ -1,42 +1,53 @@
 <!-- Backdrop -->
 <div
-  [@fadeIn]
   class="backdrop"
   role="button"
   tabindex="0"
   aria-label="Chiudi profilo utente"
+  [@fadeIn]
   (click)="onClose()"
   (keydown.enter)="onClose()"
-  (keydown.escape)="onClose()"
-></div>
+  (keydown.escape)="onClose()"></div>
 
 <!-- Drawer profilo (slide-over) -->
 <aside
-  [@slideInRight]
   class="profile-sidebar"
   role="dialog"
   aria-modal="true"
   aria-label="Menu profilo utente"
   tabindex="-1"
   cdkTrapFocus
+  [@slideInRight]
   [cdkTrapFocusAutoCapture]="true"
-  (keydown.escape)="onClose()"
->
+  (keydown.escape)="onClose()">
   <!-- Header -->
   <header class="ps-header">
     @if (currentView() === 'account') {
-      <button mat-icon-button type="button" aria-label="Indietro" (click)="backToMenu()">
+      <button
+        mat-icon-button
+        type="button"
+        aria-label="Indietro"
+        (click)="backToMenu()">
         <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
       </button>
     }
     <span class="ps-header__spacer"></span>
-    <button mat-icon-button type="button" aria-label="Chiudi" (click)="onClose()">
+    <button
+      mat-icon-button
+      type="button"
+      aria-label="Chiudi"
+      (click)="onClose()">
       <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
     </button>
   </header>
 
   <div class="ps-user">
-    <mat-icon class="ps-user__avatar" fontSet="material-symbols-outlined" aria-hidden="true">account_circle</mat-icon>
+    <mat-icon
+      class="ps-user__avatar"
+      fontSet="material-symbols-outlined"
+      aria-hidden="true"
+      >account_circle</mat-icon
+    >
     @if (displayName()) {
       <div class="ps-user__name">{{ displayName() }}</div>
     }
@@ -45,28 +56,48 @@
   <!-- Menu -->
   @if (currentView() === 'menu') {
     <mat-nav-list>
-      <button mat-list-item type="button" (click)="showAccount()">
-        <mat-icon matListItemIcon fontSet="material-symbols-outlined">person</mat-icon>
+      <button
+        mat-list-item
+        type="button"
+        (click)="showAccount()">
+        <mat-icon
+          matListItemIcon
+          fontSet="material-symbols-outlined"
+          >person</mat-icon
+        >
         <span matListItemTitle>Account</span>
       </button>
-      <button mat-list-item type="button">
-        <mat-icon matListItemIcon fontSet="material-symbols-outlined">settings</mat-icon>
+      <button
+        mat-list-item
+        type="button">
+        <mat-icon
+          matListItemIcon
+          fontSet="material-symbols-outlined"
+          >settings</mat-icon
+        >
         <span matListItemTitle>Settings</span>
       </button>
 
       <mat-divider />
 
       @if (logoutError()) {
-        <p class="ps-error" role="alert">{{ logoutError() }}</p>
+        <p
+          class="ps-error"
+          role="alert">
+          {{ logoutError() }}
+        </p>
       }
       <button
         mat-list-item
         type="button"
         class="ps-logout"
         [disabled]="loggingOut()"
-        (click)="onLogout()"
-      >
-        <mat-icon matListItemIcon fontSet="material-symbols-outlined">logout</mat-icon>
+        (click)="onLogout()">
+        <mat-icon
+          matListItemIcon
+          fontSet="material-symbols-outlined"
+          >logout</mat-icon
+        >
         <span matListItemTitle>{{ loggingOut() ? 'Signing out…' : 'Sign out' }}</span>
       </button>
     </mat-nav-list>
@@ -77,19 +108,34 @@
     <dl class="ps-account">
       @if (user(); as u) {
         @if (u.givenName) {
-          <div class="ps-account__row"><dt>First name</dt><dd>{{ u.givenName }}</dd></div>
+          <div class="ps-account__row">
+            <dt>First name</dt>
+            <dd>{{ u.givenName }}</dd>
+          </div>
         }
         @if (u.familyName) {
-          <div class="ps-account__row"><dt>Last name</dt><dd>{{ u.familyName }}</dd></div>
+          <div class="ps-account__row">
+            <dt>Last name</dt>
+            <dd>{{ u.familyName }}</dd>
+          </div>
         }
         @if (u.email) {
-          <div class="ps-account__row"><dt>Email</dt><dd>{{ u.email }}</dd></div>
+          <div class="ps-account__row">
+            <dt>Email</dt>
+            <dd>{{ u.email }}</dd>
+          </div>
         }
         @if (u.emailVerified !== undefined) {
           <div class="ps-account__row">
             <dt>Status</dt>
-            <dd class="ps-account__status" [class.is-verified]="u.emailVerified">
-              <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">{{ u.emailVerified ? 'check_circle' : 'cancel' }}</mat-icon>
+            <dd
+              class="ps-account__status"
+              [class.is-verified]="u.emailVerified">
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                aria-hidden="true"
+                >{{ u.emailVerified ? 'check_circle' : 'cancel' }}</mat-icon
+              >
               {{ u.emailVerified ? 'Verified' : 'Not verified' }}
             </dd>
           </div>

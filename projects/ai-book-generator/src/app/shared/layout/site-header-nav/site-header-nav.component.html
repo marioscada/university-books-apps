@@ -1,15 +1,33 @@
-<header appScreenType [class.has-nav]="navItems().length > 0">
+<header
+  appScreenType
+  [class.has-nav]="navItems().length > 0">
   <div class="site-container header-inner">
     <!-- SINISTRA: logo -->
-    <a class="logo-link" [routerLink]="logoRoute()" [attr.aria-label]="brand()">
-      <img class="logo-link__mark" src="images/logo.webp" [alt]="brand()" decoding="async" fetchpriority="high" />
+    <a
+      class="logo-link"
+      [routerLink]="logoRoute()"
+      [attr.aria-label]="brand()">
+      <img
+        class="logo-link__mark"
+        src="images/logo.webp"
+        decoding="async"
+        fetchpriority="high"
+        [alt]="brand()" />
     </a>
 
     <!-- CENTRO: voci di navigazione -->
     @if (navItems().length) {
-      <nav class="nav-links" aria-label="Primary">
+      <nav
+        class="nav-links"
+        aria-label="Primary">
         @for (item of navItems(); track item.id) {
-          <a [routerLink]="item.route" [queryParamsHandling]="qph(item)" routerLinkActive="is-active" class="nav-link">{{ item.label | translate }}</a>
+          <a
+            routerLinkActive="is-active"
+            class="nav-link"
+            [routerLink]="item.route"
+            [queryParamsHandling]="qph(item)"
+            >{{ item.label | translate }}</a
+          >
         }
       </nav>
     }
@@ -17,13 +35,29 @@
     <!-- DESTRA: azioni (language + login / avatar) -->
     <div class="header-zone-right">
       @if (showAuthLinks()) {
-        <a routerLink="/auth/login" class="auth-link">Login</a>
-        <a routerLink="/auth/register" class="site-cta-pill auth-cta">Sign Up</a>
+        <a
+          routerLink="/auth/login"
+          class="auth-link"
+          >Login</a
+        >
+        <a
+          routerLink="/auth/register"
+          class="site-cta-pill auth-cta"
+          >Sign Up</a
+        >
       }
 
       @if (showProfile()) {
-        <button type="button" class="profile-btn" (click)="onProfile()" aria-label="Profilo utente">
-          <span class="avatar" aria-hidden="true">M</span>
+        <button
+          type="button"
+          class="profile-btn"
+          aria-label="Profilo utente"
+          (click)="onProfile()">
+          <span
+            class="avatar"
+            aria-hidden="true"
+            >M</span
+          >
         </button>
       }
 
@@ -35,8 +69,16 @@
     </div>
 
     <!-- MOBILE: hamburger (visibile solo su isMedium/isSmall) -->
-    <button type="button" class="hamburger-btn" aria-label="Apri menu" (click)="onToggle()">
-      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">menu</mat-icon>
+    <button
+      type="button"
+      class="hamburger-btn"
+      aria-label="Apri menu"
+      (click)="onToggle()">
+      <mat-icon
+        fontSet="material-symbols-outlined"
+        aria-hidden="true"
+        >menu</mat-icon
+      >
     </button>
   </div>
 </header>

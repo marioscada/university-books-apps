@@ -1,13 +1,23 @@
 @if (showBadge()) {
   <span class="plan-card__badge">
-    <mat-icon class="plan-card__badge-icon" fontSet="material-symbols-outlined" aria-hidden="true">star</mat-icon>
+    <mat-icon
+      class="plan-card__badge-icon"
+      fontSet="material-symbols-outlined"
+      aria-hidden="true"
+      >star</mat-icon
+    >
     {{ badgeLabel() }}
   </span>
 }
 
 <header class="plan-card__header">
   @if (icon()) {
-    <mat-icon class="plan-card__icon" fontSet="material-symbols-outlined" aria-hidden="true">{{ icon() }}</mat-icon>
+    <mat-icon
+      class="plan-card__icon"
+      fontSet="material-symbols-outlined"
+      aria-hidden="true"
+      >{{ icon() }}</mat-icon
+    >
   }
   <h3 class="plan-card__name">{{ name() }}</h3>
   @if (tagline()) {
@@ -34,7 +44,12 @@
   <ul class="plan-card__features">
     @for (feature of features(); track $index) {
       <li class="plan-card__feature">
-        <mat-icon class="plan-card__feature-icon" fontSet="material-symbols-outlined" aria-hidden="true">check</mat-icon>
+        <mat-icon
+          class="plan-card__feature-icon"
+          fontSet="material-symbols-outlined"
+          aria-hidden="true"
+          >check</mat-icon
+        >
         <span class="plan-card__feature-label">{{ feature }}</span>
       </li>
     }
@@ -45,17 +60,20 @@
 <ng-content />
 
 @if (isOutline()) {
-  <button type="button" class="plan-card__cta" mat-stroked-button (click)="ctaClick.emit()">
+  <button
+    type="button"
+    class="plan-card__cta"
+    mat-stroked-button
+    (click)="ctaClick.emit()">
     {{ ctaLabel() }}
   </button>
 } @else {
   <button
     type="button"
     class="plan-card__cta"
-    [class.plan-card__cta--success]="ctaTone() === 'success'"
     mat-flat-button
-    (click)="ctaClick.emit()"
-  >
+    [class.plan-card__cta--success]="ctaTone() === 'success'"
+    (click)="ctaClick.emit()">
     {{ ctaLabel() }}
   </button>
 }
