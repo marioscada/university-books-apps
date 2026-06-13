@@ -12,7 +12,6 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -23,10 +22,6 @@ import {
   type SourceItem,
 } from '../../shared/components-v2/source-dropzone/source-dropzone.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
-import {
-  InfoListComponent,
-  type InfoListItem,
-} from '../../shared/components-v2/info-list/info-list.component';
 import { ProjectsStore } from '../../core/state/projects.store';
 import { SourcesStore } from '../../core/state/sources.store';
 import { TemplatesStore } from '../../core/state/templates.store';
@@ -77,10 +72,8 @@ const BYTES_PER_MB = 1024 * 1024;
     BackLinkComponent,
     SourceDropzoneComponent,
     ModalShellComponent,
-    InfoListComponent,
     MatIconModule,
     MatButtonModule,
-    MatMenuModule,
     TranslateModule,
   ],
   templateUrl: './model-setup.component.html',
@@ -113,8 +106,6 @@ export class ModelSetupComponent {
   readonly modelImage = computed(() => this.presentation().imageSrc);
   /** Icona Material di fallback del modello. */
   readonly modelIcon = computed(() => this.presentation().icon);
-  /** Tono cromatico del modello (per i badge della sidebar). */
-  readonly modelTone = computed(() => this.presentation().tone);
   /** Sfondo/foreground del tono del modello (token globali, con fallback neutro). */
   protected readonly modelBg = computed(
     () => `var(--tone-${this.presentation().tone}-bg, var(--surface-soft))`,
@@ -139,9 +130,9 @@ export class ModelSetupComponent {
   /** Si può generare solo con un titolo valido. */
   readonly canGenerate = computed(() => !!this.documentTitle().trim());
 
-  /** True se almeno una fonte è ancora in upload (non finita di salire su S3). */
+  /** True se almeno un file è ancora in upload (non finito di salire su S3). */
   readonly sourcesPending = computed(() =>
-    [...this.materialFiles(), ...this.instructionFiles()].some((s) => s.status === 'uploading'),
+    this.materialFiles().some((s) => s.status === 'uploading'),
   );
 
   readonly language = signal('it');
@@ -171,20 +162,11 @@ export class ModelSetupComponent {
   readonly titleFieldLabel = computed(() => `Scegli un nome per ${this.possessive()} ${this.nameLower()}`);
   readonly descFieldLabel = 'Descrivi brevemente cosa conterrà.';
 
-  // --- Consigli sotto Istruzioni/File (contenuti IT temporanei) ---------------
-  /** Due consigli: come riempire le Istruzioni e cosa caricare nei File. */
-  readonly sideHints: InfoListItem[] = [
-    {
-      icon: 'edit_note',
-      heading: 'Come scrivere le istruzioni',
-      text: 'Es. «Tono divulgativo, circa 30 pagine, niente gergo, con esempi pratici».',
-    },
-    {
-      icon: 'folder_open',
-      heading: 'Cosa mettere nei file',
-      text: 'Dispense, PDF, slide o appunti: l’AI li usa come fonti.',
-    },
-  ];
+  /** Sottotitolo della card Istruzioni (model-aware). */
+  readonly instrSubtitle = computed(
+    () =>
+      `Fornisci indicazioni, domande o obiettivi specifici per ${this.possessive()} ${this.nameLower()}.`,
+  );
 
   // --- Fonti & allegati: UPLOAD REALE su AWS S3 ------------------------------
   // I byte vanno davvero su S3 via presigned PUT (progress reale), poi l'ingest
@@ -199,71 +181,44 @@ export class ModelSetupComponent {
     this.materialFiles.update((list) => list.filter((s) => s.id !== id));
   }
 
-  // --- Sidebar: File (upload da dispositivo / contenuto testuale, catalogati) --
-  /** Dialog "Carica dal dispositivo" (dropzone). */
+  // --- Dropzone File: clic apre l'upload, trascinamento carica direttamente ----
+  /** True mentre si trascina un file sulla dropzone File (evidenziazione). */
+  readonly dragOver = signal(false);
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.dragOver.set(true);
+  }
+  onDragLeave(): void {
+    this.dragOver.set(false);
+  }
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.dragOver.set(false);
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    if (files.length) {
+      this.realUpload(this.materialFiles, files);
+    }
+  }
+
+  // --- File: upload da dispositivo (dialog dropzone) --------------------------
   readonly attachOpen = signal(false);
-  /** Bersaglio dell'upload: fonti (File) o istruzioni (Istruzioni). */
-  readonly attachTarget = signal<'files' | 'instr'>('files');
-  openAttach(target: 'files' | 'instr' = 'files'): void {
-    this.attachTarget.set(target);
+  openAttach(): void {
     this.attachOpen.set(true);
   }
   closeAttach(): void {
     this.attachOpen.set(false);
   }
-  /** Lista mostrata nel dialog di upload, in base al bersaglio. */
-  readonly attachItems = computed(() =>
-    this.attachTarget() === 'instr' ? this.instructionFiles() : this.materialFiles(),
-  );
+  readonly attachItems = computed(() => this.materialFiles());
   addAttach(files: File[]): void {
-    this.realUpload(this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles, files);
+    this.realUpload(this.materialFiles, files);
   }
   removeAttach(id: string): void {
-    const list = this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles;
-    list.update((l) => l.filter((s) => s.id !== id));
+    this.materialFiles.update((l) => l.filter((s) => s.id !== id));
   }
 
-  /** Dialog "Aggiungi contenuto testuale". */
-  readonly textOpen = signal(false);
-  readonly textContent = signal('');
-  openText(): void {
-    this.textContent.set('');
-    this.textOpen.set(true);
-  }
-  closeText(): void {
-    this.textOpen.set(false);
-  }
-  async addTextSource(): Promise<void> {
-    const text = this.textContent().trim();
-    if (!text) {
-      return;
-    }
-    const name = `${text.split(/\s+/).slice(0, 5).join(' ').slice(0, 40)}.txt`;
-    this.textOpen.set(false);
-    // Nota REALE su backend (POST /v1/documents col content), poi id reale →
-    // pronta appena la response arriva (l'ingest prosegue in background).
-    const tmpId = `tmp-${++this.uploadSeq}`;
-    const sizeBytes = new Blob([text]).size;
-    this.materialFiles.update((l) => [
-      ...l,
-      { id: tmpId, name, status: 'uploading' as const, sizeBytes },
-    ]);
-    try {
-      const note = await this.sourcesStore.createNote(name, text);
-      this.materialFiles.update((l) =>
-        l.map((s) => (s.id === tmpId ? { ...s, id: note.id, status: 'ready' as const } : s)),
-      );
-    } catch {
-      this.materialFiles.update((l) => l.map((s) => (s.id === tmpId ? { ...s, status: 'error' as const } : s)));
-    }
-  }
-
-  /** Byte totali delle fonti caricate (File + Istruzioni), dimensione reale. */
+  /** Byte totali dei file caricati (dimensione reale). */
   private readonly usedBytes = computed(() =>
-    [...this.materialFiles(), ...this.instructionFiles()].reduce(
-      (sum, f) => sum + (f.sizeBytes ?? 0),
-      0,
-    ),
+    this.materialFiles().reduce((sum, f) => sum + (f.sizeBytes ?? 0), 0),
   );
   /** Capacità del progetto usata (%) sulla quota globale `PROJECT_CAPACITY_MB`. */
   readonly capacityUsed = computed(() =>
@@ -274,6 +229,19 @@ export class ModelSetupComponent {
     const usedMb = this.usedBytes() / BYTES_PER_MB;
     const used = usedMb > 0 && usedMb < 10 ? usedMb.toFixed(1) : Math.round(usedMb).toString();
     return `${used} di ${PROJECT_CAPACITY_MB} MB`;
+  });
+
+  /** Anteprima file in card: oltre il tetto si mostra "+N" che apre il modale. */
+  private readonly FILE_PREVIEW_MAX = 4;
+  /** File mostrati come anteprima nella card (la lista completa è nel modale). */
+  readonly filePreview = computed(() => {
+    const all = this.materialFiles();
+    return all.length > this.FILE_PREVIEW_MAX ? all.slice(0, this.FILE_PREVIEW_MAX - 1) : all;
+  });
+  /** Quanti file restano oltre l'anteprima (0 = nessun chip "+N"). */
+  readonly extraFiles = computed(() => {
+    const n = this.materialFiles().length;
+    return n > this.FILE_PREVIEW_MAX ? n - (this.FILE_PREVIEW_MAX - 1) : 0;
   });
   /** Categoria del file per icona/colore riconoscibili (PDF, Word, immagine…). */
   fileKind(name: string): 'pdf' | 'doc' | 'img' | 'sheet' | 'text' | 'file' {
@@ -297,22 +265,13 @@ export class ModelSetupComponent {
     }[this.fileKind(name)];
   }
 
-  // --- Istruzioni: a mano (note) oppure da file (PC) --------------------------
+  // --- Istruzioni: testo scritto a mano (modale) ------------------------------
   readonly instrOpen = signal(false);
-  /** File di istruzioni caricati dal dispositivo (catalogati "Istruzione"). */
-  readonly instructionFiles = signal<SourceItem[]>([]);
   openInstr(): void {
     this.instrOpen.set(true);
   }
   closeInstr(): void {
     this.instrOpen.set(false);
-  }
-  /** Elimina le istruzioni scritte a mano. */
-  clearInstr(): void {
-    this.instructionsText.set('');
-  }
-  removeInstrFile(id: string): void {
-    this.instructionFiles.update((l) => l.filter((s) => s.id !== id));
   }
 
   /**
@@ -430,9 +389,7 @@ export class ModelSetupComponent {
       coverTheme: tpl.coverTheme ?? 'ocean',
       // Solo fonti `ready` (id reali su S3/backend): le pending non vanno all'AI.
       materialFileIds: this.materialFiles().filter((f) => f.status === 'ready').map((f) => f.id),
-      instructionFileIds: this.instructionFiles()
-        .filter((f) => f.status === 'ready')
-        .map((f) => f.id),
+      instructionFileIds: [],
       generationOptions,
     };
 

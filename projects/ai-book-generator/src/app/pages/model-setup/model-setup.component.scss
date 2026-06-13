@@ -196,97 +196,124 @@
   font-weight: 700;
   color: var(--mat-sys-on-surface);
 }
-.setup-aside__add {
+// Matita "modifica" (apre la modale delle Istruzioni), a destra nell'header.
+.setup-aside__edit {
   flex: 0 0 auto;
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--field-border-color, var(--card-border-color));
+  width: 30px;
+  height: 30px;
+  border: none;
   border-radius: 8px;
-  background: var(--surface-soft);
-  color: var(--accent-700);
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
   cursor: pointer;
 
+  &:hover {
+    background: var(--surface-soft);
+    color: var(--model-fg, var(--accent-700));
+  }
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
   }
 }
-.setup-aside__snippet {
-  margin: 0;
-  padding: 12px;
+// Sottotitolo descrittivo della card (sotto al titolo).
+.setup-aside__sub {
+  margin: -2px 0 0;
+  font-size: var(--site-body-small, 0.875rem);
+  line-height: 1.45;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Istruzioni: campo-anteprima cliccabile (anteprima 2 righe → modale).
+.setup-instr {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--field-border-color, var(--card-border-color));
   border-radius: 10px;
   background: var(--surface-soft);
-  border: 1px solid var(--card-border-color);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+
+  &:hover {
+    border-color: var(--model-fg, var(--accent-700));
+  }
+}
+.setup-instr__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   font-size: var(--site-body-small, 0.875rem);
   line-height: 1.5;
   color: var(--mat-sys-on-surface);
 }
-.setup-aside__hint {
-  margin: 0;
+.setup-instr__placeholder {
   font-size: var(--site-body-small, 0.875rem);
-  line-height: 1.5;
   color: var(--mat-sys-on-surface-variant);
+}
 
-  strong {
-    color: var(--mat-sys-on-surface);
-    font-weight: 700;
-  }
-}
-// Stato vuoto: icona tematica del modello affiancata al suggerimento.
-.setup-aside__empty {
+// Area dropzone File: "+" pieno (colore modello) + label + hint. Clic apre
+// l'upload; trascinando file sopra l'area si caricano davvero.
+.setup-drop {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-.setup-aside__emoji {
-  @extend %model-tile;
-  flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-
-  mat-icon {
-    font-size: 22px;
-    width: 22px;
-    height: 22px;
-  }
-}
-.setup-aside__actions {
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 22px 16px;
+  border: 1.5px dashed
+    color-mix(in srgb, var(--model-fg, var(--accent-700)) 35%, var(--card-border-color));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--model-bg, var(--surface-soft)) 45%, var(--card-bg));
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+
+  &:hover,
+  &.is-drag {
+    background: var(--model-bg, var(--surface-soft));
+    border-color: var(--model-fg, var(--accent-700));
+  }
 }
-.setup-aside__link {
-  align-self: flex-start;
+.setup-drop__plus {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  border: none;
-  background: none;
-  padding: 2px 0;
-  font: inherit;
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  color: var(--accent-700);
-  cursor: pointer;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--model-fg, var(--accent-700));
+  color: var(--on-accent);
 
   mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-  }
-
-  &--danger {
-    color: var(--tone-danger-fg);
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
   }
 }
-
-// Nota informativa dentro il dialog Istruzioni.
-.setup-instr-help {
+.setup-drop__label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.setup-drop__hint {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+// Nota informativa dentro i dialog (Istruzioni / Carica file).
+.setup-help {
   margin: 0;
   padding: 12px 14px;
   border-radius: 10px;
@@ -455,7 +482,35 @@
   background: var(--card-border-color);
 }
 
-// --- Footer dei dialog (Istruzioni / Carica / Testo) ------------------------
+// Cella "+N": apre il modale con la lista completa dei file.
+.setup-file--more {
+  padding: 0;
+  border: none;
+  background: none;
+}
+.setup-file__more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 86px;
+  border: 1px dashed var(--card-border-color);
+  border-radius: 12px;
+  background: var(--surface-soft);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--model-fg, var(--accent-700));
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+
+  &:hover {
+    border-color: var(--model-fg, var(--accent-700));
+  }
+}
+
+// --- Footer dei dialog (Istruzioni / Carica) --------------------------------
 .ed-footer {
   display: flex;
   align-items: center;

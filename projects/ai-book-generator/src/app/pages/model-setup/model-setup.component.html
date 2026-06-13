@@ -108,159 +108,71 @@
 
       <!-- Colonna destra: Istruzioni + File impilati -->
       <aside class="setup-side">
-        <!-- Istruzioni -->
+        <!-- Istruzioni: testo scritto a mano (anteprima + matita → modale) -->
         <section class="setup-aside setup-aside--inner">
           <header class="setup-aside__head">
             <span class="setup-aside__title">Istruzioni</span>
-            <ng-container [ngTemplateOutlet]="capBar" />
             <button
-              class="setup-aside__add"
+              class="setup-aside__edit"
               type="button"
-              aria-label="Aggiungi istruzioni"
-              [matMenuTriggerFor]="instrMenu">
+              aria-label="Modifica istruzioni"
+              (click)="openInstr()">
               <mat-icon
                 fontSet="material-symbols-outlined"
                 aria-hidden="true"
-                >add</mat-icon
+                >edit</mat-icon
               >
             </button>
-            <mat-menu #instrMenu="matMenu">
-              <button
-                mat-menu-item
-                type="button"
-                (click)="openAttach('instr')">
-                <mat-icon fontSet="material-symbols-outlined">upload</mat-icon>
-                <span>Carica dal dispositivo</span>
-              </button>
-              <button
-                mat-menu-item
-                type="button"
-                (click)="openInstr()">
-                <mat-icon fontSet="material-symbols-outlined">notes</mat-icon>
-                <span>Aggiungi contenuto testuale</span>
-              </button>
-            </mat-menu>
           </header>
-          @if (instructionsText().trim()) {
-            <p class="setup-aside__snippet">{{ instructionsText() }}</p>
-            <div class="setup-aside__actions">
-              <button
-                class="setup-aside__link"
-                type="button"
-                (click)="openInstr()">
-                <mat-icon
-                  fontSet="material-symbols-outlined"
-                  aria-hidden="true"
-                  >edit</mat-icon
-                >
-                Modifica
-              </button>
-              <button
-                class="setup-aside__link setup-aside__link--danger"
-                type="button"
-                (click)="clearInstr()">
-                <mat-icon
-                  fontSet="material-symbols-outlined"
-                  aria-hidden="true"
-                  >delete</mat-icon
-                >
-                Elimina
-              </button>
-            </div>
-          }
-          @if (instructionFiles().length) {
-            <ul class="setup-files">
-              @for (f of instructionFiles(); track f.id) {
-                <li
-                  class="setup-file"
-                  [attr.data-status]="f.status || 'ready'">
-                  <button
-                    class="setup-file__remove"
-                    type="button"
-                    [attr.aria-label]="f.name"
-                    (click)="removeInstrFile(f.id)">
-                    <mat-icon
-                      fontSet="material-symbols-outlined"
-                      aria-hidden="true"
-                      >close</mat-icon
-                    >
-                  </button>
-                  <span
-                    class="setup-file__thumb"
-                    [attr.data-kind]="fileKind(f.name)">
-                    <mat-icon
-                      fontSet="material-symbols-outlined"
-                      aria-hidden="true"
-                      >{{ fileIcon(f.name) }}</mat-icon
-                    >
-                  </span>
-                  <span
-                    class="setup-file__name"
-                    [title]="f.name"
-                    >{{ f.name }}</span
-                  >
-                  @if (f.status === 'uploading') {
-                    <span class="setup-file__pct">{{ f.progress ?? 0 }}%</span>
-                  } @else if (f.status === 'error') {
-                    <span class="setup-file__err">errore</span>
-                  }
-                </li>
-              }
-            </ul>
-          }
-          @if (!instructionsText().trim() && !instructionFiles().length) {
-            <div class="setup-aside__empty">
-              <span
-                class="setup-aside__emoji"
-                aria-hidden="true">
-                <mat-icon
-                  fontSet="material-symbols-outlined"
-                  aria-hidden="true"
-                  >edit</mat-icon
-                >
-              </span>
-              <p class="setup-aside__hint">Valgono per tutto il documento.</p>
-            </div>
-          }
+          <p class="setup-aside__sub">{{ instrSubtitle() }}</p>
+          <button
+            class="setup-instr"
+            type="button"
+            (click)="openInstr()">
+            @if (instructionsText().trim()) {
+              <span class="setup-instr__text">{{ instructionsText() }}</span>
+            } @else {
+              <span class="setup-instr__placeholder">Scrivi le istruzioni…</span>
+            }
+          </button>
         </section>
 
         <!-- File -->
         <section class="setup-aside setup-aside--inner">
           <header class="setup-aside__head">
-            <span class="setup-aside__title">File</span>
+            <span class="setup-aside__title">File e materiale</span>
             <ng-container [ngTemplateOutlet]="capBar" />
-            <button
-              class="setup-aside__add"
-              type="button"
-              aria-label="Aggiungi file"
-              [matMenuTriggerFor]="fileMenu">
+          </header>
+          <p class="setup-aside__sub">
+            Carica documenti, PDF, slide, screenshot e qualsiasi materiale utile.
+          </p>
+
+          <!-- "+" dropzone in alto (stabile): clic apre il modale, drop carica -->
+          <button
+            class="setup-drop"
+            type="button"
+            [class.is-drag]="dragOver()"
+            (click)="openAttach()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave()"
+            (drop)="onDrop($event)">
+            <span
+              class="setup-drop__plus"
+              aria-hidden="true">
               <mat-icon
                 fontSet="material-symbols-outlined"
                 aria-hidden="true"
                 >add</mat-icon
               >
-            </button>
-            <mat-menu #fileMenu="matMenu">
-              <button
-                mat-menu-item
-                type="button"
-                (click)="openAttach()">
-                <mat-icon fontSet="material-symbols-outlined">upload</mat-icon>
-                <span>Carica dal dispositivo</span>
-              </button>
-              <button
-                mat-menu-item
-                type="button"
-                (click)="openText()">
-                <mat-icon fontSet="material-symbols-outlined">notes</mat-icon>
-                <span>Aggiungi contenuto testuale</span>
-              </button>
-            </mat-menu>
-          </header>
+            </span>
+            <span class="setup-drop__label">Aggiungi file</span>
+            <span class="setup-drop__hint">Trascina o clicca per caricare</span>
+          </button>
 
+          <!-- Anteprima limitata sotto: oltre il tetto, "+N" apre il modale -->
           @if (materialFiles().length) {
             <ul class="setup-files">
-              @for (f of materialFiles(); track f.id) {
+              @for (f of filePreview(); track f.id) {
                 <li
                   class="setup-file"
                   [attr.data-status]="f.status || 'ready'">
@@ -296,31 +208,19 @@
                   }
                 </li>
               }
+              @if (extraFiles()) {
+                <li class="setup-file setup-file--more">
+                  <button
+                    class="setup-file__more"
+                    type="button"
+                    aria-label="Mostra tutti i file"
+                    (click)="openAttach()">
+                    +{{ extraFiles() }}
+                  </button>
+                </li>
+              }
             </ul>
-          } @else {
-            <div class="setup-aside__empty">
-              <span
-                class="setup-aside__emoji"
-                aria-hidden="true">
-                <mat-icon
-                  fontSet="material-symbols-outlined"
-                  aria-hidden="true"
-                  >upload_file</mat-icon
-                >
-              </span>
-              <p class="setup-aside__hint">
-                Nessun file. Aggiungine dal dispositivo o incolla del testo.
-              </p>
-            </div>
           }
-        </section>
-
-        <!-- Consigli (riquadro bianco): come riempire Istruzioni e File -->
-        <section class="surface-card">
-          <app-info-list
-            variant="icon"
-            [tone]="modelTone()"
-            [items]="sideHints" />
         </section>
       </aside>
     </div>
@@ -333,7 +233,7 @@
     [subtitle]="'Valgono per tutto il documento: tono, contenuti, stile e lunghezza.'"
     [closeLabel]="'Chiudi'"
     (closed)="closeInstr()">
-    <p class="setup-instr-help">
+    <p class="setup-help">
       Qui guidi l’intero documento: <strong>stile</strong> (font, dimensione, interlinea,
       allineamento), <strong>lunghezza</strong> (a pagine o a parole totali, spazi inclusi) e
       <strong>struttura</strong> (parti da includere o escludere). Es. «Garamond 12, interlinea 1,5,
@@ -376,6 +276,13 @@
     [subtitle]="'i18n.Setup.sources.subtitle' | translate"
     [closeLabel]="'Chiudi'"
     (closed)="closeAttach()">
+    <p class="setup-help">
+      Carica <strong>documenti, PDF, slide, screenshot o appunti</strong>: l’AI li
+      <strong>legge e li usa come fonti</strong> per generare contenuti accurati. Più materiale
+      fornisci, più il risultato sarà fedele.
+      <br />
+      Oppure <strong>parti senza nulla e lascia pensare a tutto l’AI</strong>.
+    </p>
     <app-source-dropzone
       [promptLabel]="'i18n.Setup.sources.prompt' | translate"
       [hintLabel]="'i18n.Setup.sources.hint' | translate"
@@ -393,43 +300,6 @@
           type="button"
           (click)="closeAttach()">
           Fatto
-        </button>
-      </div>
-    </div>
-  </app-modal-shell>
-
-  <!-- Dialog: Aggiungi contenuto testuale -->
-  <app-modal-shell
-    [open]="textOpen()"
-    [title]="'Aggiungi contenuto testuale'"
-    [subtitle]="'Incolla del testo da usare come fonte; sarà catalogato col progetto.'"
-    [closeLabel]="'Chiudi'"
-    (closed)="closeText()">
-    <app-counter-field
-      label="Contenuto"
-      multiline
-      placeholder="Incolla qui il testo…"
-      [rows]="7"
-      [maxLength]="8000"
-      [value]="textContent()"
-      (valueChange)="textContent.set($event)" />
-    <div
-      footer
-      class="ed-footer">
-      <span></span>
-      <div class="ed-footer__actions">
-        <button
-          mat-stroked-button
-          type="button"
-          (click)="closeText()">
-          Annulla
-        </button>
-        <button
-          mat-flat-button
-          color="primary"
-          type="button"
-          (click)="addTextSource()">
-          Aggiungi
         </button>
       </div>
     </div>
