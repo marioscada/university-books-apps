@@ -36,6 +36,20 @@
         >
         Nuovo progetto
       </button>
+      @if (loaded() && !hasNoProjects()) {
+        <button
+          mat-stroked-button
+          type="button"
+          class="coll__deleteall"
+          (click)="askDeleteAll()">
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            aria-hidden="true"
+            >delete_sweep</mat-icon
+          >
+          Elimina tutti
+        </button>
+      }
     </div>
   </header>
 
@@ -429,6 +443,36 @@
         type="button"
         (click)="confirmDelete()">
         Elimina
+      </button>
+    </div>
+  </app-modal-shell>
+
+  <!-- Dialog: conferma eliminazione di TUTTI i progetti (irreversibile) -->
+  <app-modal-shell
+    [open]="deleteAllOpen()"
+    [title]="'Elimina tutti i progetti'"
+    [subtitle]="'Questa operazione è irreversibile.'"
+    [closeLabel]="'Chiudi'"
+    (closed)="deleteAllOpen.set(false)">
+    <p class="coll__upsell">
+      Stai per eliminare <strong>tutti i {{ total() }} progetti</strong> e tutte le loro fonti. Non
+      potrai annullare né recuperare il contenuto.
+    </p>
+    <div
+      footer
+      class="coll__dialogfoot">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="deleteAllOpen.set(false)">
+        Annulla
+      </button>
+      <button
+        mat-flat-button
+        class="coll__delete-btn"
+        type="button"
+        (click)="confirmDeleteAll()">
+        Elimina tutti
       </button>
     </div>
   </app-modal-shell>

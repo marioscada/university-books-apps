@@ -360,6 +360,43 @@ export class CollectionComponent {
     this.pendingDelete.set(null);
   }
 
+  // --- Elimina TUTTI i progetti (bulk, irreversibile) -------------------------
+  /** Numero di progetti (per il testo di conferma e la visibilità del bottone). */
+  readonly total = computed(() => this.rows().length);
+  readonly deleteAllOpen = signal(false);
+  askDeleteAll(): void {
+    this.deleteAllOpen.set(true);
+  }
+  confirmDeleteAll(): void {
+    this.deleteAllOpen.set(false);
+    const projects = this.projects.entities();
+    if (!projects.length) return;
+    // Raccoglie le fonti di TUTTI i progetti (deduplicate), poi elimina fonti e
+    // progetti. allSettled: un errore singolo non blocca il resto.
+    const sourceIds = new Set<string>();
+    for (const p of projects) {
+      for (const id of CollectionComponent.sourceIds(p)) sourceIds.add(id);
+    }
+    void this.uiPromise.run(
+      async () => {
+        await Promise.allSettled([...sourceIds].map((id) => this.sources.delete(id)));
+        await Promise.allSettled(projects.map((p) => this.projects.delete(p.id)));
+      },
+      {
+        loading: true,
+        loadingMessage: 'Eliminazione di tutti i progetti…',
+        success: {
+          title: this.t('i18n.Common.done'),
+          message: 'Tutti i progetti sono stati eliminati.',
+        },
+        error: {
+          title: this.t('i18n.Common.error'),
+          message: 'Non è stato possibile eliminare tutti i progetti.',
+        },
+      },
+    );
+  }
+
   // --- Dialog abbonamento (rielaborazione gated) ------------------------------
   readonly reuseOpen = signal(false);
   openReuse(projectId: string): void {

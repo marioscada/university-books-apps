@@ -342,3 +342,8 @@
   --mdc-filled-button-container-color: var(--tone-danger-fg);
   --mdc-filled-button-label-text-color: #fff;
 }
+// "Elimina tutti": stroked rosso warning muto (testo + bordo), non acceso.
+.coll__deleteall {
+  --mdc-outlined-button-label-text-color: var(--tone-danger-fg);
+  --mdc-outlined-button-outline-color: color-mix(in srgb, var(--tone-danger-fg) 40%, transparent);
+}
