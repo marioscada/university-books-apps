@@ -8,10 +8,10 @@ import {
   signal,
   type WritableSignal,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -27,18 +27,25 @@ import { SourcesStore } from '../../core/state/sources.store';
 import { TemplatesStore } from '../../core/state/templates.store';
 import { injectI18nText } from '../../shared/services/i18n-text';
 import { UiPromiseService } from '../../shared/services/ui-promise.service';
+import { modelPresentation } from '../create/create.util';
 import type { OutputFormat, GenerationOptions, ProjectTemplate } from '../../core/domain';
 import type { CreateProjectInput } from '../../core/data/api-port';
 
 /** Genere grammaticale del nome modello (per gli articoli IT). */
 const MODEL_GENDER: Record<string, 'm' | 'f'> = {
-  book: 'm', summary: 'm', study_guide: 'f', manual: 'm', report: 'm',
-  presentation: 'f', course: 'm', thesis: 'f', custom: 'm',
+  book: 'm', summary: 'm', manual: 'm', presentation: 'f', course: 'f', thesis: 'f',
 };
 
 const TITLE_MAX = 80;
 const DESC_MAX = 300;
 const NOTES_MAX = 500;
+
+/**
+ * Quota di capacità del progetto per le fonti (File + Istruzioni). PUNTO UNICO:
+ * cambia qui il limite riflesso dalla barra di capacità.
+ */
+const PROJECT_CAPACITY_MB = 50;
+const BYTES_PER_MB = 1024 * 1024;
 
 /**
  * ModelSetupComponent — step "Personalizza" del flusso `/create` (componente di
@@ -53,14 +60,20 @@ const NOTES_MAX = 500;
   selector: 'app-model-setup',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // Colori del modello scelto iniettati una volta sull'host: badge, icone e box
+  // li ereditano via `var(--model-*)`. Cambi modello → cambia tutto da qui.
+  host: {
+    '[style.--model-bg]': 'modelBg()',
+    '[style.--model-fg]': 'modelFg()',
+  },
   imports: [
+    NgTemplateOutlet,
     CounterFieldComponent,
     BackLinkComponent,
     SourceDropzoneComponent,
     ModalShellComponent,
     MatIconModule,
     MatButtonModule,
-    MatMenuModule,
     TranslateModule,
   ],
   templateUrl: './model-setup.component.html',
@@ -79,12 +92,26 @@ export class ModelSetupComponent {
   private readonly t = injectI18nText();
 
   /** Modello scelto (id) — passato dal flusso `/create` (step di servizio). */
-  readonly templateId = input<string>('custom');
+  readonly templateId = input<string>('book');
   /** Richiesta di tornare alla galleria (gestita dal flusso padre). */
   readonly back = output<void>();
 
   readonly template = computed<ProjectTemplate | undefined>(
     () => this.templatesStore.templateById()[this.templateId()],
+  );
+
+  // --- Presentazione del modello scelto (immagine 3D + colori) ----------------
+  private readonly presentation = computed(() => modelPresentation(this.templateId()));
+  /** Immagine 3D del modello (vuota → si usa l'icona di fallback). */
+  readonly modelImage = computed(() => this.presentation().imageSrc);
+  /** Icona Material di fallback del modello. */
+  readonly modelIcon = computed(() => this.presentation().icon);
+  /** Sfondo/foreground del tono del modello (token globali, con fallback neutro). */
+  protected readonly modelBg = computed(
+    () => `var(--tone-${this.presentation().tone}-bg, var(--surface-soft))`,
+  );
+  protected readonly modelFg = computed(
+    () => `var(--tone-${this.presentation().tone}-fg, var(--accent-700))`,
   );
 
   // --- Stato modulo -----------------------------------------------------------
@@ -103,9 +130,9 @@ export class ModelSetupComponent {
   /** Si può generare solo con un titolo valido. */
   readonly canGenerate = computed(() => !!this.documentTitle().trim());
 
-  /** True se almeno una fonte è ancora in upload (non finita di salire su S3). */
+  /** True se almeno un file è ancora in upload (non finito di salire su S3). */
   readonly sourcesPending = computed(() =>
-    [...this.materialFiles(), ...this.instructionFiles()].some((s) => s.status === 'uploading'),
+    this.materialFiles().some((s) => s.status === 'uploading'),
   );
 
   readonly language = signal('it');
@@ -114,7 +141,7 @@ export class ModelSetupComponent {
 
   // --- Nome modello + grammatica ---------------------------------------------
   readonly modelName = computed(() =>
-    this.t(this.template()?.nameKey ?? 'i18n.Models.custom.name'),
+    this.t(this.template()?.nameKey ?? 'i18n.Models.book.name'),
   );
   private readonly nameLower = computed(() => this.modelName().toLowerCase());
   private readonly gender = computed<'m' | 'f'>(() => MODEL_GENDER[this.templateId()] ?? 'm');
@@ -135,6 +162,12 @@ export class ModelSetupComponent {
   readonly titleFieldLabel = computed(() => `Scegli un nome per ${this.possessive()} ${this.nameLower()}`);
   readonly descFieldLabel = 'Descrivi brevemente cosa conterrà.';
 
+  /** Sottotitolo della card Istruzioni (model-aware). */
+  readonly instrSubtitle = computed(
+    () =>
+      `Fornisci indicazioni, domande o obiettivi specifici per ${this.possessive()} ${this.nameLower()}.`,
+  );
+
   // --- Fonti & allegati: UPLOAD REALE su AWS S3 ------------------------------
   // I byte vanno davvero su S3 via presigned PUT (progress reale), poi l'ingest
   // backend porta la fonte a `ready` (disponibile all'AI). Vedi
@@ -148,63 +181,68 @@ export class ModelSetupComponent {
     this.materialFiles.update((list) => list.filter((s) => s.id !== id));
   }
 
-  // --- Sidebar: File (upload da dispositivo / contenuto testuale, catalogati) --
-  /** Dialog "Carica dal dispositivo" (dropzone). */
+  // --- Dropzone File: clic apre l'upload, trascinamento carica direttamente ----
+  /** True mentre si trascina un file sulla dropzone File (evidenziazione). */
+  readonly dragOver = signal(false);
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.dragOver.set(true);
+  }
+  onDragLeave(): void {
+    this.dragOver.set(false);
+  }
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.dragOver.set(false);
+    const files = Array.from(event.dataTransfer?.files ?? []);
+    if (files.length) {
+      this.realUpload(this.materialFiles, files);
+    }
+  }
+
+  // --- File: upload da dispositivo (dialog dropzone) --------------------------
   readonly attachOpen = signal(false);
-  /** Bersaglio dell'upload: fonti (File) o istruzioni (Istruzioni). */
-  readonly attachTarget = signal<'files' | 'instr'>('files');
-  openAttach(target: 'files' | 'instr' = 'files'): void {
-    this.attachTarget.set(target);
+  openAttach(): void {
     this.attachOpen.set(true);
   }
   closeAttach(): void {
     this.attachOpen.set(false);
   }
-  /** Lista mostrata nel dialog di upload, in base al bersaglio. */
-  readonly attachItems = computed(() =>
-    this.attachTarget() === 'instr' ? this.instructionFiles() : this.materialFiles(),
-  );
+  readonly attachItems = computed(() => this.materialFiles());
   addAttach(files: File[]): void {
-    this.realUpload(this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles, files);
+    this.realUpload(this.materialFiles, files);
   }
   removeAttach(id: string): void {
-    const list = this.attachTarget() === 'instr' ? this.instructionFiles : this.materialFiles;
-    list.update((l) => l.filter((s) => s.id !== id));
+    this.materialFiles.update((l) => l.filter((s) => s.id !== id));
   }
 
-  /** Dialog "Aggiungi contenuto testuale". */
-  readonly textOpen = signal(false);
-  readonly textContent = signal('');
-  openText(): void {
-    this.textContent.set('');
-    this.textOpen.set(true);
-  }
-  closeText(): void {
-    this.textOpen.set(false);
-  }
-  async addTextSource(): Promise<void> {
-    const text = this.textContent().trim();
-    if (!text) {
-      return;
-    }
-    const name = `${text.split(/\s+/).slice(0, 5).join(' ').slice(0, 40)}.txt`;
-    this.textOpen.set(false);
-    // Nota REALE su backend (POST /v1/documents col content), poi id reale →
-    // pronta appena la response arriva (l'ingest prosegue in background).
-    const tmpId = `tmp-${++this.uploadSeq}`;
-    this.materialFiles.update((l) => [...l, { id: tmpId, name, status: 'uploading' as const }]);
-    try {
-      const note = await this.sourcesStore.createNote(name, text);
-      this.materialFiles.update((l) =>
-        l.map((s) => (s.id === tmpId ? { ...s, id: note.id, status: 'ready' as const } : s)),
-      );
-    } catch {
-      this.materialFiles.update((l) => l.map((s) => (s.id === tmpId ? { ...s, status: 'error' as const } : s)));
-    }
-  }
+  /** Byte totali dei file caricati (dimensione reale). */
+  private readonly usedBytes = computed(() =>
+    this.materialFiles().reduce((sum, f) => sum + (f.sizeBytes ?? 0), 0),
+  );
+  /** Capacità del progetto usata (%) sulla quota globale `PROJECT_CAPACITY_MB`. */
+  readonly capacityUsed = computed(() =>
+    Math.min(100, Math.round((this.usedBytes() / (PROJECT_CAPACITY_MB * BYTES_PER_MB)) * 100)),
+  );
+  /** Etichetta capacità reale: "X,X di YY MB". */
+  readonly capacityLabel = computed(() => {
+    const usedMb = this.usedBytes() / BYTES_PER_MB;
+    const used = usedMb > 0 && usedMb < 10 ? usedMb.toFixed(1) : Math.round(usedMb).toString();
+    return `${used} di ${PROJECT_CAPACITY_MB} MB`;
+  });
 
-  /** Capacità progetto usata (mock): cresce coi file caricati. */
-  readonly capacityUsed = computed(() => Math.min(100, this.materialFiles().length * 12));
+  /** Anteprima file in card: oltre il tetto si mostra "+N" che apre il modale. */
+  private readonly FILE_PREVIEW_MAX = 4;
+  /** File mostrati come anteprima nella card (la lista completa è nel modale). */
+  readonly filePreview = computed(() => {
+    const all = this.materialFiles();
+    return all.length > this.FILE_PREVIEW_MAX ? all.slice(0, this.FILE_PREVIEW_MAX - 1) : all;
+  });
+  /** Quanti file restano oltre l'anteprima (0 = nessun chip "+N"). */
+  readonly extraFiles = computed(() => {
+    const n = this.materialFiles().length;
+    return n > this.FILE_PREVIEW_MAX ? n - (this.FILE_PREVIEW_MAX - 1) : 0;
+  });
   /** Categoria del file per icona/colore riconoscibili (PDF, Word, immagine…). */
   fileKind(name: string): 'pdf' | 'doc' | 'img' | 'sheet' | 'text' | 'file' {
     const ext = (name.split('.').pop() ?? '').toLowerCase();
@@ -227,22 +265,13 @@ export class ModelSetupComponent {
     }[this.fileKind(name)];
   }
 
-  // --- Istruzioni: a mano (note) oppure da file (PC) --------------------------
+  // --- Istruzioni: testo scritto a mano (modale) ------------------------------
   readonly instrOpen = signal(false);
-  /** File di istruzioni caricati dal dispositivo (catalogati "Istruzione"). */
-  readonly instructionFiles = signal<SourceItem[]>([]);
   openInstr(): void {
     this.instrOpen.set(true);
   }
   closeInstr(): void {
     this.instrOpen.set(false);
-  }
-  /** Elimina le istruzioni scritte a mano. */
-  clearInstr(): void {
-    this.instructionsText.set('');
-  }
-  removeInstrFile(id: string): void {
-    this.instructionFiles.update((l) => l.filter((s) => s.id !== id));
   }
 
   /**
@@ -283,7 +312,7 @@ export class ModelSetupComponent {
     const currentId = `tmp-${++this.uploadSeq}`;
     target.update((list) => [
       ...list,
-      { id: currentId, name: file.name, status: 'uploading' as const, progress: 0 },
+      { id: currentId, name: file.name, status: 'uploading' as const, progress: 0, sizeBytes: file.size },
     ]);
     const patch = (changes: Partial<SourceItem>) =>
       target.update((list) => list.map((s) => (s.id === currentId ? { ...s, ...changes } : s)));
@@ -360,9 +389,7 @@ export class ModelSetupComponent {
       coverTheme: tpl.coverTheme ?? 'ocean',
       // Solo fonti `ready` (id reali su S3/backend): le pending non vanno all'AI.
       materialFileIds: this.materialFiles().filter((f) => f.status === 'ready').map((f) => f.id),
-      instructionFileIds: this.instructionFiles()
-        .filter((f) => f.status === 'ready')
-        .map((f) => f.id),
+      instructionFileIds: [],
       generationOptions,
     };
 

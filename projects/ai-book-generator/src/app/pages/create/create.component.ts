@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ChoiceCardComponent } from '../../shared/components-v2/choice-card/choice-card.component';
@@ -22,7 +23,7 @@ import { toModelChoices, type ModelChoice } from './create.util';
   selector: 'app-create',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ChoiceCardComponent, ModelSetupComponent, TranslateModule],
+  imports: [ChoiceCardComponent, ModelSetupComponent, MatIconModule, TranslateModule],
   templateUrl: './create.component.html',
   styleUrl: './create.component.scss',
 })

@@ -23,6 +23,8 @@ export type ChoiceTone =
   | 'warning'
   | 'rose'
   | 'violet'
+  | 'teal'
+  | 'indigo'
   | 'danger'
   | 'neutral';
 

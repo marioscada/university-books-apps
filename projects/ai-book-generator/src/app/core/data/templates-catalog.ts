@@ -75,7 +75,7 @@ function part(
 }
 
 // ---------------------------------------------------------------------------
-// 1. Libro — Chicago Manual (front/body/back matter)
+// Libro — Chicago Manual (front/body/back matter)
 // ---------------------------------------------------------------------------
 const BOOK: ProjectTemplate = {
   id: 'book',
@@ -113,7 +113,7 @@ const BOOK: ProjectTemplate = {
 };
 
 // ---------------------------------------------------------------------------
-// 2. Riassunto — executive summary (no capitoli)
+// Riassunto — executive summary (no capitoli)
 // ---------------------------------------------------------------------------
 const SUMMARY: ProjectTemplate = {
   id: 'summary',
@@ -139,45 +139,7 @@ const SUMMARY: ProjectTemplate = {
 };
 
 // ---------------------------------------------------------------------------
-// 3. Guida allo studio — retrieval practice (quiz/esercizi ATTIVI)
-// ---------------------------------------------------------------------------
-const STUDY_GUIDE: ProjectTemplate = {
-  id: 'study_guide',
-  documentType: 'study_guide',
-  nameKey: 'i18n.Models.study_guide.name',
-  descKey: 'i18n.Models.study_guide.desc',
-  sourceKey: 'i18n.Models.study_guide.source',
-  coverTheme: 'mint',
-  estimatedPages: 40,
-  parts: [
-    part('introduction', 'front', { defaultWordCount: 500 }),
-    part('topics', 'body', {
-      optional: false,
-      repeatable: true,
-      countRange: [3, 12],
-      defaultCount: 6,
-      defaultWordCount: 1800,
-    }),
-    part('objectives', 'body', { defaultWordCount: 400 }),
-    part('keyconcepts', 'body', { optional: false, defaultWordCount: 1500 }),
-    part('visuals', 'body', { defaultWordCount: 300 }),
-    part('examples', 'body', { defaultWordCount: 1200 }),
-    part('quiz', 'body', { defaultWordCount: 1000 }),
-    part('exercises', 'body', { defaultWordCount: 1000 }),
-    part('selfassessment', 'back', { defaultWordCount: 500 }),
-    part('glossary', 'back', { defaultWordCount: 600 }),
-  ],
-  defaults: {
-    processingMode: 'educational',
-    outputFormats: ['pdf'],
-    language: 'it',
-    structure: structure({ includeQuiz: true, includeExercises: true, includeGlossary: true, includeImages: true }),
-  },
-  typography: SANS_TYPOGRAPHY,
-};
-
-// ---------------------------------------------------------------------------
-// 4. Manuale — IEC/IEEE 82079-1:2019 (concettuale/istruzionale/riferimento)
+// Manuale — IEC/IEEE 82079-1:2019 (concettuale/istruzionale/riferimento)
 // ---------------------------------------------------------------------------
 const MANUAL: ProjectTemplate = {
   id: 'manual',
@@ -211,38 +173,7 @@ const MANUAL: ProjectTemplate = {
 };
 
 // ---------------------------------------------------------------------------
-// 5. Report — business report (exec summary → findings → recommendations)
-// ---------------------------------------------------------------------------
-const REPORT: ProjectTemplate = {
-  id: 'report',
-  documentType: 'research_report',
-  nameKey: 'i18n.Models.report.name',
-  descKey: 'i18n.Models.report.desc',
-  sourceKey: 'i18n.Models.report.source',
-  coverTheme: 'gold',
-  estimatedPages: 30,
-  parts: [
-    part('titlepage', 'front', { defaultWordCount: 0 }),
-    part('executivesummary', 'front', { optional: false, defaultWordCount: 700 }),
-    part('toc', 'front', { defaultWordCount: 0 }),
-    part('introduction', 'body', { defaultWordCount: 800 }),
-    part('methodology', 'body', { defaultWordCount: 900 }),
-    part('findings', 'body', { optional: false, defaultWordCount: 2000 }),
-    part('analysis', 'body', { defaultWordCount: 1500 }),
-    part('recommendations', 'body', { optional: false, defaultWordCount: 900 }),
-    part('appendix', 'back', { defaultWordCount: 800 }),
-  ],
-  defaults: {
-    processingMode: 'business',
-    outputFormats: ['pdf', 'docx'],
-    language: 'it',
-    structure: structure({ includeBibliography: true, includeTables: true, includeImages: true, tone: 'formal' }),
-  },
-  typography: SANS_TYPOGRAPHY,
-};
-
-// ---------------------------------------------------------------------------
-// 6. Presentazione — slide e note del relatore
+// Presentazione — slide e note del relatore
 // ---------------------------------------------------------------------------
 const PRESENTATION: ProjectTemplate = {
   id: 'presentation',
@@ -275,7 +206,7 @@ const PRESENTATION: ProjectTemplate = {
 };
 
 // ---------------------------------------------------------------------------
-// 7. Corso — ADDIE (moduli/lezioni con quiz)
+// Corso — ADDIE (moduli/lezioni con quiz)
 // ---------------------------------------------------------------------------
 const COURSE: ProjectTemplate = {
   id: 'course',
@@ -306,7 +237,7 @@ const COURSE: ProjectTemplate = {
 };
 
 // ---------------------------------------------------------------------------
-// 8. Tesi / Ricerca — IMRaD (ANSI 1972)
+// Tesi / Ricerca — IMRaD (ANSI 1972)
 // ---------------------------------------------------------------------------
 const THESIS: ProjectTemplate = {
   id: 'thesis',
@@ -336,38 +267,12 @@ const THESIS: ProjectTemplate = {
   typography: SANS_TYPOGRAPHY,
 };
 
-// ---------------------------------------------------------------------------
-// 9. Personalizzato — struttura libera (nessuna parte imposta)
-// ---------------------------------------------------------------------------
-const CUSTOM: ProjectTemplate = {
-  id: 'custom',
-  documentType: 'custom',
-  nameKey: 'i18n.Models.custom.name',
-  descKey: 'i18n.Models.custom.desc',
-  sourceKey: 'i18n.Models.custom.source',
-  coverTheme: 'aurora',
-  parts: [],
-  defaults: {
-    processingMode: 'balanced',
-    outputFormats: ['pdf'],
-    language: 'it',
-    structure: structure({}),
-  },
-  typography: SANS_TYPOGRAPHY,
-};
-
-/** Tutti i modelli, nell'ordine della galleria Create.
- *  NB: `study_guide` → "Materia scientifica", `course` → "Materia letteraria",
- *  `custom` → "Lingua straniera", `thesis` → "Tesina" (ridenominati via i18n;
- *  id/struttura invariati per non toccare il contratto backend). */
+/** Modelli mostrati nella galleria Create, in ordine di buon senso. */
 export const TEMPLATE_CATALOG: readonly ProjectTemplate[] = [
   BOOK,
   SUMMARY,
-  STUDY_GUIDE, // Materia scientifica
-  COURSE, // Materia letteraria
-  CUSTOM, // Lingua straniera
-  THESIS, // Tesina
+  THESIS,
+  COURSE,
   MANUAL,
-  REPORT,
   PRESENTATION,
 ];

@@ -1,12 +1,21 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorIntl, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
-import { ListRowComponent } from '../../shared/components-v2/list-row/list-row.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
 import { NoDataComponent } from '../../shared/components-v2/no-data/no-data.component';
 import { SkeletonComponent } from '../../shared/components-v2/skeleton/skeleton.component';
@@ -18,43 +27,81 @@ import { injectI18nText } from '../../shared/services/i18n-text';
 import { ToastFacade } from '../../shared/services/toast/toast.facade';
 import { BookReaderComponent } from '../../shared/components-v2/book-reader/book-reader.component';
 import { API_PORT } from '../../core/data/api-port';
-import type { ProjectStatus, Chapter } from '../../core/domain';
-import { type RowVM, projectRow, sourceRow } from './collection-row.mapper';
+import type { Project, ProjectStatus, Chapter } from '../../core/domain';
+import {
+  type RowVM,
+  type ProjectTableVM,
+  projectTableRow,
+  sourceRow,
+} from './collection-row.mapper';
 
-interface GroupVM {
-  id: string;
-  project: RowVM;
-  sources: RowVM[];
+/** Opzione del filtro per stato (etichette IT). */
+interface StatusOption {
+  value: 'all' | ProjectStatus;
+  label: string;
 }
 
-const LIBRARY: readonly ProjectStatus[] = ['published'];
+const STATUS_OPTIONS: readonly StatusOption[] = [
+  { value: 'all', label: 'Tutti' },
+  { value: 'draft', label: 'Bozza' },
+  { value: 'queued', label: 'In coda' },
+  { value: 'processing', label: 'In generazione' },
+  { value: 'review', label: 'In revisione' },
+  { value: 'published', label: 'Pubblicato' },
+  { value: 'failed', label: 'Errore' },
+];
+
+/** MatPaginatorIntl in italiano (pattern ufficiale Material). */
+function italianPaginatorIntl(): MatPaginatorIntl {
+  const intl = new MatPaginatorIntl();
+  intl.itemsPerPageLabel = 'Per pagina:';
+  intl.nextPageLabel = 'Pagina successiva';
+  intl.previousPageLabel = 'Pagina precedente';
+  intl.firstPageLabel = 'Prima pagina';
+  intl.lastPageLabel = 'Ultima pagina';
+  intl.getRangeLabel = (page, pageSize, length) => {
+    if (length === 0 || pageSize === 0) return `0 di ${length}`;
+    const start = page * pageSize;
+    const end = Math.min(start + pageSize, length);
+    return `${start + 1}–${end} di ${length}`;
+  };
+  return intl;
+}
 
 /**
- * Collezioni — pagina unica project-centrica (assorbe le ex "Fonti"): ogni
- * progetto è una riga (copertina piena + apri/scarica/rielabora/elimina) con le
- * **fonti annidate** sotto. Container snello: orchestra `ProjectsStore` +
- * `SourcesStore` + `BillingService` e delega la mappatura a `collection-row.mapper`.
- * Due sezioni: "Continua dove eri" (savepoint) + "La tua libreria". Rielaborare è
- * gated dall'abbonamento (🔒 → upsell).
+ * Collezioni — tabella **Material** dei progetti (tutti gli stati, con filtro):
+ * paginazione/sort/ricerca client-side via `MatTableDataSource`, **riga
+ * espandibile** (pattern `multiTemplateDataRows`) che mostra le **fonti** del
+ * progetto con le relative azioni. Container snello: orchestra `ProjectsStore` +
+ * `SourcesStore` + `BillingService`, delega la mappatura a `collection-row.mapper`.
  */
 @Component({
   selector: 'app-collection',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{ provide: MatPaginatorIntl, useFactory: italianPaginatorIntl }],
   imports: [
-    ListRowComponent,
     ModalShellComponent,
     NoDataComponent,
     SkeletonComponent,
     BookReaderComponent,
-    NgTemplateOutlet,
     FormsModule,
     MatIconModule,
-    MatMenuModule,
     MatButtonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
   ],
   templateUrl: './collection.component.html',
   styleUrl: './collection.component.scss',
+  // Animazione detail-row (pattern ufficiale tabella espandibile Material).
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed,void', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition('expanded <=> collapsed', animate('180ms cubic-bezier(0.4,0,0.2,1)')),
+    ]),
+  ],
 })
 export class CollectionComponent {
   private readonly projects = inject(ProjectsStore);
@@ -66,42 +113,131 @@ export class CollectionComponent {
   private readonly toast = inject(ToastFacade);
   private readonly t = injectI18nText();
 
-  // --- Lettore del libro (click sul progetto) ---------------------------------
+  // --- Tabella ----------------------------------------------------------------
+  readonly displayedColumns = ['title', 'type', 'status', 'sources', 'updated', 'actions'] as const;
+  readonly dataSource = new MatTableDataSource<ProjectTableVM>([]);
+  readonly statusOptions = STATUS_OPTIONS;
+  readonly statusFilter = signal<'all' | ProjectStatus>('all');
+  readonly query = signal('');
+  /** Id della riga espansa (mostra le fonti); null = nessuna. */
+  readonly expandedId = signal<string | null>(null);
+
+  private readonly paginator = viewChild(MatPaginator);
+  private readonly sort = viewChild(MatSort);
+
+  /** Indice fonte per id: lookup O(1), evita le scansioni P×S. */
+  private readonly sourceById = computed(
+    () => new Map(this.sources.entities().map((s) => [s.id, s])),
+  );
+  private static sourceIds(p: Project): readonly string[] {
+    return [...(p.materialFileIds ?? []), ...(p.instructionFileIds ?? [])];
+  }
+
+  /** Tutti i progetti → righe tabella (ordinati per aggiornamento desc di base). */
+  private readonly rows = computed<ProjectTableVM[]>(() => {
+    const byId = this.sourceById();
+    return this.projects
+      .entities()
+      .slice()
+      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+      .map((p) =>
+        projectTableRow(p, CollectionComponent.sourceIds(p).filter((id) => byId.has(id)).length),
+      );
+  });
+
+  /** Fonti per progetto (per la riga espansa). */
+  private readonly sourcesByProject = computed<Map<string, RowVM[]>>(() => {
+    const byId = this.sourceById();
+    const map = new Map<string, RowVM[]>();
+    for (const p of this.projects.entities()) {
+      const srcs: RowVM[] = [];
+      for (const id of CollectionComponent.sourceIds(p)) {
+        const s = byId.get(id);
+        if (s) srcs.push(sourceRow(s));
+      }
+      map.set(p.id, srcs);
+    }
+    return map;
+  });
+
+  /** Righe filtrate per stato + ricerca (la paginazione lavora su queste). */
+  private readonly filtered = computed<ProjectTableVM[]>(() => {
+    const status = this.statusFilter();
+    const q = this.query().trim().toLowerCase();
+    return this.rows()
+      .filter((r) => status === 'all' || this.statusOf(r.id) === status)
+      .filter((r) => !q || r.title.toLowerCase().includes(q));
+  });
+
+  /** Pronto solo quando progetti E fonti sono arrivati (skeleton fino ad allora). */
+  readonly loaded = computed(() => this.projects.loaded() && this.sources.loaded());
+  /** Righe placeholder dello skeleton-tabella durante l'attesa. */
+  protected readonly skeletonRows = [1, 2, 3, 4, 5];
+  readonly hasNoProjects = computed(() => !this.rows().length);
+  readonly showEmpty = computed(() => this.loaded() && this.hasNoProjects());
+  readonly emptyMessage = computed(() => this.t('i18n.Collection.empty.message'));
+
+  constructor() {
+    this.dataSource.sortingDataAccessor = (row, col) => {
+      if (col === 'updated') return row.updatedAt;
+      if (col === 'sources') return row.sourcesCount;
+      if (col === 'type') return row.typeLabel;
+      if (col === 'status') return row.statusLabel;
+      return row.title.toLowerCase();
+    };
+    // Material non è signal-aware: sincronizzo dati + paginator/sort via effect.
+    // (paginator/sort esistono solo dopo che la tabella entra in pagina — è dentro
+    // un @if — quindi NON in ngAfterViewInit ma reattivamente al loro viewChild.)
+    effect(() => {
+      const p = this.paginator();
+      const s = this.sort();
+      if (p && this.dataSource.paginator !== p) this.dataSource.paginator = p;
+      if (s && this.dataSource.sort !== s) this.dataSource.sort = s;
+      this.dataSource.data = this.filtered();
+    });
+    // Reset a pagina 1 SOLO al cambio filtro/ricerca (intenzione utente), non a
+    // ogni aggiornamento dello store → niente "salto" di pagina in background.
+    effect(() => {
+      this.statusFilter();
+      this.query();
+      this.paginator()?.firstPage();
+    });
+  }
+
+  /** trackBy della tabella: identità per id (no re-render di righe invariate). */
+  readonly trackById = (_: number, row: ProjectTableVM): string => row.id;
+
+  private statusOf(id: string): ProjectStatus | undefined {
+    return this.projects.entities().find((p) => p.id === id)?.status;
+  }
+
+  // --- Espansione fonti -------------------------------------------------------
+  toggleExpand(row: ProjectTableVM, event?: Event): void {
+    event?.stopPropagation();
+    this.expandedId.update((cur) => (cur === row.id ? null : row.id));
+  }
+  isExpanded(row: ProjectTableVM): boolean {
+    return this.expandedId() === row.id;
+  }
+  sourcesFor(id: string): RowVM[] {
+    return this.sourcesByProject().get(id) ?? [];
+  }
+
+  // --- Lettore del libro ------------------------------------------------------
   readonly readerOpen = signal(false);
   readonly readerLoading = signal(false);
   readonly readerTitle = signal('');
   readonly readerChapters = signal<readonly Chapter[]>([]);
 
-  // --- Scarica output (icona download sul progetto) ---------------------------
+  // --- Scarica output ---------------------------------------------------------
   readonly downloadOpen = signal(false);
   readonly downloadTitle = signal('');
   readonly downloadFormats = signal<readonly string[]>([]);
   private readonly downloadProjectId = signal('');
 
-  /** Stato fatturazione → guida il dialog di rielaborazione. */
   readonly billingStatus = this.billing.status;
 
-  readonly query = signal('');
-
-  readonly library = computed<GroupVM[]>(() => this.build(LIBRARY));
-
-  /** Nessun lavoro pubblicato → empty-state globale (i progetti in corso si
-   *  riprendono da "Crea", vincolo un-progetto-alla-volta). */
-  readonly hasNoProjects = computed(() => !this.library().length);
-  /** True dopo il primo caricamento: l'empty-state appare solo se è DAVVERO
-   *  vuoto, non come falsa interpretazione dell'attesa dei dati. */
-  readonly loaded = this.projects.loaded;
-  readonly showEmpty = computed(() => this.loaded() && this.hasNoProjects());
-  /** Placeholder dello skeleton mostrato durante l'attesa dei dati. */
-  protected readonly skeletonRows = [1, 2, 3];
-  readonly emptyMessage = computed(() => this.t('i18n.Collection.empty.message'));
-
-  // --- Navigazione / azioni ---------------------------------------------------
-  /** Click sul progetto → apre il LIBRO nel lettore read-only (capitoli dalla
-   *  versione corrente). Se non c'è contenuto leggibile (bozza) → Studio. */
   async openProject(id: string): Promise<void> {
-    // Apertura OTTIMISTICA: il dialog (col titolo) appare subito con lo spinner,
-    // poi si popola coi capitoli. Niente attesa di rete prima dell'apertura.
     this.readerTitle.set(this.projects.entities().find((p) => p.id === id)?.title ?? '');
     this.readerChapters.set([]);
     this.readerLoading.set(true);
@@ -112,7 +248,6 @@ export class CollectionComponent {
     if (chapters.length) {
       this.readerChapters.set(chapters);
     } else {
-      // Nessun contenuto leggibile (bozza) → Studio per continuare.
       this.readerOpen.set(false);
       void this.router.navigate(['/project', id]);
     }
@@ -120,10 +255,8 @@ export class CollectionComponent {
   newProject(): void {
     void this.router.navigate(['/create']);
   }
-  openSource(_id: string): void {
-    // TODO: anteprima fonte (col backend).
-  }
-  onProjectAction(id: string, action: string): void {
+  onProjectAction(id: string, action: string, event?: Event): void {
+    event?.stopPropagation();
     switch (action) {
       case 'open':
       case 'read':
@@ -141,7 +274,6 @@ export class CollectionComponent {
     }
   }
 
-  /** Icona download sul progetto → modale con i formati di output scaricabili. */
   openDownload(id: string): void {
     const project = this.projects.entities().find((p) => p.id === id);
     const formats = project?.generationOptions.outputFormats ?? ['pdf'];
@@ -151,7 +283,6 @@ export class CollectionComponent {
     this.downloadOpen.set(true);
   }
 
-  /** Copia negli appunti il link al documento + toast di conferma. */
   async copyProjectLink(): Promise<void> {
     try {
       await navigator.clipboard.writeText(
@@ -171,22 +302,18 @@ export class CollectionComponent {
     else if (action === 'download') this.downloadSource(id);
   }
 
-  /** Scarica il file della fonte via presigned URL (Content-Disposition: attachment). */
   downloadSource(id: string): void {
     void this.uiPromise.run(
       async () => {
         window.location.href = await this.sources.downloadUrl(id);
       },
       {
-        error: {
-          title: this.t('i18n.Common.error'),
-          message: 'Impossibile scaricare il file.',
-        },
+        error: { title: this.t('i18n.Common.error'), message: 'Impossibile scaricare il file.' },
       },
     );
   }
 
-  // --- Conferma eliminazione (operazione irreversibile) -----------------------
+  // --- Conferma eliminazione --------------------------------------------------
   readonly pendingDelete = signal<{ kind: 'project' | 'source'; id: string; title: string } | null>(
     null,
   );
@@ -201,11 +328,9 @@ export class CollectionComponent {
     const d = this.pendingDelete();
     if (!d) return;
     this.pendingDelete.set(null);
-    // Spinner d'attesa + toast (esito) via uiPromise; il dialog di conferma è già stato mostrato.
     void this.uiPromise.run(
       async () => {
         if (d.kind === 'project') {
-          // Elimina il progetto E tutte le sue fonti (material + instruction).
           const project = this.projects.entities().find((p) => p.id === d.id);
           const sourceIds = [
             ...(project?.materialFileIds ?? []),
@@ -235,47 +360,57 @@ export class CollectionComponent {
     this.pendingDelete.set(null);
   }
 
+  // --- Elimina TUTTI i progetti (bulk, irreversibile) -------------------------
+  /** Numero di progetti (per il testo di conferma e la visibilità del bottone). */
+  readonly total = computed(() => this.rows().length);
+  readonly deleteAllOpen = signal(false);
+  askDeleteAll(): void {
+    this.deleteAllOpen.set(true);
+  }
+  confirmDeleteAll(): void {
+    this.deleteAllOpen.set(false);
+    const projects = this.projects.entities();
+    if (!projects.length) return;
+    // Raccoglie le fonti di TUTTI i progetti (deduplicate), poi elimina fonti e
+    // progetti. allSettled: un errore singolo non blocca il resto.
+    const sourceIds = new Set<string>();
+    for (const p of projects) {
+      for (const id of CollectionComponent.sourceIds(p)) sourceIds.add(id);
+    }
+    void this.uiPromise.run(
+      async () => {
+        await Promise.allSettled([...sourceIds].map((id) => this.sources.delete(id)));
+        await Promise.allSettled(projects.map((p) => this.projects.delete(p.id)));
+      },
+      {
+        loading: true,
+        loadingMessage: 'Eliminazione di tutti i progetti…',
+        success: {
+          title: this.t('i18n.Common.done'),
+          message: 'Tutti i progetti sono stati eliminati.',
+        },
+        error: {
+          title: this.t('i18n.Common.error'),
+          message: 'Non è stato possibile eliminare tutti i progetti.',
+        },
+      },
+    );
+  }
+
   // --- Dialog abbonamento (rielaborazione gated) ------------------------------
   readonly reuseOpen = signal(false);
   openReuse(projectId: string): void {
-    // Abbonamento attivo con chance → procedi (mock: apri il progetto per rielaborare).
     if (this.billing.canReuse()) {
       this.openProject(projectId);
       return;
     }
     this.reuseOpen.set(true);
   }
-  /** Caso `none`: abbonati. Caso `past_due`: regolarizza. → pagina Prezzi. */
   goPricing(): void {
     this.reuseOpen.set(false);
     void this.router.navigate(['/pricing']);
   }
-  /** Caso `none`: paga il costo del singolo progetto (mock). */
   paySingle(): void {
     this.reuseOpen.set(false);
-    // TODO: checkout singolo progetto (backend).
-  }
-
-  // --- Build (orchestrazione store → view-model via mapper) --------------------
-  private build(statuses: readonly ProjectStatus[]): GroupVM[] {
-    const q = this.query().trim().toLowerCase();
-    const all = this.sources.entities();
-    return this.projects
-      .entities()
-      .filter((p) => statuses.includes(p.status))
-      .filter((p) => !q || p.title.toLowerCase().includes(q))
-      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-      .map((p) => {
-        // Le fonti del progetto sono la sua lista (forward-reference, popolata da
-        // createProject): material + instruction file. NON usiamo `usedInProjectIds`
-        // dei documenti (back-reference che il backend non mantiene → "0 fonti").
-        const ids = new Set([...(p.materialFileIds ?? []), ...(p.instructionFileIds ?? [])]);
-        const srcs = all.filter((s) => ids.has(s.id));
-        return {
-          id: p.id,
-          project: projectRow(p, srcs.length),
-          sources: srcs.map((s) => sourceRow(s)),
-        };
-      });
   }
 }

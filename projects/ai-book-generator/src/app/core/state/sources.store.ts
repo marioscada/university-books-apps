@@ -14,7 +14,7 @@ import type { CreateUploadInput } from '../data/api-port';
  */
 export const SourcesStore = signalStore(
   { providedIn: 'root' },
-  withState<{ loading: boolean }>({ loading: false }),
+  withState<{ loading: boolean; loaded: boolean }>({ loading: false, loaded: false }),
   withEntities<Source>(),
   withMethods((store) => {
     const api = inject(API_PORT);
@@ -23,7 +23,7 @@ export const SourcesStore = signalStore(
       async loadAll(): Promise<void> {
         patchState(store, { loading: true });
         const sources = await api.listSources();
-        patchState(store, setAllEntities(sources), { loading: false });
+        patchState(store, setAllEntities(sources), { loading: false, loaded: true });
       },
 
       /** Crea una nota inline (col `content`) e la aggiunge allo store. */

@@ -5,6 +5,16 @@
   display: block;
 }
 
+// Tassello quadrato centrato col colore del modello scelto (badge, icone, hero):
+// un solo punto per il pattern "tinta del modello" condiviso in pagina.
+%model-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--model-bg, var(--surface-soft));
+  color: var(--model-fg, var(--accent-700));
+}
+
 .setup {
   display: flex;
   flex-direction: column;
@@ -38,29 +48,127 @@
   color: var(--mat-sys-on-surface);
 }
 
-// Riquadro Definisci a tutta larghezza entro l'area consentita (site-container).
+// Layout a 2 colonne: form (campi) a sinistra, Istruzioni/File a destra.
+// Gutter tra i riquadri = 24px (griglia 8dp Material), orizzontale e verticale.
+.setup-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 30%, 360px);
+  gap: var(--space-3);
+  align-items: start;
+}
+// Sotto a `lg` la colonna destra va sotto al form (colonna singola).
+@include bp.lt(bp.$lg) {
+  .setup-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// Riquadro bianco del form (colonna sinistra): header + hero + passi.
 .setup-card {
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 3vw, 28px);
+  gap: var(--space-3);
 }
-.setup-brief__form {
+
+// Colonna destra: Istruzioni + File + consigli impilati (gutter verticale 24px).
+.setup-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+// --- Hero: icona del modello + titolo + sottotitolo -------------------------
+.setup-hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.setup-hero__icon {
+  @extend %model-tile;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  overflow: hidden;
+
+  mat-icon {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+  }
+}
+.setup-hero__img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+.setup-hero__text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.setup-hero__subtitle {
+  margin: 0;
+  max-width: 62ch;
+  font-size: var(--site-body-large, 1.0625rem);
+  line-height: 1.5;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// --- Passi 1·2: rail con badge (immagine modello) uniti da una linea --------
+.setup-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-2, 16px);
 }
-
-// Riga Istruzioni + File estesa sotto agli input (pari larghezza/altezza).
-.setup-aside-row {
+.setup-step {
+  position: relative;
   display: flex;
+  align-items: flex-start;
   gap: 16px;
-  align-items: stretch;
 }
-.setup-aside-row > .setup-aside--inner {
-  flex: 1 1 0;
+// Linea tratteggiata che collega i badge consecutivi (col colore del modello).
+.setup-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 46px;
+  bottom: -16px;
+  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--model-fg, var(--accent-700)) 45%, transparent) 0 4px,
+    transparent 4px 9px
+  );
+}
+.setup-step__badge {
+  @extend %model-tile;
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  margin-top: 2px;
+  border-radius: 999px;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+.setup-step__body {
+  flex: 1 1 auto;
   min-width: 0;
 }
+
+// Riquadri Istruzioni / File (impilati nella colonna destra).
 .setup-aside--inner {
   display: flex;
   flex-direction: column;
@@ -72,13 +180,8 @@
   border: 1px solid var(--field-border-color);
   box-shadow: var(--card-shadow);
 }
-@include bp.lt(bp.$sm) {
-  .setup-aside-row {
-    flex-direction: column;
-  }
-}
 
-// --- Card sidebar (Istruzioni / File) ---------------------------------------
+// --- Card Istruzioni / File -------------------------------------------------
 .setup-aside {
   gap: 12px;
 }
@@ -88,83 +191,129 @@
   gap: 8px;
 }
 .setup-aside__title {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   font-size: var(--site-title-medium, 1rem);
   font-weight: 700;
   color: var(--mat-sys-on-surface);
 }
-.setup-aside__add {
+// Matita "modifica" (apre la modale delle Istruzioni), a destra nell'header.
+.setup-aside__edit {
   flex: 0 0 auto;
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid var(--field-border-color, var(--card-border-color));
+  width: 30px;
+  height: 30px;
+  border: none;
   border-radius: 8px;
-  background: var(--surface-soft);
-  color: var(--accent-700);
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
   cursor: pointer;
 
+  &:hover {
+    background: var(--surface-soft);
+    color: var(--model-fg, var(--accent-700));
+  }
   mat-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
   }
 }
-.setup-aside__snippet {
-  margin: 0;
-  padding: 12px;
+// Sottotitolo descrittivo della card (sotto al titolo).
+.setup-aside__sub {
+  margin: -2px 0 0;
+  font-size: var(--site-body-small, 0.875rem);
+  line-height: 1.45;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// Istruzioni: campo-anteprima cliccabile (anteprima 2 righe → modale).
+.setup-instr {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--field-border-color, var(--card-border-color));
   border-radius: 10px;
   background: var(--surface-soft);
-  border: 1px solid var(--card-border-color);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+
+  &:hover {
+    border-color: var(--model-fg, var(--accent-700));
+  }
+}
+.setup-instr__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   font-size: var(--site-body-small, 0.875rem);
   line-height: 1.5;
   color: var(--mat-sys-on-surface);
 }
-.setup-aside__hint {
-  margin: 0;
+.setup-instr__placeholder {
   font-size: var(--site-body-small, 0.875rem);
-  line-height: 1.5;
   color: var(--mat-sys-on-surface-variant);
+}
 
-  strong {
-    color: var(--mat-sys-on-surface);
-    font-weight: 700;
+// Area dropzone File: "+" pieno (colore modello) + label + hint. Clic apre
+// l'upload; trascinando file sopra l'area si caricano davvero.
+.setup-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 22px 16px;
+  border: 1.5px dashed
+    color-mix(in srgb, var(--model-fg, var(--accent-700)) 35%, var(--card-border-color));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--model-bg, var(--surface-soft)) 45%, var(--card-bg));
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+
+  &:hover,
+  &.is-drag {
+    background: var(--model-bg, var(--surface-soft));
+    border-color: var(--model-fg, var(--accent-700));
   }
 }
-.setup-aside__actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.setup-aside__link {
-  align-self: flex-start;
+.setup-drop__plus {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  border: none;
-  background: none;
-  padding: 2px 0;
-  font: inherit;
-  font-size: var(--site-body-small, 0.875rem);
-  font-weight: 600;
-  color: var(--accent-700);
-  cursor: pointer;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--model-fg, var(--accent-700));
+  color: var(--on-accent);
 
   mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-  }
-
-  &--danger {
-    color: var(--tone-danger-fg);
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
   }
 }
-
-// Nota informativa dentro il dialog Istruzioni.
-.setup-instr-help {
+.setup-drop__label {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+.setup-drop__hint {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+// Nota informativa dentro i dialog (Istruzioni / Carica file).
+.setup-help {
   margin: 0;
   padding: 12px 14px;
   border-radius: 10px;
@@ -178,11 +327,29 @@
   }
 }
 
-// --- Capacità progetto ------------------------------------------------------
+// --- Capacità progetto (barra MB inline nell'header delle card) --------------
 .setup-cap {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+// Variante inline: tra il titolo e il "+", la traccia cresce e il label resta.
+.setup-cap--inline {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+
+  .setup-cap__track {
+    flex: 1 1 auto;
+    min-width: 32px;
+  }
+  .setup-cap__label {
+    flex: 0 0 auto;
+    font-size: 0.6875rem;
+    white-space: nowrap;
+  }
 }
 .setup-cap__track {
   height: 6px;
@@ -195,7 +362,7 @@
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: var(--accent-500);
+  background: var(--model-fg, var(--accent-500));
   transition: width 0.2s ease;
 }
 .setup-cap__label {
@@ -315,7 +482,35 @@
   background: var(--card-border-color);
 }
 
-// --- Footer dei dialog (Istruzioni / Carica / Testo) ------------------------
+// Cella "+N": apre il modale con la lista completa dei file.
+.setup-file--more {
+  padding: 0;
+  border: none;
+  background: none;
+}
+.setup-file__more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 86px;
+  border: 1px dashed var(--card-border-color);
+  border-radius: 12px;
+  background: var(--surface-soft);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--model-fg, var(--accent-700));
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+
+  &:hover {
+    border-color: var(--model-fg, var(--accent-700));
+  }
+}
+
+// --- Footer dei dialog (Istruzioni / Carica) --------------------------------
 .ed-footer {
   display: flex;
   align-items: center;
