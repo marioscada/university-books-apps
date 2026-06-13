@@ -459,11 +459,12 @@
       [closeLabel]="'Chiudi'"
       (closed)="reading.set(false)">
       @if (selectedChapter(); as ch) {
-        <!-- Nav di CAPITOLO: prec. · "Capitolo N di M" (centro) · succ. -->
-        <nav class="studio-read__chapnav">
+        <!-- Riga capitolo (leggera): ‹ · Capitolo N di M · › -->
+        <div class="reader-chapterbar">
           <button
-            mat-button
+            class="reader-chip"
             type="button"
+            aria-label="Capitolo precedente"
             [disabled]="!canPrevChapter()"
             (click)="prevChapter()">
             <mat-icon
@@ -471,56 +472,66 @@
               aria-hidden="true"
               >chevron_left</mat-icon
             >
-            Capitolo prec.
           </button>
-          <span class="studio-read__chaplabel">{{ readerChapterLabel() }}</span>
+          <span class="reader-chapterbar__label">{{ readerChapterLabel() }}</span>
           <button
-            mat-button
+            class="reader-chip"
             type="button"
+            aria-label="Capitolo successivo"
             [disabled]="!canNextChapter()"
             (click)="nextChapter()">
-            Capitolo succ.
             <mat-icon
               fontSet="material-symbols-outlined"
               aria-hidden="true"
               >chevron_right</mat-icon
             >
           </button>
-        </nav>
-        <article class="studio-read">
-          <h3 class="studio-read__title">{{ ch.index + 1 }} · {{ ch.title }}</h3>
-          <p class="studio-read__meta">≈ {{ ch.wordCount }} parole</p>
-          <app-prose [blocks]="readerParagraphs()" />
-        </article>
+        </div>
+        <!-- Area di lettura con frecce pagina ai lati (e-reader) -->
+        <div class="reader-stage">
+          <button
+            class="reader-edge"
+            type="button"
+            aria-label="Pagina precedente"
+            [disabled]="!canReadPrev()"
+            (click)="readPrev()">
+            <mat-icon
+              fontSet="material-symbols-outlined"
+              aria-hidden="true"
+              >chevron_left</mat-icon
+            >
+          </button>
+          <article class="studio-read">
+            <h3 class="studio-read__title">{{ ch.index + 1 }} · {{ ch.title }}</h3>
+            <p class="studio-read__meta">≈ {{ ch.wordCount }} parole</p>
+            <app-prose [blocks]="readerParagraphs()" />
+          </article>
+          <button
+            class="reader-edge"
+            type="button"
+            aria-label="Pagina successiva"
+            [disabled]="!canReadNext()"
+            (click)="readNext()">
+            <mat-icon
+              fontSet="material-symbols-outlined"
+              aria-hidden="true"
+              >chevron_right</mat-icon
+            >
+          </button>
+        </div>
       }
+      <!-- Progresso pagine (footer): barra sottile + etichetta -->
       <div
         footer
-        class="studio-read__nav">
-        <button
-          mat-button
-          type="button"
-          [disabled]="!canReadPrev()"
-          (click)="readPrev()">
-          <mat-icon
-            fontSet="material-symbols-outlined"
-            aria-hidden="true"
-            >chevron_left</mat-icon
-          >
-          Precedente
-        </button>
-        <span class="studio-read__pos">{{ readerPosLabel() }}</span>
-        <button
-          mat-button
-          type="button"
-          [disabled]="!canReadNext()"
-          (click)="readNext()">
-          Successivo
-          <mat-icon
-            fontSet="material-symbols-outlined"
-            aria-hidden="true"
-            >chevron_right</mat-icon
-          >
-        </button>
+        class="reader-progress">
+        <span
+          class="reader-progress__track"
+          role="presentation">
+          <span
+            class="reader-progress__fill"
+            [style.width.%]="pageProgressPct()"></span>
+        </span>
+        <span class="reader-progress__label">{{ readerPosLabel() }}</span>
       </div>
     </app-modal-shell>
   </div>

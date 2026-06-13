@@ -202,6 +202,10 @@ export class ProjectWorkspaceComponent {
   readonly readerPosLabel = computed(
     () => `Pagina ${this.readerCurrentPage() + 1} di ${this.readerPageCount()}`,
   );
+  /** Avanzamento di lettura del capitolo (0–100) per la barra di progresso pagine. */
+  readonly pageProgressPct = computed(() =>
+    Math.round(((this.readerCurrentPage() + 1) / this.readerPageCount()) * 100),
+  );
   private chapterIndexOf(): number {
     return this.workspace.chapters().findIndex((c) => c.id === this.selectedKey());
   }
