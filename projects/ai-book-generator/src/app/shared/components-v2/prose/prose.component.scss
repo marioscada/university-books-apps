@@ -1,0 +1,32 @@
+// Prose — blocchi markdown (heading/paragrafi) resi come testo leggibile.
+// `display:contents`: i blocchi ereditano il layout (gap/scroll) del contenitore,
+// così l'aspetto resta quello del lettore che ospita la prose.
+:host {
+  display: contents;
+}
+
+.prose__p {
+  margin: 0;
+  font-size: var(--site-body-medium, 1rem);
+  line-height: 1.6;
+  color: var(--mat-sys-on-surface);
+}
+
+.prose__h {
+  margin: 18px 0 4px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--mat-sys-on-surface);
+}
+.prose__h:first-child {
+  margin-top: 0;
+}
+.prose__h[data-level='1'] {
+  font-size: 1.3125rem;
+}
+.prose__h[data-level='2'] {
+  font-size: 1.0625rem;
+}
+.prose__h[data-level='3'] {
+  font-size: 0.95rem;
+}

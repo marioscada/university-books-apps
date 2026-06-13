@@ -50,7 +50,11 @@ export interface ChapterItem {
   selector: 'app-chapter-index',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'chapter-index', '[class.is-collapsed]': 'collapsed()' },
+  host: {
+    class: 'chapter-index',
+    '[class.is-collapsed]': 'collapsed()',
+    '[class.is-progressive]': 'dimPending()',
+  },
   imports: [MatIconModule],
   templateUrl: './chapter-index.component.html',
   styleUrl: './chapter-index.component.scss',
@@ -68,6 +72,12 @@ export class ChapterIndexComponent {
   readonly addLabel = input<string>('');
   /** Mostra il toggle di collasso del pannello. */
   readonly collapsible = input(false, { transform: booleanAttribute });
+  /**
+   * Smorza (opacità ridotta) i capitoli `todo` ancora da generare, così quelli
+   * già fatti restano "vivi" e quelli da fare appaiono più opachi. Usalo in fase
+   * di generazione capitolo-per-capitolo; in revisione indice lascialo `false`.
+   */
+  readonly dimPending = input(false, { transform: booleanAttribute });
 
   /** Stato collassato (two-way), gestito dal padre per il layout. */
   readonly collapsed = model<boolean>(false);

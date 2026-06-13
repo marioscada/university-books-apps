@@ -74,9 +74,9 @@ export class AwsApiService implements ApiPort {
   }
 
   generate(id: string): Promise<Job> {
-    return firstValueFrom(this.http.post<unknown>(this.url(`/v1/projects/${id}/generate`), {})).then(
-      (j) => this.mapJob(j),
-    );
+    return firstValueFrom(
+      this.http.post<unknown>(this.url(`/v1/projects/${id}/generate`), {}),
+    ).then((j) => this.mapJob(j));
   }
 
   cancel(id: string): Promise<Project> {
@@ -84,7 +84,9 @@ export class AwsApiService implements ApiPort {
   }
 
   async getJob(projectId: string): Promise<Job | null> {
-    const j = await firstValueFrom(this.http.get<unknown>(this.url(`/v1/projects/${projectId}/job`)));
+    const j = await firstValueFrom(
+      this.http.get<unknown>(this.url(`/v1/projects/${projectId}/job`)),
+    );
     return j ? this.mapJob(j) : null;
   }
 
@@ -95,9 +97,12 @@ export class AwsApiService implements ApiPort {
     return v ? this.mapVersion(v) : null;
   }
 
-  generateChapters(projectId: string): Promise<Version> {
+  generateChapters(projectId: string, chapterId?: string): Promise<Version> {
     return firstValueFrom(
-      this.http.post<unknown>(this.url(`/v1/projects/${projectId}/chapters`), {}),
+      this.http.post<unknown>(
+        this.url(`/v1/projects/${projectId}/chapters`),
+        chapterId ? { chapterId } : {},
+      ),
     ).then((v) => this.mapVersion(v));
   }
 
@@ -107,7 +112,9 @@ export class AwsApiService implements ApiPort {
 
   // ----- Lifecycle: una sola rotta reale, azione nel body ---------------------
   private lifecycle(id: string, payload: Record<string, unknown>): Promise<Project> {
-    return firstValueFrom(this.http.post<Project>(this.url(`/v1/projects/${id}/lifecycle`), payload));
+    return firstValueFrom(
+      this.http.post<Project>(this.url(`/v1/projects/${id}/lifecycle`), payload),
+    );
   }
   publish(id: string): Promise<Project> {
     return this.lifecycle(id, { action: 'publish' });

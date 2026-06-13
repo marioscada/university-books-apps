@@ -90,7 +90,6 @@ app-review-shell {
   margin-top: 6px;
 }
 
-
 // Body a 3 pannelli (Capitoli): indice · lettura · chat, pari altezza.
 // Altezza limitata al viewport: i pannelli scrollano internamente (stesso
 // comportamento di review-shell) → la pagina non si allunga.
@@ -194,10 +193,9 @@ app-review-shell {
 
 // --- Lettore read-only (dialog) ---------------------------------------------
 .studio-read {
-  max-width: 68ch;
+  width: 100%;
   // Altezza stabile: le pagine non fanno "saltare" il dialog; niente scroll.
   min-height: clamp(300px, 48vh, 460px);
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -214,23 +212,42 @@ app-review-shell {
   font-weight: 600;
   color: var(--mat-sys-on-surface-variant);
 }
-.studio-read__p {
-  margin: 0;
-  font-size: 1.0625rem;
-  line-height: 1.75;
-  color: var(--mat-sys-on-surface);
-}
 .studio-read__nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   width: 100%;
+  // Barra navigazione pagine su superficie "cool light" (token globale).
+  padding: 6px 10px;
+  background: var(--surface-soft);
+  border-radius: 12px;
 }
 .studio-read__pos {
   font-size: var(--site-body-small, 0.875rem);
   font-weight: 600;
   color: var(--mat-sys-on-surface-variant);
+}
+
+// Nav di CAPITOLO in cima al lettore: prec. · "Capitolo N di M" (centrato) · succ.
+// (stesso pattern della nav pagine in fondo, ma a livello di capitolo).
+.studio-read__chapnav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 10px;
+  // Barra navigazione capitoli su superficie "cool light" (token globale).
+  padding: 6px 10px;
+  background: var(--surface-soft);
+  border-radius: 12px;
+}
+.studio-read__chaplabel {
+  flex: 1 1 auto;
+  text-align: center;
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
 }
 
 @include bp.lt(bp.$studio) {
@@ -262,6 +279,14 @@ app-review-shell {
     flex: 0 0 auto;
     width: 100%;
     max-height: 80vh;
+  }
+  // Conferma/skeleton-conferma: a flusso naturale (niente flex-basis:0, che
+  // collasserebbe dentro lo stack ad altezza `auto` facendo sbordare il
+  // contenuto fuori dalla card). Cresce col contenuto, resta centrato.
+  .studio-confirm,
+  .skel-confirm-wrap {
+    flex: 0 0 auto;
+    min-height: clamp(340px, 56vh, 520px);
   }
 }
 
@@ -317,6 +342,9 @@ app-review-shell {
 // non sposta nulla.
 .skel-pane {
   min-height: 0;
+  // Ancora per gli overlay centrati nel pannello (es. `.studio-thinking` quando
+  // si genera il singolo capitolo nel lettore).
+  position: relative;
 }
 .skel-pane--index {
   flex: 0 0 288px;

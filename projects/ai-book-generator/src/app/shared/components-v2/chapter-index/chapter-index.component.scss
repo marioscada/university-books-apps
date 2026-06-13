@@ -206,6 +206,15 @@
 .chapter-index__row.is-selected .chapter-index__label {
   font-weight: 700;
 }
+// Generazione capitolo-per-capitolo: i capitoli ancora DA generare appaiono più
+// opachi, quelli già fatti restano vivi (contrasto di avanzamento). Attivo solo
+// quando il padre setta `dimPending`; in revisione indice resta tutto vivo.
+:host(.is-progressive) .chapter-index__row[data-status='todo'] {
+  opacity: 0.45;
+}
+:host(.is-progressive) .chapter-index__row[data-status='todo']:hover {
+  opacity: 0.7;
+}
 
 // Etichetta di stato a destra.
 .chapter-index__status {

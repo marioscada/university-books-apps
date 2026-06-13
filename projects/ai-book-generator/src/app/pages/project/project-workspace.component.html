@@ -228,8 +228,8 @@
               mat-flat-button
               color="primary"
               type="button"
-              (click)="generateChapters()">
-              {{ 'i18n.Workspace.Action.generateChapters' | translate }}
+              (click)="approveAndGenerateNext()">
+              {{ 'i18n.Workspace.Action.startChapters' | translate }}
               <mat-icon
                 fontSet="material-symbols-outlined"
                 aria-hidden="true"
@@ -256,22 +256,49 @@
             index
             class="fill-pane"
             collapsible
+            dimPending
             [heading]="'Indice'"
+            [countLabel]="indexCountLabel()"
             [chapters]="chapterItems()"
             [selectedKey]="selectedKey()"
             (selected)="selectChapter($event)" />
           @if (selectedChapter(); as ch) {
-            <app-chapter-reader
-              class="fill-pane"
-              expandable
-              actionIcon="arrow_forward"
-              [documentTitle]="project.title"
-              [title]="ch.index + ' · ' + ch.title"
-              [meta]="'≈ ' + ch.wordCount + ' parole'"
-              [paragraphs]="selectedParagraphs()"
-              [actionLabel]="'i18n.Workspace.Action.publish' | translate"
-              (expand)="openReader()"
-              (action)="goToPublish()" />
+            @if (ch.status === 'generating') {
+              <!-- Capitolo in generazione: riuso lo skeleton del lettore
+                     (skel-pane--reader) + il messaggio pulsante (studio-thinking).
+                     Gli altri capitoli già fatti restano visibili nell'indice. -->
+              <section class="fill-pane surface-card skel-pane skel-pane--reader skel-card">
+                <app-skeleton
+                  width="55%"
+                  height="26px" />
+                <app-skeleton
+                  width="30%"
+                  height="13px" />
+                <div class="skel-grow"></div>
+                @for (l of skeletonParas; track $index) {
+                  <app-skeleton
+                    height="13px"
+                    [width]="l" />
+                }
+                <p
+                  class="studio-thinking"
+                  aria-live="polite">
+                  {{ 'i18n.Workspace.chapterGenerating' | translate }}
+                </p>
+              </section>
+            } @else {
+              <app-chapter-reader
+                class="fill-pane"
+                expandable
+                actionIcon="arrow_forward"
+                [documentTitle]="project.title"
+                [title]="ch.index + 1 + ' · ' + ch.title"
+                [meta]="'≈ ' + ch.wordCount + ' parole'"
+                [paragraphs]="selectedParagraphs()"
+                [actionLabel]="readerActionLabel()"
+                (expand)="openReader()"
+                (action)="onReaderAction()" />
+            }
           }
           <app-ai-chat-panel
             ai
@@ -429,16 +456,41 @@
       expandable
       [open]="reading()"
       [title]="project.title"
-      [subtitle]="'Sola lettura'"
       [closeLabel]="'Chiudi'"
       (closed)="reading.set(false)">
       @if (selectedChapter(); as ch) {
+        <!-- Nav di CAPITOLO: prec. · "Capitolo N di M" (centro) · succ. -->
+        <nav class="studio-read__chapnav">
+          <button
+            mat-button
+            type="button"
+            [disabled]="!canPrevChapter()"
+            (click)="prevChapter()">
+            <mat-icon
+              fontSet="material-symbols-outlined"
+              aria-hidden="true"
+              >chevron_left</mat-icon
+            >
+            Capitolo prec.
+          </button>
+          <span class="studio-read__chaplabel">{{ readerChapterLabel() }}</span>
+          <button
+            mat-button
+            type="button"
+            [disabled]="!canNextChapter()"
+            (click)="nextChapter()">
+            Capitolo succ.
+            <mat-icon
+              fontSet="material-symbols-outlined"
+              aria-hidden="true"
+              >chevron_right</mat-icon
+            >
+          </button>
+        </nav>
         <article class="studio-read">
-          <h3 class="studio-read__title">{{ ch.index }} · {{ ch.title }}</h3>
+          <h3 class="studio-read__title">{{ ch.index + 1 }} · {{ ch.title }}</h3>
           <p class="studio-read__meta">≈ {{ ch.wordCount }} parole</p>
-          @for (p of readerParagraphs(); track $index) {
-            <p class="studio-read__p">{{ p }}</p>
-          }
+          <app-prose [blocks]="readerParagraphs()" />
         </article>
       }
       <div
