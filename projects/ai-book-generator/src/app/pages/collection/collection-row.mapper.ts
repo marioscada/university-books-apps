@@ -5,7 +5,15 @@
  */
 import type { Tone } from '../../shared/components-v2/tone';
 import type { RowAction } from '../../shared/components-v2/list-row/list-row.component';
-import type { Project, DocumentType, ProjectStatus, CoverTheme, Source, SourceType, IngestStatus } from '../../core/domain';
+import type {
+  Project,
+  DocumentType,
+  ProjectStatus,
+  CoverTheme,
+  Source,
+  SourceType,
+  IngestStatus,
+} from '../../core/domain';
 import { relTime, humanSize } from './format.util';
 
 /** View-model di una riga (progetto o fonte) per `list-row`. */
@@ -24,14 +32,7 @@ export interface RowVM {
 }
 
 /** Modelli con immagine 3D in `public/images/models/<id>.png`. */
-const MODEL_IMG_IDS = new Set([
-  'book',
-  'summary',
-  'thesis',
-  'course',
-  'manual',
-  'presentation',
-]);
+const MODEL_IMG_IDS = new Set(['book', 'summary', 'thesis', 'course', 'manual', 'presentation']);
 
 const KIND_LABEL: Record<DocumentType, string> = {
   book: 'Libro',
@@ -123,6 +124,51 @@ export function projectRow(p: Project, nSources: number): RowVM {
     meta: `${kicker} · ${fonti} · ${relTime(p.updatedAt)}`,
     badge,
     badgeTone: tone,
+    actions: projectActions(p),
+  };
+}
+
+/** View-model di una riga PROGETTO per la tabella Material (colonne esplicite). */
+export interface ProjectTableVM {
+  id: string;
+  title: string;
+  cover: string;
+  imageSrc: string;
+  icon: string;
+  typeLabel: string;
+  statusLabel: string;
+  statusTone: Tone;
+  sourcesCount: number;
+  updatedLabel: string;
+  /** ISO grezzo per l'ordinamento. */
+  updatedAt: string;
+  actions: RowAction[];
+}
+
+/** Mappa un progetto nelle colonne della tabella (riusa label/icone/colori). */
+export function projectTableRow(p: Project, nSources: number): ProjectTableVM {
+  const info = STATUS_INFO[p.status];
+  let statusLabel = info.label;
+  let statusTone = info.tone;
+  if (p.status === 'review') {
+    const chapters = p.reviewStage === 'chapters';
+    statusLabel = chapters ? 'Capitoli pronti' : 'Indice pronto';
+    statusTone = chapters ? 'amber' : 'info';
+  }
+  const imageSrc =
+    p.templateId && MODEL_IMG_IDS.has(p.templateId) ? `images/models/${p.templateId}.png` : '';
+  return {
+    id: p.id,
+    title: p.title,
+    cover: COVER_COLOR[p.coverTheme],
+    imageSrc,
+    icon: KIND_ICON[p.documentType],
+    typeLabel: KIND_LABEL[p.documentType],
+    statusLabel,
+    statusTone,
+    sourcesCount: nSources,
+    updatedLabel: relTime(p.updatedAt),
+    updatedAt: p.updatedAt,
     actions: projectActions(p),
   };
 }

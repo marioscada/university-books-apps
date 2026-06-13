@@ -1,5 +1,4 @@
-// Collezioni — solo layout di pagina (token globali). Righe = list-row (dumb),
-// card/ricerca/titoli/empty GLOBALI (theme/_components.scss).
+// Collezioni — tabella Material dei progetti (token globali).
 :host {
   display: block;
 }
@@ -8,58 +7,291 @@
   padding-block: var(--page-padding-block, clamp(40px, 6vw, 72px)) clamp(40px, 6vw, 72px);
 }
 
+// --- Testata: titolo + strumenti (filtro stato, ricerca, nuovo) -------------
 .coll__head {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 .coll__title {
   flex: 1 1 auto;
   margin: 0;
 }
-.coll__search {
-  width: min(260px, 60vw);
+.coll__tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
-
-.coll__section {
-  margin-top: 36px;
-}
-.coll__section:first-of-type {
-  margin-top: 28px;
-}
-.coll__count {
-  margin-left: 10px;
+.coll__filter {
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--field-border-color, var(--card-border-color));
+  border-radius: 10px;
+  background: var(--card-bg);
+  font: inherit;
   font-size: 0.875rem;
-  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  cursor: pointer;
+}
+.coll__search {
+  width: min(260px, 55vw);
+}
+// Skeleton-tabella (stessa griglia delle colonne reali) durante l'attesa.
+.coll__skelhead,
+.coll__skelrow {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) 1fr 1fr 0.7fr 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+}
+.coll__skelhead {
+  height: 44px;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--mat-sys-on-surface-variant);
+  border-bottom: 1px solid var(--card-border-color);
+}
+.coll__skelrow {
+  height: 64px;
+  border-bottom: 1px solid var(--card-border-color);
+}
+.coll__skelrow:last-child {
+  border-bottom: none;
+}
+.coll__skelname {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.coll__skelactions {
+  display: inline-flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.coll__empty {
+  --no-data-min-height: calc(100vh - 260px);
 }
 
-// Pannello-progetto: riga progetto + fonti annidate, a tutta larghezza.
-.coll__panel {
-  padding: 0;
-  overflow: hidden;
-  margin-top: 14px;
+// --- Tabella ----------------------------------------------------------------
+.coll__tablewrap {
+  padding: 8px 8px 4px;
+  overflow-x: auto;
+}
+.coll__table {
+  width: 100%;
+  background: transparent;
+
+  .mat-mdc-header-cell {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--mat-sys-on-surface-variant);
+  }
+  .mat-mdc-cell {
+    font-size: 0.9375rem;
+    color: var(--mat-sys-on-surface);
+    border-bottom-color: var(--card-border-color);
+  }
 }
 
-// Sottotestata "Fonti · N" che separa il progetto dalle sue fonti.
-.coll__srchead {
-  padding: 8px 18px;
+// Riga progetto: cliccabile (toggle fonti), hover, evidenziata se espansa.
+.coll__row {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+.coll__row:hover {
   background: var(--surface-soft);
-  border-top: 1px solid var(--card-border-color);
+}
+.coll__row.is-expanded {
+  background: var(--surface-soft);
+}
+// La riga progetto espansa non ha bordo sotto (continua nel dettaglio).
+.coll__row.is-expanded .mat-mdc-cell {
+  border-bottom-color: transparent;
+}
+
+// Colonna Titolo: copertina + nome.
+.coll__name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.coll__cover {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  color: #fff;
+  overflow: hidden;
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+}
+.coll__cover-img {
+  width: 116%;
+  height: 116%;
+  object-fit: contain;
+}
+.coll__nametext {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 32ch;
+}
+
+// Badge di stato (tono dinamico via --b-bg/--b-fg).
+.coll__badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: var(--b-bg, var(--tone-neutral-bg));
+  color: var(--b-fg, var(--tone-neutral-fg));
+  white-space: nowrap;
+}
+
+// Conteggio fonti.
+.coll__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mat-sys-on-surface-variant);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Azioni inline (icone) + chevron espandi.
+.coll__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+.coll__iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--mat-sys-on-surface-variant);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--card-border-color);
+    color: var(--accent-700);
+  }
+  &.is-danger {
+    color: var(--tone-danger-fg);
+  }
+  &.is-danger:hover {
+    background: var(--tone-danger-bg);
+  }
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+.coll__expand mat-icon {
+  transition: transform 0.18s ease;
+}
+.coll__expand.is-open mat-icon {
+  transform: rotate(180deg);
+}
+
+// --- Riga di dettaglio (fonti) ----------------------------------------------
+.coll__detailrow {
+  height: 0;
+}
+.coll__detailrow .mat-mdc-cell {
+  padding: 0;
+  border-bottom-color: var(--card-border-color);
+}
+.coll__detail {
+  overflow: hidden;
+  display: block;
+}
+.coll__detailinner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 16px 58px;
+}
+.coll__detailhead {
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--mat-sys-on-surface-variant);
 }
+.coll__source {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.coll__srcicon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--t-bg, var(--tone-neutral-bg));
+  color: var(--t-fg, var(--tone-neutral-fg));
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+}
+.coll__srcname {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 30ch;
+}
+.coll__srcmeta {
+  flex: 1 1 auto;
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+.coll__srcactions {
+  flex: 0 0 auto;
+  display: inline-flex;
+  gap: 2px;
+}
 .coll__nosrc {
   margin: 0;
-  padding: 12px 18px 14px 64px;
   font-size: 0.8125rem;
   color: var(--mat-sys-on-surface-variant);
 }
 
+// --- Modali (rielaborazione / elimina / scarica) ----------------------------
 .coll__gate {
   display: flex;
   gap: 14px;
@@ -89,71 +321,23 @@
   justify-content: flex-end;
   gap: 12px;
 }
-
-// Senza titolo (nessun progetto): search + bottone restano a destra come prima.
-.coll__search--right {
-  margin-left: auto;
-}
-// Search disabilitata (niente da cercare): attenuata e non interattiva.
-.coll__search:has(input:disabled) {
-  opacity: 0.55;
-  pointer-events: none;
-}
-
-// Empty-state globale (nessun progetto): riempie lo spazio; l'host del no-data
-// centra immagine + messaggio (via la sua CSS var min-height).
-.coll__empty {
-  --no-data-min-height: calc(100vh - 260px);
-}
-
-// Skeleton: pannello IDENTICO a quello reale (riga progetto + banda fonti + area
-// fonti) finché i progetti non arrivano dal server. La riga rispecchia la
-// list-row emphasis (padding 15px 18px, gap 14px, icona 40px).
-.coll__skel-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 15px 18px;
-}
-.coll__skel-text {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-.coll__skel-badge {
-  flex: 0 0 auto;
-}
-.coll__skel-actions {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
-// --- Modale "Scarica output" -------------------------------------------------
 .coll__downloadmsg {
   margin: 0 0 16px;
   text-align: center;
   color: var(--mat-sys-on-surface-variant);
 }
-
 .coll__downloads {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
 }
-
 .coll__downloadhint {
   margin: 12px 0 0;
   text-align: center;
   font-size: 0.8125rem;
   color: var(--mat-sys-on-surface-variant);
 }
-
-// Bottone Elimina del dialog: rosso "warning" muto (#c0362c), non il warn acceso.
 .coll__delete-btn {
   --mdc-filled-button-container-color: var(--tone-danger-fg);
   --mdc-filled-button-label-text-color: #fff;

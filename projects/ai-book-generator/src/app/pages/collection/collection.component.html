@@ -1,293 +1,482 @@
 <div class="coll site-container">
-  <!-- Header -->
   <header class="coll__head">
-    @if (!showEmpty()) {
-      <h1 class="page-title coll__title">Le tue collezioni</h1>
-    }
-    <label
-      class="page-search coll__search"
-      [class.coll__search--right]="showEmpty()">
-      <mat-icon
-        fontSet="material-symbols-outlined"
-        aria-hidden="true"
-        >search</mat-icon
-      >
-      <input
-        type="search"
-        placeholder="Cerca…"
-        aria-label="Cerca nelle collezioni"
-        [disabled]="showEmpty()"
-        [ngModel]="query()"
-        (ngModelChange)="query.set($event)" />
-    </label>
-    <button
-      mat-flat-button
-      color="primary"
-      type="button"
-      (click)="newProject()">
-      <mat-icon
-        fontSet="material-symbols-outlined"
-        aria-hidden="true"
-        >add</mat-icon
-      >
-      Nuovo progetto
-    </button>
+    <h1 class="page-title coll__title">Le tue collezioni</h1>
+    <div class="coll__tools">
+      <select
+        class="coll__filter"
+        aria-label="Filtra per stato"
+        [ngModel]="statusFilter()"
+        (ngModelChange)="statusFilter.set($event)">
+        @for (o of statusOptions; track o.value) {
+          <option [value]="o.value">{{ o.label }}</option>
+        }
+      </select>
+      <label class="page-search coll__search">
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          aria-hidden="true"
+          >search</mat-icon
+        >
+        <input
+          type="search"
+          placeholder="Cerca…"
+          aria-label="Cerca nelle collezioni"
+          [ngModel]="query()"
+          (ngModelChange)="query.set($event)" />
+      </label>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        (click)="newProject()">
+        <mat-icon
+          fontSet="material-symbols-outlined"
+          aria-hidden="true"
+          >add</mat-icon
+        >
+        Nuovo progetto
+      </button>
+    </div>
   </header>
 
   @if (!loaded()) {
-    <!-- In attesa dei progetti dal server: skeleton (NON l'empty-state, che
-         sarebbe una falsa interpretazione dell'attesa). -->
-    <section class="coll__section">
-      <h2 class="section-title">La tua libreria</h2>
+    <!-- Skeleton a forma di tabella finché progetti E fonti non sono arrivati -->
+    <div class="coll__tablewrap surface-card">
+      <div class="coll__skelhead">
+        <span>Titolo</span>
+        <span>Tipo</span>
+        <span>Stato</span>
+        <span>Fonti</span>
+        <span>Aggiornato</span>
+        <span></span>
+      </div>
       @for (s of skeletonRows; track $index) {
-        <div class="coll__panel surface-card">
-          <!-- Riga progetto (mirror list-row emphasis: icona · 2 linee · badge · azioni) -->
-          <div class="coll__skel-row">
+        <div class="coll__skelrow">
+          <span class="coll__skelname">
             <app-skeleton
-              width="40px"
-              height="40px"
-              radius="10px" />
-            <div class="coll__skel-text">
-              <app-skeleton
-                width="190px"
-                height="17px" />
-              <app-skeleton
-                width="150px"
-                height="13px" />
-            </div>
+              width="34px"
+              height="34px"
+              radius="9px" />
             <app-skeleton
-              class="coll__skel-badge"
-              width="96px"
-              height="28px"
-              radius="14px" />
-            <span class="coll__skel-actions">
-              <app-skeleton
-                width="22px"
-                height="22px"
-                radius="6px" />
-              <app-skeleton
-                width="22px"
-                height="22px"
-                radius="6px" />
-              <app-skeleton
-                width="22px"
-                height="22px"
-                radius="6px" />
-            </span>
-          </div>
-          <!-- Banda "Fonti · N" (mirror coll__srchead) -->
-          <div class="coll__srchead">
+              width="45%"
+              height="14px" />
+          </span>
+          <app-skeleton
+            width="70px"
+            height="13px" />
+          <app-skeleton
+            width="84px"
+            height="22px"
+            radius="999px" />
+          <app-skeleton
+            width="36px"
+            height="13px" />
+          <app-skeleton
+            width="56px"
+            height="13px" />
+          <span class="coll__skelactions">
             <app-skeleton
-              width="64px"
-              height="11px" />
-          </div>
-          <!-- Riga area fonti (mirror coll__nosrc) -->
-          <p class="coll__nosrc">
+              width="24px"
+              height="24px"
+              radius="6px" />
             <app-skeleton
-              width="170px"
-              height="13px" />
-          </p>
+              width="24px"
+              height="24px"
+              radius="6px" />
+            <app-skeleton
+              width="24px"
+              height="24px"
+              radius="6px" />
+          </span>
         </div>
       }
-    </section>
-  } @else if (hasNoProjects()) {
-    <!-- Nessun progetto: empty-state con immagine centrale + messaggio dinamico
-         (solo dopo il caricamento). -->
+    </div>
+  } @else if (showEmpty()) {
     <app-no-data
       class="coll__empty"
       [message]="emptyMessage()" />
   } @else {
-    <!-- Solo i lavori PUBBLICATI: i progetti in corso si riprendono da "Crea"
-         (vincolo un-progetto-alla-volta), non si elencano qui. -->
-    <section class="coll__section">
-      <h2 class="section-title">La tua libreria</h2>
-      @for (g of library(); track g.id) {
-        <ng-container
-          [ngTemplateOutlet]="panel"
-          [ngTemplateOutletContext]="{ $implicit: g }" />
-      }
-    </section>
+    <div class="coll__tablewrap surface-card">
+      <table
+        mat-table
+        matSort
+        multiTemplateDataRows
+        class="coll__table"
+        [dataSource]="dataSource"
+        [trackBy]="trackById">
+        <!-- Titolo (copertina + nome) -->
+        <ng-container matColumnDef="title">
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header>
+            Titolo
+          </th>
+          <td
+            *matCellDef="let r"
+            mat-cell>
+            <div class="coll__name">
+              <span
+                class="coll__cover"
+                aria-hidden="true"
+                [style.background]="r.cover">
+                @if (r.imageSrc) {
+                  <img
+                    class="coll__cover-img"
+                    alt=""
+                    [src]="r.imageSrc" />
+                } @else {
+                  <mat-icon
+                    fontSet="material-symbols-outlined"
+                    aria-hidden="true"
+                    >{{ r.icon }}</mat-icon
+                  >
+                }
+              </span>
+              <span
+                class="coll__nametext"
+                [title]="r.title"
+                >{{ r.title }}</span
+              >
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Tipo -->
+        <ng-container matColumnDef="type">
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header>
+            Tipo
+          </th>
+          <td
+            *matCellDef="let r"
+            mat-cell>
+            {{ r.typeLabel }}
+          </td>
+        </ng-container>
+
+        <!-- Stato -->
+        <ng-container matColumnDef="status">
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header>
+            Stato
+          </th>
+          <td
+            *matCellDef="let r"
+            mat-cell>
+            <span
+              class="coll__badge"
+              [style.--b-bg]="'var(--tone-' + r.statusTone + '-bg)'"
+              [style.--b-fg]="'var(--tone-' + r.statusTone + '-fg)'"
+              >{{ r.statusLabel }}</span
+            >
+          </td>
+        </ng-container>
+
+        <!-- Fonti (conteggio) -->
+        <ng-container matColumnDef="sources">
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header>
+            Fonti
+          </th>
+          <td
+            *matCellDef="let r"
+            mat-cell>
+            <span class="coll__count">
+              <mat-icon
+                fontSet="material-symbols-outlined"
+                aria-hidden="true"
+                >folder</mat-icon
+              >
+              {{ r.sourcesCount }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Aggiornato -->
+        <ng-container matColumnDef="updated">
+          <th
+            *matHeaderCellDef
+            mat-header-cell
+            mat-sort-header>
+            Aggiornato
+          </th>
+          <td
+            *matCellDef="let r"
+            mat-cell>
+            {{ r.updatedLabel }}
+          </td>
+        </ng-container>
+
+        <!-- Azioni + chevron espandi -->
+        <ng-container matColumnDef="actions">
+          <th
+            *matHeaderCellDef
+            mat-header-cell></th>
+          <td
+            *matCellDef="let r"
+            mat-cell>
+            <span class="coll__actions">
+              @for (a of r.actions; track a.id) {
+                <button
+                  class="coll__iconbtn"
+                  type="button"
+                  [class.is-danger]="a.danger"
+                  [attr.aria-label]="a.label"
+                  (click)="onProjectAction(r.id, a.id, $event)">
+                  <mat-icon
+                    fontSet="material-symbols-outlined"
+                    aria-hidden="true"
+                    >{{ a.icon }}</mat-icon
+                  >
+                </button>
+              }
+              <button
+                class="coll__iconbtn coll__expand"
+                type="button"
+                [class.is-open]="isExpanded(r)"
+                [attr.aria-label]="isExpanded(r) ? 'Nascondi fonti' : 'Mostra fonti'"
+                (click)="toggleExpand(r, $event)">
+                <mat-icon
+                  fontSet="material-symbols-outlined"
+                  aria-hidden="true"
+                  >expand_more</mat-icon
+                >
+              </button>
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Riga di dettaglio: fonti del progetto -->
+        <ng-container matColumnDef="expandedDetail">
+          <td
+            *matCellDef="let r"
+            mat-cell
+            [attr.colspan]="displayedColumns.length + 1">
+            <div
+              class="coll__detail"
+              [@detailExpand]="isExpanded(r) ? 'expanded' : 'collapsed'">
+              <div class="coll__detailinner">
+                <span class="coll__detailhead">Fonti · {{ r.sourcesCount }}</span>
+                @for (s of sourcesFor(r.id); track s.id) {
+                  <div class="coll__source">
+                    <span
+                      class="coll__srcicon"
+                      aria-hidden="true"
+                      [style.--t-bg]="'var(--tone-' + s.iconTone + '-bg)'"
+                      [style.--t-fg]="'var(--tone-' + s.iconTone + '-fg)'">
+                      <mat-icon
+                        fontSet="material-symbols-outlined"
+                        aria-hidden="true"
+                        >{{ s.icon }}</mat-icon
+                      >
+                    </span>
+                    <span
+                      class="coll__srcname"
+                      [title]="s.title"
+                      >{{ s.title }}</span
+                    >
+                    <span class="coll__srcmeta">{{ s.meta }}</span>
+                    <span
+                      class="coll__badge"
+                      [style.--b-bg]="'var(--tone-' + s.badgeTone + '-bg)'"
+                      [style.--b-fg]="'var(--tone-' + s.badgeTone + '-fg)'"
+                      >{{ s.badge }}</span
+                    >
+                    <span class="coll__srcactions">
+                      @for (a of s.actions; track a.id) {
+                        <button
+                          class="coll__iconbtn"
+                          type="button"
+                          [class.is-danger]="a.danger"
+                          [attr.aria-label]="a.label"
+                          (click)="onSourceAction(s.id, a.id)">
+                          <mat-icon
+                            fontSet="material-symbols-outlined"
+                            aria-hidden="true"
+                            >{{ a.icon }}</mat-icon
+                          >
+                        </button>
+                      }
+                    </span>
+                  </div>
+                } @empty {
+                  <p class="coll__nosrc">Nessuna fonte collegata.</p>
+                }
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr
+          *matHeaderRowDef="displayedColumns"
+          mat-header-row></tr>
+        <tr
+          *matRowDef="let r; columns: displayedColumns"
+          mat-row
+          class="coll__row"
+          [class.is-expanded]="isExpanded(r)"
+          (click)="toggleExpand(r)"></tr>
+        <tr
+          *matRowDef="let r; columns: ['expandedDetail']"
+          mat-row
+          class="coll__detailrow"></tr>
+      </table>
+
+      <mat-paginator
+        showFirstLastButtons
+        [pageSize]="10"
+        [pageSizeOptions]="[10, 25, 50]" />
+    </div>
   }
-</div>
 
-<!-- Pannello progetto + fonti annidate -->
-<ng-template
-  #panel
-  let-g>
-  <div class="coll__panel surface-card">
-    <app-list-row
-      emphasis
-      titleClickable
-      [icon]="g.project.icon"
-      [cover]="g.project.cover"
-      [imageSrc]="g.project.imageSrc"
-      [title]="g.project.title"
-      [meta]="g.project.meta"
-      [badge]="g.project.badge"
-      [badgeTone]="g.project.badgeTone"
-      [actions]="g.project.actions"
-      (open)="openProject(g.id)"
-      (action)="onProjectAction(g.id, $event)" />
+  <!-- Dialog: rielaborazione gated dall'abbonamento -->
+  <app-modal-shell
+    [open]="reuseOpen()"
+    [title]="billingStatus() === 'past_due' ? 'Pagamento in sospeso' : 'Serve un abbonamento'"
+    [subtitle]="'Rielaborare un lavoro conta come un nuovo progetto.'"
+    [closeLabel]="'Chiudi'"
+    (closed)="reuseOpen.set(false)">
+    <div class="coll__gate">
+      <mat-icon
+        class="coll__gate-icon"
+        fontSet="material-symbols-outlined"
+        aria-hidden="true"
+        >lock</mat-icon
+      >
+      @if (billingStatus() === 'past_due') {
+        <p class="coll__upsell">
+          Il tuo abbonamento è attivo ma c'è un <strong>pagamento da regolarizzare</strong>.
+          Sistemalo per riprendere a rielaborare i tuoi lavori. Lettura e download restano sempre
+          disponibili.
+        </p>
+      } @else {
+        <p class="coll__upsell">
+          Per rielaborare un lavoro serve un <strong>abbonamento attivo</strong> (entro le chance
+          mensili) oppure puoi pagare il costo di <strong>questo singolo progetto</strong>. Lettura
+          e download restano sempre disponibili.
+        </p>
+      }
+    </div>
+    <div
+      footer
+      class="coll__dialogfoot">
+      @if (billingStatus() === 'past_due') {
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="reuseOpen.set(false)">
+          Non ora
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          (click)="goPricing()">
+          Regolarizza il pagamento
+        </button>
+      } @else {
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="paySingle()">
+          Paga questo progetto
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="button"
+          (click)="goPricing()">
+          Abbonati
+        </button>
+      }
+    </div>
+  </app-modal-shell>
 
-    <div class="coll__srchead">Fonti · {{ g.sources.length }}</div>
-    @for (r of g.sources; track r.id) {
-      <app-list-row
-        indent
-        [icon]="r.icon"
-        [iconTone]="r.iconTone"
-        [title]="r.title"
-        [meta]="r.meta"
-        [badge]="r.badge"
-        [badgeTone]="r.badgeTone"
-        [actions]="r.actions"
-        (open)="openSource(r.id)"
-        (action)="onSourceAction(r.id, $event)" />
-    } @empty {
-      <p class="coll__nosrc">Nessuna fonte collegata.</p>
-    }
-  </div>
-</ng-template>
-
-<!-- Dialog: rielaborazione gated dall'abbonamento -->
-<app-modal-shell
-  [open]="reuseOpen()"
-  [title]="billingStatus() === 'past_due' ? 'Pagamento in sospeso' : 'Serve un abbonamento'"
-  [subtitle]="'Rielaborare un lavoro conta come un nuovo progetto.'"
-  [closeLabel]="'Chiudi'"
-  (closed)="reuseOpen.set(false)">
-  <div class="coll__gate">
-    <mat-icon
-      class="coll__gate-icon"
-      fontSet="material-symbols-outlined"
-      aria-hidden="true"
-      >lock</mat-icon
-    >
-    @if (billingStatus() === 'past_due') {
-      <p class="coll__upsell">
-        Il tuo abbonamento è attivo ma c'è un <strong>pagamento da regolarizzare</strong>. Sistemalo
-        per riprendere a rielaborare i tuoi lavori in collezione. Lettura e download restano sempre
-        disponibili.
-      </p>
-    } @else {
-      <p class="coll__upsell">
-        Per rielaborare un lavoro serve un <strong>abbonamento attivo</strong> (entro le chance
-        mensili) oppure puoi pagare il costo di <strong>questo singolo progetto</strong>. Lettura e
-        download restano sempre disponibili.
-      </p>
-    }
-  </div>
-  <div
-    footer
-    class="coll__dialogfoot">
-    @if (billingStatus() === 'past_due') {
+  <!-- Dialog: conferma eliminazione (irreversibile) -->
+  <app-modal-shell
+    [open]="!!pendingDelete()"
+    [title]="'Elimina definitivamente'"
+    [subtitle]="'Questa operazione è irreversibile.'"
+    [closeLabel]="'Chiudi'"
+    (closed)="cancelDelete()">
+    <p class="coll__upsell">
+      @if (pendingDelete()?.kind === 'project') {
+        Stai per eliminare <strong>«{{ pendingDelete()?.title }}»</strong> e tutte le sue fonti.
+      } @else {
+        Stai per eliminare <strong>«{{ pendingDelete()?.title }}»</strong>.
+      }
+      Non potrai annullare né recuperare il contenuto.
+    </p>
+    <div
+      footer
+      class="coll__dialogfoot">
       <button
         mat-stroked-button
         type="button"
-        (click)="reuseOpen.set(false)">
-        Non ora
+        (click)="cancelDelete()">
+        Annulla
       </button>
       <button
         mat-flat-button
-        color="primary"
+        class="coll__delete-btn"
         type="button"
-        (click)="goPricing()">
-        Regolarizza il pagamento
+        (click)="confirmDelete()">
+        Elimina
       </button>
-    } @else {
+    </div>
+  </app-modal-shell>
+
+  <!-- Lettore del libro -->
+  <app-book-reader
+    [open]="readerOpen()"
+    [loading]="readerLoading()"
+    [title]="readerTitle()"
+    [chapters]="readerChapters()"
+    (closed)="readerOpen.set(false)" />
+
+  <!-- Scarica output -->
+  <app-modal-shell
+    [open]="downloadOpen()"
+    [title]="downloadTitle()"
+    [subtitle]="'Scarica il documento'"
+    [closeLabel]="'Chiudi'"
+    (closed)="downloadOpen.set(false)">
+    <p class="coll__downloadmsg">
+      Scegli il formato che preferisci tra quelli disponibili per questo modello.
+    </p>
+    <div class="coll__downloads">
+      @for (f of downloadFormats(); track f) {
+        <button
+          mat-stroked-button
+          type="button"
+          disabled>
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            aria-hidden="true"
+            >download</mat-icon
+          >
+          Scarica {{ f }}
+        </button>
+      }
       <button
         mat-stroked-button
         type="button"
-        (click)="paySingle()">
-        Paga questo progetto
-      </button>
-      <button
-        mat-flat-button
-        color="primary"
-        type="button"
-        (click)="goPricing()">
-        Abbonati
-      </button>
-    }
-  </div>
-</app-modal-shell>
-
-<!-- Dialog: conferma eliminazione (irreversibile) -->
-<app-modal-shell
-  [open]="!!pendingDelete()"
-  [title]="'Elimina definitivamente'"
-  [subtitle]="'Questa operazione è irreversibile.'"
-  [closeLabel]="'Chiudi'"
-  (closed)="cancelDelete()">
-  <p class="coll__upsell">
-    @if (pendingDelete()?.kind === 'project') {
-      Stai per eliminare <strong>«{{ pendingDelete()?.title }}»</strong> e tutte le sue fonti.
-    } @else {
-      Stai per eliminare <strong>«{{ pendingDelete()?.title }}»</strong>.
-    }
-    Non potrai annullare né recuperare il contenuto.
-  </p>
-  <div
-    footer
-    class="coll__dialogfoot">
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="cancelDelete()">
-      Annulla
-    </button>
-    <button
-      mat-flat-button
-      class="coll__delete-btn"
-      type="button"
-      (click)="confirmDelete()">
-      Elimina
-    </button>
-  </div>
-</app-modal-shell>
-
-<!-- Lettore del libro: click sul progetto apre la lettura read-only -->
-<app-book-reader
-  [open]="readerOpen()"
-  [loading]="readerLoading()"
-  [title]="readerTitle()"
-  [chapters]="readerChapters()"
-  (closed)="readerOpen.set(false)" />
-
-<!-- Scarica output: icona download sul progetto (formati del modello, no lettura) -->
-<app-modal-shell
-  [open]="downloadOpen()"
-  [title]="downloadTitle()"
-  [subtitle]="'Scarica il documento'"
-  [closeLabel]="'Chiudi'"
-  (closed)="downloadOpen.set(false)">
-  <p class="coll__downloadmsg">
-    Scegli il formato che preferisci tra quelli disponibili per questo modello.
-  </p>
-  <div class="coll__downloads">
-    @for (f of downloadFormats(); track f) {
-      <button
-        mat-stroked-button
-        type="button"
-        disabled>
+        (click)="copyProjectLink()">
         <mat-icon
           fontSet="material-symbols-outlined"
           aria-hidden="true"
-          >download</mat-icon
+          >link</mat-icon
         >
-        Scarica {{ f }}
+        Copia link
       </button>
-    }
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="copyProjectLink()">
-      <mat-icon
-        fontSet="material-symbols-outlined"
-        aria-hidden="true"
-        >link</mat-icon
-      >
-      Copia link
-    </button>
-  </div>
-  <p class="coll__downloadhint">In arrivo · download</p>
-</app-modal-shell>
+    </div>
+    <p class="coll__downloadhint">In arrivo · download</p>
+  </app-modal-shell>
+</div>
