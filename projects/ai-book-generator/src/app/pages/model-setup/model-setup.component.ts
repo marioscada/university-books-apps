@@ -33,7 +33,7 @@ import type { CreateProjectInput } from '../../core/data/api-port';
 
 /** Genere grammaticale del nome modello (per gli articoli IT). */
 const MODEL_GENDER: Record<string, 'm' | 'f'> = {
-  book: 'm', summary: 'm', manual: 'm', presentation: 'f', course: 'f', thesis: 'f',
+  book: 'm', summary: 'm', manual: 'm', presentation: 'f', course: 'm', thesis: 'f',
 };
 
 const TITLE_MAX = 80;
