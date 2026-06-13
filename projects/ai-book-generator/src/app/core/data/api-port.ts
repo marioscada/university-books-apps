@@ -54,8 +54,12 @@ export interface ApiPort {
    * sono in `pending` (solo indice/outline); dopo `generateChapters` sono `ready`.
    */
   getCurrentVersion(projectId: string): Promise<Version | null>;
-  /** POST /projects/:id/chapters — sviluppa i capitoli dall'indice approvato. */
-  generateChapters(projectId: string): Promise<Version>;
+  /**
+   * POST /projects/:id/chapters — sviluppa i capitoli dall'indice approvato.
+   * Con `chapterId` sviluppa **solo quel capitolo** (generazione capitolo per
+   * capitolo); senza, sviluppa tutto l'indice in un colpo.
+   */
+  generateChapters(projectId: string, chapterId?: string): Promise<Version>;
 
   // --- Chat contestuale al progetto -----------------------------------------
   /** GET /projects/:id/chat — il thread di messaggi del progetto. */

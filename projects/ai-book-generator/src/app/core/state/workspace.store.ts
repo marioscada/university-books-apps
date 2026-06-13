@@ -1,11 +1,5 @@
 import { computed, inject } from '@angular/core';
-import {
-  patchState,
-  signalStore,
-  withComputed,
-  withMethods,
-  withState,
-} from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 
 import type { Chapter, ChatMessage, Version } from '../domain';
 import { API_PORT } from '../data/api-port';
@@ -60,8 +54,8 @@ export const WorkspaceStore = signalStore(
      * I capitoli sono stati sviluppati (fase Capitoli). Se falso ma esiste una
      * versione → fase **revisione indice** (solo outline, capitoli non sviluppati).
      */
-    chaptersReady: computed(
-      () => (store.version()?.chapters ?? []).some((c) => c.status === 'ready'),
+    chaptersReady: computed(() =>
+      (store.version()?.chapters ?? []).some((c) => c.status === 'ready'),
     ),
   })),
   withMethods((store) => {
@@ -102,17 +96,45 @@ export const WorkspaceStore = signalStore(
         }
       },
 
-      /** Sviluppa i capitoli dall'indice approvato (review indice → capitoli). */
-      async generateChapters(projectId: string): Promise<void> {
+      /**
+       * Sviluppa il **prossimo capitolo** `pending` (generazione capitolo per
+       * capitolo): approvi quello corrente → si genera il successivo, fino alla
+       * fine. Aggiornamento ottimistico (capitolo → `generating`) per feedback
+       * immediato, con **revert** in caso di errore. Guardia anti-doppio-invio.
+       */
+      async generateNextChapter(projectId: string): Promise<void> {
         if (store.generating()) {
           return;
         }
+        const next = (store.version()?.chapters ?? []).find((c) => c.status === 'pending');
+        if (!next) {
+          return; // tutti i capitoli già generati
+        }
+        const setStatus = (status: Chapter['status']): void =>
+          patchState(store, (s) =>
+            s.version
+              ? {
+                  version: {
+                    ...s.version,
+                    chapters: s.version.chapters.map((c) =>
+                      c.id === next.id ? { ...c, status } : c,
+                    ),
+                  },
+                }
+              : {},
+          );
         patchState(store, { generating: true });
+        setStatus('generating'); // ottimistico
         try {
-          const version = await api.generateChapters(projectId);
+          const version = await api.generateChapters(projectId, next.id);
           if (store.projectId() === projectId) {
             patchState(store, { version });
           }
+        } catch (error) {
+          if (store.projectId() === projectId) {
+            setStatus('pending'); // revert
+          }
+          throw error;
         } finally {
           patchState(store, { generating: false });
         }

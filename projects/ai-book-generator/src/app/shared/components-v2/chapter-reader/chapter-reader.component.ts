@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, booleanAttribute, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
+import { ProseComponent } from '../prose/prose.component';
+
 /** Tono del chip di stato del capitolo (mappa sui token globali dei toni). */
 export type ChapterReaderTone = 'neutral' | 'accent' | 'success' | 'warning';
 
@@ -28,7 +30,7 @@ export type ChapterReaderTone = 'neutral' | 'accent' | 'success' | 'warning';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'chapter-reader' },
-  imports: [MatIconModule],
+  imports: [MatIconModule, ProseComponent],
   templateUrl: './chapter-reader.component.html',
   styleUrl: './chapter-reader.component.scss',
 })
@@ -64,17 +66,4 @@ export class ChapterReaderComponent {
   readonly prev = output<void>();
   /** Emesso al capitolo successivo. */
   readonly next = output<void>();
-
-  /** Un blocco è un heading markdown se inizia con 1–6 `#` seguiti da spazio. */
-  protected isHeading(block: string): boolean {
-    return /^#{1,6}\s/.test(block);
-  }
-  /** Livello del heading (1–6). */
-  protected headingLevel(block: string): number {
-    return block.match(/^(#{1,6})\s/)?.[1].length ?? 0;
-  }
-  /** Testo del heading senza i `#`. */
-  protected headingText(block: string): string {
-    return block.replace(/^#{1,6}\s+/, '');
-  }
 }

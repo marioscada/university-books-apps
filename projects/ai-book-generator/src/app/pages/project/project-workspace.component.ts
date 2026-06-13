@@ -20,6 +20,7 @@ import {
   type ChapterItem,
 } from '../../shared/components-v2/chapter-index/chapter-index.component';
 import { ChapterReaderComponent } from '../../shared/components-v2/chapter-reader/chapter-reader.component';
+import { ProseComponent } from '../../shared/components-v2/prose/prose.component';
 import { SkeletonComponent } from '../../shared/components-v2/skeleton/skeleton.component';
 import { SpinnerComponent } from '../../shared/ui/spinner/spinner.component';
 import { ModalShellComponent } from '../../shared/components-v2/modal-shell/modal-shell.component';
@@ -61,6 +62,7 @@ import {
     ReviewShellComponent,
     ChapterIndexComponent,
     ChapterReaderComponent,
+    ProseComponent,
     SkeletonComponent,
     SpinnerComponent,
     AiChatPanelComponent,
@@ -149,13 +151,14 @@ export class ProjectWorkspaceComponent {
   });
 
   /**
-   * Generazione CAPITOLI in corso → **skeleton in pagina** + spinner centrato
-   * (stesso pattern dell'indice): navigazione ottimistica dallo step "Genera
-   * capitoli". Niente overlay.
+   * Generazione del **primo** capitolo → skeleton a 3 pannelli in pagina (passaggio
+   * da revisione indice a capitoli). Dal secondo capitolo in poi NON si copre tutta
+   * la schermata: resta la vista capitoli e lo skeleton è solo nel lettore (vedi
+   * `selectedGenerating`), così i capitoli già fatti restano visibili.
    */
   readonly chaptersLoading = computed(() => {
     const p = this.project();
-    return !!p && p.status === 'review' && this.workspace.generating();
+    return !!p && p.status === 'review' && this.workspace.generating() && !this.chaptersReady();
   });
 
   /**
@@ -166,9 +169,7 @@ export class ProjectWorkspaceComponent {
 
   // --- Capitoli (revisione) ---------------------------------------------------
   private readonly pickedKey = signal('');
-  readonly selectedKey = computed(
-    () => this.pickedKey() || this.workspace.chapters()[0]?.id || '',
-  );
+  readonly selectedKey = computed(() => this.pickedKey() || this.workspace.chapters()[0]?.id || '');
   readonly selectedChapter = computed<Chapter | undefined>(() => {
     const key = this.selectedKey();
     return this.workspace.chapters().find((c) => c.id === key);
@@ -188,23 +189,27 @@ export class ProjectWorkspaceComponent {
     Math.min(this.readerPage(), this.readerPageCount() - 1),
   );
   /** Paragrafi della pagina corrente. */
-  readonly readerParagraphs = computed(
-    () => this.readerPages()[this.readerCurrentPage()] ?? [],
-  );
-  readonly readerPosLabel = computed(() => {
+  readonly readerParagraphs = computed(() => this.readerPages()[this.readerCurrentPage()] ?? []);
+  /** Posizione del capitolo (1-based) per il sottotitolo del lettore in dialog. */
+  readonly readerChapterLabel = computed(() => {
     const ch = this.selectedChapter();
     if (!ch) {
       return '';
     }
-    const total = this.workspace.chapters().length;
-    return `Capitolo ${ch.index} di ${total} · pagina ${this.readerCurrentPage() + 1} di ${this.readerPageCount()}`;
+    return `Capitolo ${ch.index + 1} di ${this.workspace.chapters().length}`;
   });
+  /** Posizione di pagina (footer del lettore in dialog). */
+  readonly readerPosLabel = computed(
+    () => `Pagina ${this.readerCurrentPage() + 1} di ${this.readerPageCount()}`,
+  );
+  /** Avanzamento di lettura del capitolo (0–100) per la barra di progresso pagine. */
+  readonly pageProgressPct = computed(() =>
+    Math.round(((this.readerCurrentPage() + 1) / this.readerPageCount()) * 100),
+  );
   private chapterIndexOf(): number {
     return this.workspace.chapters().findIndex((c) => c.id === this.selectedKey());
   }
-  readonly canReadPrev = computed(
-    () => this.readerCurrentPage() > 0 || this.chapterIndexOf() > 0,
-  );
+  readonly canReadPrev = computed(() => this.readerCurrentPage() > 0 || this.chapterIndexOf() > 0);
   readonly canReadNext = computed(
     () =>
       this.readerCurrentPage() < this.readerPageCount() - 1 ||
@@ -237,13 +242,54 @@ export class ProjectWorkspaceComponent {
     }
   }
 
+  // --- Navigazione di CAPITOLO nel lettore (salta direttamente al capitolo) -----
+  readonly canPrevChapter = computed(() => this.chapterIndexOf() > 0);
+  readonly canNextChapter = computed(
+    () => this.chapterIndexOf() < this.workspace.chapters().length - 1,
+  );
+  /** Capitolo precedente (dalla pagina 1). */
+  prevChapter(): void {
+    const i = this.chapterIndexOf();
+    if (i > 0) {
+      this.pickedKey.set(this.workspace.chapters()[i - 1].id);
+      this.readerPage.set(0);
+    }
+  }
+  /** Capitolo successivo (dalla pagina 1). */
+  nextChapter(): void {
+    const list = this.workspace.chapters();
+    const i = this.chapterIndexOf();
+    if (i < list.length - 1) {
+      this.pickedKey.set(list[i + 1].id);
+      this.readerPage.set(0);
+    }
+  }
+
   /** True nella fase Capitoli (corpi sviluppati); false in revisione indice. */
   readonly chaptersReady = computed(() => this.workspace.chaptersReady());
 
   readonly chapterItems = computed<ChapterItem[]>(() =>
     toChapterItems(this.workspace.chapters(), this.chaptersReady(), this.selectedKey()),
   );
-  readonly indexCountLabel = computed(() => `${this.workspace.chapters().length} capitoli`);
+  /** In fase capitoli mostra l'avanzamento (sviluppati/totale); altrimenti il totale. */
+  readonly indexCountLabel = computed(() => {
+    const cs = this.workspace.chapters();
+    if (this.chaptersReady()) {
+      const ready = cs.filter((c) => c.status === 'ready').length;
+      return `${ready}/${cs.length} sviluppati`;
+    }
+    return `${cs.length} capitoli`;
+  });
+  /** Restano capitoli da generare (pending). */
+  readonly hasPendingChapters = computed(() =>
+    this.workspace.chapters().some((c) => c.status === 'pending'),
+  );
+  /** Etichetta azione del lettore: "approva+prossimo" finché restano capitoli, poi "pubblica". */
+  readonly readerActionLabel = computed(() =>
+    this.hasPendingChapters()
+      ? this.t('i18n.Workspace.Action.approveNext')
+      : this.t('i18n.Workspace.Action.publish'),
+  );
 
   // --- Chat -------------------------------------------------------------------
   readonly chatDraft = signal('');
@@ -255,9 +301,7 @@ export class ProjectWorkspaceComponent {
     return ch ? `Modifica: ${ch.index} · ${ch.title}` : 'Chiedi una modifica al documento';
   });
   /** Suggerimenti rapidi contestuali: indice in revisione indice, capitoli dopo. */
-  readonly quickOps = computed(() =>
-    this.chaptersReady() ? QUICK_OPS_CHAPTERS : QUICK_OPS_INDEX,
-  );
+  readonly quickOps = computed(() => (this.chaptersReady() ? QUICK_OPS_CHAPTERS : QUICK_OPS_INDEX));
 
   // --- Azioni -----------------------------------------------------------------
   selectChapter(key: string): void {
@@ -270,11 +314,34 @@ export class ProjectWorkspaceComponent {
   runQuickOp(key: string): void {
     void this.workspace.send(this.id(), quickOpText(key));
   }
-  /** True mentre i capitoli vengono sviluppati. */
+  /** True mentre un capitolo viene sviluppato. */
   readonly generating = computed(() => this.workspace.generating());
-  /** Dalla revisione indice: sviluppa i capitoli. */
-  generateChapters(): void {
-    void this.workspace.generateChapters(this.id());
+  /**
+   * Genera il **prossimo** capitolo `pending` (capitolo per capitolo). Salta al
+   * capitolo in generazione e, in caso di errore, mostra un toast (lo store fa il
+   * revert dello stato ottimistico). Guardia anti-doppio-invio.
+   */
+  approveAndGenerateNext(): void {
+    if (this.workspace.generating()) {
+      return;
+    }
+    const next = this.workspace.chapters().find((c) => c.status === 'pending');
+    if (next) {
+      this.pickedKey.set(next.id);
+    }
+    void this.workspace.generateNextChapter(this.id()).catch(() => {
+      void this.toast.present(this.t('i18n.Workspace.chapterError'), this.t('i18n.Common.error'), {
+        severity: 'error',
+      });
+    });
+  }
+  /** Azione del lettore in fase capitoli: approva+prossimo, oppure pubblica se finiti. */
+  onReaderAction(): void {
+    if (this.hasPendingChapters()) {
+      this.approveAndGenerateNext();
+    } else {
+      this.goToPublish();
+    }
   }
 
   // --- Pubblica / Conferma (sotto-viste UI dello stato review/published) -------

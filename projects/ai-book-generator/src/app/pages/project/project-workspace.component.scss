@@ -90,7 +90,6 @@ app-review-shell {
   margin-top: 6px;
 }
 
-
 // Body a 3 pannelli (Capitoli): indice · lettura · chat, pari altezza.
 // Altezza limitata al viewport: i pannelli scrollano internamente (stesso
 // comportamento di review-shell) → la pagina non si allunga.
@@ -192,12 +191,12 @@ app-review-shell {
   gap: 12px;
 }
 
-// --- Lettore read-only (dialog) ---------------------------------------------
+// --- Lettore e-reader (dialog) ----------------------------------------------
+// Riga capitolo leggera in alto, area di lettura con frecce pagina ai lati,
+// barra di progresso pagine nel footer. Niente blocchi/sfondi pieni.
 .studio-read {
-  max-width: 68ch;
-  // Altezza stabile: le pagine non fanno "saltare" il dialog; niente scroll.
-  min-height: clamp(300px, 48vh, 460px);
-  margin: 0 auto;
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -214,20 +213,119 @@ app-review-shell {
   font-weight: 600;
   color: var(--mat-sys-on-surface-variant);
 }
-.studio-read__p {
-  margin: 0;
-  font-size: 1.0625rem;
-  line-height: 1.75;
-  color: var(--mat-sys-on-surface);
-}
-.studio-read__nav {
+
+// Riga capitolo: ‹ · Capitolo N di M · › (leggera, solo divider sotto).
+.reader-chapterbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: center;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--card-border-color);
+}
+.reader-chapterbar__label {
+  min-width: 11ch;
+  text-align: center;
+  font-size: var(--site-body-small, 0.875rem);
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+}
+// Stepper di capitolo: piccolo bottone fantasma.
+.reader-chip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 9px;
+  background: none;
+  color: var(--accent-700);
+  cursor: pointer;
+  transition: background 0.12s ease;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  &:hover:not(:disabled) {
+    background: var(--surface-soft);
+  }
+  &:disabled {
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+// Area di lettura: frecce pagina ai lati (e-reader), articolo al centro.
+.reader-stage {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(6px, 1.5vw, 16px);
+  flex: 1 1 auto;
+  min-height: clamp(280px, 46vh, 440px);
+}
+// Frecce pagina grandi "fantasma" ai bordi; spariscono a inizio/fine (no salti).
+.reader-edge {
+  flex: 0 0 auto;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--card-border-color);
+  border-radius: 999px;
+  background: var(--card-bg);
+  color: var(--mat-sys-on-surface);
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+
+  mat-icon {
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
+  }
+  &:hover:not(:disabled) {
+    background: var(--surface-soft);
+    border-color: var(--accent-400);
+  }
+  &:disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+// Progresso pagine (footer): barra sottile + etichetta.
+.reader-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   width: 100%;
 }
-.studio-read__pos {
+.reader-progress__track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  overflow: hidden;
+}
+.reader-progress__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent-500);
+  transition: width 0.2s ease;
+}
+.reader-progress__label {
+  flex: 0 0 auto;
   font-size: var(--site-body-small, 0.875rem);
   font-weight: 600;
   color: var(--mat-sys-on-surface-variant);
@@ -262,6 +360,14 @@ app-review-shell {
     flex: 0 0 auto;
     width: 100%;
     max-height: 80vh;
+  }
+  // Conferma/skeleton-conferma: a flusso naturale (niente flex-basis:0, che
+  // collasserebbe dentro lo stack ad altezza `auto` facendo sbordare il
+  // contenuto fuori dalla card). Cresce col contenuto, resta centrato.
+  .studio-confirm,
+  .skel-confirm-wrap {
+    flex: 0 0 auto;
+    min-height: clamp(340px, 56vh, 520px);
   }
 }
 
@@ -317,6 +423,9 @@ app-review-shell {
 // non sposta nulla.
 .skel-pane {
   min-height: 0;
+  // Ancora per gli overlay centrati nel pannello (es. `.studio-thinking` quando
+  // si genera il singolo capitolo nel lettore).
+  position: relative;
 }
 .skel-pane--index {
   flex: 0 0 288px;

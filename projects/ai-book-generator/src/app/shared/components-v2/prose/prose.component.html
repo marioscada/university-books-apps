@@ -1,0 +1,11 @@
+@for (b of blocks(); track $index) {
+  @if (isHeading(b)) {
+    <p
+      class="prose__h"
+      [attr.data-level]="headingLevel(b)">
+      {{ headingText(b) }}
+    </p>
+  } @else {
+    <p class="prose__p">{{ b }}</p>
+  }
+}

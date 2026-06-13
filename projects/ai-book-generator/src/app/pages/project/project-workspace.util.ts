@@ -74,8 +74,10 @@ export function chapterStatusLabel(status: ChapterItem['status']): string {
       return 'In generazione';
     case 'current':
       return 'In lettura';
+    case 'todo':
+      return 'Da generare';
     default:
-      return 'Da rivedere';
+      return 'Pronto';
   }
 }
 
@@ -89,10 +91,11 @@ export function paginate<T>(items: readonly T[], size: number): T[][] {
 }
 
 /**
- * Mappa i capitoli nel view-model della lista indice. In revisione indice
- * (`ready=false`) lista neutra SENZA stima pagine (i capitoli non sono ancora
- * generati); a capitoli sviluppati lo stato riflette in generazione/in lettura/
- * da rivedere.
+ * Mappa i capitoli nel view-model della lista indice. In revisione **indice**
+ * (`ready=false`) lista neutra senza etichette (i capitoli non sono ancora
+ * generati). In fase **capitoli** lo stato riflette la generazione progressiva:
+ * `generating` (in corso), `todo` (ancora da generare → reso opaco), `current`
+ * (in lettura) oppure `review` (già fatto → vivo).
  */
 export function toChapterItems(
   chapters: readonly Chapter[],
@@ -104,17 +107,23 @@ export function toChapterItems(
     if (!ready) {
       return {
         key: c.id,
-        index: c.index,
+        index: c.index + 1,
         title: c.title,
         status: 'todo' as const,
         sections,
       };
     }
-    const status =
-      c.status === 'generating' ? 'generating' : c.id === selectedKey ? 'current' : 'review';
+    let status: ChapterItem['status'];
+    if (c.status === 'generating') {
+      status = 'generating';
+    } else if (c.status !== 'ready') {
+      status = 'todo'; // pending/failed: non ancora pronto → opaco
+    } else {
+      status = c.id === selectedKey ? 'current' : 'review';
+    }
     return {
       key: c.id,
-      index: c.index,
+      index: c.index + 1,
       title: c.title,
       status,
       statusLabel: chapterStatusLabel(status),
@@ -135,7 +144,12 @@ export function toChatBubbles(messages: readonly ChatMessage[], sending: boolean
     operationLabel: (m as { operationLabel?: string }).operationLabel,
   }));
   if (sending) {
-    bubbles.push({ id: 'pending', role: 'assistant', text: 'Sto applicando la modifica…', pending: true });
+    bubbles.push({
+      id: 'pending',
+      role: 'assistant',
+      text: 'Sto applicando la modifica…',
+      pending: true,
+    });
   }
   return bubbles;
 }
